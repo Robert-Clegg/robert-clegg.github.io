@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v138 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v130 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -691,34 +691,6 @@ const SOLDIER_RAW = generateRawInputs(SOLDIER_EVENTS, 88.6);
 const COMMANDER_RAW = generateRawInputs(COMMANDER_EVENTS, 196.8);
 
 // ═══════════════════════════════════════════════════════════════
-// PRE-COMPUTED SNAPSHOTS — computed once at module load, O(1) render lookup
-// 1600 steps × 100ms = 160s full demo coverage
-// Eliminates per-frame computeProfile + computeTreeActivation calls
-// ═══════════════════════════════════════════════════════════════
-const SNAPSHOT_STEP = 0.1; // 100ms resolution
-const SNAPSHOT_COUNT = 1601; // 0..160s inclusive
-
-const SOLDIER_PROFILE_SNAPS = new Array(SNAPSHOT_COUNT);
-const COMMANDER_PROFILE_SNAPS = new Array(SNAPSHOT_COUNT);
-const COMMANDER_TREE_SNAPS = new Array(SNAPSHOT_COUNT);
-const SOLDIER_TREE_SNAPS = new Array(SNAPSHOT_COUNT);
-
-(function precompute() {
-  for (let i = 0; i < SNAPSHOT_COUNT; i++) {
-    const t = i * SNAPSHOT_STEP;
-    SOLDIER_PROFILE_SNAPS[i] = computeProfile(SOLDIER_EVENTS, t);
-    COMMANDER_PROFILE_SNAPS[i] = computeProfile(COMMANDER_EVENTS, t);
-    COMMANDER_TREE_SNAPS[i] = computeTreeActivation(COMMANDER_EVENTS, t);
-    SOLDIER_TREE_SNAPS[i] = computeTreeActivation(SOLDIER_EVENTS, t);
-  }
-})();
-
-function getSnapshotIndex(time) {
-  return Math.min(Math.floor(time / SNAPSHOT_STEP), SNAPSHOT_COUNT - 1);
-}
-
-
-// ═══════════════════════════════════════════════════════════════
 // BATTLEFIELD MAP COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
@@ -1139,17 +1111,17 @@ function TemporalReplay() {
   const [treeSession, setTreeSession] = useState("commander");
   const animRef = useRef(null);
   const lastFrameRef = useRef(null);
-  const timeRef = useRef(0); // real-time tracker at 60fps (not throttled)
-  const lastRenderRef = useRef(0); // timestamp of last React state flush
-  const RENDER_INTERVAL = 66; // ms — flush React state at ~15fps (was 60fps)
 
-  // ═══ VIDEO — YouTube IFrame API (ambient, decoupled from dashboard timer) ═══
-  const [videoUrl, setVideoUrl] = useState(null); // YouTube video ID or null
-  const [videoMode, setVideoMode] = useState(false);
+  // ═══ VIDEO SYNC ═══
+  const [videoUrl, setVideoUrl] = useState(null);
+  const [videoMode, setVideoMode] = useState(false); // split view active
+  const [videoOffset, setVideoOffset] = useState(0); // seconds offset between video and telemetry
+  const [videoDuration, setVideoDuration] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [videoStatus, setVideoStatus] = useState("");
-  const ytPlayerRef = useRef(null); // YouTube player instance
-  const ytReady = useRef(false);
+  const videoRef = useRef(null);
+  const syncingFromVideo = useRef(false);
+  const syncingFromAlgo = useRef(false);
 
   // ═══ TELEMETRY FILE LOADING ═══
   const [telemetrySource, setTelemetrySource] = useState("demo"); // "demo" | "loaded"
@@ -1216,15 +1188,12 @@ function TemporalReplay() {
   const tick = useCallback(() => {
     const now = performance.now();
     if (lastFrameRef.current != null) {
-      // Dashboard always drives its own timer — video plays ambient, fully decoupled
       const dt = ((now - lastFrameRef.current) / 1000) * speed * 4; // base rate 4× for alive feel
-      timeRef.current = timeRef.current + dt;
-      if (timeRef.current >= 160) { timeRef.current = 160; setPlaying(false); setTime(160); lastFrameRef.current = now; return; }
-      // Only flush to React state at ~15fps to avoid re-rendering the SVG pipeline every frame
-      if (now - lastRenderRef.current >= RENDER_INTERVAL) {
-        setTime(timeRef.current);
-        lastRenderRef.current = now;
-      }
+      setTime(prev => {
+        const next = prev + dt;
+        if (next >= 160) { setPlaying(false); return 160; }
+        return next;
+      });
     }
     lastFrameRef.current = now;
     animRef.current = requestAnimationFrame(tick);
@@ -1232,7 +1201,6 @@ function TemporalReplay() {
 
   useEffect(() => {
     if (playing) {
-      // Dashboard always runs its own rAF loop — video is ambient
       lastFrameRef.current = null;
       animRef.current = requestAnimationFrame(tick);
     } else {
@@ -1241,96 +1209,109 @@ function TemporalReplay() {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [playing, tick]);
 
-  // ═══ YOUTUBE IFRAME API — cross-origin guarantees separate Chrome process ═══
-  // Load YouTube IFrame API script
+  // ═══ VIDEO SYNC EFFECTS ═══
+  // Only sync after video is actually loaded (videoDuration > 0 = metadata received)
   useEffect(() => {
-    if (window.YT && window.YT.Player) return; // already loaded
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-  }, []);
+    if (videoRef.current && videoMode && videoDuration > 0 && !syncingFromVideo.current) {
+      syncingFromAlgo.current = true;
+      const videoTime = time + videoOffset;
+      if (Math.abs(videoRef.current.currentTime - videoTime) > 0.3) {
+        videoRef.current.currentTime = Math.max(0, Math.min(videoTime, videoDuration));
+      }
+      syncingFromAlgo.current = false;
+    }
+  }, [time, videoMode, videoOffset, videoDuration]);
 
-  // Create YouTube player when API is ready and we have a video ID
-  const initYouTubePlayer = useCallback((videoId) => {
-    // Destroy previous player if exists
-    if (ytPlayerRef.current) { try { ytPlayerRef.current.destroy(); } catch(e) {} }
-    
-    const createPlayer = () => {
-      ytPlayerRef.current = new window.YT.Player("yt-player-container", {
-        videoId: videoId,
-        width: "100%",
-        height: "100%",
-        playerVars: { autoplay: 0, controls: 1, modestbranding: 1, rel: 0, fs: 1, playsinline: 1 },
-        events: {
-          onReady: (event) => {
-            ytReady.current = true;
-            const dur = event.target.getDuration();
-            setVideoStatus("✅ YouTube loaded " + Math.round(dur) + "s");
-            setVideoUrl(videoId);
-            setVideoMode(true);
-          },
-          onStateChange: (event) => {
-            // YouTube state changes no longer drive dashboard state (fully decoupled)
-            // Dashboard has its own timer; YouTube is ambient video only
-          }
-        }
-      });
+  // Video play/pause sync — telemetry → video
+  useEffect(() => {
+    if (videoRef.current && videoMode) {
+      syncingFromAlgo.current = true;
+      if (playing) {
+        videoRef.current.playbackRate = speed;
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
+      // Small delay before clearing flag so the video's onPause/onPlay doesn't echo back
+      setTimeout(() => { syncingFromAlgo.current = false; }, 50);
+    }
+  }, [playing, videoMode, speed]);
+
+  // Video native controls → telemetry sync (pause/play buttons on video element)
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid || !videoMode) return;
+    const onNativePause = () => {
+      if (!syncingFromAlgo.current) setPlaying(false);
     };
+    const onNativePlay = () => {
+      if (!syncingFromAlgo.current) setPlaying(true);
+    };
+    vid.addEventListener("pause", onNativePause);
+    vid.addEventListener("play", onNativePlay);
+    return () => {
+      vid.removeEventListener("pause", onNativePause);
+      vid.removeEventListener("play", onNativePlay);
+    };
+  }, [videoMode]);
 
-    if (window.YT && window.YT.Player) {
-      createPlayer();
-    } else {
-      window.onYouTubeIframeAPIReady = createPlayer;
-    }
-  }, []);
-
-  // Note: play/pause sent to YouTube directly in onClick (must be synchronous within user gesture)
-
-  // Send speed to YouTube
+  // ═══ VIDEO CLEANUP — release file handle on page close/unmount ═══
+  // Without this, blob URL holds a file handle that can lock/corrupt the MP4 on Windows
   useEffect(() => {
-    if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
-    try { ytPlayerRef.current.setPlaybackRate(speed); } catch(e) {}
-  }, [speed, videoUrl]);
+    const cleanup = () => {
+      if (videoUrl && videoUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(videoUrl);
+      }
+    };
+    window.addEventListener("beforeunload", cleanup);
+    return () => {
+      window.removeEventListener("beforeunload", cleanup);
+      cleanup(); // also revoke on React unmount
+    };
+  }, [videoUrl]);
 
-  // ═══ URL PARAMETER VIDEO LOADING ═══
-  // ?yt=VIDEO_ID for YouTube, ?v=filename for local hosted video
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const yt = params.get("yt");
-    if (yt) {
-      setVideoStatus("⏳ loading YouTube " + yt + "...");
-      setTab("career");
-      // Small delay to ensure container div is mounted
-      setTimeout(() => initYouTubePlayer(yt), 300);
+  const handleVideoTimeUpdate = useCallback(() => {
+    if (videoRef.current && videoMode && !syncingFromAlgo.current) {
+      syncingFromVideo.current = true;
+      const algoTime = videoRef.current.currentTime - videoOffset;
+      setTime(Math.max(0, Math.min(algoTime, MAX_DUR)));
+      syncingFromVideo.current = false;
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [videoMode, videoOffset]);
 
-  // Handle JSON telemetry file drops on the dashboard
-  const handleDashboardDrop = useCallback((e) => {
+  const loadVideoFile = useCallback((file) => {
+    if (!file || !file.type.startsWith("video/")) return;
+    // Fully release previous video: pause, clear src, revoke blob
+    if (videoRef.current) { videoRef.current.pause(); videoRef.current.removeAttribute("src"); videoRef.current.load(); }
+    if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
+    const url = URL.createObjectURL(file);
+    setVideoStatus("⏳ " + file.name + " (" + (file.size/1024/1024).toFixed(1) + "MB)");
+    setVideoUrl(url);
+    setVideoMode(true);
+    setTab("career");
+  }, [videoUrl]);
+
+  const handleVideoDrop = useCallback((e) => {
     e.preventDefault();
+    setDragOver(false);
     const files = Array.from(e.dataTransfer?.files || []);
+    const videoFile = files.find(f => f.type?.startsWith("video/"));
     const jsonFile = files.find(f => f.name?.endsWith(".json"));
+    if (videoFile) loadVideoFile(videoFile);
     if (jsonFile) parseTelemetryFile(jsonFile);
-  }, [parseTelemetryFile]);
+  }, [loadVideoFile, parseTelemetryFile]);
 
-  // Snapshot lookup — O(1) instead of O(n_events) per render
-  const snapIdx = getSnapshotIndex(time);
-  const soldierProfile = isLoaded
-    ? computeProfile(loadedEvents, time)
-    : SOLDIER_PROFILE_SNAPS[snapIdx];
-  const commanderProfile = isLoaded
-    ? computeProfile(loadedEvents, time)
-    : COMMANDER_PROFILE_SNAPS[snapIdx];
+  const handleVideoFile = useCallback((e) => {
+    loadVideoFile(e.target?.files?.[0]);
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+  }, [loadVideoFile]);
+
+  const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
+  const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
 
   const treeEvents = isLoaded ? loadedEvents : (treeSession === "commander" ? COMMANDER_EVENTS : SOLDIER_EVENTS);
-  // For loaded sessions compute directly; for demo use pre-baked snapshots
-  const loadedTreeActivation = useMemo(
-    () => isLoaded ? computeTreeActivation(treeEvents, time) : null,
-    [isLoaded, treeEvents, time]
-  );
-  const treeActivation = isLoaded
-    ? loadedTreeActivation
-    : (treeSession === "commander" ? COMMANDER_TREE_SNAPS[snapIdx] : SOLDIER_TREE_SNAPS[snapIdx]);
+  const treeActivation = useMemo(() => computeTreeActivation(treeEvents, time), [treeEvents, time]);
 
   const radarData = AXES.map(axis => ({
     axis: AXIS_LABELS[axis],
@@ -1404,7 +1385,7 @@ function TemporalReplay() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, padding: "0 4px" }}>
         <div style={{ fontSize: 8, letterSpacing: 4, color: "rgba(255,255,255,0.15)", fontFamily: mono }}>KNOVERSE AI</div>
         <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 1, background: "linear-gradient(135deg, " + S_COLOR + ", " + C_COLOR + ")", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-          {isLoaded ? "Live Telemetry — " + (loadedMeta?.label || "Loaded") : "Cognitive Mechanics"}
+          {videoMode ? "Video + Cognitive Mechanics" : isLoaded ? "Live Telemetry — " + (loadedMeta?.label || "Loaded") : "Cognitive Mechanics"}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {isCommanderWin && (
@@ -1417,27 +1398,22 @@ function TemporalReplay() {
           {isLoaded && (
             <button onClick={() => { setTelemetrySource("demo"); setLoadedEvents(null); setLoadedMeta(null); setTelemetryStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }} title="Reset to demo data">⟲</button>
           )}
-          {videoStatus && <span style={{ fontSize: 8, color: videoStatus.startsWith("❌") ? "#ff4444" : videoStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{videoStatus}</span>}
+          <label style={{ padding: "2px 8px", background: videoMode ? "#a855f720" : "rgba(255,255,255,0.05)", border: "1px solid " + (videoMode ? "#a855f740" : "rgba(255,255,255,0.1)"), borderRadius: 4, color: videoMode ? "#a855f7" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: mono, cursor: "pointer", letterSpacing: 1 }}>
+            🎬 {videoMode ? "VIDEO ON" : "LOAD VIDEO"}
+            <input type="file" accept="video/*" onChange={handleVideoFile} style={{ display: "none" }} />
+          </label>
+          {videoMode && (
+            <button onClick={() => { if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl); setVideoMode(false); setVideoUrl(null); setVideoDuration(0); setVideoStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>✕</button>
+          )}
           {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v138</span>
+          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v130</span>
         </div>
       </div>
 
       {/* TRANSPORT + TABS — single row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <button onClick={() => { timeRef.current = 0; setTime(0); setPlaying(false); try { if (ytPlayerRef.current && ytReady.current) ytPlayerRef.current.seekTo(0, true); } catch(e) {} }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
-        <button onClick={() => {
-            const nowPlaying = !playing;
-            if (!playing && time >= MAX_DUR - 0.1) { timeRef.current = 0; setTime(0); }
-            setPlaying(nowPlaying);
-            // Call YouTube synchronously inside user gesture — browser blocks async media play
-            try {
-              if (ytPlayerRef.current && ytReady.current) {
-                if (nowPlaying) ytPlayerRef.current.playVideo();
-                else ytPlayerRef.current.pauseVideo();
-              }
-            } catch(e) {}
-          }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
+        <button onClick={() => { setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
+        <button onClick={() => { if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(!playing); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>
@@ -1454,9 +1430,16 @@ function TemporalReplay() {
           ))}
         </div>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-
+        {/* VIDEO OFFSET — only when video loaded */}
+        {videoMode && <>
+          <div style={{ fontSize: 8, color: "#a855f7", fontFamily: mono, letterSpacing: 1 }}>OFFSET</div>
+          <button onClick={() => setVideoOffset(prev => prev - 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>-1s</button>
+          <span style={{ fontFamily: mono, fontSize: 9, color: "#a855f7", minWidth: 32, textAlign: "center" }}>{videoOffset >= 0 ? "+" : ""}{videoOffset}s</span>
+          <button onClick={() => setVideoOffset(prev => prev + 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>+1s</button>
+          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
+        </>}
         {/* TABS inline */}
-        {TABS.map(t => (
+        {!videoMode && TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             padding: "4px 8px", borderRadius: 4, cursor: "pointer", fontFamily: mono, fontSize: 9,
             letterSpacing: 1.5, fontWeight: tab === t.id ? 700 : 400, transition: "all 0.2s",
@@ -1466,7 +1449,7 @@ function TemporalReplay() {
           }}>{t.label}</button>
         ))}
         {/* CMD/SLD session selector — always visible */}
-        <div style={{ display: "flex", gap: 2, marginLeft: "auto" }}>
+        <div style={{ display: "flex", gap: 2, marginLeft: videoMode ? 0 : "auto" }}>
           {["commander", "soldier"].map(s => (
             <button key={s} onClick={() => setTreeSession(s)} style={{
               background: treeSession === s ? (s === "commander" ? C_COLOR + "18" : S_COLOR + "18") : "none",
@@ -1478,28 +1461,69 @@ function TemporalReplay() {
         </div>
       </div>
 
-      {/* ═══ VIDEO PANEL — YouTube IFrame API, cross-origin = separate Chrome process ═══ */}
-      {(
+      {/* ═══ VIDEO PANEL — only in video mode, positioned absolutely ═══ */}
+      {videoMode && (
         <div style={{ position: "fixed", left: 16, top: 80, width: "42vw", bottom: 16, display: "flex", flexDirection: "column", gap: 8, zIndex: 10 }}>
-          <div style={{ flex: 1, borderRadius: 10, overflow: "hidden", background: "#000", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
-            {/* YouTube player container — API replaces this div with an iframe */}
-            <div id="yt-player-container" style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: videoUrl ? 2 : 0 }} />
-            {/* Placeholder shown when no video loaded */}
-            {!videoUrl && (
-              <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, position: "relative", zIndex: 1 }}>
-                <div style={{ fontSize: 48, opacity: 0.15 }}>🎬</div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: mono, letterSpacing: 1 }}>YOUTUBE VIDEO PLAYER</div>
-                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.15)", fontFamily: mono, textAlign: "center", maxWidth: 280 }}>
-                  {"Add ?yt=VIDEO_ID to the URL to load a YouTube video"}
-                </div>
-                {videoStatus && <div style={{ fontSize: 9, color: "#ffaa00", fontFamily: mono }}>{videoStatus}</div>}
+          {videoUrl ? (
+            <div style={{ flex: 1, borderRadius: 10, overflow: "hidden", background: "#0a0a1a", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
+              <video
+                key={videoUrl}
+                ref={videoRef}
+                src={videoUrl}
+                onTimeUpdate={handleVideoTimeUpdate}
+                onLoadedMetadata={(e) => { setVideoDuration(e.target.duration); setVideoStatus("✅ loaded " + Math.round(e.target.duration) + "s"); }}
+                onError={(e) => { const err = e.target.error; setVideoStatus("❌ error code:" + err?.code + " " + (err?.message||"")); }}
+                onCanPlay={() => {}}
+                onLoadStart={() => setVideoStatus("⏳ loading...")}
+                style={{ width: "100%", height: "100%", objectFit: "contain", background: "#000" }}
+                controls
+                muted
+                playsInline
+                preload="auto"
+              />
+              {/* Video overlay with match time */}
+              <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.7)", borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 8px #00ff88" : "none" }} />
+                <span style={{ fontFamily: mono, fontSize: 11, color: "white" }}>
+                  {Math.floor(time / 60)}:{String(Math.floor(time % 60)).padStart(2, "0")}.{String(Math.floor((time % 1) * 10))}
+                </span>
+                <span style={{ fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.3)" }}>MATCH TIME</span>
               </div>
-            )}
-          </div>
+              {/* Cognitive profile badge */}
+              <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", borderRadius: 6, padding: "6px 10px" }}>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: treeSession === "commander" ? C_COLOR : S_COLOR, fontFamily: mono, marginBottom: 2 }}>
+                  {treeSession === "commander" ? "COMMANDER" : "SOLDIER"}
+                </div>
+                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", fontFamily: mono }}>
+                  L1:{Math.round((treeActivation.L1 || 0) * 100)}% L2:{Math.round((treeActivation.L2 || 0) * 100)}% L3:{Math.round((treeActivation.L3 || 0) * 100)}% L4:{Math.round((treeActivation.L4 || 0) * 100)}%
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleVideoDrop}
+              style={{
+                flex: 1, borderRadius: 10, background: dragOver ? "rgba(168,85,247,0.08)" : "rgba(255,255,255,0.02)",
+                border: "2px dashed " + (dragOver ? "#a855f7" : "rgba(255,255,255,0.08)"),
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, transition: "all 0.2s"
+              }}
+            >
+              <div style={{ fontSize: 48, opacity: 0.2 }}>🎬</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: mono, letterSpacing: 1 }}>
+                {"DROP VIDEO FILE HERE"}
+              </div>
+              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.15)", fontFamily: mono }}>
+                {"Drop MP4 + JSON telemetry together, or use the buttons above"}
+              </div>
+
+            </div>
+          )}
           {/* Scrubber bar under video */}
           <div style={{ padding: "0 4px" }}>
             <input type="range" min={0} max={MAX_DUR} step={0.1} value={time}
-              onChange={(e) => { const v = parseFloat(e.target.value); timeRef.current = v; setTime(v); }}
+              onChange={(e) => { setTime(parseFloat(e.target.value)); }}
               style={{ width: "100%", accentColor: treeSession === "commander" ? C_COLOR : S_COLOR, height: 4, cursor: "pointer" }}
             />
             {/* Event markers on scrubber */}
@@ -1514,11 +1538,11 @@ function TemporalReplay() {
         </div>
       )}
 
-      {/* CONTENT AREA — always offset for left video panel */}
-      <div style={{ marginLeft: "44vw", transition: "margin-left 0.3s" }}>
+      {/* CONTENT AREA — shifts right when video panel is open */}
+      <div style={{ marginLeft: videoMode ? "44vw" : 0, transition: "margin-left 0.3s" }}>
 
       {/* ═══ OVERVIEW ═══ */}
-      {tab === "overview" && <>
+      {!videoMode && tab === "overview" && <>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {/* SOLDIER */}
           <div style={{ background: S_COLOR + "04", borderRadius: 12, padding: 14, border: "1px solid " + S_COLOR + "12" }}>
@@ -1612,7 +1636,7 @@ function TemporalReplay() {
       </>}
 
       {/* ═══ COMBAT ═══ */}
-      {tab === "mbti" && <>
+      {!videoMode && tab === "mbti" && <>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center" }}>
           <div>
             <div style={{ color: "rgba(255,255,255,0.5)", fontFamily: mono, fontSize: 10, marginBottom: 6, letterSpacing: 2 }}>COMMANDER — COGNITIVE QUADRANT</div>
@@ -1646,7 +1670,7 @@ function TemporalReplay() {
         </div>
       </>}
 
-      {tab === "combat" && <>
+      {!videoMode && tab === "combat" && <>
         <div style={{ fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 10, textAlign: "center" }}>
           BATTLEFIELD • COMBAT DENSITY • {Math.round(time)}s
         </div>
@@ -1683,7 +1707,7 @@ function TemporalReplay() {
       </>}
 
       {/* ═══ TERRITORY ═══ */}
-      {tab === "territory" && <>
+      {!videoMode && tab === "territory" && <>
         <div style={{ fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 10, textAlign: "center" }}>
           TERRITORIAL CONTROL • NODE OWNERSHIP • {Math.round(time)}s
         </div>
@@ -3484,7 +3508,7 @@ function TemporalReplay() {
             {/* Scrubber bar — fills remaining space */}
             <div style={{ flex: 1, position: "relative", height: 14, cursor: "pointer", marginLeft: 8 }} onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              const v = (e.clientX - rect.left) / rect.width * MAX_DUR; timeRef.current = v; setTime(v);
+              setTime((e.clientX - rect.left) / rect.width * MAX_DUR);
             }}>
               <div style={{ position: "absolute", top: 5, left: 0, right: 0, height: 3, background: "rgba(255,255,255,0.05)", borderRadius: 2 }} />
               <div style={{ position: "absolute", top: 3, left: (SOLDIER_DUR / MAX_DUR * 100) + "%", width: 1, height: 8, background: S_COLOR, opacity: 0.2 }} />
@@ -4425,7 +4449,7 @@ function TemporalReplay() {
       })()}
 
       {/* ═══ COMPARE — Population Braided River ═══ */}
-      {tab === "compare" && (() => {
+      {!videoMode && tab === "compare" && (() => {
         const CW = 1100, CH = 500;
         const cPad = { top: 50, bottom: 40, left: 60, right: 60 };
         const plotW = CW - cPad.left - cPad.right;

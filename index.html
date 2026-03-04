@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v143 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v144 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v143</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v144</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -1644,7 +1644,7 @@ function TemporalReplay() {
         const COL_RAMP = {
           input:      ease(lerp01(wt, 0, 3)),      // 0-3s
           data:       ease(lerp01(wt, 0, 3)),      // 0-3s
-          extraction: ease(lerp01(wt, 2, 6)),      // 2-6s: first processing step, bright early
+          extraction: ease(lerp01(wt, 2, 10)),     // 2-10s
           events:     ease(lerp01(wt, 7, 20)),     // 7-20s
           bioVirus:   ease(lerp01(wt, 1, 10)),     // 1-10s
           bioOther:   ease(lerp01(wt, 5, 30)),     // 5-30s
@@ -2149,7 +2149,9 @@ function TemporalReplay() {
         };
 
         const getNodeIntensity = (id, type) => {
-          // ═══ COLUMN RAMP GATE — each node type follows its choreographed timeline ═══
+          // ═══ COLUMN RAMP = CEILING — node can't be brighter than its ramp allows ═══
+          // Brightness comes FROM signal flow (prop, fire counts, mastery).
+          // A node can't light without a path to it. Ramp caps maximum visible brightness.
           let colRamp = 1;
           if (type === "event")  colRamp = COL_RAMP.events;
           if (type === "skill")  colRamp = id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
@@ -2158,44 +2160,40 @@ function TemporalReplay() {
           if (type === "career") colRamp = COL_RAMP.careers;
           if (colRamp <= 0) return 0;
 
-          // Live floor: uses treeActivation directly (matches mid-playback brightness)
-          const liveFloor = getLiveFinalFloor(id, type) * colRamp;
-          // Reverse-trace floor (for edge connectivity)
-          const traceFloor = isFinalNode(id) ? Math.max(0.12, getFinalStrength(id)) * colRamp : 0;
-          const finalMin = Math.max(liveFloor, traceFloor);
+          // Signal-driven brightness — what actually arrived through edges
+          let signal = 0;
           if (type === "event") {
             const preFire = (derivedPreFire[id] || 0) * 0.5;
             const evPulse = getEventPulse(id);
             const prop = getPropIntensity(id);
             const HEAVY = new Set(["ev_emit", "ev_replicate", "ev_zoomOut", "ev_zoomIn", "ev_dock"]);
             if (HEAVY.has(id)) {
-              return Math.max(evPulse, preFire * 1.5, prop * 1.3, finalMin) * colRamp;
-            }
-            if (id === "ev_worldDeath") {
+              signal = Math.max(evPulse, preFire * 1.5, prop * 1.3);
+            } else if (id === "ev_worldDeath") {
               const wdCount = treeActivation.activeCounts["ev_worldDeath"] || 0;
               const accumGlow = Math.min(0.7, wdCount * 0.012);
-              return Math.max(evPulse * 0.6, preFire, prop * 1.2, accumGlow, finalMin) * colRamp;
+              signal = Math.max(evPulse * 0.6, preFire, prop * 1.2, accumGlow);
+            } else {
+              signal = Math.max(evPulse * 0.4, preFire, prop);
             }
-            return Math.max(evPulse * 0.4, preFire, prop, finalMin) * colRamp;
-          }
-          if (type === "skill") {
+          } else if (type === "skill") {
             const prop = getPropIntensity(id);
             const mastery = getParentMastery ? getParentMastery(id) : 0;
-            return Math.max(prop * 0.5, mastery * 0.8, finalMin) * colRamp;
+            signal = Math.max(prop * 0.5, mastery * 0.8);
+          } else if (type === "layer") {
+            signal = getPropIntensity(id) * 0.9;
+          } else if (type === "profile") {
+            signal = getPropIntensity(id) * 0.7;
+          } else if (type === "career") {
+            signal = getPropIntensity(id) * 0.5;
           }
-          if (type === "layer") {
-            const prop = getPropIntensity(id);
-            return Math.max(prop * 0.9, finalMin) * colRamp;
-          }
-          if (type === "profile") {
-            const prop = getPropIntensity(id);
-            return Math.max(prop * 0.7, finalMin) * colRamp;
-          }
-          if (type === "career") {
-            const prop = getPropIntensity(id);
-            return Math.max(prop * 0.5, finalMin) * colRamp;
-          }
-          return finalMin;
+
+          // End-state floors only apply when ramp is nearly full (playback ending)
+          const liveFloor = colRamp > 0.8 ? getLiveFinalFloor(id, type) : 0;
+          const traceFloor = colRamp > 0.8 && isFinalNode(id) ? Math.max(0.12, getFinalStrength(id)) : 0;
+
+          // Final: signal capped by ramp ceiling
+          return Math.min(Math.max(signal, liveFloor, traceFloor), colRamp);
         };
 
         const isBlinking = (id) => {
@@ -2779,7 +2777,7 @@ function TemporalReplay() {
               ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03)
               : 0;
 
-            const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor) * toRamp;
+            const displayIntensity = Math.min(Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor), toRamp);
             
             // Layer-specific edge colors — blended with event source color
             const EVENT_SOURCE_COLOR = {
@@ -2941,14 +2939,14 @@ function TemporalReplay() {
               if (charge > 0.3 || isFinalTrail) {
                 edges.push(
                   <path key={`ch-ev-glow-${inp.fireKey}-${evId}`} d={d}
-                    fill="none" stroke={inp.color} strokeWidth={charge * 3} opacity={charge * 0.25 * COL_RAMP.events} filter="url(#glow)" />
+                    fill="none" stroke={inp.color} strokeWidth={charge * 3} opacity={Math.min(charge * 0.25, COL_RAMP.events)} filter="url(#glow)" />
                 );
               }
               edges.push(
                 <path key={`ch-ev-${inp.fireKey}-${evId}`} d={d}
                   fill="none" stroke={color}
                   strokeWidth={0.4 + displayCharge * 1.5 + trailWeight * 3}
-                  opacity={(0.04 + displayCharge * 0.5) * COL_RAMP.events} />
+                  opacity={Math.min(0.04 + displayCharge * 0.5, COL_RAMP.events)} />
               );
             }
           });
@@ -2991,8 +2989,8 @@ function TemporalReplay() {
               const gap = x2 - x1, cp = Math.max(6, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
               const color = isFinalTrail ? inp.color : charge > 0.15 ? inp.color : trailWeight > 0.02 ? df.color + "44" : "rgba(255,255,255,0.04)";
-              if (charge > 0.3 || isFinalTrail) edges.push(<path key={`ch-df-g-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={df.color} strokeWidth={Math.max(charge, finalTrailFloor) * 2} opacity={Math.max(charge, finalTrailFloor) * 0.15 * COL_RAMP.extraction} filter="url(#glow)" />);
-              edges.push(<path key={`ch-df-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.2 + trailWeight * 2} opacity={(0.03 + displayCharge * 0.4) * COL_RAMP.extraction} />);
+              if (charge > 0.3 || isFinalTrail) edges.push(<path key={`ch-df-g-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={df.color} strokeWidth={Math.max(charge, finalTrailFloor) * 2} opacity={Math.min(Math.max(charge, finalTrailFloor) * 0.15, COL_RAMP.extraction)} filter="url(#glow)" />);
+              edges.push(<path key={`ch-df-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.2 + trailWeight * 2} opacity={Math.min(0.03 + displayCharge * 0.4, COL_RAMP.extraction)} />);
             }
           });
           return edges;
@@ -3026,8 +3024,8 @@ function TemporalReplay() {
               const gap = x2 - x1, cp = Math.max(6, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
               const color = isFinalTrail ? df.color : dfCharge > 0.2 ? df.color : trailWeight > 0.02 ? df.color + "44" : "rgba(255,255,255,0.04)";
-              if (dfCharge > 0.35 || isFinalTrail) edges.push(<path key={`df-ev-g-${df.id}-${evId}`} d={d} fill="none" stroke={df.color} strokeWidth={Math.max(dfCharge, finalTrailFloor) * 2} opacity={Math.max(dfCharge, finalTrailFloor) * 0.15 * COL_RAMP.events} filter="url(#glow)" />);
-              edges.push(<path key={`df-ev-${df.id}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.3 + trailWeight * 2.5} opacity={(0.03 + displayCharge * 0.4) * COL_RAMP.events} />);
+              if (dfCharge > 0.35 || isFinalTrail) edges.push(<path key={`df-ev-g-${df.id}-${evId}`} d={d} fill="none" stroke={df.color} strokeWidth={Math.max(dfCharge, finalTrailFloor) * 2} opacity={Math.min(Math.max(dfCharge, finalTrailFloor) * 0.15, COL_RAMP.events)} filter="url(#glow)" />);
+              edges.push(<path key={`df-ev-${df.id}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.3 + trailWeight * 2.5} opacity={Math.min(0.03 + displayCharge * 0.4, COL_RAMP.events)} />);
             }
           }
           return edges;
@@ -3094,9 +3092,9 @@ function TemporalReplay() {
           const sx = pp.x + pw - ssW;
           const ssDropGap = 4; // gap between parent bottom and first sub-skill
           const sy = pp.y + nodeH + ssDropGap + sub.offset * (ssH + ssGap);
-          const mastery = getSubSkillMastery(sub.id) * skRamp;
-          const propFlash = getPropIntensity(sub.id) * skRamp;
-          const brightness = Math.max(mastery, propFlash);
+          const mastery = getSubSkillMastery(sub.id);
+          const propFlash = getPropIntensity(sub.id);
+          const brightness = Math.min(Math.max(mastery, propFlash), skRamp);
           const active = brightness > 0.05;
           const fresh = propFlash > 0.3;
           const hexBr = (v) => Math.round(v).toString(16).padStart(2, "0");
@@ -3177,7 +3175,7 @@ function TemporalReplay() {
             const layerShimmerSpeed = toId === "L1" ? 50 : toId === "L2" ? 300 : toId === "L3" ? 700 : 1500;
             const layerShimmer = playing && COL_RAMP.layers > 0
               ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03) : 0;
-            const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor) * COL_RAMP.layers;
+            const displayIntensity = Math.min(Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor), COL_RAMP.layers);
 
             const layerColor = TREE_LAYERS.find(l => l.id === toId)?.color || "#00e5ff";
             const edgeColor = ssPos.color
@@ -3458,7 +3456,7 @@ function TemporalReplay() {
                       <line x1={boxLayout[inp.boxIdx].x + boxLayout[inp.boxIdx].w} y1={ny + inputNodeH / 2}
                         x2={inputNodeX} y2={ny + inputNodeH / 2}
                         stroke={inp.color} strokeWidth={firehoseHit ? 1 : isFinal ? 0.8 : 0.5}
-                        opacity={(firehoseHit ? displayBrightness * 0.5 : isFinal ? 0.3 : (eventFresh ? 0.4 : 0.1)) * COL_RAMP.data} />
+                        opacity={Math.min(firehoseHit ? displayBrightness * 0.5 : isFinal ? 0.3 : (eventFresh ? 0.4 : 0.1), COL_RAMP.data)} />
                     )}
                   </g>
                 );

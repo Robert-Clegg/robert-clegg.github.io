@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Pathogenika Video</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; color: white; font-family: 'Segoe UI', system-ui, sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  .video-area { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+  video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+  .drop-zone { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 2px dashed rgba(255,255,255,0.08); transition: all 0.2s; cursor: pointer; }
+  .drop-zone.active { border-color: #a855f7; background: rgba(168,85,247,0.05); }
+  .drop-icon { font-size: 48px; opacity: 0.15; }
+  .drop-text { font-family: 'Courier New', monospace; font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 2px; }
+  .overlay-time { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.75); border-radius: 6px; padding: 4px 10px; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+  .overlay-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .overlay-clock { font-family: 'Courier New', monospace; font-size: 11px; color: white; }
+  .overlay-label { font-family: 'Courier New', monospace; font-size: 8px; color: rgba(255,255,255,0.3); letter-spacing: 1px; }
+  .file-input { display: none; }
+</style>
+</head>
+<body>
+<div class="video-area" id="videoArea">
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon">🎬</div>
+    <div class="drop-text">DROP VIDEO HERE</div>
+  </div>
+  <video id="video" style="display:none;" muted playsinline preload="auto"></video>
+  <div class="overlay-time" id="timeOverlay" style="display:none;">
+    <div class="overlay-dot" id="playDot" style="background: #ff3d71;"></div>
+    <span class="overlay-clock" id="timeClock">0:00.0</span>
+    <span class="overlay-label">MATCH TIME</span>
+  </div>
+  <input type="file" accept="video/*" class="file-input" id="fileInput"/>
+</div>
+<script>
+const video = document.getElementById("video");
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const timeOverlay = document.getElementById("timeOverlay");
+const timeClock = document.getElementById("timeClock");
+const playDot = document.getElementById("playDot");
+
+let videoLoaded = false;
+let currentOffset = 0;
+
+// ═══ PostMessage API — commands from parent dashboard ═══
+window.addEventListener("message", (e) => {
+  const msg = e.data;
+  if (!msg || !msg.type) return;
+
+  if (msg.type === "play") {
+    if (videoLoaded) {
+      if (msg.speed) video.playbackRate = msg.speed;
+      video.play().catch(() => {});
+    }
+    playDot.style.background = "#00ff88";
+    playDot.style.boxShadow = "0 0 8px #00ff88";
+  } else if (msg.type === "pause") {
+    if (videoLoaded) video.pause();
+    playDot.style.background = "#ff3d71";
+    playDot.style.boxShadow = "none";
+  } else if (msg.type === "seek") {
+    if (videoLoaded && msg.time != null) {
+      const t = Math.max(0, Math.min(msg.time, video.duration || 9999));
+      if (Math.abs(video.currentTime - t) > 0.3) video.currentTime = t;
+    }
+  } else if (msg.type === "speed") {
+    if (videoLoaded) video.playbackRate = msg.speed || 1;
+  } else if (msg.type === "offset") {
+    currentOffset = msg.offset || 0;
+  } else if (msg.type === "load-url") {
+    loadVideoFromUrl(msg.url, msg.label || "");
+  } else if (msg.type === "ping") {
+    sendStatus();
+  }
+});
+
+function sendStatus() {
+  parent.postMessage({ type: "player-status", videoLoaded: videoLoaded, duration: video.duration || 0 }, "*");
+}
+
+// ═══ Time updates to parent — throttled ~15fps ═══
+let lastTimePost = 0;
+video.addEventListener("timeupdate", () => {
+  const now = performance.now();
+  if (now - lastTimePost < 66) return;
+  lastTimePost = now;
+  const t = video.currentTime;
+  timeClock.textContent = Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + Math.floor((t%1)*10);
+  parent.postMessage({ type: "video-timeupdate", currentTime: t - currentOffset }, "*");
+});
+
+// Native controls → parent
+video.addEventListener("play", () => { parent.postMessage({ type: "video-play" }, "*"); playDot.style.background = "#00ff88"; playDot.style.boxShadow = "0 0 8px #00ff88"; });
+video.addEventListener("pause", () => { parent.postMessage({ type: "video-pause" }, "*"); playDot.style.background = "#ff3d71"; playDot.style.boxShadow = "none"; });
+
+// ═══ Video loading ═══
+function loadVideoFromUrl(url) {
+  if (video.src && video.src.startsWith("blob:")) URL.revokeObjectURL(video.src);
+  video.src = url;
+  video.style.display = "block";
+  dropZone.style.display = "none";
+  timeOverlay.style.display = "flex";
+  video.onloadedmetadata = () => { videoLoaded = true; sendStatus(); };
+}
+
+function loadVideoFile(file) {
+  if (!file || !file.type.startsWith("video/")) return;
+  loadVideoFromUrl(URL.createObjectURL(file));
+  parent.postMessage({ type: "video-file-loaded", name: file.name, size: file.size }, "*");
+}
+
+fileInput.addEventListener("change", (e) => { loadVideoFile(e.target.files[0]); });
+
+// Drag and drop
+document.getElementById("videoArea").addEventListener("dragover", (e) => { e.preventDefault(); if (dropZone.style.display !== "none") dropZone.classList.add("active"); });
+document.getElementById("videoArea").addEventListener("dragleave", () => { dropZone.classList.remove("active"); });
+document.getElementById("videoArea").addEventListener("drop", (e) => {
+  e.preventDefault(); dropZone.classList.remove("active");
+  const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith("video/"));
+  if (file) loadVideoFile(file);
+});
+dropZone.addEventListener("click", () => fileInput.click());
+
+// Drop on video to swap
+video.addEventListener("dragover", (e) => e.preventDefault());
+video.addEventListener("drop", (e) => { e.preventDefault(); const f = Array.from(e.dataTransfer.files).find(f => f.type.startsWith("video/")); if (f) loadVideoFile(f); });
+
+sendStatus();
+window.addEventListener("beforeunload", () => { if (video.src && video.src.startsWith("blob:")) URL.revokeObjectURL(video.src); });
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v145 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v146 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v145</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v146</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -3032,7 +3032,7 @@ function TemporalReplay() {
               if (srcAge < 2.0) dfCharge = Math.max(dfCharge, Math.exp(-srcAge * 0.8));
               if (firehoseSet.has(src)) dfCharge = Math.max(dfCharge, 0.3);
             }
-            if (COL_RAMP.extraction > 0) dfCharge = Math.max(dfCharge, 0.04 * COL_RAMP.extraction);
+            // No ramp floor — dfCharge must come from actual channel signal
             for (const evId of df.feeds) {
               const eventNode = TREE_EVENTS.find(n => n.id === evId);
               if (!eventNode) continue;
@@ -3060,15 +3060,31 @@ function TemporalReplay() {
         const renderDerivedFeatureNodes = () => {
           return DERIVED_FEATURES.map(df => {
             const pos = getDfPos(df.row);
+            // Signal-driven: activity comes from channel sources
             let activity = 0;
             for (const src of df.sources) {
               const srcAge = time - (inputNodeFire[src] || -999);
               if (srcAge < 6.0) activity = Math.max(activity, Math.exp(-srcAge * 0.2));
               if (firehoseSet.has(src)) activity = Math.max(activity, 0.4);
             }
-            if (COL_RAMP.extraction > 0) activity = Math.max(activity, 0.06 * COL_RAMP.extraction);
+            // Cap by max incoming channel→derived edge brightness
+            let maxInEdge = 0;
+            for (const src of df.sources) {
+              const ek = `${src}:${df.id}`;
+              const eFire = edgeFireCounts[ek] || 0;
+              const CLEN = Math.max(1, maxFireCount * 0.3);
+              const comp = Math.floor(eFire / CLEN);
+              const prog = (eFire % CLEN) / CLEN;
+              const mFlr = Math.min(0.3, comp * 0.06);
+              maxInEdge = Math.max(maxInEdge, mFlr + prog * (0.7 - mFlr));
+              const srcAge = time - (inputNodeFire[src] || -999);
+              if (srcAge < 2.0) maxInEdge = Math.max(maxInEdge, Math.exp(-srcAge * 0.8));
+              if (firehoseSet.has(src)) maxInEdge = Math.max(maxInEdge, 0.3);
+            }
+            activity = Math.min(activity, Math.max(maxInEdge, 0.001)); // node ≤ pathway
+            activity = Math.min(activity, COL_RAMP.extraction); // ramp ceiling
             const isFinal = isFinalNode(df.id);
-            if (isFinal) activity = Math.max(activity, getFinalStrength(df.id) || 0.5);
+            if (isFinal && COL_RAMP.extraction > 0.8) activity = Math.max(activity, getFinalStrength(df.id) || 0.5);
             const active = activity > 0.1;
             const fresh = activity > 0.3;
             const bgOp = fresh ? Math.round(activity * 40).toString(16).padStart(2,'0') : active ? "08" : "05";

@@ -691,6 +691,34 @@ const SOLDIER_RAW = generateRawInputs(SOLDIER_EVENTS, 88.6);
 const COMMANDER_RAW = generateRawInputs(COMMANDER_EVENTS, 196.8);
 
 // ═══════════════════════════════════════════════════════════════
+// PRE-COMPUTED SNAPSHOTS — computed once at module load, O(1) render lookup
+// 1600 steps × 100ms = 160s full demo coverage
+// Eliminates per-frame computeProfile + computeTreeActivation calls
+// ═══════════════════════════════════════════════════════════════
+const SNAPSHOT_STEP = 0.1; // 100ms resolution
+const SNAPSHOT_COUNT = 1601; // 0..160s inclusive
+
+const SOLDIER_PROFILE_SNAPS = new Array(SNAPSHOT_COUNT);
+const COMMANDER_PROFILE_SNAPS = new Array(SNAPSHOT_COUNT);
+const COMMANDER_TREE_SNAPS = new Array(SNAPSHOT_COUNT);
+const SOLDIER_TREE_SNAPS = new Array(SNAPSHOT_COUNT);
+
+(function precompute() {
+  for (let i = 0; i < SNAPSHOT_COUNT; i++) {
+    const t = i * SNAPSHOT_STEP;
+    SOLDIER_PROFILE_SNAPS[i] = computeProfile(SOLDIER_EVENTS, t);
+    COMMANDER_PROFILE_SNAPS[i] = computeProfile(COMMANDER_EVENTS, t);
+    COMMANDER_TREE_SNAPS[i] = computeTreeActivation(COMMANDER_EVENTS, t);
+    SOLDIER_TREE_SNAPS[i] = computeTreeActivation(SOLDIER_EVENTS, t);
+  }
+})();
+
+function getSnapshotIndex(time) {
+  return Math.min(Math.floor(time / SNAPSHOT_STEP), SNAPSHOT_COUNT - 1);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
 // BATTLEFIELD MAP COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
@@ -1285,11 +1313,24 @@ function TemporalReplay() {
     if (jsonFile) parseTelemetryFile(jsonFile);
   }, [parseTelemetryFile]);
 
-  const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
-  const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
+  // Snapshot lookup — O(1) instead of O(n_events) per render
+  const snapIdx = getSnapshotIndex(time);
+  const soldierProfile = isLoaded
+    ? computeProfile(loadedEvents, time)
+    : SOLDIER_PROFILE_SNAPS[snapIdx];
+  const commanderProfile = isLoaded
+    ? computeProfile(loadedEvents, time)
+    : COMMANDER_PROFILE_SNAPS[snapIdx];
 
   const treeEvents = isLoaded ? loadedEvents : (treeSession === "commander" ? COMMANDER_EVENTS : SOLDIER_EVENTS);
-  const treeActivation = useMemo(() => computeTreeActivation(treeEvents, time), [treeEvents, time]);
+  // For loaded sessions compute directly; for demo use pre-baked snapshots
+  const loadedTreeActivation = useMemo(
+    () => isLoaded ? computeTreeActivation(treeEvents, time) : null,
+    [isLoaded, treeEvents, time]
+  );
+  const treeActivation = isLoaded
+    ? loadedTreeActivation
+    : (treeSession === "commander" ? COMMANDER_TREE_SNAPS[snapIdx] : SOLDIER_TREE_SNAPS[snapIdx]);
 
   const radarData = AXES.map(axis => ({
     axis: AXIS_LABELS[axis],

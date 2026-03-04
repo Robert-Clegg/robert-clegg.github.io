@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v133 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v134 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -586,9 +586,9 @@ function generateRawInputs(events, maxTime) {
     const evtsNow = eventsByTime[roundT] || [];
 
     // ── EARLY GAME RAMP: player is orienting, not acting at full speed ──
-    // 0-10s: very sparse (20% chance), 10-30s: building, 30s+: full rate
+    // 0-50s: very sparse (20% chance), 50-150s: building, 150s+: full rate — 5x emergence
     // Event-driven samples (hot) always pass — real actions aren't suppressed
-    const ramp = t < 10 ? 0.2 : t < 30 ? 0.2 + (t - 10) / 20 * 0.8 : 1.0;
+    const ramp = t < 50 ? 0.2 : t < 150 ? 0.2 + (t - 50) / 100 * 0.8 : 1.0;
     const passRamp = seed(t * 99.7 + 0.3) < ramp; // deterministic gate
 
     // Update state from events at this time
@@ -1297,7 +1297,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v133</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v134</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -1643,7 +1643,7 @@ function TemporalReplay() {
         // NOTE: firehoseSet computed AFTER inputNodeFire is populated (see below)
         let firehoseSet = new Set();
         // Container shimmer: subtle constant pulse when playing
-        const shimmerVal = playing && time > 0.5 ? 0.04 + Math.sin(nowMs / 200) * 0.03 : 0;
+        const shimmerVal = playing && time > 2.5 ? 0.04 + Math.sin(nowMs / 200) * 0.03 : 0;
 
         // ═══ EVENT PRECEDENCE — staggered activation timing ═══
         // Events don't all pulse together. Each has a processing delay and phase offset.
@@ -1670,7 +1670,7 @@ function TemporalReplay() {
         // Per-event pulse: each event has its own frequency and phase
         // Faster events pulse quicker, strategic events pulse slower
         const getEventPulse = (evId) => {
-          if (!playing || time < 0.5) return 0;
+          if (!playing || time < 2.5) return 0;
           const t = EVENT_TIMING[evId] || { depth: 2, phase: 0 };
           const speed = 180 + t.depth * 120;
           const phase = t.phase * 137.5;
@@ -2025,7 +2025,7 @@ function TemporalReplay() {
           if (e.type === "SwitchEvent") { inputNodeFire.teamPop = e.t; inputNodeFire.nodeOwner = e.t; }
         }
         // ═══ GATED FIREHOSE — only flicker channels with recent real data ═══
-        if (playing && time > 0.5) {
+        if (playing && time > 2.5) {
           FIREHOSE_KEYS.forEach((key, i) => {
             const lastReal = inputNodeFire[key] !== undefined ? inputNodeFire[key] : -999;
             const realAge = time - lastReal;
@@ -2128,7 +2128,7 @@ function TemporalReplay() {
         };
 
         const getNodeIntensity = (id, type) => {
-          if (time < 0.5) return 0; // clean baseline on rewind
+          if (time < 2.5) return 0; // clean baseline on rewind
           // Live floor: uses treeActivation directly (matches mid-playback brightness)
           const liveFloor = getLiveFinalFloor(id, type);
           // Reverse-trace floor (for edge connectivity)
@@ -2175,13 +2175,13 @@ function TemporalReplay() {
           const last = treeActivation.lastActivated[id];
           if (last === undefined) return false;
           const age = time - last;
-          return age > 0 && age < BLINK_WINDOW && time > 0.5;
+          return age > 0 && age < BLINK_WINDOW && time > 2.5;
         };
 
         // ═══ FORWARD PROPAGATION MODEL ═══
         // Signal travels left→right with real delay per column transition.
         // An event firing at t=5.0 reaches layers at t+0.3, profiles at t+0.6, careers at t+0.9
-        const PROP_DELAY = 0.3;  // L1 base delay (seconds per column transition)
+        const PROP_DELAY = 1.5;  // L1 base delay (seconds per column transition) — 5x slow emergence
         const PROP_DECAY = 1.2;  // seconds for propagation wavefront to fade
         // Layer speed ratios relative to L1: L2 half speed, L3 third, L4 fifth
         const LAYER_SPEED = { L1: 2.0, L2: 0.5, L3: 0.3, L4: 0.2 };
@@ -2368,7 +2368,7 @@ function TemporalReplay() {
         const MOVEMENT_EVENTS = new Set(["ev_wasd", "ev_mouseFollow", "ev_waypoint"]);
         const movementEdgeKeys = new Set(); // track for blue coloring in renderer
         const activeEventCount = TREE_EVENTS.filter(ev => propArrival[ev.id] !== undefined && propArrival[ev.id] > -900).length;
-        if (time > 3.0 && activeEventCount >= 3) {
+        if (time > 15.0 && activeEventCount >= 3) {
           const HALF_PRIMES = [14, 22, 26, 34, 38, 46, 58, 62, 74, 82, 86, 94, 106, 118, 122, 134, 142, 146, 158, 166, 178];
 
           // First pass: determine which skills are "active" from non-movement events
@@ -2737,7 +2737,7 @@ function TemporalReplay() {
             // ─── LAYER-SPEED SHIMMER ────────────────────────────
             const layerShimmerSpeed = toId === "L1" ? 50 : toId === "L2" ? 300 : toId === "L3" ? 700 : toId === "L4" ? 1500 : 0;
             const isLayerTarget = ["L1", "L2", "L3", "L4"].includes(toId);
-            const layerShimmer = isLayerTarget && playing && time > 0.5
+            const layerShimmer = isLayerTarget && playing && time > 2.5
               ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03)
               : 0;
 
@@ -2827,7 +2827,7 @@ function TemporalReplay() {
         // Computes feature activation from channel data + renders pre-fire connections to game events
         const derivedActivation = {};
         const derivedPreFire = {}; // which game events are being pre-fired by derived features
-        if (playing && time > 0.5) {
+        if (playing && time > 2.5) {
           for (const df of DERIVED_FEATURES) {
             // Feature activates when ANY of its source channels recently fired
             const sourceActivity = df.sources.map(s => {
@@ -2933,7 +2933,7 @@ function TemporalReplay() {
             const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.2) : 0;
             const firehoseBoost = firehoseSet.has(inp.fireKey) ? 0.2 : 0;
             const charge = Math.min(1, srcAct + firehoseBoost);
-            const hasActivity = firehoseSet.has(inp.fireKey) || srcAct > 0 || time > 0.5;
+            const hasActivity = firehoseSet.has(inp.fireKey) || srcAct > 0 || time > 2.5;
             for (const dfId of dfIds) {
               const df = DERIVED_FEATURES.find(d => d.id === dfId);
               if (!df) continue;
@@ -2969,7 +2969,7 @@ function TemporalReplay() {
               if (srcAge < 2.0) dfCharge = Math.max(dfCharge, Math.exp(-srcAge * 0.8));
               if (firehoseSet.has(src)) dfCharge = Math.max(dfCharge, 0.3);
             }
-            if (time > 0.5) dfCharge = Math.max(dfCharge, 0.04);
+            if (time > 2.5) dfCharge = Math.max(dfCharge, 0.04);
             for (const evId of df.feeds) {
               const eventNode = TREE_EVENTS.find(n => n.id === evId);
               if (!eventNode) continue;
@@ -3003,7 +3003,7 @@ function TemporalReplay() {
               if (srcAge < 6.0) activity = Math.max(activity, Math.exp(-srcAge * 0.2));
               if (firehoseSet.has(src)) activity = Math.max(activity, 0.4);
             }
-            if (time > 0.5) activity = Math.max(activity, 0.06);
+            if (time > 2.5) activity = Math.max(activity, 0.06);
             const isFinal = isFinalNode(df.id);
             if (isFinal) activity = Math.max(activity, getFinalStrength(df.id) || 0.5);
             const active = activity > 0.1;
@@ -3133,7 +3133,7 @@ function TemporalReplay() {
 
             const phase = i * 2.17 + fromId.length * 0.3;
             const layerShimmerSpeed = toId === "L1" ? 50 : toId === "L2" ? 300 : toId === "L3" ? 700 : 1500;
-            const layerShimmer = playing && time > 0.5
+            const layerShimmer = playing && time > 2.5
               ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03) : 0;
             const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor);
 
@@ -3348,8 +3348,8 @@ function TemporalReplay() {
               {/* ─── COLUMN HEADERS — inside SVG so they stay locked to column positions ─── */}
               {[
                 { label: "INPUT",          sub: "devices",          x: boxX + boxW / 2,              color: "rgba(255,255,255,0.55)" },
-                { label: "DATA",           sub: "sample rate: 16ms",x: inputNodeX + inputNodeW / 2,  color: playing && time > 0.5 ? "#00e5ff" : "rgba(255,255,255,0.55)" },
-                { label: "EXTRACTION",     sub: "L1 processing",    x: dfColX + dfNodeW / 2,         color: playing && time > 0.5 ? "#ff6644" : "rgba(255,255,255,0.55)" },
+                { label: "DATA",           sub: "sample rate: 16ms",x: inputNodeX + inputNodeW / 2,  color: playing && time > 2.5 ? "#00e5ff" : "rgba(255,255,255,0.55)" },
+                { label: "EXTRACTION",     sub: "L1 processing",    x: dfColX + dfNodeW / 2,         color: playing && time > 2.5 ? "#ff6644" : "rgba(255,255,255,0.55)" },
                 { label: "GAME EVENTS",    sub: "classified",       x: colX[2] + nodeW[2] / 2,       color: "rgba(255,255,255,0.55)" },
                 { label: "BIOLOGY",        sub: "domain skills",    x: colX[3] + nodeW[3] / 2,  color: "rgba(255,255,255,0.55)" },
                 { label: "NEURAL ABSTRACTION",sub:"seconds",      x: colX[4] + nodeW[4] / 2,       color: "rgba(255,255,255,0.55)" },
@@ -3679,8 +3679,8 @@ function TemporalReplay() {
                 if (box.id === "audio") {
                   const fxAge = time - inputNodeFire.audio;
                   const spAge = time - inputNodeFire.linguistic;
-                  const fxActive = fxAge < 1.5 && time > 0.5;
-                  const spActive = spAge < 2.0 && time > 0.5;
+                  const fxActive = fxAge < 1.5 && time > 2.5;
+                  const spActive = spAge < 2.0 && time > 2.5;
                   const fxIntensity = fxActive ? Math.exp(-fxAge * 1.2) : 0;
                   const spIntensity = spActive ? Math.exp(-spAge * 0.6) : 0;
                   const innerPad = 3;
@@ -3745,9 +3745,9 @@ function TemporalReplay() {
                   const langAge = time - inputNodeFire.language;
                   const symAge = time - inputNodeFire.symbolic;
                   const iconAge = time - inputNodeFire.icon;
-                  const langAct = langAge < 2.0 && time > 0.5 ? Math.exp(-langAge * 0.8) : 0;
-                  const symAct = symAge < 1.5 && time > 0.5 ? Math.exp(-symAge * 1.0) : 0;
-                  const iconAct = iconAge < 1.5 && time > 0.5 ? Math.exp(-iconAge * 1.0) : 0;
+                  const langAct = langAge < 2.0 && time > 2.5 ? Math.exp(-langAge * 0.8) : 0;
+                  const symAct = symAge < 1.5 && time > 2.5 ? Math.exp(-symAge * 1.0) : 0;
+                  const iconAct = iconAge < 1.5 && time > 2.5 ? Math.exp(-iconAge * 1.0) : 0;
                   const anyAct = langAct + symAct + iconAct > 0.1;
                   const innerPad = 3;
                   const pillH = 11;
@@ -3804,7 +3804,7 @@ function TemporalReplay() {
                         const iconGap = (pillW - iconItems.length * iconS) / (iconItems.length + 1);
                         return iconItems.map((ic, ii) => {
                           const icAge = time - (inputNodeFire[ic.key] || -999);
-                          const lit = icAge < 1.5 && time > 0.5;
+                          const lit = icAge < 1.5 && time > 2.5;
                           const intensity = lit ? Math.exp(-icAge * 1.0) : 0;
                           const ix = bx + innerPad + iconGap + ii * (iconS + iconGap);
                           return (
@@ -3831,9 +3831,9 @@ function TemporalReplay() {
                   const hmAge = time - inputNodeFire.heatmap;
                   const scAge = time - inputNodeFire.schematic;
                   const rdAge = time - inputNodeFire.readout;
-                  const hmAct = hmAge < 2.0 && time > 0.5 ? Math.exp(-hmAge * 0.7) : 0;
-                  const scAct = scAge < 1.5 && time > 0.5 ? Math.exp(-scAge * 0.9) : 0;
-                  const rdAct = rdAge < 1.5 && time > 0.5 ? Math.exp(-rdAge * 1.0) : 0;
+                  const hmAct = hmAge < 2.0 && time > 2.5 ? Math.exp(-hmAge * 0.7) : 0;
+                  const scAct = scAge < 1.5 && time > 2.5 ? Math.exp(-scAge * 0.9) : 0;
+                  const rdAct = rdAge < 1.5 && time > 2.5 ? Math.exp(-rdAge * 1.0) : 0;
                   const anyAct = hmAct + scAct + rdAct > 0.1;
                   const innerPad = 3;
                   const labelH = 12;
@@ -3843,9 +3843,9 @@ function TemporalReplay() {
                   // ── UNIT state (embedded at right edge) ──
                   const switchEvents = treeEvents.filter(e => e.type === "SwitchEvent" && e.t <= time);
                   const lastSwitch = switchEvents.length > 0 ? switchEvents[switchEvents.length - 1] : null;
-                  const currentUnit = (time > 0.5 && lastSwitch) ? (lastSwitch?.data?.toUnitType || "") : "";
+                  const currentUnit = (time > 2.5 && lastSwitch) ? (lastSwitch?.data?.toUnitType || "") : "";
                   const switchAge = lastSwitch ? time - lastSwitch.t : 999;
-                  const switchFresh = time > 0.5 && switchAge < 1.0;
+                  const switchFresh = time > 2.5 && switchAge < 1.0;
                   const switchPulse = switchFresh ? Math.exp(-switchAge * 2.5) : 0;
                   const pathogenSet = new Set(["VirusType","PneumoniaType","MycobacteriumType","TuberculosisType"]);
                   const immuneSet2 = new Set(["NeutrophilType","TCellType","NKCellType","MacrophageType"]);
@@ -3859,8 +3859,8 @@ function TemporalReplay() {
                   };
                   const unitName = unitNames[currentUnit] || "—";
 
-                  // ── Independent timers — gated behind time > 0.5 so HUD starts dim like AUDIO/TXT ──
-                  const gameStarted = time > 0.5;
+                  // ── Independent timers — gated behind time > 2.5 so HUD starts dim like AUDIO/TXT ──
+                  const gameStarted = time > 2.5;
                   const sqCycle = playing && gameStarted ? (time % 12) : 12;
                   const sqOn = sqCycle < 10;
                   const sqFade = sqCycle >= 10 && sqCycle < 11;
@@ -4112,7 +4112,7 @@ function TemporalReplay() {
                         </g>
                       ))}
                       {/* All observed cell positions — only after game starts */}
-                      {time > 0.5 && cellSightings.filter(dot => dot.x >= 0 && dot.x <= GAME_SIZE && dot.z >= 0 && dot.z <= GAME_SIZE).map((dot, di) => {
+                      {time > 2.5 && cellSightings.filter(dot => dot.x >= 0 && dot.x <= GAME_SIZE && dot.z >= 0 && dot.z <= GAME_SIZE).map((dot, di) => {
                         const nx = mapX + Math.max(0, Math.min(1, dot.x / GAME_SIZE)) * mapW;
                         const nz = mapY + mapH - Math.max(0, Math.min(1, dot.z / GAME_SIZE)) * mapH;
                         const color = dot.team === "imm" ? "#66bbff" : dot.team === "path" ? "#ff5555" : "#777777";
@@ -4131,7 +4131,7 @@ function TemporalReplay() {
                         );
                       })}
                       {/* Kill splashes — skull & crossbones */}
-                      {time > 0.5 && killSplashes.filter(ks => ks.x >= 0 && ks.x <= GAME_SIZE && ks.z >= 0 && ks.z <= GAME_SIZE).map((ks, ki) => {
+                      {time > 2.5 && killSplashes.filter(ks => ks.x >= 0 && ks.x <= GAME_SIZE && ks.z >= 0 && ks.z <= GAME_SIZE).map((ks, ki) => {
                         const kx = mapX + (ks.x / GAME_SIZE) * mapW;
                         const kz = mapY + mapH - (ks.z / GAME_SIZE) * mapH;
                         const fade = Math.pow(Math.max(0, 1 - ks.age / KILL_SPLASH_FADE), 0.6);

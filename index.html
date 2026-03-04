@@ -1237,7 +1237,6 @@ function TemporalReplay() {
           onReady: (event) => {
             ytReady.current = true;
             const dur = event.target.getDuration();
-            setVideoDuration(dur);
             setVideoStatus("✅ YouTube loaded " + Math.round(dur) + "s");
             setVideoUrl(videoId);
             setVideoMode(true);

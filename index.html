@@ -1115,17 +1115,13 @@ function TemporalReplay() {
   const lastRenderRef = useRef(0); // timestamp of last React state flush
   const RENDER_INTERVAL = 66; // ms — flush React state at ~15fps (was 60fps)
 
-  // ═══ VIDEO SYNC — YouTube IFrame API, cross-origin = guaranteed separate process ═══
+  // ═══ VIDEO — YouTube IFrame API (ambient, decoupled from dashboard timer) ═══
   const [videoUrl, setVideoUrl] = useState(null); // YouTube video ID or null
   const [videoMode, setVideoMode] = useState(false);
-  const [videoOffset, setVideoOffset] = useState(0);
-  const [videoDuration, setVideoDuration] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [videoStatus, setVideoStatus] = useState("");
   const ytPlayerRef = useRef(null); // YouTube player instance
   const ytReady = useRef(false);
-  const ytSyncInterval = useRef(null); // polling interval for time sync
-  const ytSyncingState = useRef(false); // prevent play/pause echo loops during YouTube state changes
 
   // ═══ TELEMETRY FILE LOADING ═══
   const [telemetrySource, setTelemetrySource] = useState("demo"); // "demo" | "loaded"
@@ -1192,32 +1188,30 @@ function TemporalReplay() {
   const tick = useCallback(() => {
     const now = performance.now();
     if (lastFrameRef.current != null) {
-      // When video is loaded, the VIDEO is the clock source — don't advance time or seek here
-      if (!videoUrl) {
-        const dt = ((now - lastFrameRef.current) / 1000) * speed * 4; // base rate 4× for alive feel
-        timeRef.current = timeRef.current + dt;
-        if (timeRef.current >= 160) { timeRef.current = 160; setPlaying(false); setTime(160); lastFrameRef.current = now; return; }
-      }
+      // Dashboard always drives its own timer — video plays ambient, fully decoupled
+      const dt = ((now - lastFrameRef.current) / 1000) * speed * 4; // base rate 4× for alive feel
+      timeRef.current = timeRef.current + dt;
+      if (timeRef.current >= 160) { timeRef.current = 160; setPlaying(false); setTime(160); lastFrameRef.current = now; return; }
       // Only flush to React state at ~15fps to avoid re-rendering the SVG pipeline every frame
-      if (!videoUrl && now - lastRenderRef.current >= RENDER_INTERVAL) {
+      if (now - lastRenderRef.current >= RENDER_INTERVAL) {
         setTime(timeRef.current);
         lastRenderRef.current = now;
       }
     }
     lastFrameRef.current = now;
     animRef.current = requestAnimationFrame(tick);
-  }, [speed, videoUrl, videoOffset]);
+  }, [speed]);
 
   useEffect(() => {
-    if (playing && !videoUrl) {
-      // Only run animation loop for demo mode (no video). YouTube drives time via polling.
+    if (playing) {
+      // Dashboard always runs its own rAF loop — video is ambient
       lastFrameRef.current = null;
       animRef.current = requestAnimationFrame(tick);
     } else {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     }
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [playing, tick, videoUrl]);
+  }, [playing, tick]);
 
   // ═══ YOUTUBE IFRAME API — cross-origin guarantees separate Chrome process ═══
   // Load YouTube IFrame API script
@@ -1249,11 +1243,8 @@ function TemporalReplay() {
             setVideoMode(true);
           },
           onStateChange: (event) => {
-            // YT.PlayerState: UNSTARTED=-1, ENDED=0, PLAYING=1, PAUSED=2, BUFFERING=3, CUED=5
-            // Ignore BUFFERING(3) — YouTube buffers chunks during adaptive streaming
-            // Setting playing state during buffering causes play/pause fight loops
-            if (event.data === 1) { ytSyncingState.current = true; setPlaying(true); setTimeout(() => { ytSyncingState.current = false; }, 100); }
-            if (event.data === 2 || event.data === 0) { ytSyncingState.current = true; setPlaying(false); setTimeout(() => { ytSyncingState.current = false; }, 100); }
+            // YouTube state changes no longer drive dashboard state (fully decoupled)
+            // Dashboard has its own timer; YouTube is ambient video only
           }
         }
       });
@@ -1266,28 +1257,9 @@ function TemporalReplay() {
     }
   }, []);
 
-  // Poll YouTube player time at ~15fps (YT API has no continuous timeupdate event)
-  useEffect(() => {
-    if (ytSyncInterval.current) clearInterval(ytSyncInterval.current);
-    if (playing && ytPlayerRef.current && ytReady.current) {
-      ytSyncInterval.current = setInterval(() => {
-        if (ytPlayerRef.current && ytReady.current) {
-          try {
-            const t = ytPlayerRef.current.getCurrentTime() - videoOffset;
-            const clamped = Math.max(0, Math.min(t, MAX_DUR));
-            timeRef.current = clamped;
-            setTime(clamped);
-          } catch(e) {}
-        }
-      }, 200); // ~5fps — minimal CPU while YouTube buffers
-    }
-    return () => { if (ytSyncInterval.current) clearInterval(ytSyncInterval.current); };
-  }, [playing, videoOffset]);
-
-  // Send play/pause to YouTube — skip if YouTube itself triggered the state change
+  // Send play/pause to YouTube — dashboard is clock, YouTube is ambient
   useEffect(() => {
     if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
-    if (ytSyncingState.current) return; // YouTube fired the state change, don't echo back
     try {
       if (playing) {
         ytPlayerRef.current.playVideo();
@@ -1302,13 +1274,6 @@ function TemporalReplay() {
     if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
     try { ytPlayerRef.current.setPlaybackRate(speed); } catch(e) {}
   }, [speed, videoUrl]);
-
-  // Send seek on manual scrub when paused
-  useEffect(() => {
-    if (!playing && ytPlayerRef.current && ytReady.current && videoUrl) {
-      try { ytPlayerRef.current.seekTo(time + videoOffset, true); } catch(e) {}
-    }
-  }, [time, playing, videoUrl, videoOffset]);
 
   // ═══ URL PARAMETER VIDEO LOADING ═══
   // ?yt=VIDEO_ID for YouTube, ?v=filename for local hosted video
@@ -1430,7 +1395,7 @@ function TemporalReplay() {
 
       {/* TRANSPORT + TABS — single row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <button onClick={() => { timeRef.current = 0; setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
+        <button onClick={() => { timeRef.current = 0; setTime(0); setPlaying(false); try { if (ytPlayerRef.current && ytReady.current) ytPlayerRef.current.seekTo(0, true); } catch(e) {} }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { if (!playing && time >= MAX_DUR - 0.1) { timeRef.current = 0; setTime(0); } setPlaying(!playing); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
@@ -1448,14 +1413,7 @@ function TemporalReplay() {
           ))}
         </div>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        {/* VIDEO OFFSET — when video loaded */}
-        {videoUrl && <>
-          <div style={{ fontSize: 8, color: "#a855f7", fontFamily: mono, letterSpacing: 1 }}>OFFSET</div>
-          <button onClick={() => setVideoOffset(prev => prev - 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>-1s</button>
-          <span style={{ fontFamily: mono, fontSize: 9, color: "#a855f7", minWidth: 32, textAlign: "center" }}>{videoOffset >= 0 ? "+" : ""}{videoOffset}s</span>
-          <button onClick={() => setVideoOffset(prev => prev + 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>+1s</button>
-          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        </>}
+
         {/* TABS inline */}
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{

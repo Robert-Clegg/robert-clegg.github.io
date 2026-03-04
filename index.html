@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v132 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v133 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1297,7 +1297,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v132</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v133</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -2248,8 +2248,8 @@ function TemporalReplay() {
             }
           });
         };
-        propagateThrough(EVENT_SUBSKILL_EDGES, PROP_DELAY * 0.4); // event → sub-skill
-        propagateThrough(EVENT_SKILL_EDGES, PROP_DELAY * 0.5); // event → parent cell
+        propagateThrough(EVENT_SUBSKILL_EDGES, PROP_DELAY * 2.0); // event → sub-skill (visible cascade delay)
+        propagateThrough(EVENT_SKILL_EDGES, PROP_DELAY * 2.5); // event → parent cell
         propagateThrough(SUBSKILL_LAYER_EDGES, getLayerDelay); // skill→layer (replaces direct event→layer)
         propagateThrough(LAYER_PROFILE_EDGES, PROP_DELAY);
         propagateThrough(PROFILE_CAREER_EDGES, PROP_DELAY);
@@ -2364,9 +2364,11 @@ function TemporalReplay() {
         // ─── RANDOM FIRE: ALL game events → ALL biology skills at half firehose speed ─────────────
         // Fire counts ALWAYS accumulate (for final pathway myelination)
         // Propagation arrivals ONLY during playback (for visual flicker)
+        // GATE: biology skills only fire AFTER game events have populated (left→right cascade)
         const MOVEMENT_EVENTS = new Set(["ev_wasd", "ev_mouseFollow", "ev_waypoint"]);
         const movementEdgeKeys = new Set(); // track for blue coloring in renderer
-        if (time > 0.5) {
+        const activeEventCount = TREE_EVENTS.filter(ev => propArrival[ev.id] !== undefined && propArrival[ev.id] > -900).length;
+        if (time > 3.0 && activeEventCount >= 3) {
           const HALF_PRIMES = [14, 22, 26, 34, 38, 46, 58, 62, 74, 82, 86, 94, 106, 118, 122, 134, 142, 146, 158, 166, 178];
 
           // First pass: determine which skills are "active" from non-movement events
@@ -2385,7 +2387,7 @@ function TemporalReplay() {
                 const k = `${ev.id}:${sk.id}`;
                 edgeFireCounts[k] = (edgeFireCounts[k] || 0) + 2;
                 if (playing) {
-                  propArrival[sk.id] = Math.max(propArrival[sk.id] || -999, time - 0.2);
+                  propArrival[sk.id] = Math.max(propArrival[sk.id] || -999, time - 0.8);
                   propArrival[ev.id] = Math.max(propArrival[ev.id] || -999, time - 0.1);
                 }
                 skillActivity[sk.id] = (skillActivity[sk.id] || 0) + 2;
@@ -2413,7 +2415,7 @@ function TemporalReplay() {
                 const brightness = isActive || !hasActive ? (hasActive ? 5 : 3) : 0;
                 edgeFireCounts[k] = (edgeFireCounts[k] || 0) + brightness;
                 if (playing) {
-                  propArrival[sk.id] = Math.max(propArrival[sk.id] || -999, time - 0.15);
+                  propArrival[sk.id] = Math.max(propArrival[sk.id] || -999, time - 0.8);
                   propArrival[ev.id] = Math.max(propArrival[ev.id] || -999, time - 0.08);
                 }
                 movementEdgeKeys.add(k);
@@ -2432,7 +2434,7 @@ function TemporalReplay() {
                 const k = `${ev.id}:${ss.id}`;
                 edgeFireCounts[k] = (edgeFireCounts[k] || 0) + 1.5;
                 if (playing) {
-                  propArrival[ss.id] = Math.max(propArrival[ss.id] || -999, time - 0.3);
+                  propArrival[ss.id] = Math.max(propArrival[ss.id] || -999, time - 0.9);
                 }
                 if (MOVEMENT_EVENTS.has(ev.id)) movementEdgeKeys.add(k);
               }

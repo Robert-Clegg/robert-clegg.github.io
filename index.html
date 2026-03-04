@@ -2,10 +2,10 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v134 — Cognitive Telemetry Dashboard | KnoverseAI</title>
-<meta name="description" content="Real-time cognitive profiling through gameplay telemetry. Watch how different players think at millisecond resolution."/>
+<title>Pathogenika v135 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
-<meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time through behavioral telemetry."/>
+<meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
 <meta property="og:type" content="website"/>
 <style>body{margin:0;background:#0a0a0a;overflow-x:hidden}#root{width:100vw;min-height:100vh}</style>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -1198,23 +1198,19 @@ function TemporalReplay() {
   const tick = useCallback(() => {
     const now = performance.now();
     if (lastFrameRef.current != null) {
-      const dt = ((now - lastFrameRef.current) / 1000) * speed * 4; // base rate 4× for alive feel
-      timeRef.current = timeRef.current + dt;
-      if (timeRef.current >= 160) { timeRef.current = 160; setPlaying(false); setTime(160); lastFrameRef.current = now; return; }
-      // Sync local video at full 60fps using ref — no React re-render
-      if (videoRef.current && videoUrl && !syncingFromVideo.current) {
-        const vt = timeRef.current + videoOffset;
-        if (Math.abs(videoRef.current.currentTime - vt) > 0.5) {
-          videoRef.current.currentTime = Math.max(0, vt);
-        }
+      // When video is loaded, the VIDEO is the clock source — don't advance time or seek here
+      if (!videoUrl) {
+        const dt = ((now - lastFrameRef.current) / 1000) * speed * 4; // base rate 4× for alive feel
+        timeRef.current = timeRef.current + dt;
+        if (timeRef.current >= 160) { timeRef.current = 160; setPlaying(false); setTime(160); lastFrameRef.current = now; return; }
       }
-      // Sync external video player via BroadcastChannel (throttle to ~10fps to avoid flooding)
+      // Sync external video player via BroadcastChannel (throttle to ~10fps)
       if (channelRef.current && extConnected && (now - extLastSeek.current > 100)) {
         channelRef.current.postMessage({ type: "seek", time: timeRef.current + videoOffset });
         extLastSeek.current = now;
       }
       // Only flush to React state at ~15fps to avoid re-rendering the SVG pipeline every frame
-      if (now - lastRenderRef.current >= RENDER_INTERVAL) {
+      if (!videoUrl && now - lastRenderRef.current >= RENDER_INTERVAL) {
         setTime(timeRef.current);
         lastRenderRef.current = now;
       }
@@ -1235,9 +1231,9 @@ function TemporalReplay() {
 
   // ═══ VIDEO SYNC EFFECTS ═══
   // Video time sync now happens inside the tick loop via timeRef (60fps)
-  // This effect only handles scrubber/manual time changes (when not playing)
+  // This effect handles scrubber/manual time changes (when not playing) — seek the video
   useEffect(() => {
-    if (!playing && videoRef.current && videoUrl && videoDuration > 0 && !syncingFromVideo.current) {
+    if (!playing && videoRef.current && videoUrl && videoDuration > 0) {
       const videoTime = time + videoOffset;
       if (Math.abs(videoRef.current.currentTime - videoTime) > 0.3) {
         videoRef.current.currentTime = Math.max(0, Math.min(videoTime, videoDuration));
@@ -1245,20 +1241,25 @@ function TemporalReplay() {
     }
   }, [time, playing, videoUrl, videoOffset, videoDuration]);
 
-  // Video play/pause sync — telemetry → video
+  // Video play/pause sync — dashboard controls → video
   useEffect(() => {
     if (videoRef.current && videoUrl) {
       syncingFromAlgo.current = true;
       if (playing) {
-        videoRef.current.playbackRate = speed;
         videoRef.current.play().catch(() => {});
       } else {
         videoRef.current.pause();
       }
-      // Small delay before clearing flag so the video's onPause/onPlay doesn't echo back
       setTimeout(() => { syncingFromAlgo.current = false; }, 50);
     }
-  }, [playing, videoUrl, speed]);
+  }, [playing, videoUrl]);
+
+  // Video speed sync — separate from play/pause to avoid retriggering
+  useEffect(() => {
+    if (videoRef.current && videoUrl && playing) {
+      videoRef.current.playbackRate = speed;
+    }
+  }, [speed, videoUrl, playing]);
 
   // Video native controls → telemetry sync (pause/play buttons on video element)
   useEffect(() => {
@@ -1347,13 +1348,16 @@ function TemporalReplay() {
   }, []);
 
   const handleVideoTimeUpdate = useCallback(() => {
-    if (videoRef.current && videoUrl && !syncingFromAlgo.current) {
-      syncingFromVideo.current = true;
+    if (videoRef.current && videoUrl) {
       const algoTime = videoRef.current.currentTime - videoOffset;
       const clamped = Math.max(0, Math.min(algoTime, MAX_DUR));
-      timeRef.current = clamped;
-      setTime(clamped);
-      syncingFromVideo.current = false;
+      timeRef.current = clamped; // always update ref at full rate
+      // Throttle React state flushes to ~15fps
+      const now = performance.now();
+      if (now - lastRenderRef.current >= RENDER_INTERVAL) {
+        setTime(clamped);
+        lastRenderRef.current = now;
+      }
     }
   }, [videoUrl, videoOffset]);
 
@@ -1504,7 +1508,7 @@ function TemporalReplay() {
             <button onClick={() => { if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl); setVideoMode(false); setVideoUrl(null); setVideoDuration(0); setVideoStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>✕</button>
           )}
           {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v134</span>
+          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v135</span>
         </div>
       </div>
 
@@ -1613,29 +1617,7 @@ function TemporalReplay() {
                 {"DROP VIDEO FILE HERE"}
               </div>
               <div style={{ fontSize: 9, color: "rgba(255,255,255,0.15)", fontFamily: mono }}>
-                {"Inline playback — or open an external synced player:"}
-              </div>
-              {/* External player button */}
-              <button onClick={openExternalPlayer} style={{
-                padding: "8px 20px", marginTop: 4,
-                background: extConnected ? "rgba(0,255,136,0.08)" : "rgba(168,85,247,0.1)",
-                border: "1px solid " + (extConnected ? "rgba(0,255,136,0.3)" : "rgba(168,85,247,0.3)"),
-                borderRadius: 6, cursor: "pointer", fontFamily: mono, fontSize: 11,
-                color: extConnected ? "#00ff88" : "#a855f7", letterSpacing: 1, fontWeight: 700
-              }}>
-                {extConnected ? "🔗 EXTERNAL PLAYER CONNECTED" : "🖥️ OPEN EXTERNAL VIDEO PLAYER"}
-              </button>
-              {/* Connection status */}
-              {extConnected && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: extVideoLoaded ? "#00ff88" : "#ffaa00", boxShadow: extVideoLoaded ? "0 0 6px #00ff8866" : "none" }} />
-                  <span style={{ fontSize: 9, color: extVideoLoaded ? "#00ff88" : "#ffaa00", fontFamily: mono }}>
-                    {extVideoLoaded ? "VIDEO LOADED — " + Math.round(extDuration) + "s" : "WAITING FOR VIDEO IN PLAYER"}
-                  </span>
-                </div>
-              )}
-              <div style={{ fontSize: 8, color: "rgba(255,255,255,0.1)", fontFamily: mono, marginTop: 4 }}>
-                {"External player runs video in its own Chrome process — zero impact on dashboard rendering"}
+                {"Drop MP4 + JSON telemetry together, or use the LOAD VIDEO button above"}
               </div>
             </div>
           )}
@@ -4885,7 +4867,6 @@ function TemporalReplay() {
     </div>
   );
 }
-
 
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

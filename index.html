@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v138 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v139 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1112,6 +1112,7 @@ function TemporalReplay() {
   const animRef = useRef(null);
   const lastFrameRef = useRef(null);
   const playingRef = useRef(false);
+  const [wallTime, setWallTime] = useState(0); // real elapsed seconds since play start
 
 
   // ═══ TELEMETRY FILE LOADING ═══
@@ -1180,7 +1181,9 @@ function TemporalReplay() {
     if (!playingRef.current) return;
     const now = performance.now();
     if (lastFrameRef.current != null) {
-      const dt = ((now - lastFrameRef.current) / 1000) * speed * 0.8; // 5x slower — watch propagation cascade
+      const realDt = (now - lastFrameRef.current) / 1000; // real seconds
+      const dt = realDt * speed * 0.8; // game-time seconds (5x slower than real)
+      setWallTime(prev => prev + realDt);
       setTime(prev => {
         const next = prev + dt;
         if (next >= 160) { playingRef.current = false; setPlaying(false); return 160; }
@@ -1297,10 +1300,10 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v138</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v139</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
-        <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
+        <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
+        <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>
@@ -1633,19 +1636,20 @@ function TemporalReplay() {
         const nowMs = playing ? Date.now() : 0;
 
         // ═══ CHOREOGRAPHED COLUMN RAMPS — the emergence of learning ═══
-        // Each column ramps 0→1 on its own timeline. Signal cascades left→right.
+        // Each column ramps 0→1 on its own timeline. All times are REAL WALL-CLOCK SECONDS.
         const clamp01 = (v) => Math.max(0, Math.min(1, v));
         const lerp01 = (t, start, end) => clamp01((t - start) / (end - start));
+        const wt = wallTime; // real seconds since play started
         const COL_RAMP = {
-          input:      lerp01(time, 0, 3),     // 0-3s: inputs flicker to life
-          data:       lerp01(time, 0, 3),     // 0-3s: data channels alongside inputs
-          extraction: lerp01(time, 4, 16),    // 4-16s: L1 feature extraction (2x slower)
-          events:     lerp01(time, 5, 15),    // 5-15s: game events populate
-          bioVirus:   lerp01(time, 5, 10),    // 5-10s: virus lights up first
-          bioOther:   lerp01(time, 5, 30),    // 5-30s: TB, pneumonia, myco ramp in
-          layers:     lerp01(time, 10, 25),   // 10-25s: neural layers emerge
-          profiles:   lerp01(time, 15, 35),   // 15-35s: cognitive profiles form
-          careers:    lerp01(time, 20, 45),   // 20-45s: career pathways sharpen
+          input:      lerp01(wt, 0, 3),      // 0-3s
+          data:       lerp01(wt, 0, 3),      // 0-3s
+          extraction: lerp01(wt, 4, 16),     // 4-16s
+          events:     lerp01(wt, 5, 15),     // 5-15s
+          bioVirus:   lerp01(wt, 5, 10),     // 5-10s
+          bioOther:   lerp01(wt, 5, 30),     // 5-30s
+          layers:     lerp01(wt, 10, 25),    // 10-25s
+          profiles:   lerp01(wt, 15, 35),    // 15-35s
+          careers:    lerp01(wt, 20, 45),    // 20-45s
         };
         const FIREHOSE_KEYS = [
           "mouseX","mouseY","velocity","LMB","RMB","scroll",

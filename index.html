@@ -1257,17 +1257,7 @@ function TemporalReplay() {
     }
   }, []);
 
-  // Send play/pause to YouTube — dashboard is clock, YouTube is ambient
-  useEffect(() => {
-    if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
-    try {
-      if (playing) {
-        ytPlayerRef.current.playVideo();
-      } else {
-        ytPlayerRef.current.pauseVideo();
-      }
-    } catch(e) {}
-  }, [playing, videoUrl]);
+  // Note: play/pause sent to YouTube directly in onClick (must be synchronous within user gesture)
 
   // Send speed to YouTube
   useEffect(() => {
@@ -1396,7 +1386,18 @@ function TemporalReplay() {
       {/* TRANSPORT + TABS — single row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <button onClick={() => { timeRef.current = 0; setTime(0); setPlaying(false); try { if (ytPlayerRef.current && ytReady.current) ytPlayerRef.current.seekTo(0, true); } catch(e) {} }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
-        <button onClick={() => { if (!playing && time >= MAX_DUR - 0.1) { timeRef.current = 0; setTime(0); } setPlaying(!playing); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
+        <button onClick={() => {
+            const nowPlaying = !playing;
+            if (!playing && time >= MAX_DUR - 0.1) { timeRef.current = 0; setTime(0); }
+            setPlaying(nowPlaying);
+            // Call YouTube synchronously inside user gesture — browser blocks async media play
+            try {
+              if (ytPlayerRef.current && ytReady.current) {
+                if (nowPlaying) ytPlayerRef.current.playVideo();
+                else ytPlayerRef.current.pauseVideo();
+              }
+            } catch(e) {}
+          }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>

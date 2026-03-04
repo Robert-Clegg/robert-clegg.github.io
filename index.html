@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v146 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v147 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v146</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v147</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -2912,66 +2912,58 @@ function TemporalReplay() {
         // v33: Derived features merged — no separate column needed
         // derivedActivation still computed, used as pre-glow on event nodes
 
-        // ═══ CHANNEL → EVENT EDGES (replaces channel→derived→event pipeline) ═══
+        // ═══ CHANNEL → EVENT EDGES — stochastic popcorn firing ═══
         const renderChannelToEventEdges = () => {
           if (COL_RAMP.events <= 0) return null;
           const edges = [];
+          let edgeIdx = 0;
           INPUT_NODES.forEach((inp, inpIdx) => {
             const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
             if (!evIds) return;
             const boxY = getRawBoxY(inp.boxIdx);
             const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
             const nodeIdx = nodesForBox.indexOf(inp);
-            // v36: top-aligned (matches rendering loop)
             const startY = boxY + 4;
             const srcY = startY + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
             const srcAge = time - (inputNodeFire[inp.fireKey] || -999);
-            const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.2) : 0;
-            const firehoseBoost = firehoseSet.has(inp.fireKey) ? 0.15 : 0;
-            const charge = Math.min(1, srcAct + firehoseBoost);
+            const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.8) : 0;
+            const channelLive = firehoseSet.has(inp.fireKey) || srcAct > 0.05;
             
             for (const evId of evIds) {
               const eventNode = TREE_EVENTS.find(n => n.id === evId);
               if (!eventNode) continue;
-              // v35: Persistent floor on channel→event trails too
+              edgeIdx++;
               const trailKey = `${inp.fireKey}:${evId}`;
               const trailFireCount = edgeFireCounts[trailKey] || 0;
-              const trailFloor = trailFireCount > 0 ? 0.03 + Math.min(0.08, trailFireCount * 0.01) : 0;
-              const trailWeight = trailFloor + Math.min(0.17, trailFireCount * 0.006);
-              // Final pathway: keep lit when playback ends
-              // Light if EITHER the channel or event is in the final pathway
+              const myelinFloor = trailFireCount > 0 ? Math.min(0.35, 0.02 + trailFireCount * 0.004) : 0;
               const isFinalTrail = isFinalNode(evId) || isFinalNode(inp.fireKey);
-              const finalTrailFloor = isFinalTrail ? Math.max(0.15, Math.max(getFinalStrength(inp.fireKey), getFinalStrength(evId)) * 0.4) : 0;
-              // v35: Two-tier rendering — passive dim flow + active burst
-              // Passive: always visible when channel has data (even if this specific event never fired)
-              const hasChannelData = firehoseSet.has(inp.fireKey) || srcAct > 0;
-              const passiveBase = hasChannelData ? 0.02 : 0;
-              const displayCharge = Math.max(charge, trailWeight, passiveBase, finalTrailFloor);
-              if (displayCharge < 0.01) continue;
+              const finalTrailFloor = isFinalTrail && COL_RAMP.events > 0.8 ? Math.max(0.15, Math.max(getFinalStrength(inp.fireKey), getFinalStrength(evId)) * 0.4) : 0;
+              // Stochastic fire
+              const period = EDGE_PRIMES[(edgeIdx + 5) % EDGE_PRIMES.length];
+              const cycle = Math.floor(nowMs / period);
+              const phase = (inp.fireKey.length * 13 + evId.length * 23 + edgeIdx * 11) % 9;
+              const isFiring = channelLive && playing && ((cycle + phase) % 7 < 3);
+              const flash = isFiring ? Math.min(0.7, 0.3 + srcAct * 0.5) : 0;
+              const displayCharge = Math.max(flash, myelinFloor, finalTrailFloor);
+              if (displayCharge < 0.005) continue;
               
               const tp = getPos(eventNode.col + 2, eventNode.row);
-              const x1 = channelRightEdge;
-              const y1 = srcY;
-              const x2 = tp.x;
-              const y2 = tp.y + nodeH / 2;
-              const gap = x2 - x1;
-              const cp = Math.max(8, gap * 0.35);
+              const x1 = channelRightEdge, y1 = srcY;
+              const x2 = tp.x, y2 = tp.y + nodeH / 2;
+              const gap = x2 - x1, cp = Math.max(8, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
-              const isTrailOnly = charge < 0.03 && trailWeight > 0.02;
-              const isPassiveOnly = charge < 0.03 && trailWeight < 0.02 && passiveBase > 0;
-              const color = isFinalTrail ? inp.color : charge > 0.2 ? inp.color : isTrailOnly ? "rgba(120,180,255,0.25)" : isPassiveOnly ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.08)";
-              // Glow for active or final pathway
-              if (charge > 0.3 || isFinalTrail) {
+              const color = isFinalTrail ? inp.color : isFiring ? inp.color : myelinFloor > 0.05 ? "rgba(120,180,255,0.25)" : "rgba(255,255,255,0.04)";
+              if (isFiring && flash > 0.3) {
                 edges.push(
                   <path key={`ch-ev-glow-${inp.fireKey}-${evId}`} d={d}
-                    fill="none" stroke={inp.color} strokeWidth={charge * 3} opacity={Math.min(charge * 0.25, COL_RAMP.events)} filter="url(#glow)" />
+                    fill="none" stroke={inp.color} strokeWidth={flash * 3} opacity={Math.min(flash * 0.25, COL_RAMP.events)} filter="url(#glow)" />
                 );
               }
               edges.push(
                 <path key={`ch-ev-${inp.fireKey}-${evId}`} d={d}
                   fill="none" stroke={color}
-                  strokeWidth={0.4 + displayCharge * 1.5 + trailWeight * 3}
-                  opacity={Math.min(0.04 + displayCharge * 0.5, COL_RAMP.events)} />
+                  strokeWidth={0.4 + displayCharge * 1.5}
+                  opacity={Math.min(0.02 + displayCharge * 0.5, COL_RAMP.events)} />
               );
             }
           });
@@ -2981,9 +2973,13 @@ function TemporalReplay() {
         // v30: renderBoxToNodeEdges REMOVED — signal flows through derived features only
 
         // ═══ CHANNEL → DERIVED FEATURE EDGES ═══
+        // Stochastic firing: each edge pops independently like popcorn.
+        // Repeated fires build permanent floor. Inactive edges cool down.
+        const EDGE_PRIMES = [37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113];
         const renderChannelToDerivedEdges = () => {
           if (COL_RAMP.extraction <= 0) return null;
           const edges = [];
+          let edgeIdx = 0;
           INPUT_NODES.forEach((inp) => {
             const dfIds = CHANNEL_TO_DF[inp.fireKey];
             if (!dfIds) return;
@@ -2993,64 +2989,80 @@ function TemporalReplay() {
             const startY = boxY + 4;
             const srcY = startY + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
             const srcAge = time - (inputNodeFire[inp.fireKey] || -999);
-            const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.2) : 0;
-            const firehoseBoost = firehoseSet.has(inp.fireKey) ? 0.2 : 0;
-            const charge = Math.min(1, srcAct + firehoseBoost);
-            const hasActivity = firehoseSet.has(inp.fireKey) || srcAct > 0 || time > 0.1;
+            const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.8) : 0;
+            const channelLive = firehoseSet.has(inp.fireKey) || srcAct > 0.05;
             for (const dfId of dfIds) {
               const df = DERIVED_FEATURES.find(d => d.id === dfId);
               if (!df) continue;
+              edgeIdx++;
               const dfPos = getDfPos(df.row);
               const trailKey = `${inp.fireKey}:${dfId}`;
               const trailCount = edgeFireCounts[trailKey] || 0;
-              const trailWeight = trailCount > 0 ? 0.03 + Math.min(0.12, trailCount * 0.003) : 0;
+              // Accumulated floor: builds with repeated fires, represents myelination
+              const myelinFloor = trailCount > 0 ? Math.min(0.35, 0.02 + trailCount * 0.004) : 0;
               const isFinalTrail = isFinalEdge(inp.fireKey, dfId);
-              const finalTrailFloor = isFinalTrail ? Math.max(0.15, getFinalStrength(`${inp.fireKey}:${dfId}`) * 0.4) : 0;
-              const passiveBase = hasActivity ? 0.025 : 0;
-              const displayCharge = Math.max(charge, trailWeight, passiveBase, finalTrailFloor);
-              if (displayCharge < 0.01) continue;
+              const finalTrailFloor = isFinalTrail && COL_RAMP.extraction > 0.8 ? Math.max(0.15, getFinalStrength(`${inp.fireKey}:${dfId}`) * 0.4) : 0;
+              // Stochastic fire: each edge has its own prime-period cycle
+              const period = EDGE_PRIMES[edgeIdx % EDGE_PRIMES.length];
+              const cycle = Math.floor(nowMs / period);
+              const phase = (inp.fireKey.length * 17 + dfId.length * 31 + edgeIdx * 7) % 11;
+              const isFiring = channelLive && playing && ((cycle + phase) % 7 < 3); // ~43% duty
+              // Flash bright on fire, cool to myelin floor when off
+              const flash = isFiring ? Math.min(0.7, 0.3 + srcAct * 0.5) : 0;
+              const displayCharge = Math.max(flash, myelinFloor, finalTrailFloor);
+              if (displayCharge < 0.005) continue;
               const x1 = channelRightEdge, y1 = srcY;
               const x2 = dfPos.x, y2 = dfPos.y + dfNodeH / 2;
               const gap = x2 - x1, cp = Math.max(6, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
-              const color = isFinalTrail ? inp.color : charge > 0.15 ? inp.color : trailWeight > 0.02 ? df.color + "44" : "rgba(255,255,255,0.04)";
-              if (charge > 0.3 || isFinalTrail) edges.push(<path key={`ch-df-g-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={df.color} strokeWidth={Math.max(charge, finalTrailFloor) * 2} opacity={Math.min(Math.max(charge, finalTrailFloor) * 0.15, COL_RAMP.extraction)} filter="url(#glow)" />);
-              edges.push(<path key={`ch-df-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.2 + trailWeight * 2} opacity={Math.min(0.03 + displayCharge * 0.4, COL_RAMP.extraction)} />);
+              const color = isFinalTrail ? inp.color : isFiring ? inp.color : myelinFloor > 0.05 ? df.color + "44" : "rgba(255,255,255,0.04)";
+              if (isFiring && flash > 0.3) edges.push(<path key={`ch-df-g-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={df.color} strokeWidth={flash * 2} opacity={Math.min(flash * 0.2, COL_RAMP.extraction)} filter="url(#glow)" />);
+              edges.push(<path key={`ch-df-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.5} opacity={Math.min(0.02 + displayCharge * 0.5, COL_RAMP.extraction)} />);
             }
           });
           return edges;
         };
 
-        // ═══ DERIVED FEATURE → GAME EVENT EDGES ═══
+        // ═══ DERIVED FEATURE → GAME EVENT EDGES — stochastic popcorn ═══
         const renderDerivedToEventEdges = () => {
+          if (COL_RAMP.events <= 0) return null;
           const edges = [];
+          let edgeIdx = 0;
           for (const df of DERIVED_FEATURES) {
             const dfPos = getDfPos(df.row);
-            let dfCharge = 0;
+            // Source activity from channels feeding this derived feature
+            let dfAct = 0;
             for (const src of df.sources) {
               const srcAge = time - (inputNodeFire[src] || -999);
-              if (srcAge < 2.0) dfCharge = Math.max(dfCharge, Math.exp(-srcAge * 0.8));
-              if (firehoseSet.has(src)) dfCharge = Math.max(dfCharge, 0.3);
+              if (srcAge < 2.0) dfAct = Math.max(dfAct, Math.exp(-srcAge * 0.8));
+              if (firehoseSet.has(src)) dfAct = Math.max(dfAct, 0.3);
             }
-            // No ramp floor — dfCharge must come from actual channel signal
+            const dfLive = dfAct > 0.05;
             for (const evId of df.feeds) {
               const eventNode = TREE_EVENTS.find(n => n.id === evId);
               if (!eventNode) continue;
+              edgeIdx++;
               const trailKey = `${df.id}:${evId}`;
               const trailCount = edgeFireCounts[trailKey] || 0;
-              const trailWeight = trailCount > 0 ? 0.03 + Math.min(0.10, trailCount * 0.008) : 0;
+              const myelinFloor = trailCount > 0 ? Math.min(0.35, 0.02 + trailCount * 0.004) : 0;
               const isFinalTrail = isFinalEdge(df.id, evId);
-              const finalTrailFloor = isFinalTrail ? Math.max(0.15, getFinalStrength(`${df.id}:${evId}`) * 0.4) : 0;
-              const displayCharge = Math.max(dfCharge, trailWeight, finalTrailFloor);
-              if (displayCharge < 0.01) continue;
+              const finalTrailFloor = isFinalTrail && COL_RAMP.events > 0.8 ? Math.max(0.15, getFinalStrength(`${df.id}:${evId}`) * 0.4) : 0;
+              // Stochastic fire
+              const period = EDGE_PRIMES[(edgeIdx + 9) % EDGE_PRIMES.length];
+              const cycle = Math.floor(nowMs / period);
+              const phase = (df.id.length * 19 + evId.length * 29 + edgeIdx * 13) % 11;
+              const isFiring = dfLive && playing && ((cycle + phase) % 7 < 3);
+              const flash = isFiring ? Math.min(0.6, 0.2 + dfAct * 0.5) : 0;
+              const displayCharge = Math.max(flash, myelinFloor, finalTrailFloor);
+              if (displayCharge < 0.005) continue;
               const x1 = dfRightEdge, y1 = dfPos.y + dfNodeH / 2;
               const tp = getPos(eventNode.col + 2, eventNode.row);
               const x2 = tp.x, y2 = tp.y + nodeH / 2;
               const gap = x2 - x1, cp = Math.max(6, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
-              const color = isFinalTrail ? df.color : dfCharge > 0.2 ? df.color : trailWeight > 0.02 ? df.color + "44" : "rgba(255,255,255,0.04)";
-              if (dfCharge > 0.35 || isFinalTrail) edges.push(<path key={`df-ev-g-${df.id}-${evId}`} d={d} fill="none" stroke={df.color} strokeWidth={Math.max(dfCharge, finalTrailFloor) * 2} opacity={Math.min(Math.max(dfCharge, finalTrailFloor) * 0.15, COL_RAMP.events)} filter="url(#glow)" />);
-              edges.push(<path key={`df-ev-${df.id}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.3 + trailWeight * 2.5} opacity={Math.min(0.03 + displayCharge * 0.4, COL_RAMP.events)} />);
+              const color = isFinalTrail ? df.color : isFiring ? df.color : myelinFloor > 0.05 ? df.color + "44" : "rgba(255,255,255,0.04)";
+              if (isFiring && flash > 0.3) edges.push(<path key={`df-ev-g-${df.id}-${evId}`} d={d} fill="none" stroke={df.color} strokeWidth={flash * 2} opacity={Math.min(flash * 0.15, COL_RAMP.events)} filter="url(#glow)" />);
+              edges.push(<path key={`df-ev-${df.id}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.5} opacity={Math.min(0.02 + displayCharge * 0.5, COL_RAMP.events)} />);
             }
           }
           return edges;
@@ -3058,30 +3070,29 @@ function TemporalReplay() {
 
         // ═══ DERIVED FEATURE NODE RENDERING ═══
         const renderDerivedFeatureNodes = () => {
+          let dfNodeIdx = 0;
           return DERIVED_FEATURES.map(df => {
+            dfNodeIdx++;
             const pos = getDfPos(df.row);
-            // Signal-driven: activity comes from channel sources
-            let activity = 0;
+            // Max incoming edge stochastic flash + myelin floor
+            let maxFlash = 0;
+            let maxMyelin = 0;
             for (const src of df.sources) {
               const srcAge = time - (inputNodeFire[src] || -999);
-              if (srcAge < 6.0) activity = Math.max(activity, Math.exp(-srcAge * 0.2));
-              if (firehoseSet.has(src)) activity = Math.max(activity, 0.4);
-            }
-            // Cap by max incoming channel→derived edge brightness
-            let maxInEdge = 0;
-            for (const src of df.sources) {
+              const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.8) : 0;
+              const channelLive = firehoseSet.has(src) || srcAct > 0.05;
               const ek = `${src}:${df.id}`;
               const eFire = edgeFireCounts[ek] || 0;
-              const CLEN = Math.max(1, maxFireCount * 0.3);
-              const comp = Math.floor(eFire / CLEN);
-              const prog = (eFire % CLEN) / CLEN;
-              const mFlr = Math.min(0.3, comp * 0.06);
-              maxInEdge = Math.max(maxInEdge, mFlr + prog * (0.7 - mFlr));
-              const srcAge = time - (inputNodeFire[src] || -999);
-              if (srcAge < 2.0) maxInEdge = Math.max(maxInEdge, Math.exp(-srcAge * 0.8));
-              if (firehoseSet.has(src)) maxInEdge = Math.max(maxInEdge, 0.3);
+              const mFloor = eFire > 0 ? Math.min(0.35, 0.02 + eFire * 0.004) : 0;
+              maxMyelin = Math.max(maxMyelin, mFloor);
+              // Stochastic fire — same prime logic as edges
+              const period = EDGE_PRIMES[dfNodeIdx % EDGE_PRIMES.length];
+              const cycle = Math.floor(nowMs / period);
+              const phase = (src.length * 17 + df.id.length * 31 + dfNodeIdx * 7) % 11;
+              const isFiring = channelLive && playing && ((cycle + phase) % 7 < 3);
+              if (isFiring) maxFlash = Math.max(maxFlash, Math.min(0.7, 0.3 + srcAct * 0.5));
             }
-            activity = Math.min(activity, Math.max(maxInEdge, 0.001)); // node ≤ pathway
+            let activity = Math.max(maxFlash, maxMyelin);
             activity = Math.min(activity, COL_RAMP.extraction); // ramp ceiling
             const isFinal = isFinalNode(df.id);
             if (isFinal && COL_RAMP.extraction > 0.8) activity = Math.max(activity, getFinalStrength(df.id) || 0.5);

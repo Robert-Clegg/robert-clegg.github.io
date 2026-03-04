@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v149 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v150 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v149</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v150</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -1690,21 +1690,7 @@ function TemporalReplay() {
 
         // Per-event pulse: each event has its own frequency and phase
         // Faster events pulse quicker, strategic events pulse slower
-        const getEventPulse = (evId) => {
-          if (!playing || COL_RAMP.events <= 0) return 0;
-          const t = EVENT_TIMING[evId] || { depth: 2, phase: 0 };
-          const speed = 180 + t.depth * 120;
-          const phase = t.phase * 137.5;
-          const base = 0.08 + Math.sin(nowMs / speed + phase) * 0.08;
-          // Heavy events: emit, replicate, zoom, death, dock — amplified glow
-          const HEAVY = new Set(["ev_emit", "ev_replicate", "ev_zoomOut", "ev_zoomIn", "ev_dock"]);
-          if (HEAVY.has(evId)) {
-            return 0.25 + Math.sin(nowMs / speed + phase) * 0.2 + Math.sin(nowMs / (speed * 0.6) + phase * 2.1) * 0.1;
-          }
-          return base;
-        };
-
-        // (layer pulse replaced by forward propagation model)
+        // (getEventPulse removed — unified brightness pipeline)
 
         // Layout: containers leftmost → 22 data channels → game event network
         const boxX = -88; // containers extend left of origin
@@ -2148,55 +2134,8 @@ function TemporalReplay() {
           return 0;
         };
 
-        const getNodeIntensity = (id, type) => {
-          // ═══ COLUMN RAMP = CEILING — node can't be brighter than its ramp allows ═══
-          // Brightness comes FROM signal flow (prop, fire counts, mastery).
-          // A node can't light without a path to it. Ramp caps maximum visible brightness.
-          let colRamp = 1;
-          if (type === "event")  colRamp = COL_RAMP.events;
-          if (type === "skill")  colRamp = id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
-          if (type === "layer")  colRamp = COL_RAMP.layers;
-          if (type === "profile") colRamp = COL_RAMP.profiles;
-          if (type === "career") colRamp = COL_RAMP.careers;
-          if (colRamp <= 0) return 0;
-
-          // Signal-driven brightness — what actually arrived through edges
-          let signal = 0;
-          if (type === "event") {
-            const preFire = (derivedPreFire[id] || 0) * 0.5;
-            const evPulse = getEventPulse(id);
-            const prop = getPropIntensity(id);
-            const HEAVY = new Set(["ev_emit", "ev_replicate", "ev_zoomOut", "ev_zoomIn", "ev_dock"]);
-            if (HEAVY.has(id)) {
-              signal = Math.max(evPulse, preFire * 1.5, prop * 1.3);
-            } else if (id === "ev_worldDeath") {
-              const wdCount = treeActivation.activeCounts["ev_worldDeath"] || 0;
-              const accumGlow = Math.min(0.7, wdCount * 0.012);
-              signal = Math.max(evPulse * 0.6, preFire, prop * 1.2, accumGlow);
-            } else {
-              signal = Math.max(evPulse * 0.4, preFire, prop);
-            }
-          } else if (type === "skill") {
-            const prop = getPropIntensity(id);
-            const mastery = getParentMastery ? getParentMastery(id) : 0;
-            signal = Math.max(prop * 0.5, mastery * 0.8);
-          } else if (type === "layer") {
-            signal = getPropIntensity(id) * 0.9;
-          } else if (type === "profile") {
-            signal = getPropIntensity(id) * 0.7;
-          } else if (type === "career") {
-            signal = getPropIntensity(id) * 0.5;
-          }
-
-          // End-state floors only apply when ramp is nearly full (playback ending)
-          const liveFloor = colRamp > 0.8 ? getLiveFinalFloor(id, type) : 0;
-          const traceFloor = colRamp > 0.8 && isFinalNode(id) ? Math.max(0.12, getFinalStrength(id)) : 0;
-
-          // Final: signal capped by ramp ceiling AND max incoming edge brightness
-          // A node can never be brighter than the pathway feeding it
-          const edgeCap = maxIncomingEdge[id] !== undefined ? maxIncomingEdge[id] : colRamp;
-          return Math.min(Math.max(signal, liveFloor, traceFloor), colRamp, edgeCap);
-        };
+        // ═══ getNodeIntensity — reads from unified nodeBright map ═══
+        const getNodeIntensity = (id, type) => nodeBright[id] || 0;
 
         const isBlinking = (id) => {
           const last = treeActivation.lastActivated[id];
@@ -2283,41 +2222,12 @@ function TemporalReplay() {
 
         // Get propagation intensity: how recently did the wavefront arrive at this node?
         const HEAVY_EVENTS = new Set(["ev_emit", "ev_replicate", "ev_zoomOut", "ev_zoomIn", "ev_dock"]);
-        const getPropIntensity = (id) => {
-          const arrival = propArrival[id];
-          if (arrival === undefined || arrival < -900) return 0;
-          const age = time - arrival;
-          if (age < 0) return 0;
-          // L1 decays fast — short blink window so it flashes on/off
-          if (id === "L1") return Math.exp(-age / 0.4);
-          // worldDeath: sustain grows with attrition count — starts normal, ends 4× longer
-          if (id === "ev_worldDeath") {
-            const wdCount = treeActivation.activeCounts["ev_worldDeath"] || 0;
-            const wdDecay = PROP_DECAY * (1 + Math.min(3, wdCount * 0.06)); // 1×→4× over ~50 deaths
-            return Math.exp(-age / wdDecay);
-          }
-          // Heavy events sustain 3× longer
-          const decay = HEAVY_EVENTS.has(id) ? PROP_DECAY * 3 : PROP_DECAY;
-          return Math.exp(-age / decay);
-        };
+        // (getPropIntensity removed — unified brightness pipeline)
+
 
         // Edge propagation: edge lights up ONLY when wavefront is traversing it
-        const getEdgePropIntensity = (fromId, toId, delay) => {
-          // Use layer-specific delay for layer targets
-          const edgeDelay = LAYER_SPEED[toId] ? getLayerDelay(toId) : delay;
-          const fromArrival = propArrival[fromId];
-          if (fromArrival === undefined || fromArrival < -900) return 0;
-          const edgeStart = fromArrival;
-          const edgeEnd = fromArrival + edgeDelay;
-          // L1 edges: fast blink with short fade
-          const fadeTime = toId === "L1" ? 0.2 : PROP_DECAY * 0.5;
-          if (time >= edgeStart && time <= edgeEnd + fadeTime) {
-            const transitProgress = Math.min(1, (time - edgeStart) / edgeDelay);
-            const fadeAfter = time > edgeEnd ? Math.exp(-(time - edgeEnd) / fadeTime) : 1;
-            return transitProgress * fadeAfter;
-          }
-          return 0;
-        };
+        // (getEdgePropIntensity removed — unified brightness pipeline)
+
 
         // ═══ CUMULATIVE EDGE FIRE TRACKING — "baking in" trails ═══
         // Count how many times each edge path has been activated
@@ -2529,27 +2439,89 @@ function TemporalReplay() {
         }
         const maxFireCount = Math.max(1, ...Object.values(edgeFireCounts));
 
-        // ═══ MAX INCOMING EDGE BRIGHTNESS — node can't be brighter than its brightest feeding pathway ═══
-        const maxIncomingEdge = {};
-        const computeEdgeBrightness = (fromId, toId, weight) => {
-          const fireKey = `${fromId}:${toId}`;
-          const rawFire = edgeFireCounts[fireKey] || 0;
-          const propEdge = getEdgePropIntensity(fromId, toId, PROP_DELAY) * (weight || 1);
-          const CYCLE_LEN = Math.max(1, maxFireCount * 0.3);
-          const completed = Math.floor(rawFire / CYCLE_LEN);
-          const progress = (rawFire % CYCLE_LEN) / CYCLE_LEN;
-          const mFloor = Math.min(0.3, completed * 0.06);
-          const cycleBright = mFloor + progress * (0.7 - mFloor);
-          return Math.max(cycleBright, propEdge);
+        // ═══ UNIFIED BRIGHTNESS PIPELINE ═══
+        // One system. Every edge and node gets brightness the same way.
+        // Edge: stochastic flash (when source live) + myelin floor (from fire count)
+        // Node: max(incoming edge brightnesses), capped by COL_RAMP
+        // Rule: nothing downstream outshines its feeding pathway.
+        const EDGE_PRIMES = [37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113];
+        const edgeBright = {};
+        const nodeBright = {};
+        let _eIdx = 0;
+
+        // Is a source currently live? (has signal flowing)
+        const isLive = (id) => {
+          if (inputNodeFire[id] !== undefined) {
+            return firehoseSet.has(id) || (time - inputNodeFire[id]) < 3.0;
+          }
+          const arr = propArrival[id];
+          return arr !== undefined && arr > -900 && (time - arr) < 2.0;
         };
-        const ALL_EDGES = [
-          ...EVENT_SKILL_EDGES, ...EVENT_SUBSKILL_EDGES,
-          ...SUBSKILL_LAYER_EDGES, ...LAYER_PROFILE_EDGES, ...PROFILE_CAREER_EDGES
-        ];
-        for (const edge of ALL_EDGES) {
-          const toId = edge[1], w = edge[2] || 1;
-          const b = computeEdgeBrightness(edge[0], toId, w);
-          maxIncomingEdge[toId] = Math.max(maxIncomingEdge[toId] || 0, b);
+
+        // COL_RAMP ceiling for a destination node
+        const getDestRamp = (toId) => {
+          if (DERIVED_FEATURES.some(d => d.id === toId)) return COL_RAMP.extraction;
+          if (TREE_EVENTS.some(n => n.id === toId)) return COL_RAMP.events;
+          const sk = TREE_SKILLS.find(n => n.id === toId);
+          if (sk) return sk.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
+          const ss = TREE_SUB_SKILLS.find(n => n.id === toId);
+          if (ss) { const p = TREE_SKILLS.find(s => s.id === ss.parent); return p && p.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther; }
+          if (["L1","L2","L3","L4"].includes(toId)) return COL_RAMP.layers;
+          if (TREE_PROFILES.some(n => n.id === toId)) return COL_RAMP.profiles;
+          if (TREE_CAREERS.some(n => n.id === toId)) return COL_RAMP.careers;
+          return 1;
+        };
+
+        // Compute brightness for one edge
+        const calcEdge = (fromId, toId) => {
+          _eIdx++;
+          const destRamp = getDestRamp(toId);
+          if (destRamp <= 0) return 0;
+          const key = `${fromId}:${toId}`;
+          const fireCount = edgeFireCounts[key] || 0;
+          // Myelin floor: permanent trail from repeated firing
+          const myelin = fireCount > 0 ? Math.min(0.4, 0.02 + fireCount * 0.005) : 0;
+          // Stochastic flash when source is live
+          let flash = 0;
+          if (playing && isLive(fromId)) {
+            const period = EDGE_PRIMES[_eIdx % EDGE_PRIMES.length];
+            const cycle = Math.floor(nowMs / period);
+            const phase = (fromId.length * 17 + toId.length * 31 + _eIdx * 7) % 11;
+            if ((cycle + phase) % 7 < 3) flash = 0.5; // ~43% duty cycle
+          }
+          return Math.min(Math.max(flash, myelin), destRamp);
+        };
+
+        // Compute ALL edge brightnesses — every edge in the system
+        // Channel → Derived Feature
+        INPUT_NODES.forEach(inp => {
+          const dfIds = CHANNEL_TO_DF[inp.fireKey];
+          if (dfIds) dfIds.forEach(dfId => { edgeBright[`${inp.fireKey}:${dfId}`] = calcEdge(inp.fireKey, dfId); });
+        });
+        // Channel → Event (transitive)
+        INPUT_NODES.forEach(inp => {
+          const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
+          if (evIds) evIds.forEach(evId => { edgeBright[`${inp.fireKey}:${evId}`] = calcEdge(inp.fireKey, evId); });
+        });
+        // Derived Feature → Event
+        DERIVED_FEATURES.forEach(df => {
+          df.feeds.forEach(evId => { edgeBright[`${df.id}:${evId}`] = calcEdge(df.id, evId); });
+        });
+        // All tree edges
+        [...EVENT_SKILL_EDGES, ...EVENT_SUBSKILL_EDGES, ...SUBSKILL_LAYER_EDGES,
+         ...LAYER_PROFILE_EDGES, ...PROFILE_CAREER_EDGES].forEach(edge => {
+          edgeBright[`${edge[0]}:${edge[1]}`] = calcEdge(edge[0], edge[1]);
+        });
+
+        // Node brightness = max incoming edge brightness
+        for (const key of Object.keys(edgeBright)) {
+          const sep = key.indexOf(":");
+          const toId = key.substring(sep + 1);
+          nodeBright[toId] = Math.max(nodeBright[toId] || 0, edgeBright[key]);
+        }
+        // Cap by COL_RAMP
+        for (const id of Object.keys(nodeBright)) {
+          nodeBright[id] = Math.min(nodeBright[id], getDestRamp(id));
         }
 
         // ═══ FINAL PATHWAY — when stopped, ALL fired chains remain highlighted ═══
@@ -2743,16 +2715,23 @@ function TemporalReplay() {
         const isFinalNode = (id) => finalPathway.has(id);
         const getFinalStrength = (key) => finalStrength[key] || 0;
 
+        // Apply final pathway floors to unified maps (only when demo nearly ended)
+        for (const key of finalPathway) {
+          if (key.includes(":")) {
+            // Edge
+            const ramp = getDestRamp(key.substring(key.indexOf(":") + 1));
+            if (ramp > 0.8) edgeBright[key] = Math.max(edgeBright[key] || 0, (finalStrength[key] || 0) * 0.5);
+          } else {
+            // Node
+            const ramp = getDestRamp(key);
+            if (ramp > 0.8) nodeBright[key] = Math.max(nodeBright[key] || 0, (finalStrength[key] || 0) * 0.5);
+          }
+        }
+
         // Sub-skill channel dimensions (matching data channel size)
         const ssW = 48, ssH = 14, ssGap = 1, ssXGap = 3;
 
         const renderEdges = (edges, fromNodes, toNodes, fromType, toType) => {
-          // Column ramp gate for destination — edges fade in with their target column
-          const toRamp = toType === "skill" ? COL_RAMP.bioOther
-            : toType === "layer" ? COL_RAMP.layers
-            : toType === "profile" ? COL_RAMP.profiles
-            : toType === "career" ? COL_RAMP.careers : 1;
-          if (toRamp <= 0) return null;
           return edges.map((edge, i) => {
             const fromId = edge[0], toId = edge[1], edgeWeight = edge[2] || 1.0;
             const isSecondary = edgeWeight < 0.6;
@@ -2760,49 +2739,16 @@ function TemporalReplay() {
             const toNode = toNodes.find(n => n.id === toId);
             if (!fromNode || !toNode) return null;
 
-            // Propagation-based intensity: edge lights when wavefront traverses it
-            const propEdge = getEdgePropIntensity(fromId, toId, PROP_DELAY) * edgeWeight;
-
-            // ═══ MYELINATION CYCLE ═════════════════════════════════
-            // Fire count drives a repeating cycle:
-            //   low brightness → medium → bright → GLOW → reset to floor, repeat
-            // Each completed cycle raises the permanent floor slightly
+            // ═══ UNIFIED: read from edgeBright map ═══
             const fireKey = `${fromId}:${toId}`;
             const rawFireCount = edgeFireCounts[fireKey] || 0;
-            
-            if (rawFireCount < 0.01) {
-              const propCheck = getEdgePropIntensity(fromId, toId, PROP_DELAY) * edgeWeight;
-              if (propCheck < 0.01 && !isFinalEdge(fromId, toId)) return null;
-            }
-            
-            // End-state floor: any event→skill edge that fired stays visible
-            const isSkillEdge = fromType === "event" && toType === "skill";
-            const endFloor = isSkillEdge && rawFireCount > 0 ? Math.min(0.25, 0.05 + rawFireCount * 0.008) : 0;
-            
-            const CYCLE_LENGTH = Math.max(1, maxFireCount * 0.3);
-            const completedCycles = Math.floor(rawFireCount / CYCLE_LENGTH);
-            const cycleProgress = (rawFireCount % CYCLE_LENGTH) / CYCLE_LENGTH;
-            const myelinFloor = Math.min(0.3, completedCycles * 0.06);
-            const cycleBrightness = myelinFloor + cycleProgress * (0.7 - myelinFloor);
-            const isGlowing = cycleProgress > 0.75;
-            const glowStrength = isGlowing ? (cycleProgress - 0.75) / 0.25 : 0;
-            // Final pathway edges stay visible with proportional brightness
-            const finalFloor = isFinalEdge(fromId, toId) ? getFinalStrength(`${fromId}:${toId}`) * 0.5 : 0;
-            const myelinWidth = isSecondary 
-              ? 0.3 + Math.max(cycleBrightness, finalFloor, endFloor) * 1.8
-              : 0.4 + Math.max(cycleBrightness, finalFloor, endFloor) * 3.5;
-
-            // Background stimulation: subtle micro-pulse (much dimmer than propagation)
-            const phase = i * 2.17 + fromId.length * 0.3;
-
-            // ─── LAYER-SPEED SHIMMER ────────────────────────────
-            const layerShimmerSpeed = toId === "L1" ? 50 : toId === "L2" ? 300 : toId === "L3" ? 700 : toId === "L4" ? 1500 : 0;
-            const isLayerTarget = ["L1", "L2", "L3", "L4"].includes(toId);
-            const layerShimmer = isLayerTarget && playing && COL_RAMP.layers > 0
-              ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03)
-              : 0;
-
-            const displayIntensity = Math.min(Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor), toRamp);
+            const displayIntensity = edgeBright[fireKey] || 0;
+            if (displayIntensity < 0.005 && !isFinalEdge(fromId, toId)) return null;
+            const isGlowing = displayIntensity > 0.35;
+            const glowStrength = isGlowing ? (displayIntensity - 0.35) / 0.65 : 0;
+            const myelinWidth = isSecondary
+              ? 0.3 + displayIntensity * 1.8
+              : 0.4 + displayIntensity * 3.5;
             
             // Layer-specific edge colors — blended with event source color
             const EVENT_SOURCE_COLOR = {
@@ -2912,59 +2858,32 @@ function TemporalReplay() {
         // v33: Derived features merged — no separate column needed
         // derivedActivation still computed, used as pre-glow on event nodes
 
-        // ═══ CHANNEL → EVENT EDGES — stochastic popcorn firing ═══
+        // ═══ CHANNEL → EVENT EDGES — reads from edgeBright ═══
         const renderChannelToEventEdges = () => {
           if (COL_RAMP.events <= 0) return null;
           const edges = [];
-          let edgeIdx = 0;
-          INPUT_NODES.forEach((inp, inpIdx) => {
+          INPUT_NODES.forEach(inp => {
             const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
             if (!evIds) return;
             const boxY = getRawBoxY(inp.boxIdx);
             const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
             const nodeIdx = nodesForBox.indexOf(inp);
-            const startY = boxY + 4;
-            const srcY = startY + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
-            const srcAge = time - (inputNodeFire[inp.fireKey] || -999);
-            const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.8) : 0;
-            const channelLive = firehoseSet.has(inp.fireKey) || srcAct > 0.05;
-            
+            const srcY = boxY + 4 + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
             for (const evId of evIds) {
               const eventNode = TREE_EVENTS.find(n => n.id === evId);
               if (!eventNode) continue;
-              edgeIdx++;
-              const trailKey = `${inp.fireKey}:${evId}`;
-              const trailFireCount = edgeFireCounts[trailKey] || 0;
-              const myelinFloor = trailFireCount > 0 ? Math.min(0.35, 0.02 + trailFireCount * 0.004) : 0;
-              const isFinalTrail = isFinalNode(evId) || isFinalNode(inp.fireKey);
-              const finalTrailFloor = isFinalTrail && COL_RAMP.events > 0.8 ? Math.max(0.15, Math.max(getFinalStrength(inp.fireKey), getFinalStrength(evId)) * 0.4) : 0;
-              // Stochastic fire
-              const period = EDGE_PRIMES[(edgeIdx + 5) % EDGE_PRIMES.length];
-              const cycle = Math.floor(nowMs / period);
-              const phase = (inp.fireKey.length * 13 + evId.length * 23 + edgeIdx * 11) % 9;
-              const isFiring = channelLive && playing && ((cycle + phase) % 7 < 3);
-              const flash = isFiring ? Math.min(0.7, 0.3 + srcAct * 0.5) : 0;
-              const displayCharge = Math.max(flash, myelinFloor, finalTrailFloor);
-              if (displayCharge < 0.005) continue;
-              
+              const key = `${inp.fireKey}:${evId}`;
+              const bright = edgeBright[key] || 0;
+              if (bright < 0.005) continue;
               const tp = getPos(eventNode.col + 2, eventNode.row);
               const x1 = channelRightEdge, y1 = srcY;
               const x2 = tp.x, y2 = tp.y + nodeH / 2;
               const gap = x2 - x1, cp = Math.max(8, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
-              const color = isFinalTrail ? inp.color : isFiring ? inp.color : myelinFloor > 0.05 ? "rgba(120,180,255,0.25)" : "rgba(255,255,255,0.04)";
-              if (isFiring && flash > 0.3) {
-                edges.push(
-                  <path key={`ch-ev-glow-${inp.fireKey}-${evId}`} d={d}
-                    fill="none" stroke={inp.color} strokeWidth={flash * 3} opacity={Math.min(flash * 0.25, COL_RAMP.events)} filter="url(#glow)" />
-                );
-              }
-              edges.push(
-                <path key={`ch-ev-${inp.fireKey}-${evId}`} d={d}
-                  fill="none" stroke={color}
-                  strokeWidth={0.4 + displayCharge * 1.5}
-                  opacity={Math.min(0.02 + displayCharge * 0.5, COL_RAMP.events)} />
-              );
+              const isFiring = bright > 0.2;
+              const color = isFiring ? inp.color : bright > 0.05 ? "rgba(120,180,255,0.25)" : "rgba(255,255,255,0.04)";
+              if (isFiring) edges.push(<path key={`ch-ev-glow-${inp.fireKey}-${evId}`} d={d} fill="none" stroke={inp.color} strokeWidth={bright * 3} opacity={bright * 0.25} filter="url(#glow)" />);
+              edges.push(<path key={`ch-ev-${inp.fireKey}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.4 + bright * 1.5} opacity={0.02 + bright * 0.5} />);
             }
           });
           return edges;
@@ -2972,97 +2891,58 @@ function TemporalReplay() {
 
         // v30: renderBoxToNodeEdges REMOVED — signal flows through derived features only
 
-        // ═══ CHANNEL → DERIVED FEATURE EDGES ═══
-        // Stochastic firing: each edge pops independently like popcorn.
-        // Repeated fires build permanent floor. Inactive edges cool down.
-        const EDGE_PRIMES = [37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113];
+        // ═══ CHANNEL → DERIVED FEATURE EDGES — reads from edgeBright ═══
         const renderChannelToDerivedEdges = () => {
           if (COL_RAMP.extraction <= 0) return null;
           const edges = [];
-          let edgeIdx = 0;
-          INPUT_NODES.forEach((inp) => {
+          INPUT_NODES.forEach(inp => {
             const dfIds = CHANNEL_TO_DF[inp.fireKey];
             if (!dfIds) return;
             const boxY = getRawBoxY(inp.boxIdx);
             const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
             const nodeIdx = nodesForBox.indexOf(inp);
-            const startY = boxY + 4;
-            const srcY = startY + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
-            const srcAge = time - (inputNodeFire[inp.fireKey] || -999);
-            const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.8) : 0;
-            const channelLive = firehoseSet.has(inp.fireKey) || srcAct > 0.05;
+            const srcY = boxY + 4 + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
             for (const dfId of dfIds) {
               const df = DERIVED_FEATURES.find(d => d.id === dfId);
               if (!df) continue;
-              edgeIdx++;
+              const key = `${inp.fireKey}:${dfId}`;
+              const bright = edgeBright[key] || 0;
+              if (bright < 0.005) continue;
               const dfPos = getDfPos(df.row);
-              const trailKey = `${inp.fireKey}:${dfId}`;
-              const trailCount = edgeFireCounts[trailKey] || 0;
-              // Accumulated floor: builds with repeated fires, represents myelination
-              const myelinFloor = trailCount > 0 ? Math.min(0.35, 0.02 + trailCount * 0.004) : 0;
-              const isFinalTrail = isFinalEdge(inp.fireKey, dfId);
-              const finalTrailFloor = isFinalTrail && COL_RAMP.extraction > 0.8 ? Math.max(0.15, getFinalStrength(`${inp.fireKey}:${dfId}`) * 0.4) : 0;
-              // Stochastic fire: each edge has its own prime-period cycle
-              const period = EDGE_PRIMES[edgeIdx % EDGE_PRIMES.length];
-              const cycle = Math.floor(nowMs / period);
-              const phase = (inp.fireKey.length * 17 + dfId.length * 31 + edgeIdx * 7) % 11;
-              const isFiring = channelLive && playing && ((cycle + phase) % 7 < 3); // ~43% duty
-              // Flash bright on fire, cool to myelin floor when off
-              const flash = isFiring ? Math.min(0.7, 0.3 + srcAct * 0.5) : 0;
-              const displayCharge = Math.max(flash, myelinFloor, finalTrailFloor);
-              if (displayCharge < 0.005) continue;
               const x1 = channelRightEdge, y1 = srcY;
               const x2 = dfPos.x, y2 = dfPos.y + dfNodeH / 2;
               const gap = x2 - x1, cp = Math.max(6, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
-              const color = isFinalTrail ? inp.color : isFiring ? inp.color : myelinFloor > 0.05 ? df.color + "44" : "rgba(255,255,255,0.04)";
-              if (isFiring && flash > 0.3) edges.push(<path key={`ch-df-g-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={df.color} strokeWidth={flash * 2} opacity={Math.min(flash * 0.2, COL_RAMP.extraction)} filter="url(#glow)" />);
-              edges.push(<path key={`ch-df-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.5} opacity={Math.min(0.02 + displayCharge * 0.5, COL_RAMP.extraction)} />);
+              const isFiring = bright > 0.2;
+              const color = isFiring ? inp.color : bright > 0.05 ? df.color + "44" : "rgba(255,255,255,0.04)";
+              if (isFiring) edges.push(<path key={`ch-df-g-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={df.color} strokeWidth={bright * 2.5} opacity={bright * 0.2} filter="url(#glow)" />);
+              edges.push(<path key={`ch-df-${inp.fireKey}-${dfId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + bright * 1.5} opacity={0.02 + bright * 0.5} />);
             }
           });
           return edges;
         };
 
-        // ═══ DERIVED FEATURE → GAME EVENT EDGES — stochastic popcorn ═══
+        // ═══ DERIVED FEATURE → GAME EVENT EDGES — reads from edgeBright ═══
         const renderDerivedToEventEdges = () => {
           if (COL_RAMP.events <= 0) return null;
           const edges = [];
-          let edgeIdx = 0;
           for (const df of DERIVED_FEATURES) {
             const dfPos = getDfPos(df.row);
-            // Source activity from channels feeding this derived feature
-            let dfAct = 0;
-            for (const src of df.sources) {
-              const srcAge = time - (inputNodeFire[src] || -999);
-              if (srcAge < 2.0) dfAct = Math.max(dfAct, Math.exp(-srcAge * 0.8));
-              if (firehoseSet.has(src)) dfAct = Math.max(dfAct, 0.3);
-            }
-            const dfLive = dfAct > 0.05;
             for (const evId of df.feeds) {
               const eventNode = TREE_EVENTS.find(n => n.id === evId);
               if (!eventNode) continue;
-              edgeIdx++;
-              const trailKey = `${df.id}:${evId}`;
-              const trailCount = edgeFireCounts[trailKey] || 0;
-              const myelinFloor = trailCount > 0 ? Math.min(0.35, 0.02 + trailCount * 0.004) : 0;
-              const isFinalTrail = isFinalEdge(df.id, evId);
-              const finalTrailFloor = isFinalTrail && COL_RAMP.events > 0.8 ? Math.max(0.15, getFinalStrength(`${df.id}:${evId}`) * 0.4) : 0;
-              // Stochastic fire
-              const period = EDGE_PRIMES[(edgeIdx + 9) % EDGE_PRIMES.length];
-              const cycle = Math.floor(nowMs / period);
-              const phase = (df.id.length * 19 + evId.length * 29 + edgeIdx * 13) % 11;
-              const isFiring = dfLive && playing && ((cycle + phase) % 7 < 3);
-              const flash = isFiring ? Math.min(0.6, 0.2 + dfAct * 0.5) : 0;
-              const displayCharge = Math.max(flash, myelinFloor, finalTrailFloor);
-              if (displayCharge < 0.005) continue;
+              const key = `${df.id}:${evId}`;
+              const bright = edgeBright[key] || 0;
+              if (bright < 0.005) continue;
               const x1 = dfRightEdge, y1 = dfPos.y + dfNodeH / 2;
               const tp = getPos(eventNode.col + 2, eventNode.row);
               const x2 = tp.x, y2 = tp.y + nodeH / 2;
               const gap = x2 - x1, cp = Math.max(6, gap * 0.35);
               const d = `M${x1},${y1} C${x1+cp},${y1} ${x2-cp},${y2} ${x2},${y2}`;
-              const color = isFinalTrail ? df.color : isFiring ? df.color : myelinFloor > 0.05 ? df.color + "44" : "rgba(255,255,255,0.04)";
-              if (isFiring && flash > 0.3) edges.push(<path key={`df-ev-g-${df.id}-${evId}`} d={d} fill="none" stroke={df.color} strokeWidth={flash * 2} opacity={Math.min(flash * 0.15, COL_RAMP.events)} filter="url(#glow)" />);
-              edges.push(<path key={`df-ev-${df.id}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + displayCharge * 1.5} opacity={Math.min(0.02 + displayCharge * 0.5, COL_RAMP.events)} />);
+              const isFiring = bright > 0.2;
+              const color = isFiring ? df.color : bright > 0.05 ? df.color + "44" : "rgba(255,255,255,0.04)";
+              if (isFiring) edges.push(<path key={`df-ev-g-${df.id}-${evId}`} d={d} fill="none" stroke={df.color} strokeWidth={bright * 2} opacity={bright * 0.15} filter="url(#glow)" />);
+              edges.push(<path key={`df-ev-${df.id}-${evId}`} d={d} fill="none" stroke={color} strokeWidth={0.3 + bright * 1.5} opacity={0.02 + bright * 0.5} />);
             }
           }
           return edges;
@@ -3070,32 +2950,9 @@ function TemporalReplay() {
 
         // ═══ DERIVED FEATURE NODE RENDERING ═══
         const renderDerivedFeatureNodes = () => {
-          let dfNodeIdx = 0;
           return DERIVED_FEATURES.map(df => {
-            dfNodeIdx++;
             const pos = getDfPos(df.row);
-            // Max incoming edge stochastic flash + myelin floor
-            let maxFlash = 0;
-            let maxMyelin = 0;
-            for (const src of df.sources) {
-              const srcAge = time - (inputNodeFire[src] || -999);
-              const srcAct = srcAge < 8.0 ? Math.exp(-srcAge * 0.8) : 0;
-              const channelLive = firehoseSet.has(src) || srcAct > 0.05;
-              const ek = `${src}:${df.id}`;
-              const eFire = edgeFireCounts[ek] || 0;
-              const mFloor = eFire > 0 ? Math.min(0.35, 0.02 + eFire * 0.004) : 0;
-              maxMyelin = Math.max(maxMyelin, mFloor);
-              // Stochastic fire — same prime logic as edges
-              const period = EDGE_PRIMES[dfNodeIdx % EDGE_PRIMES.length];
-              const cycle = Math.floor(nowMs / period);
-              const phase = (src.length * 17 + df.id.length * 31 + dfNodeIdx * 7) % 11;
-              const isFiring = channelLive && playing && ((cycle + phase) % 7 < 3);
-              if (isFiring) maxFlash = Math.max(maxFlash, Math.min(0.7, 0.3 + srcAct * 0.5));
-            }
-            let activity = Math.max(maxFlash, maxMyelin);
-            activity = Math.min(activity, COL_RAMP.extraction); // ramp ceiling
-            const isFinal = isFinalNode(df.id);
-            if (isFinal && COL_RAMP.extraction > 0.8) activity = Math.max(activity, getFinalStrength(df.id) || 0.5);
+            const activity = nodeBright[df.id] || 0;
             const active = activity > 0.1;
             const fresh = activity > 0.3;
             const bgOp = fresh ? Math.round(activity * 40).toString(16).padStart(2,'0') : active ? "08" : "05";
@@ -3140,13 +2997,10 @@ function TemporalReplay() {
           if (skRamp <= 0) return null;
           const pp = getPos(parent.col + 2, parent.row);
           const pw = nodeW[parent.col + 2];
-          // Right-justified below parent cell
           const sx = pp.x + pw - ssW;
-          const ssDropGap = 4; // gap between parent bottom and first sub-skill
+          const ssDropGap = 4;
           const sy = pp.y + nodeH + ssDropGap + sub.offset * (ssH + ssGap);
-          const mastery = getSubSkillMastery(sub.id);
-          const propFlash = getPropIntensity(sub.id);
-          const brightness = Math.min(Math.max(mastery, propFlash), skRamp);
+          const brightness = nodeBright[sub.id] || 0;
           const active = brightness > 0.05;
           const fresh = propFlash > 0.3;
           const hexBr = (v) => Math.round(v).toString(16).padStart(2, "0");
@@ -3201,33 +3055,16 @@ function TemporalReplay() {
             const toNode = TREE_LAYERS.find(n => n.id === toId);
             if (!ssPos || !toNode) return null;
 
-            const propEdge = getEdgePropIntensity(fromId, toId, PROP_DELAY) * edgeWeight;
+            // ═══ UNIFIED: read from edgeBright map ═══
             const fireKey = `${fromId}:${toId}`;
             const rawFireCount = edgeFireCounts[fireKey] || 0;
-
-            if (rawFireCount < 0.01) {
-              const propCheck = getEdgePropIntensity(fromId, toId, PROP_DELAY) * edgeWeight;
-              if (propCheck < 0.01 && !isFinalEdge(fromId, toId)) return null;
-            }
-
-            const endFloor = rawFireCount > 0 ? Math.min(0.25, 0.05 + rawFireCount * 0.008) : 0;
-            const CYCLE_LENGTH = Math.max(1, maxFireCount * 0.3);
-            const completedCycles = Math.floor(rawFireCount / CYCLE_LENGTH);
-            const cycleProgress = (rawFireCount % CYCLE_LENGTH) / CYCLE_LENGTH;
-            const myelinFloor = Math.min(0.3, completedCycles * 0.06);
-            const cycleBrightness = myelinFloor + cycleProgress * (0.7 - myelinFloor);
-            const isGlowing = cycleProgress > 0.75;
-            const glowStrength = isGlowing ? (cycleProgress - 0.75) / 0.25 : 0;
-            const finalFloor = isFinalEdge(fromId, toId) ? getFinalStrength(`${fromId}:${toId}`) * 0.5 : 0;
+            const displayIntensity = edgeBright[fireKey] || 0;
+            if (displayIntensity < 0.005 && !isFinalEdge(fromId, toId)) return null;
+            const isGlowing = displayIntensity > 0.35;
+            const glowStrength = isGlowing ? (displayIntensity - 0.35) / 0.65 : 0;
             const myelinWidth = isSecondary
-              ? 0.3 + Math.max(cycleBrightness, finalFloor, endFloor) * 1.8
-              : 0.4 + Math.max(cycleBrightness, finalFloor, endFloor) * 3.5;
-
-            const phase = i * 2.17 + fromId.length * 0.3;
-            const layerShimmerSpeed = toId === "L1" ? 50 : toId === "L2" ? 300 : toId === "L3" ? 700 : 1500;
-            const layerShimmer = playing && COL_RAMP.layers > 0
-              ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03) : 0;
-            const displayIntensity = Math.min(Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor), COL_RAMP.layers);
+              ? 0.3 + displayIntensity * 1.8
+              : 0.4 + displayIntensity * 3.5;
 
             const layerColor = TREE_LAYERS.find(l => l.id === toId)?.color || "#00e5ff";
             const edgeColor = ssPos.color

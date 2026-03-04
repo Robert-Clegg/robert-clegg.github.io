@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v137 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v138 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1125,6 +1125,7 @@ function TemporalReplay() {
   const ytPlayerRef = useRef(null); // YouTube player instance
   const ytReady = useRef(false);
   const ytSyncInterval = useRef(null); // polling interval for time sync
+  const ytSyncingState = useRef(false); // prevent play/pause echo loops during YouTube state changes
 
   // ═══ TELEMETRY FILE LOADING ═══
   const [telemetrySource, setTelemetrySource] = useState("demo"); // "demo" | "loaded"
@@ -1208,14 +1209,15 @@ function TemporalReplay() {
   }, [speed, videoUrl, videoOffset]);
 
   useEffect(() => {
-    if (playing) {
+    if (playing && !videoUrl) {
+      // Only run animation loop for demo mode (no video). YouTube drives time via polling.
       lastFrameRef.current = null;
       animRef.current = requestAnimationFrame(tick);
     } else {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     }
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [playing, tick]);
+  }, [playing, tick, videoUrl]);
 
   // ═══ YOUTUBE IFRAME API — cross-origin guarantees separate Chrome process ═══
   // Load YouTube IFrame API script
@@ -1247,9 +1249,11 @@ function TemporalReplay() {
             setVideoMode(true);
           },
           onStateChange: (event) => {
-            // YT.PlayerState: PLAYING=1, PAUSED=2, ENDED=0
-            if (event.data === 1) { setPlaying(true); }
-            if (event.data === 2 || event.data === 0) { setPlaying(false); }
+            // YT.PlayerState: UNSTARTED=-1, ENDED=0, PLAYING=1, PAUSED=2, BUFFERING=3, CUED=5
+            // Ignore BUFFERING(3) — YouTube buffers chunks during adaptive streaming
+            // Setting playing state during buffering causes play/pause fight loops
+            if (event.data === 1) { ytSyncingState.current = true; setPlaying(true); setTimeout(() => { ytSyncingState.current = false; }, 100); }
+            if (event.data === 2 || event.data === 0) { ytSyncingState.current = true; setPlaying(false); setTimeout(() => { ytSyncingState.current = false; }, 100); }
           }
         }
       });
@@ -1275,14 +1279,15 @@ function TemporalReplay() {
             setTime(clamped);
           } catch(e) {}
         }
-      }, 66); // ~15fps
+      }, 200); // ~5fps — minimal CPU while YouTube buffers
     }
     return () => { if (ytSyncInterval.current) clearInterval(ytSyncInterval.current); };
   }, [playing, videoOffset]);
 
-  // Send play/pause to YouTube
+  // Send play/pause to YouTube — skip if YouTube itself triggered the state change
   useEffect(() => {
     if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
+    if (ytSyncingState.current) return; // YouTube fired the state change, don't echo back
     try {
       if (playing) {
         ytPlayerRef.current.playVideo();
@@ -1419,7 +1424,7 @@ function TemporalReplay() {
           )}
           {videoStatus && <span style={{ fontSize: 8, color: videoStatus.startsWith("❌") ? "#ff4444" : videoStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{videoStatus}</span>}
           {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v137</span>
+          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v138</span>
         </div>
       </div>
 

@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v130 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v144 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1307,6 +1307,40 @@ function TemporalReplay() {
     e.target.value = "";
   }, [loadVideoFile]);
 
+  // ═══ SCREEN RECORDER ═══
+  const startRecording = useCallback(async () => {
+    try {
+      setRecStatus("⏳ select tab...");
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 30, displaySurface: "browser" },
+        audio: false,
+        preferCurrentTab: true,
+      });
+      recChunksRef.current = [];
+      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+        ? "video/webm;codecs=vp9" : "video/webm";
+      const mr = new MediaRecorder(stream, { mimeType });
+      mr.ondataavailable = (e) => { if (e.data.size > 0) recChunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const blob = new Blob(recChunksRef.current, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "pathogenika-dashboard-demo.webm"; a.click();
+        URL.revokeObjectURL(url);
+        stream.getTracks().forEach(t => t.stop());
+        setRecording(false); setRecStatus("✅ saved"); setTimeout(() => setRecStatus(""), 3000);
+      };
+      stream.getVideoTracks()[0].onended = () => { if (mr.state !== "inactive") mr.stop(); setRecording(false); };
+      mr.start(1000);
+      mediaRecorderRef.current = mr;
+      setRecording(true); setRecStatus("● REC");
+    } catch (err) { setRecStatus("❌ " + err.message); setTimeout(() => setRecStatus(""), 4000); }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") mediaRecorderRef.current.stop();
+  }, []);
+
   const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
   const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
 
@@ -1406,7 +1440,7 @@ function TemporalReplay() {
             <button onClick={() => { if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl); setVideoMode(false); setVideoUrl(null); setVideoDuration(0); setVideoStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>✕</button>
           )}
           {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v130</span>
+          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v144</span>
         </div>
       </div>
 
@@ -1429,6 +1463,14 @@ function TemporalReplay() {
             }}>{s}x</button>
           ))}
         </div>
+        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
+        {/* SCREEN RECORDER */}
+        {!recording ? (
+          <button onClick={startRecording} style={{ background: "rgba(255,40,40,0.12)", border: "1px solid rgba(255,40,40,0.35)", color: "#ff4444", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>⏺ REC</button>
+        ) : (
+          <button onClick={stopRecording} style={{ background: "rgba(255,40,40,0.25)", border: "1px solid rgba(255,40,40,0.7)", color: "#ff6666", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>■ STOP</button>
+        )}
+        {recStatus && <span style={{ fontSize: 8, color: recording ? "#ff4444" : recStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono, letterSpacing: 1 }}>{recStatus}</span>}
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         {/* VIDEO OFFSET — only when video loaded */}
         {videoMode && <>
@@ -3539,7 +3581,7 @@ function TemporalReplay() {
                 { label: "BIOLOGY",        sub: "domain skills",    x: colX[3] + nodeW[3] / 2,  color: "rgba(255,255,255,0.55)" },
                 { label: "NEURAL ABSTRACTION",sub:"seconds",      x: colX[4] + nodeW[4] / 2,       color: "rgba(255,255,255,0.55)" },
                 { label: "PROFILES",        sub: "minutes",          x: colX[5] + nodeW[5] / 2,       color: "rgba(255,255,255,0.55)" },
-                { label: "CAREER PATHWAYS",sub: "match+",           x: colX[6] + nodeW[6] / 2,       color: "rgba(255,255,255,0.55)" },
+                { label: "CAREER PATHWAYS",sub: "confidence →",     x: colX[6] + nodeW[6] / 2,       color: "rgba(255,255,255,0.55)" },
               ].map(h => (
                 <g key={h.label}>
                   <text x={h.x} y={10} textAnchor="middle"
@@ -4429,6 +4471,62 @@ function TemporalReplay() {
               {TREE_LAYERS.map(n => renderNode(n, "layer"))}
               {TREE_PROFILES.map(n => renderNode(n, "profile"))}
               {TREE_CAREERS.map(n => renderNode(n, "career"))}
+
+              {/* ─── SOFTMAX PROBABILITY BARS — confidence distribution across careers ─── */}
+              {(() => {
+                const barW = nodeW[6]; // 135 — matches career node width
+                const barH = 5;
+                const barGap = 3; // px below node bottom
+                const sorted = [...TREE_CAREERS].sort((a, b) =>
+                  (treeActivation.careerStrength[b.id] || 0) - (treeActivation.careerStrength[a.id] || 0)
+                );
+                const top1Id = sorted[0]?.id;
+                const top2Id = sorted[1]?.id;
+                const top3Id = sorted[2]?.id;
+                const anyData = sorted[0] && (treeActivation.careerStrength[sorted[0].id] || 0) > 0.01;
+
+                return TREE_CAREERS.map(n => {
+                  const pos = getPos(n.col + 2, n.row);
+                  const prob = treeActivation.careerStrength[n.id] || 0;
+                  const fillW = prob * barW;
+                  const barY = pos.y + nodeH + barGap;
+                  const isTop1 = n.id === top1Id;
+                  const isTop3 = n.id === top1Id || n.id === top2Id || n.id === top3Id;
+                  const pct = Math.round(prob * 100);
+
+                  // Bar color: top1=bright purple, top2/3=medium, rest=dim
+                  const barColor = isTop1 ? "#c084fc" : isTop3 ? "#a855f7" : "rgba(168,85,247,0.3)";
+                  const trackColor = "rgba(168,85,247,0.07)";
+                  const pctColor = isTop1 ? "#c084fc" : isTop3 ? "rgba(168,85,247,0.7)" : "rgba(168,85,247,0.3)";
+
+                  return (
+                    <g key={`prob-${n.id}`}>
+                      {/* Track */}
+                      <rect x={pos.x} y={barY} width={barW} height={barH} rx={2.5} fill={trackColor} />
+                      {/* Fill — proportional to softmax probability */}
+                      {fillW > 0 && (
+                        <rect x={pos.x} y={barY} width={fillW} height={barH} rx={2.5} fill={barColor}
+                          opacity={anyData ? 0.85 : 0}
+                          filter={isTop1 && prob > 0.25 ? "url(#glowSmall)" : undefined} />
+                      )}
+                      {/* Percentage label — right-aligned in node */}
+                      {anyData && pct > 0 && (
+                        <text x={pos.x + barW} y={pos.y + 19} textAnchor="end"
+                          fill={pctColor} fontSize={7} fontFamily={mono} fontWeight={isTop1 ? 700 : 400}
+                          opacity={0.9}>
+                          {pct}%
+                        </text>
+                      )}
+                      {/* Leading indicator: pulsing dot on top career */}
+                      {isTop1 && prob > 0.2 && (
+                        <circle cx={pos.x + fillW} cy={barY + barH / 2} r={2.5} fill="#c084fc">
+                          <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite" />
+                        </circle>
+                      )}
+                    </g>
+                  );
+                });
+              })()}
 
               {/* Gap indicators */}
               {gaps.map(gapId => {

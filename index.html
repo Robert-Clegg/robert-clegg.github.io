@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v130 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v131 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1111,6 +1111,7 @@ function TemporalReplay() {
   const [treeSession, setTreeSession] = useState("commander");
   const animRef = useRef(null);
   const lastFrameRef = useRef(null);
+  const playingRef = useRef(false);
 
   // ═══ VIDEO SYNC ═══
   const [videoUrl, setVideoUrl] = useState(null);
@@ -1186,20 +1187,22 @@ function TemporalReplay() {
 
   // ═══ AUTO-LOAD from local server ═══
   const tick = useCallback(() => {
+    if (!playingRef.current) return;
     const now = performance.now();
     if (lastFrameRef.current != null) {
       const dt = ((now - lastFrameRef.current) / 1000) * speed * 4; // base rate 4× for alive feel
       setTime(prev => {
         const next = prev + dt;
-        if (next >= 160) { setPlaying(false); return 160; }
+        if (next >= 160) { playingRef.current = false; setPlaying(false); return 160; }
         return next;
       });
     }
     lastFrameRef.current = now;
-    animRef.current = requestAnimationFrame(tick);
+    if (playingRef.current) animRef.current = requestAnimationFrame(tick);
   }, [speed]);
 
   useEffect(() => {
+    playingRef.current = playing;
     if (playing) {
       lastFrameRef.current = null;
       animRef.current = requestAnimationFrame(tick);
@@ -1208,6 +1211,21 @@ function TemporalReplay() {
     }
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [playing, tick]);
+
+  // ═══ SPACEBAR PLAY/PAUSE ═══
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.code === "Space" && e.target === document.body) {
+        e.preventDefault();
+        const next = !playingRef.current;
+        playingRef.current = next;
+        if (!next && animRef.current) cancelAnimationFrame(animRef.current);
+        setPlaying(next);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   // ═══ VIDEO SYNC EFFECTS ═══
   // Only sync after video is actually loaded (videoDuration > 0 = metadata received)
@@ -1381,39 +1399,13 @@ function TemporalReplay() {
     <div style={{ minHeight: "100vh", background: "#060610", color: "white", fontFamily: display, padding: "20px 16px", overflow: "hidden" }}>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-      {/* HEADER — compact single line */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, padding: "0 4px" }}>
-        <div style={{ fontSize: 8, letterSpacing: 4, color: "rgba(255,255,255,0.15)", fontFamily: mono }}>KNOVERSE AI</div>
-        <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 1, background: "linear-gradient(135deg, " + S_COLOR + ", " + C_COLOR + ")", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-          {videoMode ? "Video + Cognitive Mechanics" : isLoaded ? "Live Telemetry — " + (loadedMeta?.label || "Loaded") : "Cognitive Mechanics"}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {isCommanderWin && (
-            <span style={{ padding: "2px 10px", background: WIN_COLOR + "15", border: "1px solid " + WIN_COLOR + "40", borderRadius: 10, color: WIN_COLOR, fontSize: 9, fontWeight: 700, fontFamily: mono, letterSpacing: 1 }}>🏆 PATHOGEN WIN</span>
-          )}
-          <label style={{ padding: "2px 8px", background: isLoaded ? "#00e5ff20" : "rgba(255,255,255,0.05)", border: "1px solid " + (isLoaded ? "#00e5ff40" : "rgba(255,255,255,0.1)"), borderRadius: 4, color: isLoaded ? "#00e5ff" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: mono, cursor: "pointer", letterSpacing: 1 }}>
-            📊 {isLoaded ? "TELEMETRY ✓" : "LOAD TELEMETRY"}
-            <input type="file" accept=".json" onChange={handleTelemetryFile} style={{ display: "none" }} />
-          </label>
-          {isLoaded && (
-            <button onClick={() => { setTelemetrySource("demo"); setLoadedEvents(null); setLoadedMeta(null); setTelemetryStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }} title="Reset to demo data">⟲</button>
-          )}
-          <label style={{ padding: "2px 8px", background: videoMode ? "#a855f720" : "rgba(255,255,255,0.05)", border: "1px solid " + (videoMode ? "#a855f740" : "rgba(255,255,255,0.1)"), borderRadius: 4, color: videoMode ? "#a855f7" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: mono, cursor: "pointer", letterSpacing: 1 }}>
-            🎬 {videoMode ? "VIDEO ON" : "LOAD VIDEO"}
-            <input type="file" accept="video/*" onChange={handleVideoFile} style={{ display: "none" }} />
-          </label>
-          {videoMode && (
-            <button onClick={() => { if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl); setVideoMode(false); setVideoUrl(null); setVideoDuration(0); setVideoStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>✕</button>
-          )}
-          {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v130</span>
-        </div>
-      </div>
-
-      {/* TRANSPORT + TABS — single row */}
+      {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <button onClick={() => { setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
-        <button onClick={() => { if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(!playing); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
+        <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v131</span>
+        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
+        <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
+        <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>
@@ -1458,6 +1450,16 @@ function TemporalReplay() {
               borderRadius: 3, padding: "2px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, fontWeight: 600, letterSpacing: 1
             }}>{s === "commander" ? "CMD" : "SLD"}</button>
           ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <label style={{ padding: "2px 6px", background: isLoaded ? "#00e5ff20" : "rgba(255,255,255,0.05)", border: "1px solid " + (isLoaded ? "#00e5ff40" : "rgba(255,255,255,0.1)"), borderRadius: 4, color: isLoaded ? "#00e5ff" : "rgba(255,255,255,0.4)", fontSize: 8, fontFamily: mono, cursor: "pointer" }}>
+            📊 {isLoaded ? "✓" : "LOAD"}
+            <input type="file" accept=".json" onChange={handleTelemetryFile} style={{ display: "none" }} />
+          </label>
+          {isLoaded && (
+            <button onClick={() => { setTelemetrySource("demo"); setLoadedEvents(null); setLoadedMeta(null); setTelemetryStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "1px 4px", cursor: "pointer", fontFamily: mono, fontSize: 8 }}>⟲</button>
+          )}
+          {telemetryStatus && <span style={{ fontSize: 7, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
         </div>
       </div>
 

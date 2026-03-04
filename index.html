@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v131 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v132 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1113,16 +1113,6 @@ function TemporalReplay() {
   const lastFrameRef = useRef(null);
   const playingRef = useRef(false);
 
-  // ═══ VIDEO SYNC ═══
-  const [videoUrl, setVideoUrl] = useState(null);
-  const [videoMode, setVideoMode] = useState(false); // split view active
-  const [videoOffset, setVideoOffset] = useState(0); // seconds offset between video and telemetry
-  const [videoDuration, setVideoDuration] = useState(0);
-  const [dragOver, setDragOver] = useState(false);
-  const [videoStatus, setVideoStatus] = useState("");
-  const videoRef = useRef(null);
-  const syncingFromVideo = useRef(false);
-  const syncingFromAlgo = useRef(false);
 
   // ═══ TELEMETRY FILE LOADING ═══
   const [telemetrySource, setTelemetrySource] = useState("demo"); // "demo" | "loaded"
@@ -1227,103 +1217,8 @@ function TemporalReplay() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // ═══ VIDEO SYNC EFFECTS ═══
-  // Only sync after video is actually loaded (videoDuration > 0 = metadata received)
-  useEffect(() => {
-    if (videoRef.current && videoMode && videoDuration > 0 && !syncingFromVideo.current) {
-      syncingFromAlgo.current = true;
-      const videoTime = time + videoOffset;
-      if (Math.abs(videoRef.current.currentTime - videoTime) > 0.3) {
-        videoRef.current.currentTime = Math.max(0, Math.min(videoTime, videoDuration));
-      }
-      syncingFromAlgo.current = false;
-    }
-  }, [time, videoMode, videoOffset, videoDuration]);
 
-  // Video play/pause sync — telemetry → video
-  useEffect(() => {
-    if (videoRef.current && videoMode) {
-      syncingFromAlgo.current = true;
-      if (playing) {
-        videoRef.current.playbackRate = speed;
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
-      // Small delay before clearing flag so the video's onPause/onPlay doesn't echo back
-      setTimeout(() => { syncingFromAlgo.current = false; }, 50);
-    }
-  }, [playing, videoMode, speed]);
 
-  // Video native controls → telemetry sync (pause/play buttons on video element)
-  useEffect(() => {
-    const vid = videoRef.current;
-    if (!vid || !videoMode) return;
-    const onNativePause = () => {
-      if (!syncingFromAlgo.current) setPlaying(false);
-    };
-    const onNativePlay = () => {
-      if (!syncingFromAlgo.current) setPlaying(true);
-    };
-    vid.addEventListener("pause", onNativePause);
-    vid.addEventListener("play", onNativePlay);
-    return () => {
-      vid.removeEventListener("pause", onNativePause);
-      vid.removeEventListener("play", onNativePlay);
-    };
-  }, [videoMode]);
-
-  // ═══ VIDEO CLEANUP — release file handle on page close/unmount ═══
-  // Without this, blob URL holds a file handle that can lock/corrupt the MP4 on Windows
-  useEffect(() => {
-    const cleanup = () => {
-      if (videoUrl && videoUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(videoUrl);
-      }
-    };
-    window.addEventListener("beforeunload", cleanup);
-    return () => {
-      window.removeEventListener("beforeunload", cleanup);
-      cleanup(); // also revoke on React unmount
-    };
-  }, [videoUrl]);
-
-  const handleVideoTimeUpdate = useCallback(() => {
-    if (videoRef.current && videoMode && !syncingFromAlgo.current) {
-      syncingFromVideo.current = true;
-      const algoTime = videoRef.current.currentTime - videoOffset;
-      setTime(Math.max(0, Math.min(algoTime, MAX_DUR)));
-      syncingFromVideo.current = false;
-    }
-  }, [videoMode, videoOffset]);
-
-  const loadVideoFile = useCallback((file) => {
-    if (!file || !file.type.startsWith("video/")) return;
-    // Fully release previous video: pause, clear src, revoke blob
-    if (videoRef.current) { videoRef.current.pause(); videoRef.current.removeAttribute("src"); videoRef.current.load(); }
-    if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
-    const url = URL.createObjectURL(file);
-    setVideoStatus("⏳ " + file.name + " (" + (file.size/1024/1024).toFixed(1) + "MB)");
-    setVideoUrl(url);
-    setVideoMode(true);
-    setTab("career");
-  }, [videoUrl]);
-
-  const handleVideoDrop = useCallback((e) => {
-    e.preventDefault();
-    setDragOver(false);
-    const files = Array.from(e.dataTransfer?.files || []);
-    const videoFile = files.find(f => f.type?.startsWith("video/"));
-    const jsonFile = files.find(f => f.name?.endsWith(".json"));
-    if (videoFile) loadVideoFile(videoFile);
-    if (jsonFile) parseTelemetryFile(jsonFile);
-  }, [loadVideoFile, parseTelemetryFile]);
-
-  const handleVideoFile = useCallback((e) => {
-    loadVideoFile(e.target?.files?.[0]);
-    // Reset input so same file can be re-selected
-    e.target.value = "";
-  }, [loadVideoFile]);
 
   const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
   const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
@@ -1402,7 +1297,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v131</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v132</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -1422,16 +1317,8 @@ function TemporalReplay() {
           ))}
         </div>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        {/* VIDEO OFFSET — only when video loaded */}
-        {videoMode && <>
-          <div style={{ fontSize: 8, color: "#a855f7", fontFamily: mono, letterSpacing: 1 }}>OFFSET</div>
-          <button onClick={() => setVideoOffset(prev => prev - 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>-1s</button>
-          <span style={{ fontFamily: mono, fontSize: 9, color: "#a855f7", minWidth: 32, textAlign: "center" }}>{videoOffset >= 0 ? "+" : ""}{videoOffset}s</span>
-          <button onClick={() => setVideoOffset(prev => prev + 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>+1s</button>
-          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        </>}
         {/* TABS inline */}
-        {!videoMode && TABS.map(t => (
+        {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             padding: "4px 8px", borderRadius: 4, cursor: "pointer", fontFamily: mono, fontSize: 9,
             letterSpacing: 1.5, fontWeight: tab === t.id ? 700 : 400, transition: "all 0.2s",
@@ -1441,7 +1328,7 @@ function TemporalReplay() {
           }}>{t.label}</button>
         ))}
         {/* CMD/SLD session selector — always visible */}
-        <div style={{ display: "flex", gap: 2, marginLeft: videoMode ? 0 : "auto" }}>
+        <div style={{ display: "flex", gap: 2, marginLeft: "auto" }}>
           {["commander", "soldier"].map(s => (
             <button key={s} onClick={() => setTreeSession(s)} style={{
               background: treeSession === s ? (s === "commander" ? C_COLOR + "18" : S_COLOR + "18") : "none",
@@ -1463,88 +1350,12 @@ function TemporalReplay() {
         </div>
       </div>
 
-      {/* ═══ VIDEO PANEL — only in video mode, positioned absolutely ═══ */}
-      {videoMode && (
-        <div style={{ position: "fixed", left: 16, top: 80, width: "42vw", bottom: 16, display: "flex", flexDirection: "column", gap: 8, zIndex: 10 }}>
-          {videoUrl ? (
-            <div style={{ flex: 1, borderRadius: 10, overflow: "hidden", background: "#0a0a1a", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
-              <video
-                key={videoUrl}
-                ref={videoRef}
-                src={videoUrl}
-                onTimeUpdate={handleVideoTimeUpdate}
-                onLoadedMetadata={(e) => { setVideoDuration(e.target.duration); setVideoStatus("✅ loaded " + Math.round(e.target.duration) + "s"); }}
-                onError={(e) => { const err = e.target.error; setVideoStatus("❌ error code:" + err?.code + " " + (err?.message||"")); }}
-                onCanPlay={() => {}}
-                onLoadStart={() => setVideoStatus("⏳ loading...")}
-                style={{ width: "100%", height: "100%", objectFit: "contain", background: "#000" }}
-                controls
-                muted
-                playsInline
-                preload="auto"
-              />
-              {/* Video overlay with match time */}
-              <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.7)", borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 8px #00ff88" : "none" }} />
-                <span style={{ fontFamily: mono, fontSize: 11, color: "white" }}>
-                  {Math.floor(time / 60)}:{String(Math.floor(time % 60)).padStart(2, "0")}.{String(Math.floor((time % 1) * 10))}
-                </span>
-                <span style={{ fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.3)" }}>MATCH TIME</span>
-              </div>
-              {/* Cognitive profile badge */}
-              <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", borderRadius: 6, padding: "6px 10px" }}>
-                <div style={{ fontSize: 8, letterSpacing: 2, color: treeSession === "commander" ? C_COLOR : S_COLOR, fontFamily: mono, marginBottom: 2 }}>
-                  {treeSession === "commander" ? "COMMANDER" : "SOLDIER"}
-                </div>
-                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", fontFamily: mono }}>
-                  L1:{Math.round((treeActivation.L1 || 0) * 100)}% L2:{Math.round((treeActivation.L2 || 0) * 100)}% L3:{Math.round((treeActivation.L3 || 0) * 100)}% L4:{Math.round((treeActivation.L4 || 0) * 100)}%
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleVideoDrop}
-              style={{
-                flex: 1, borderRadius: 10, background: dragOver ? "rgba(168,85,247,0.08)" : "rgba(255,255,255,0.02)",
-                border: "2px dashed " + (dragOver ? "#a855f7" : "rgba(255,255,255,0.08)"),
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, transition: "all 0.2s"
-              }}
-            >
-              <div style={{ fontSize: 48, opacity: 0.2 }}>🎬</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: mono, letterSpacing: 1 }}>
-                {"DROP VIDEO FILE HERE"}
-              </div>
-              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.15)", fontFamily: mono }}>
-                {"Drop MP4 + JSON telemetry together, or use the buttons above"}
-              </div>
 
-            </div>
-          )}
-          {/* Scrubber bar under video */}
-          <div style={{ padding: "0 4px" }}>
-            <input type="range" min={0} max={MAX_DUR} step={0.1} value={time}
-              onChange={(e) => { setTime(parseFloat(e.target.value)); }}
-              style={{ width: "100%", accentColor: treeSession === "commander" ? C_COLOR : S_COLOR, height: 4, cursor: "pointer" }}
-            />
-            {/* Event markers on scrubber */}
-            <div style={{ position: "relative", height: 14, marginTop: -2 }}>
-              {treeEvents.filter(e => e.type !== "ViewEvent" && e.type !== "CombatEvent").map((e, i) => {
-                const pct = (e.t / MAX_DUR) * 100;
-                const col = e.type === "NodeCaptureEvent" ? "#00ff88" : e.type === "SwitchEvent" ? "#ffcc00" : e.type === "AbilityEvent" ? "#a855f7" : "#44aaff";
-                return <div key={i} style={{ position: "absolute", left: pct + "%", width: 2, height: 8, background: col, opacity: 0.4, borderRadius: 1 }} />;
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CONTENT AREA — shifts right when video panel is open */}
-      <div style={{ marginLeft: videoMode ? "44vw" : 0, transition: "margin-left 0.3s" }}>
+      {/* CONTENT AREA — full width */}
+      <div style={{ marginLeft: 0, transition: "margin-left 0.3s" }}>
 
       {/* ═══ OVERVIEW ═══ */}
-      {!videoMode && tab === "overview" && <>
+      {tab === "overview" && <>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {/* SOLDIER */}
           <div style={{ background: S_COLOR + "04", borderRadius: 12, padding: 14, border: "1px solid " + S_COLOR + "12" }}>
@@ -1638,7 +1449,7 @@ function TemporalReplay() {
       </>}
 
       {/* ═══ COMBAT ═══ */}
-      {!videoMode && tab === "mbti" && <>
+      {tab === "mbti" && <>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center" }}>
           <div>
             <div style={{ color: "rgba(255,255,255,0.5)", fontFamily: mono, fontSize: 10, marginBottom: 6, letterSpacing: 2 }}>COMMANDER — COGNITIVE QUADRANT</div>
@@ -1672,7 +1483,7 @@ function TemporalReplay() {
         </div>
       </>}
 
-      {!videoMode && tab === "combat" && <>
+      {tab === "combat" && <>
         <div style={{ fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 10, textAlign: "center" }}>
           BATTLEFIELD • COMBAT DENSITY • {Math.round(time)}s
         </div>
@@ -1709,7 +1520,7 @@ function TemporalReplay() {
       </>}
 
       {/* ═══ TERRITORY ═══ */}
-      {!videoMode && tab === "territory" && <>
+      {tab === "territory" && <>
         <div style={{ fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 10, textAlign: "center" }}>
           TERRITORIAL CONTROL • NODE OWNERSHIP • {Math.round(time)}s
         </div>
@@ -1803,7 +1614,7 @@ function TemporalReplay() {
 
       {/* ═══ DIAGNOSTIC ═══ */}
       {/* ═══ CAREER DISCOVERY ═══ */}
-      {(videoMode || tab === "career") && (() => {
+      {(tab === "career") && (() => {
         const W = 1340, H = 700;
         // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
         // Derived features and channels are positioned independently (left of colX[2])
@@ -3519,7 +3330,7 @@ function TemporalReplay() {
             </div>
           </div>
 
-          <div style={{ overflow: "hidden", direction: videoMode ? "rtl" : "ltr" }}>
+          <div style={{ overflow: "hidden", direction: "ltr" }}>
             <svg width={W} height={H} viewBox={`-92 0 ${W + 92} ${H}`} style={{ display: "block", margin: "0 auto", direction: "ltr" }}>
               <defs>
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -3541,7 +3352,7 @@ function TemporalReplay() {
                 { label: "BIOLOGY",        sub: "domain skills",    x: colX[3] + nodeW[3] / 2,  color: "rgba(255,255,255,0.55)" },
                 { label: "NEURAL ABSTRACTION",sub:"seconds",      x: colX[4] + nodeW[4] / 2,       color: "rgba(255,255,255,0.55)" },
                 { label: "PROFILES",        sub: "minutes",          x: colX[5] + nodeW[5] / 2,       color: "rgba(255,255,255,0.55)" },
-                { label: "CAREER PATHWAYS",sub: "match+",           x: colX[6] + nodeW[6] / 2,       color: "rgba(255,255,255,0.55)" },
+                { label: "CAREER PATHWAYS",sub: "confidence →",     x: colX[6] + nodeW[6] / 2,       color: "rgba(255,255,255,0.55)" },
               ].map(h => (
                 <g key={h.label}>
                   <text x={h.x} y={10} textAnchor="middle"
@@ -4432,6 +4243,57 @@ function TemporalReplay() {
               {TREE_PROFILES.map(n => renderNode(n, "profile"))}
               {TREE_CAREERS.map(n => renderNode(n, "career"))}
 
+              {/* ─── SOFTMAX PROBABILITY BARS — confidence distribution across careers ─── */}
+              {(() => {
+                const barW = nodeW[6]; // matches career node width
+                const barH = 5;
+                const barGap = 3;
+                const sorted = [...TREE_CAREERS].sort((a, b) =>
+                  (treeActivation.careerStrength[b.id] || 0) - (treeActivation.careerStrength[a.id] || 0)
+                );
+                const top1Id = sorted[0]?.id;
+                const top2Id = sorted[1]?.id;
+                const top3Id = sorted[2]?.id;
+                const anyData = sorted[0] && (treeActivation.careerStrength[sorted[0].id] || 0) > 0.01;
+
+                return TREE_CAREERS.map(n => {
+                  const pos = getPos(n.col + 2, n.row);
+                  const prob = treeActivation.careerStrength[n.id] || 0;
+                  const fillW = prob * barW;
+                  const barY = pos.y + nodeH + barGap;
+                  const isTop1 = n.id === top1Id;
+                  const isTop3 = n.id === top1Id || n.id === top2Id || n.id === top3Id;
+                  const pct = Math.round(prob * 100);
+
+                  const barColor = isTop1 ? "#c084fc" : isTop3 ? "#a855f7" : "rgba(168,85,247,0.3)";
+                  const trackColor = "rgba(168,85,247,0.07)";
+                  const pctColor = isTop1 ? "#c084fc" : isTop3 ? "rgba(168,85,247,0.7)" : "rgba(168,85,247,0.3)";
+
+                  return (
+                    <g key={`prob-${n.id}`}>
+                      <rect x={pos.x} y={barY} width={barW} height={barH} rx={2.5} fill={trackColor} />
+                      {fillW > 0 && (
+                        <rect x={pos.x} y={barY} width={fillW} height={barH} rx={2.5} fill={barColor}
+                          opacity={anyData ? 0.85 : 0}
+                          filter={isTop1 && prob > 0.25 ? "url(#glowSmall)" : undefined} />
+                      )}
+                      {anyData && pct > 0 && (
+                        <text x={pos.x + barW} y={pos.y + 19} textAnchor="end"
+                          fill={pctColor} fontSize={7} fontFamily={mono} fontWeight={isTop1 ? 700 : 400}
+                          opacity={0.9}>
+                          {pct}%
+                        </text>
+                      )}
+                      {isTop1 && prob > 0.2 && (
+                        <circle cx={pos.x + fillW} cy={barY + barH / 2} r={2.5} fill="#c084fc">
+                          <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite" />
+                        </circle>
+                      )}
+                    </g>
+                  );
+                });
+              })()}
+
               {/* Gap indicators */}
               {gaps.map(gapId => {
                 const layer = TREE_LAYERS.find(l => l.id === gapId);
@@ -4451,7 +4313,7 @@ function TemporalReplay() {
       })()}
 
       {/* ═══ COMPARE — Population Braided River ═══ */}
-      {!videoMode && tab === "compare" && (() => {
+      {tab === "compare" && (() => {
         const CW = 1100, CH = 500;
         const cPad = { top: 50, bottom: 40, left: 60, right: 60 };
         const plotW = CW - cPad.left - cPad.right;

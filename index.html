@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v136 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v137 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1115,14 +1115,16 @@ function TemporalReplay() {
   const lastRenderRef = useRef(0); // timestamp of last React state flush
   const RENDER_INTERVAL = 66; // ms — flush React state at ~15fps (was 60fps)
 
-  // ═══ VIDEO SYNC — iframe-based, video renders in separate process ═══
-  const [videoUrl, setVideoUrl] = useState(null); // tracks if video is active (url or true)
-  const [videoMode, setVideoMode] = useState(false); // split view active
-  const [videoOffset, setVideoOffset] = useState(0); // seconds offset between video and telemetry
+  // ═══ VIDEO SYNC — YouTube IFrame API, cross-origin = guaranteed separate process ═══
+  const [videoUrl, setVideoUrl] = useState(null); // YouTube video ID or null
+  const [videoMode, setVideoMode] = useState(false);
+  const [videoOffset, setVideoOffset] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [videoStatus, setVideoStatus] = useState("");
-  const iframeRef = useRef(null); // ref to <iframe> containing video player
+  const ytPlayerRef = useRef(null); // YouTube player instance
+  const ytReady = useRef(false);
+  const ytSyncInterval = useRef(null); // polling interval for time sync
 
   // ═══ TELEMETRY FILE LOADING ═══
   const [telemetrySource, setTelemetrySource] = useState("demo"); // "demo" | "loaded"
@@ -1215,88 +1217,108 @@ function TemporalReplay() {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [playing, tick]);
 
-  // ═══ IFRAME VIDEO SYNC — postMessage to/from video-player.html iframe ═══
-  // Listen for messages from the iframe video player
+  // ═══ YOUTUBE IFRAME API — cross-origin guarantees separate Chrome process ═══
+  // Load YouTube IFrame API script
   useEffect(() => {
-    const onMsg = (e) => {
-      const msg = e.data;
-      if (!msg || !msg.type) return;
-      if (msg.type === "video-timeupdate" && msg.currentTime != null) {
-        const clamped = Math.max(0, Math.min(msg.currentTime, MAX_DUR));
-        timeRef.current = clamped;
-        setTime(clamped);
-      }
-      if (msg.type === "player-status") {
-        if (msg.videoLoaded) {
-          setVideoUrl("iframe-loaded");
-          setVideoMode(true);
-          setVideoDuration(msg.duration || 0);
-          setVideoStatus("✅ loaded " + Math.round(msg.duration || 0) + "s");
-        }
-      }
-      if (msg.type === "video-file-loaded") {
-        setVideoStatus("⏳ " + (msg.name || "video") + " (" + ((msg.size||0)/1024/1024).toFixed(1) + "MB)");
-      }
-      if (msg.type === "video-play") { setPlaying(true); }
-      if (msg.type === "video-pause") { setPlaying(false); }
-    };
-    window.addEventListener("message", onMsg);
-    return () => window.removeEventListener("message", onMsg);
+    if (window.YT && window.YT.Player) return; // already loaded
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
   }, []);
 
-  // Send play/pause to iframe
-  useEffect(() => {
-    if (!iframeRef.current?.contentWindow || !videoUrl) return;
-    if (playing) {
-      iframeRef.current.contentWindow.postMessage({ type: "play", speed: speed }, "*");
-    } else {
-      iframeRef.current.contentWindow.postMessage({ type: "pause" }, "*");
-    }
-  }, [playing, videoUrl, speed]);
+  // Create YouTube player when API is ready and we have a video ID
+  const initYouTubePlayer = useCallback((videoId) => {
+    // Destroy previous player if exists
+    if (ytPlayerRef.current) { try { ytPlayerRef.current.destroy(); } catch(e) {} }
+    
+    const createPlayer = () => {
+      ytPlayerRef.current = new window.YT.Player("yt-player-container", {
+        videoId: videoId,
+        width: "100%",
+        height: "100%",
+        playerVars: { autoplay: 0, controls: 1, modestbranding: 1, rel: 0, fs: 1, playsinline: 1 },
+        events: {
+          onReady: (event) => {
+            ytReady.current = true;
+            const dur = event.target.getDuration();
+            setVideoDuration(dur);
+            setVideoStatus("✅ YouTube loaded " + Math.round(dur) + "s");
+            setVideoUrl(videoId);
+            setVideoMode(true);
+          },
+          onStateChange: (event) => {
+            // YT.PlayerState: PLAYING=1, PAUSED=2, ENDED=0
+            if (event.data === 1) { setPlaying(true); }
+            if (event.data === 2 || event.data === 0) { setPlaying(false); }
+          }
+        }
+      });
+    };
 
-  // Send speed to iframe
+    if (window.YT && window.YT.Player) {
+      createPlayer();
+    } else {
+      window.onYouTubeIframeAPIReady = createPlayer;
+    }
+  }, []);
+
+  // Poll YouTube player time at ~15fps (YT API has no continuous timeupdate event)
   useEffect(() => {
-    if (!iframeRef.current?.contentWindow || !videoUrl) return;
-    iframeRef.current.contentWindow.postMessage({ type: "speed", speed: speed }, "*");
+    if (ytSyncInterval.current) clearInterval(ytSyncInterval.current);
+    if (playing && ytPlayerRef.current && ytReady.current) {
+      ytSyncInterval.current = setInterval(() => {
+        if (ytPlayerRef.current && ytReady.current) {
+          try {
+            const t = ytPlayerRef.current.getCurrentTime() - videoOffset;
+            const clamped = Math.max(0, Math.min(t, MAX_DUR));
+            timeRef.current = clamped;
+            setTime(clamped);
+          } catch(e) {}
+        }
+      }, 66); // ~15fps
+    }
+    return () => { if (ytSyncInterval.current) clearInterval(ytSyncInterval.current); };
+  }, [playing, videoOffset]);
+
+  // Send play/pause to YouTube
+  useEffect(() => {
+    if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
+    try {
+      if (playing) {
+        ytPlayerRef.current.playVideo();
+      } else {
+        ytPlayerRef.current.pauseVideo();
+      }
+    } catch(e) {}
+  }, [playing, videoUrl]);
+
+  // Send speed to YouTube
+  useEffect(() => {
+    if (!ytPlayerRef.current || !ytReady.current || !videoUrl) return;
+    try { ytPlayerRef.current.setPlaybackRate(speed); } catch(e) {}
   }, [speed, videoUrl]);
 
   // Send seek on manual scrub when paused
   useEffect(() => {
-    if (!playing && iframeRef.current?.contentWindow && videoUrl) {
-      iframeRef.current.contentWindow.postMessage({ type: "seek", time: time + videoOffset }, "*");
+    if (!playing && ytPlayerRef.current && ytReady.current && videoUrl) {
+      try { ytPlayerRef.current.seekTo(time + videoOffset, true); } catch(e) {}
     }
   }, [time, playing, videoUrl, videoOffset]);
 
-  // Send offset changes to iframe
-  useEffect(() => {
-    if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage({ type: "offset", offset: videoOffset }, "*");
-    }
-  }, [videoOffset]);
-
-  // ═══ URL PARAMETER VIDEO LOADING — for GitHub Pages hosted demos ═══
+  // ═══ URL PARAMETER VIDEO LOADING ═══
+  // ?yt=VIDEO_ID for YouTube, ?v=filename for local hosted video
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const v = params.get("v");
-    if (v) {
-      // ?v=commander-demo → videos/commander-demo.mp4
-      const videoPath = "videos/" + v + (v.endsWith(".mp4") ? "" : ".mp4");
-      // Wait for iframe to load, then send the URL
-      const sendLoad = () => {
-        if (iframeRef.current?.contentWindow) {
-          iframeRef.current.contentWindow.postMessage({ type: "load-url", url: videoPath, label: v }, "*");
-          setVideoUrl(videoPath);
-          setVideoMode(true);
-          setVideoStatus("⏳ loading " + v + "...");
-          setTab("career");
-        }
-      };
-      // Slight delay to ensure iframe is ready
-      setTimeout(sendLoad, 500);
+    const yt = params.get("yt");
+    if (yt) {
+      setVideoStatus("⏳ loading YouTube " + yt + "...");
+      setTab("career");
+      // Small delay to ensure container div is mounted
+      setTimeout(() => initYouTubePlayer(yt), 300);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Handle JSON telemetry file drops on the dashboard (video drops go to iframe)
+  // Handle JSON telemetry file drops on the dashboard
   const handleDashboardDrop = useCallback((e) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer?.files || []);
@@ -1397,7 +1419,7 @@ function TemporalReplay() {
           )}
           {videoStatus && <span style={{ fontSize: 8, color: videoStatus.startsWith("❌") ? "#ff4444" : videoStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{videoStatus}</span>}
           {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v136</span>
+          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v137</span>
         </div>
       </div>
 
@@ -1452,17 +1474,23 @@ function TemporalReplay() {
         </div>
       </div>
 
-      {/* ═══ VIDEO PANEL — iframe isolates video rendering from SVG pipeline ═══ */}
+      {/* ═══ VIDEO PANEL — YouTube IFrame API, cross-origin = separate Chrome process ═══ */}
       {(
         <div style={{ position: "fixed", left: 16, top: 80, width: "42vw", bottom: 16, display: "flex", flexDirection: "column", gap: 8, zIndex: 10 }}>
           <div style={{ flex: 1, borderRadius: 10, overflow: "hidden", background: "#000", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
-            <iframe
-              ref={iframeRef}
-              src="video-player.html"
-              style={{ width: "100%", height: "100%", border: "none" }}
-              allow="autoplay"
-              title="Pathogenika Video Player"
-            />
+            {/* YouTube player container — API replaces this div with an iframe */}
+            <div id="yt-player-container" style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: videoUrl ? 2 : 0 }} />
+            {/* Placeholder shown when no video loaded */}
+            {!videoUrl && (
+              <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, position: "relative", zIndex: 1 }}>
+                <div style={{ fontSize: 48, opacity: 0.15 }}>🎬</div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: mono, letterSpacing: 1 }}>YOUTUBE VIDEO PLAYER</div>
+                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.15)", fontFamily: mono, textAlign: "center", maxWidth: 280 }}>
+                  {"Add ?yt=VIDEO_ID to the URL to load a YouTube video"}
+                </div>
+                {videoStatus && <div style={{ fontSize: 9, color: "#ffaa00", fontFamily: mono }}>{videoStatus}</div>}
+              </div>
+            )}
           </div>
           {/* Scrubber bar under video */}
           <div style={{ padding: "0 4px" }}>

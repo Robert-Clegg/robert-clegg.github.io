@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v135 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v136 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1297,7 +1297,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v135</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v136</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
@@ -2144,45 +2144,51 @@ function TemporalReplay() {
         };
 
         const getNodeIntensity = (id, type) => {
-          if (time < 2.5) return 0; // clean baseline on rewind
+          // ═══ COLUMN RAMP GATE — each node type follows its choreographed timeline ═══
+          let colRamp = 1;
+          if (type === "event")  colRamp = COL_RAMP.events;
+          if (type === "skill")  colRamp = id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
+          if (type === "layer")  colRamp = COL_RAMP.layers;
+          if (type === "profile") colRamp = COL_RAMP.profiles;
+          if (type === "career") colRamp = COL_RAMP.careers;
+          if (colRamp <= 0) return 0;
+
           // Live floor: uses treeActivation directly (matches mid-playback brightness)
-          const liveFloor = getLiveFinalFloor(id, type);
+          const liveFloor = getLiveFinalFloor(id, type) * colRamp;
           // Reverse-trace floor (for edge connectivity)
-          const traceFloor = isFinalNode(id) ? Math.max(0.12, getFinalStrength(id)) : 0;
+          const traceFloor = isFinalNode(id) ? Math.max(0.12, getFinalStrength(id)) * colRamp : 0;
           const finalMin = Math.max(liveFloor, traceFloor);
           if (type === "event") {
             const preFire = (derivedPreFire[id] || 0) * 0.5;
             const evPulse = getEventPulse(id);
             const prop = getPropIntensity(id);
-            // Heavy events sustain brighter
             const HEAVY = new Set(["ev_emit", "ev_replicate", "ev_zoomOut", "ev_zoomIn", "ev_dock"]);
             if (HEAVY.has(id)) {
-              return Math.max(evPulse, preFire * 1.5, prop * 1.3, finalMin);
+              return Math.max(evPulse, preFire * 1.5, prop * 1.3, finalMin) * colRamp;
             }
-            // worldDeath: accumulating strategic weight — brighter as attrition mounts
             if (id === "ev_worldDeath") {
               const wdCount = treeActivation.activeCounts["ev_worldDeath"] || 0;
               const accumGlow = Math.min(0.7, wdCount * 0.012);
-              return Math.max(evPulse * 0.6, preFire, prop * 1.2, accumGlow, finalMin);
+              return Math.max(evPulse * 0.6, preFire, prop * 1.2, accumGlow, finalMin) * colRamp;
             }
-            return Math.max(evPulse * 0.4, preFire, prop, finalMin);
+            return Math.max(evPulse * 0.4, preFire, prop, finalMin) * colRamp;
           }
           if (type === "skill") {
             const prop = getPropIntensity(id);
             const mastery = getParentMastery ? getParentMastery(id) : 0;
-            return Math.max(prop * 0.5, mastery * 0.8, finalMin);
+            return Math.max(prop * 0.5, mastery * 0.8, finalMin) * colRamp;
           }
           if (type === "layer") {
             const prop = getPropIntensity(id);
-            return Math.max(prop * 0.9, finalMin);
+            return Math.max(prop * 0.9, finalMin) * colRamp;
           }
           if (type === "profile") {
             const prop = getPropIntensity(id);
-            return Math.max(prop * 0.7, finalMin);
+            return Math.max(prop * 0.7, finalMin) * colRamp;
           }
           if (type === "career") {
             const prop = getPropIntensity(id);
-            return Math.max(prop * 0.5, finalMin);
+            return Math.max(prop * 0.5, finalMin) * colRamp;
           }
           return finalMin;
         };
@@ -2713,6 +2719,12 @@ function TemporalReplay() {
         const ssW = 48, ssH = 14, ssGap = 1, ssXGap = 3;
 
         const renderEdges = (edges, fromNodes, toNodes, fromType, toType) => {
+          // Column ramp gate for destination — edges fade in with their target column
+          const toRamp = toType === "skill" ? COL_RAMP.bioOther
+            : toType === "layer" ? COL_RAMP.layers
+            : toType === "profile" ? COL_RAMP.profiles
+            : toType === "career" ? COL_RAMP.careers : 1;
+          if (toRamp <= 0) return null;
           return edges.map((edge, i) => {
             const fromId = edge[0], toId = edge[1], edgeWeight = edge[2] || 1.0;
             const isSecondary = edgeWeight < 0.6;
@@ -2762,7 +2774,7 @@ function TemporalReplay() {
               ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03)
               : 0;
 
-            const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor);
+            const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor) * toRamp;
             
             // Layer-specific edge colors — blended with event source color
             const EVENT_SOURCE_COLOR = {
@@ -3067,14 +3079,16 @@ function TemporalReplay() {
         const renderSubSkills = () => TREE_SUB_SKILLS.map(sub => {
           const parent = TREE_SKILLS.find(s => s.id === sub.parent);
           if (!parent) return null;
+          const skRamp = parent.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
+          if (skRamp <= 0) return null;
           const pp = getPos(parent.col + 2, parent.row);
           const pw = nodeW[parent.col + 2];
           // Right-justified below parent cell
           const sx = pp.x + pw - ssW;
           const ssDropGap = 4; // gap between parent bottom and first sub-skill
           const sy = pp.y + nodeH + ssDropGap + sub.offset * (ssH + ssGap);
-          const mastery = getSubSkillMastery(sub.id);
-          const propFlash = getPropIntensity(sub.id);
+          const mastery = getSubSkillMastery(sub.id) * skRamp;
+          const propFlash = getPropIntensity(sub.id) * skRamp;
           const brightness = Math.max(mastery, propFlash);
           const active = brightness > 0.05;
           const fresh = propFlash > 0.3;
@@ -3156,7 +3170,7 @@ function TemporalReplay() {
             const layerShimmerSpeed = toId === "L1" ? 50 : toId === "L2" ? 300 : toId === "L3" ? 700 : 1500;
             const layerShimmer = playing && COL_RAMP.layers > 0
               ? Math.sin(nowMs / layerShimmerSpeed + phase) * (toId === "L1" ? 0.08 : 0.03) : 0;
-            const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor);
+            const displayIntensity = Math.max(cycleBrightness + layerShimmer, propEdge, finalFloor, endFloor) * COL_RAMP.layers;
 
             const layerColor = TREE_LAYERS.find(l => l.id === toId)?.color || "#00e5ff";
             const edgeColor = ssPos.color
@@ -4267,7 +4281,7 @@ function TemporalReplay() {
               {TREE_CAREERS.map(n => renderNode(n, "career"))}
 
               {/* ─── SOFTMAX PROBABILITY BARS — confidence distribution across careers ─── */}
-              {(() => {
+              {COL_RAMP.careers > 0 && (() => {
                 const barW = nodeW[6]; // matches career node width
                 const barH = 5;
                 const barGap = 3;

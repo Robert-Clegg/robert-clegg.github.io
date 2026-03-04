@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v135 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v136 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1115,23 +1115,14 @@ function TemporalReplay() {
   const lastRenderRef = useRef(0); // timestamp of last React state flush
   const RENDER_INTERVAL = 66; // ms — flush React state at ~15fps (was 60fps)
 
-  // ═══ VIDEO SYNC ═══
-  const [videoUrl, setVideoUrl] = useState(null);
+  // ═══ VIDEO SYNC — iframe-based, video renders in separate process ═══
+  const [videoUrl, setVideoUrl] = useState(null); // tracks if video is active (url or true)
   const [videoMode, setVideoMode] = useState(false); // split view active
   const [videoOffset, setVideoOffset] = useState(0); // seconds offset between video and telemetry
   const [videoDuration, setVideoDuration] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const [videoStatus, setVideoStatus] = useState("");
-  const videoRef = useRef(null);
-  const syncingFromVideo = useRef(false);
-  const syncingFromAlgo = useRef(false);
-
-  // ═══ EXTERNAL VIDEO SYNC — BroadcastChannel to separate tab ═══
-  const [extConnected, setExtConnected] = useState(false);
-  const [extVideoLoaded, setExtVideoLoaded] = useState(false);
-  const [extDuration, setExtDuration] = useState(0);
-  const channelRef = useRef(null);
-  const extLastSeek = useRef(0); // throttle seek commands
+  const iframeRef = useRef(null); // ref to <iframe> containing video player
 
   // ═══ TELEMETRY FILE LOADING ═══
   const [telemetrySource, setTelemetrySource] = useState("demo"); // "demo" | "loaded"
@@ -1204,11 +1195,6 @@ function TemporalReplay() {
         timeRef.current = timeRef.current + dt;
         if (timeRef.current >= 160) { timeRef.current = 160; setPlaying(false); setTime(160); lastFrameRef.current = now; return; }
       }
-      // Sync external video player via BroadcastChannel (throttle to ~10fps)
-      if (channelRef.current && extConnected && (now - extLastSeek.current > 100)) {
-        channelRef.current.postMessage({ type: "seek", time: timeRef.current + videoOffset });
-        extLastSeek.current = now;
-      }
       // Only flush to React state at ~15fps to avoid re-rendering the SVG pipeline every frame
       if (!videoUrl && now - lastRenderRef.current >= RENDER_INTERVAL) {
         setTime(timeRef.current);
@@ -1217,7 +1203,7 @@ function TemporalReplay() {
     }
     lastFrameRef.current = now;
     animRef.current = requestAnimationFrame(tick);
-  }, [speed, videoUrl, videoOffset, extConnected]);
+  }, [speed, videoUrl, videoOffset]);
 
   useEffect(() => {
     if (playing) {
@@ -1229,185 +1215,94 @@ function TemporalReplay() {
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, [playing, tick]);
 
-  // ═══ VIDEO SYNC EFFECTS ═══
-  // Video time sync now happens inside the tick loop via timeRef (60fps)
-  // This effect handles scrubber/manual time changes (when not playing) — seek the video
+  // ═══ IFRAME VIDEO SYNC — postMessage to/from video-player.html iframe ═══
+  // Listen for messages from the iframe video player
   useEffect(() => {
-    if (!playing && videoRef.current && videoUrl && videoDuration > 0) {
-      const videoTime = time + videoOffset;
-      if (Math.abs(videoRef.current.currentTime - videoTime) > 0.3) {
-        videoRef.current.currentTime = Math.max(0, Math.min(videoTime, videoDuration));
-      }
-    }
-  }, [time, playing, videoUrl, videoOffset, videoDuration]);
-
-  // Video play/pause sync — dashboard controls → video
-  useEffect(() => {
-    if (videoRef.current && videoUrl) {
-      syncingFromAlgo.current = true;
-      if (playing) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
-      setTimeout(() => { syncingFromAlgo.current = false; }, 50);
-    }
-  }, [playing, videoUrl]);
-
-  // Video speed sync — separate from play/pause to avoid retriggering
-  useEffect(() => {
-    if (videoRef.current && videoUrl && playing) {
-      videoRef.current.playbackRate = speed;
-    }
-  }, [speed, videoUrl, playing]);
-
-  // Video native controls → telemetry sync (pause/play buttons on video element)
-  useEffect(() => {
-    const vid = videoRef.current;
-    if (!vid || !videoUrl) return;
-    const onNativePause = () => {
-      if (!syncingFromAlgo.current) setPlaying(false);
-    };
-    const onNativePlay = () => {
-      if (!syncingFromAlgo.current) setPlaying(true);
-    };
-    vid.addEventListener("pause", onNativePause);
-    vid.addEventListener("play", onNativePlay);
-    return () => {
-      vid.removeEventListener("pause", onNativePause);
-      vid.removeEventListener("play", onNativePlay);
-    };
-  }, [videoUrl]);
-
-  // ═══ VIDEO CLEANUP — release file handle on page close/unmount ═══
-  // Without this, blob URL holds a file handle that can lock/corrupt the MP4 on Windows
-  useEffect(() => {
-    const cleanup = () => {
-      if (videoUrl && videoUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(videoUrl);
-      }
-    };
-    window.addEventListener("beforeunload", cleanup);
-    return () => {
-      window.removeEventListener("beforeunload", cleanup);
-      cleanup(); // also revoke on React unmount
-    };
-  }, [videoUrl]);
-
-  // ═══ BROADCASTCHANNEL — external video player in separate tab ═══
-  useEffect(() => {
-    const ch = new BroadcastChannel("pathogenika-video-sync");
-    channelRef.current = ch;
-    // Ping the player on startup
-    ch.postMessage({ type: "dashboard-ping" });
-    const pingInterval = setInterval(() => { ch.postMessage({ type: "dashboard-ping" }); }, 2000);
-
-    ch.onmessage = (e) => {
+    const onMsg = (e) => {
       const msg = e.data;
       if (!msg || !msg.type) return;
+      if (msg.type === "video-timeupdate" && msg.currentTime != null) {
+        const clamped = Math.max(0, Math.min(msg.currentTime, MAX_DUR));
+        timeRef.current = clamped;
+        setTime(clamped);
+      }
       if (msg.type === "player-status") {
-        setExtConnected(msg.connected);
-        setExtVideoLoaded(msg.videoLoaded);
-        setExtDuration(msg.duration || 0);
+        if (msg.videoLoaded) {
+          setVideoUrl("iframe-loaded");
+          setVideoMode(true);
+          setVideoDuration(msg.duration || 0);
+          setVideoStatus("✅ loaded " + Math.round(msg.duration || 0) + "s");
+        }
       }
-      if (msg.type === "player-disconnected") {
-        setExtConnected(false);
-        setExtVideoLoaded(false);
-        setExtDuration(0);
+      if (msg.type === "video-file-loaded") {
+        setVideoStatus("⏳ " + (msg.name || "video") + " (" + ((msg.size||0)/1024/1024).toFixed(1) + "MB)");
       }
+      if (msg.type === "video-play") { setPlaying(true); }
+      if (msg.type === "video-pause") { setPlaying(false); }
     };
-    return () => { clearInterval(pingInterval); ch.close(); };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
   }, []);
 
-  // Send play/pause to external player
+  // Send play/pause to iframe
   useEffect(() => {
-    if (!channelRef.current || !extConnected) return;
+    if (!iframeRef.current?.contentWindow || !videoUrl) return;
     if (playing) {
-      channelRef.current.postMessage({ type: "play", speed: speed * 4 }); // base rate 4×
+      iframeRef.current.contentWindow.postMessage({ type: "play", speed: speed }, "*");
     } else {
-      channelRef.current.postMessage({ type: "pause" });
+      iframeRef.current.contentWindow.postMessage({ type: "pause" }, "*");
     }
-  }, [playing, extConnected, speed]);
+  }, [playing, videoUrl, speed]);
 
-  // Send speed changes
+  // Send speed to iframe
   useEffect(() => {
-    if (!channelRef.current || !extConnected) return;
-    channelRef.current.postMessage({ type: "speed", speed: speed * 4 });
-  }, [speed, extConnected]);
+    if (!iframeRef.current?.contentWindow || !videoUrl) return;
+    iframeRef.current.contentWindow.postMessage({ type: "speed", speed: speed }, "*");
+  }, [speed, videoUrl]);
 
   // Send seek on manual scrub when paused
   useEffect(() => {
-    if (!playing && channelRef.current && extConnected) {
-      channelRef.current.postMessage({ type: "seek", time: time + videoOffset });
+    if (!playing && iframeRef.current?.contentWindow && videoUrl) {
+      iframeRef.current.contentWindow.postMessage({ type: "seek", time: time + videoOffset }, "*");
     }
-  }, [time, playing, extConnected, videoOffset]);
+  }, [time, playing, videoUrl, videoOffset]);
 
-  const openExternalPlayer = useCallback(() => {
-    const base = window.location.href.replace(/[^/]*$/, "");
-    window.open(base + "pathogenika-video-player.html", "pathogenika-video", "width=960,height=640");
-  }, []);
-
-  const handleVideoTimeUpdate = useCallback(() => {
-    if (videoRef.current && videoUrl) {
-      const algoTime = videoRef.current.currentTime - videoOffset;
-      const clamped = Math.max(0, Math.min(algoTime, MAX_DUR));
-      timeRef.current = clamped; // always update ref at full rate
-      // Throttle React state flushes to ~15fps
-      const now = performance.now();
-      if (now - lastRenderRef.current >= RENDER_INTERVAL) {
-        setTime(clamped);
-        lastRenderRef.current = now;
-      }
+  // Send offset changes to iframe
+  useEffect(() => {
+    if (iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.postMessage({ type: "offset", offset: videoOffset }, "*");
     }
-  }, [videoUrl, videoOffset]);
-
-  const loadVideoFile = useCallback((file) => {
-    if (!file || !file.type.startsWith("video/")) return;
-    // Fully release previous video: pause, clear src, revoke blob
-    if (videoRef.current) { videoRef.current.pause(); videoRef.current.removeAttribute("src"); videoRef.current.load(); }
-    if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
-    const url = URL.createObjectURL(file);
-    setVideoStatus("⏳ " + file.name + " (" + (file.size/1024/1024).toFixed(1) + "MB)");
-    setVideoUrl(url);
-    setVideoMode(true);
-    setTab("career");
-  }, [videoUrl]);
+  }, [videoOffset]);
 
   // ═══ URL PARAMETER VIDEO LOADING — for GitHub Pages hosted demos ═══
-  const loadVideoFromUrl = useCallback((url, label) => {
-    if (videoRef.current) { videoRef.current.pause(); videoRef.current.removeAttribute("src"); videoRef.current.load(); }
-    if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl);
-    setVideoStatus("⏳ loading " + (label || url) + "...");
-    setVideoUrl(url);
-    setVideoMode(true);
-    setTab("career");
-  }, [videoUrl]);
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
     if (v) {
       // ?v=commander-demo → videos/commander-demo.mp4
       const videoPath = "videos/" + v + (v.endsWith(".mp4") ? "" : ".mp4");
-      loadVideoFromUrl(videoPath, v);
+      // Wait for iframe to load, then send the URL
+      const sendLoad = () => {
+        if (iframeRef.current?.contentWindow) {
+          iframeRef.current.contentWindow.postMessage({ type: "load-url", url: videoPath, label: v }, "*");
+          setVideoUrl(videoPath);
+          setVideoMode(true);
+          setVideoStatus("⏳ loading " + v + "...");
+          setTab("career");
+        }
+      };
+      // Slight delay to ensure iframe is ready
+      setTimeout(sendLoad, 500);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleVideoDrop = useCallback((e) => {
+  // Handle JSON telemetry file drops on the dashboard (video drops go to iframe)
+  const handleDashboardDrop = useCallback((e) => {
     e.preventDefault();
-    setDragOver(false);
     const files = Array.from(e.dataTransfer?.files || []);
-    const videoFile = files.find(f => f.type?.startsWith("video/"));
     const jsonFile = files.find(f => f.name?.endsWith(".json"));
-    if (videoFile) loadVideoFile(videoFile);
     if (jsonFile) parseTelemetryFile(jsonFile);
-  }, [loadVideoFile, parseTelemetryFile]);
-
-  const handleVideoFile = useCallback((e) => {
-    loadVideoFile(e.target?.files?.[0]);
-    // Reset input so same file can be re-selected
-    e.target.value = "";
-  }, [loadVideoFile]);
+  }, [parseTelemetryFile]);
 
   const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
   const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
@@ -1500,15 +1395,9 @@ function TemporalReplay() {
           {isLoaded && (
             <button onClick={() => { setTelemetrySource("demo"); setLoadedEvents(null); setLoadedMeta(null); setTelemetryStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }} title="Reset to demo data">⟲</button>
           )}
-          <label style={{ padding: "2px 8px", background: videoMode ? "#a855f720" : "rgba(255,255,255,0.05)", border: "1px solid " + (videoMode ? "#a855f740" : "rgba(255,255,255,0.1)"), borderRadius: 4, color: videoMode ? "#a855f7" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: mono, cursor: "pointer", letterSpacing: 1 }}>
-            🎬 {videoMode ? "VIDEO ON" : "LOAD VIDEO"}
-            <input type="file" accept="video/*" onChange={handleVideoFile} style={{ display: "none" }} />
-          </label>
-          {videoMode && (
-            <button onClick={() => { if (videoUrl && videoUrl.startsWith("blob:")) URL.revokeObjectURL(videoUrl); setVideoMode(false); setVideoUrl(null); setVideoDuration(0); setVideoStatus(""); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>✕</button>
-          )}
+          {videoStatus && <span style={{ fontSize: 8, color: videoStatus.startsWith("❌") ? "#ff4444" : videoStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{videoStatus}</span>}
           {telemetryStatus && <span style={{ fontSize: 8, color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono }}>{telemetryStatus}</span>}
-          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v135</span>
+          <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866" }}>v136</span>
         </div>
       </div>
 
@@ -1532,8 +1421,8 @@ function TemporalReplay() {
           ))}
         </div>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        {/* VIDEO OFFSET — when video loaded OR external player connected */}
-        {(videoUrl || extConnected) && <>
+        {/* VIDEO OFFSET — when video loaded */}
+        {videoUrl && <>
           <div style={{ fontSize: 8, color: "#a855f7", fontFamily: mono, letterSpacing: 1 }}>OFFSET</div>
           <button onClick={() => setVideoOffset(prev => prev - 1)} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.3)", borderRadius: 3, padding: "2px 4px", cursor: "pointer", fontFamily: mono, fontSize: 9 }}>-1s</button>
           <span style={{ fontFamily: mono, fontSize: 9, color: "#a855f7", minWidth: 32, textAlign: "center" }}>{videoOffset >= 0 ? "+" : ""}{videoOffset}s</span>
@@ -1563,64 +1452,18 @@ function TemporalReplay() {
         </div>
       </div>
 
-      {/* ═══ VIDEO PANEL — always visible on left side ═══ */}
+      {/* ═══ VIDEO PANEL — iframe isolates video rendering from SVG pipeline ═══ */}
       {(
         <div style={{ position: "fixed", left: 16, top: 80, width: "42vw", bottom: 16, display: "flex", flexDirection: "column", gap: 8, zIndex: 10 }}>
-          {videoUrl ? (
-            <div style={{ flex: 1, borderRadius: 10, overflow: "hidden", background: "#0a0a1a", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
-              <video
-                key={videoUrl}
-                ref={videoRef}
-                src={videoUrl}
-                onTimeUpdate={handleVideoTimeUpdate}
-                onLoadedMetadata={(e) => { setVideoDuration(e.target.duration); setVideoStatus("✅ loaded " + Math.round(e.target.duration) + "s"); }}
-                onError={(e) => { const err = e.target.error; setVideoStatus("❌ error code:" + err?.code + " " + (err?.message||"")); }}
-                onCanPlay={() => {}}
-                onLoadStart={() => setVideoStatus("⏳ loading...")}
-                style={{ width: "100%", height: "100%", objectFit: "contain", background: "#000" }}
-                controls
-                muted
-                playsInline
-                preload="auto"
-              />
-              {/* Video overlay with match time */}
-              <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(0,0,0,0.7)", borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 8px #00ff88" : "none" }} />
-                <span style={{ fontFamily: mono, fontSize: 11, color: "white" }}>
-                  {Math.floor(time / 60)}:{String(Math.floor(time % 60)).padStart(2, "0")}.{String(Math.floor((time % 1) * 10))}
-                </span>
-                <span style={{ fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.3)" }}>MATCH TIME</span>
-              </div>
-              {/* Cognitive profile badge */}
-              <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", borderRadius: 6, padding: "6px 10px" }}>
-                <div style={{ fontSize: 8, letterSpacing: 2, color: treeSession === "commander" ? C_COLOR : S_COLOR, fontFamily: mono, marginBottom: 2 }}>
-                  {treeSession === "commander" ? "COMMANDER" : "SOLDIER"}
-                </div>
-                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", fontFamily: mono }}>
-                  L1:{Math.round((treeActivation.L1 || 0) * 100)}% L2:{Math.round((treeActivation.L2 || 0) * 100)}% L3:{Math.round((treeActivation.L3 || 0) * 100)}% L4:{Math.round((treeActivation.L4 || 0) * 100)}%
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleVideoDrop}
-              style={{
-                flex: 1, borderRadius: 10, background: dragOver ? "rgba(168,85,247,0.08)" : "rgba(255,255,255,0.02)",
-                border: "2px dashed " + (dragOver ? "#a855f7" : "rgba(255,255,255,0.08)"),
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, transition: "all 0.2s"
-              }}
-            >
-              <div style={{ fontSize: 48, opacity: 0.2 }}>🎬</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", fontFamily: mono, letterSpacing: 1 }}>
-                {"DROP VIDEO FILE HERE"}
-              </div>
-              <div style={{ fontSize: 9, color: "rgba(255,255,255,0.15)", fontFamily: mono }}>
-                {"Drop MP4 + JSON telemetry together, or use the LOAD VIDEO button above"}
-              </div>
-            </div>
-          )}
+          <div style={{ flex: 1, borderRadius: 10, overflow: "hidden", background: "#000", border: "1px solid rgba(255,255,255,0.08)", position: "relative" }}>
+            <iframe
+              ref={iframeRef}
+              src="video-player.html"
+              style={{ width: "100%", height: "100%", border: "none" }}
+              allow="autoplay"
+              title="Pathogenika Video Player"
+            />
+          </div>
           {/* Scrubber bar under video */}
           <div style={{ padding: "0 4px" }}>
             <input type="range" min={0} max={MAX_DUR} step={0.1} value={time}

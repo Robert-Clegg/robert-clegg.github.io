@@ -1307,6 +1307,40 @@ function TemporalReplay() {
     e.target.value = "";
   }, [loadVideoFile]);
 
+  // ═══ SCREEN RECORDER ═══
+  const startRecording = useCallback(async () => {
+    try {
+      setRecStatus("⏳ select tab...");
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 30, displaySurface: "browser" },
+        audio: false,
+        preferCurrentTab: true,
+      });
+      recChunksRef.current = [];
+      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+        ? "video/webm;codecs=vp9" : "video/webm";
+      const mr = new MediaRecorder(stream, { mimeType });
+      mr.ondataavailable = (e) => { if (e.data.size > 0) recChunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const blob = new Blob(recChunksRef.current, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "pathogenika-dashboard-demo.webm"; a.click();
+        URL.revokeObjectURL(url);
+        stream.getTracks().forEach(t => t.stop());
+        setRecording(false); setRecStatus("✅ saved"); setTimeout(() => setRecStatus(""), 3000);
+      };
+      stream.getVideoTracks()[0].onended = () => { if (mr.state !== "inactive") mr.stop(); setRecording(false); };
+      mr.start(1000);
+      mediaRecorderRef.current = mr;
+      setRecording(true); setRecStatus("● REC");
+    } catch (err) { setRecStatus("❌ " + err.message); setTimeout(() => setRecStatus(""), 4000); }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") mediaRecorderRef.current.stop();
+  }, []);
+
   const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
   const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
 
@@ -1429,6 +1463,14 @@ function TemporalReplay() {
             }}>{s}x</button>
           ))}
         </div>
+        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
+        {/* SCREEN RECORDER */}
+        {!recording ? (
+          <button onClick={startRecording} style={{ background: "rgba(255,40,40,0.12)", border: "1px solid rgba(255,40,40,0.35)", color: "#ff4444", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>⏺ REC</button>
+        ) : (
+          <button onClick={stopRecording} style={{ background: "rgba(255,40,40,0.25)", border: "1px solid rgba(255,40,40,0.7)", color: "#ff6666", borderRadius: 4, padding: "3px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, fontWeight: 700, letterSpacing: 1 }}>■ STOP</button>
+        )}
+        {recStatus && <span style={{ fontSize: 8, color: recording ? "#ff4444" : recStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00", fontFamily: mono, letterSpacing: 1 }}>{recStatus}</span>}
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         {/* VIDEO OFFSET — only when video loaded */}
         {videoMode && <>

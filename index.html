@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v212 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v213 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6670,10 +6670,10 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v212") {
+      if (ver !== "v213") {
         localStorage.removeItem("pathogenika-columns");
         localStorage.removeItem("pathogenika-basebright");
-        localStorage.setItem("pathogenika-columns-ver", "v212");
+        localStorage.setItem("pathogenika-columns-ver", "v213");
       }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) {
@@ -6994,7 +6994,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v212"), /*#__PURE__*/React.createElement("span", {
+  }, "v213"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10882,7 +10882,7 @@ function TemporalReplay() {
           }
         }, /*#__PURE__*/React.createElement("input", {
           type: "number",
-          step: 0.5,
+          step: 1,
           value: COLUMNS[k]?.[f] ?? 0,
           onInput: e => updateCol(k, f, e.target.value),
           onChange: e => updateCol(k, f, e.target.value),

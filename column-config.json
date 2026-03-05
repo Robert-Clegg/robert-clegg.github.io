@@ -3,84 +3,72 @@
     "inStart": 0,
     "nodeOn": 0.5,
     "outStart": 0.5,
-    "flicker": 0.9,
-    "baseBright": 0.06
+    "flicker": 0.9
   },
   "data": {
     "inStart": 0,
     "nodeOn": 0.5,
     "outStart": 0.5,
-    "flicker": 0.9,
-    "baseBright": 0.06
+    "flicker": 0.9
   },
   "extraction": {
     "inStart": 0,
     "nodeOn": 1.5,
     "outStart": 2,
-    "flicker": 0.7,
-    "baseBright": 0.06
+    "flicker": 0.7
   },
   "events": {
     "inStart": 1.5,
     "nodeOn": 4,
     "outStart": 5,
-    "flicker": 0.5,
-    "baseBright": 0.06
+    "flicker": 0.5
   },
   "bioVirus": {
     "inStart": 3,
     "nodeOn": 6,
     "outStart": 7,
-    "flicker": 0.4,
-    "baseBright": 0.06
+    "flicker": 0.4
   },
   "bioTuber": {
     "inStart": 6,
     "nodeOn": 10,
     "outStart": 11,
-    "flicker": 0.3,
-    "baseBright": 0.06
+    "flicker": 0.3
   },
   "bioPneum": {
     "inStart": 6,
     "nodeOn": 10,
     "outStart": 11,
-    "flicker": 0.3,
-    "baseBright": 0.06
+    "flicker": 0.3
   },
   "bioMyco": {
     "inStart": 6,
     "nodeOn": 10,
     "outStart": 11,
-    "flicker": 0.3,
-    "baseBright": 0.06
+    "flicker": 0.3
   },
   "bioWin": {
     "inStart": 12,
     "nodeOn": 18,
     "outStart": 19,
-    "flicker": 0.2,
-    "baseBright": 0.06
+    "flicker": 0.2
   },
   "layers": {
     "inStart": 5,
     "nodeOn": 9,
     "outStart": 10,
-    "flicker": 0.3,
-    "baseBright": 0.06
+    "flicker": 0.3
   },
   "profiles": {
     "inStart": 12,
     "nodeOn": 20,
     "outStart": 22,
-    "flicker": 0.2,
-    "baseBright": 0.06
+    "flicker": 0.2
   },
   "careers": {
     "inStart": 20,
     "nodeOn": 35,
     "outStart": 38,
-    "flicker": 0.1,
-    "baseBright": 0.06
+    "flicker": 0.1
   }
 }

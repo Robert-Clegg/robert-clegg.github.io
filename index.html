@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v214 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v215 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -5445,68 +5445,80 @@ const LAYER_PROFILE_EDGES = [["L1", "pr_blitzer", 1.0], ["L1", "pr_mechmaster", 
 ];
 const PROFILE_CAREER_EDGES = [["pr_blitzer", "cr_rapid", 1.0], ["pr_blitzer", "cr_trades", 0.3], ["pr_mechmaster", "cr_precision", 1.0], ["pr_mechmaster", "cr_trades", 0.8], ["pr_mechmaster", "cr_techanalysis", 0.3], ["pr_adaptive", "cr_techanalysis", 1.0], ["pr_theory", "cr_techanalysis", 0.8], ["pr_theory", "cr_systems", 1.0], ["pr_planner", "cr_systems", 1.0], ["pr_shotcaller", "cr_leadership", 1.0], ["pr_catalyst", "cr_human", 1.0], ["pr_swiss", "cr_creative", 1.0], ["pr_swiss", "cr_leadership", 0.4], ["pr_swiss", "cr_systems", 0.3], ["pr_swiss", "cr_techanalysis", 0.3]];
 
-// ═══ COLUMN CONFIG — simple: start (when) + speed (ramp duration) + flicker (pop rate) ═══
-// flicker: 0 = steady glow, 10 = max popcorn. Controls how often pathways flash.
+// ═══ COLUMN CONFIG — start (when) + speed (ramp duration) + flicker (pop rate) + out (outgoing delay) ═══
+// out: seconds after start before this column sends signal to the next column
 const DEFAULT_COLUMNS = {
   input: {
     start: 0,
-    speed: 0.5,
-    flicker: 9
+    speed: 1,
+    flicker: 9,
+    out: 0
   },
   data: {
     start: 0,
-    speed: 0.5,
-    flicker: 9
+    speed: 1,
+    flicker: 9,
+    out: 0
   },
   extraction: {
     start: 0,
     speed: 3,
-    flicker: 7
+    flicker: 7,
+    out: 2
   },
   events: {
     start: 4,
     speed: 12,
-    flicker: 5
+    flicker: 5,
+    out: 8
   },
   bioVirus: {
     start: 3,
     speed: 8,
-    flicker: 4
+    flicker: 4,
+    out: 6
   },
   bioTuber: {
     start: 6,
     speed: 10,
-    flicker: 3
+    flicker: 3,
+    out: 8
   },
   bioPneum: {
     start: 6,
     speed: 10,
-    flicker: 3
+    flicker: 3,
+    out: 8
   },
   bioMyco: {
     start: 6,
     speed: 10,
-    flicker: 3
+    flicker: 3,
+    out: 8
   },
   bioWin: {
     start: 12,
     speed: 12,
-    flicker: 2
+    flicker: 2,
+    out: 10
   },
   layers: {
     start: 5,
     speed: 12,
-    flicker: 3
+    flicker: 3,
+    out: 10
   },
   profiles: {
     start: 12,
     speed: 16,
-    flicker: 2
+    flicker: 2,
+    out: 14
   },
   careers: {
     start: 20,
     speed: 20,
-    flicker: 1
+    flicker: 1,
+    out: 18
   }
 };
 const DEFAULT_BASE_BRIGHT = 5;
@@ -6683,10 +6695,10 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v214") {
+      if (ver !== "v215") {
         localStorage.removeItem("pathogenika-columns");
         localStorage.removeItem("pathogenika-basebright");
-        localStorage.setItem("pathogenika-columns-ver", "v214");
+        localStorage.setItem("pathogenika-columns-ver", "v215");
       }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) {
@@ -7007,7 +7019,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v214"), /*#__PURE__*/React.createElement("span", {
+  }, "v215"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8026,20 +8038,19 @@ function TemporalReplay() {
       };
     });
 
-    // ═══ DERIVE RAMPS FROM start/speed ═══
     // COL_RAMP: 0→1 over [start, start+speed] — controls pathways IN + node gray ghost
     // COL_NODE: same ramp — nodes appear alongside pathways
-    // COL_OUT:  starts 30% into the ramp — outgoing pathways lag slightly
-    // flicker: derived from speed (slow columns = steady, fast = popcorn)
+    // COL_OUT:  0→1 from [start+out, start+out+speed*0.5] — outgoing pathways lag by tunable delay
     const COL_RAMP = {};
     const COL_OUT = {};
     const COL_NODE = {};
     for (const [key, cfg] of Object.entries(colConfig)) {
       const s = cfg.start || 0;
       const d = cfg.speed || 1;
+      const o = cfg.out !== undefined ? cfg.out : d * 0.3;
       COL_RAMP[key] = lerp01(wt, s, s + d);
       COL_NODE[key] = COL_RAMP[key]; // nodes track pathways
-      COL_OUT[key] = lerp01(wt, s + d * 0.3, s + d * 1.2);
+      COL_OUT[key] = lerp01(wt, s + o, s + o + d * 0.5);
     }
     // Input/data need a floor for firehose to work
     COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
@@ -10794,9 +10805,9 @@ function TemporalReplay() {
         label: "CAREER",
         w: 7
       }];
-      const fields = ["start", "speed", "flicker"];
-      const fieldLabels = ["start ramp", "speed ramp", "pop rate"];
-      const fieldColors = ["#00ff88", "#00ccff", "#aa55ff"];
+      const fields = ["start", "speed", "flicker", "out"];
+      const fieldLabels = ["start ramp", "speed ramp", "pop rate", "out delay"];
+      const fieldColors = ["#00ff88", "#00ccff", "#aa55ff", "#ff8800"];
       const subLabels = {
         bioVirus: "V",
         bioTuber: "T",

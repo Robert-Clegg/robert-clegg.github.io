@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v188 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v189 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1338,7 +1338,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v188</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v189</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1683,7 +1683,7 @@ function TemporalReplay() {
         // ═══ RANDOMIZE BIOLOGY ORDER — changes each playback ═══
         // Virus always first (bioVirus in COLUMNS). Other 3 get random staggered starts.
         // bioSeed changes on rewind/restart, giving a new order each time.
-        // colConfig = COLUMNS + bio randomization (local, not mutating state)
+        // colConfig = COLUMNS + bio randomization (relative offsets from tuner values)
         const colConfig = JSON.parse(JSON.stringify(COLUMNS));
         const bioOtherKeys = ["bioTuber", "bioPneum", "bioMyco"];
         const shuffled = [...bioOtherKeys].sort((a, b) => {
@@ -1692,12 +1692,18 @@ function TemporalReplay() {
           return (ha % 1) - (hb % 1);
         });
         shuffled.forEach((key, i) => {
-          const baseStart = 5 + i * 2.5;
-          const jitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
-          const inStart = Math.max(5, baseStart + jitter);
-          const rampDur = 8 + Math.sin(bioSeed * 3333 + i * 557) * 4;
-          const outDelay = 2 + Math.sin(bioSeed * 5555 + i * 223) * 1;
-          colConfig[key] = { ...colConfig[key], inStart, inEnd: inStart + rampDur, nodeOn: inStart + outDelay - 0.5, outStart: inStart + outDelay, outEnd: inStart + rampDur + 2 };
+          const base = colConfig[key]; // tuner values preserved as base
+          const offsetJitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
+          const durationJitter = Math.sin(bioSeed * 3333 + i * 557) * 2;
+          const offset = i * 2 + offsetJitter; // stagger: 0, ~2, ~4 seconds apart
+          colConfig[key] = {
+            ...base,
+            inStart: base.inStart + offset,
+            inEnd: base.inEnd + offset + durationJitter,
+            nodeOn: base.nodeOn + offset,
+            outStart: base.outStart + offset,
+            outEnd: base.outEnd + offset + durationJitter,
+          };
         });
 
         // ═══ COL_RAMP (pathways IN), COL_OUT (pathways OUT), COL_NODE (node visibility gate) ═══
@@ -2698,6 +2704,16 @@ function TemporalReplay() {
           const sep = key.indexOf(":");
           const toId = key.substring(sep + 1);
           nodeBright[toId] = Math.max(nodeBright[toId] || 0, edgeBright[key]);
+        }
+
+        // ═══ PARENT SKILL BRIGHTNESS = max of child sub-skill brightness ═══
+        // Sub-skills glow from EVENT_SUBSKILL_EDGES; parent skill nodes must inherit
+        for (const sk of TREE_SKILLS) {
+          const children = TREE_SUB_SKILLS.filter(ss => ss.parent === sk.id);
+          const maxChild = Math.max(0, ...children.map(c => nodeBright[c.id] || 0));
+          if (maxChild > (nodeBright[sk.id] || 0)) {
+            nodeBright[sk.id] = maxChild;
+          }
         }
 
         // ═══ FINAL PATHWAY — when stopped, ALL fired chains remain highlighted ═══

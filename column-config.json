@@ -16,12 +16,12 @@
     "nodeOn": 0.5
   },
   "extraction": {
-    "inStart": 1,
-    "inEnd": 4,
+    "inStart": 0,
+    "inEnd": 1,
     "outStart": 2,
-    "outEnd": 5,
+    "outEnd": 4,
     "flicker": 0.7,
-    "nodeOn": 2.5
+    "nodeOn": 1
   },
   "events": {
     "inStart": 2,

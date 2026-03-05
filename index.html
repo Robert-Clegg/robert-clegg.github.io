@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v197 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v198 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -435,20 +435,19 @@ const PROFILE_CAREER_EDGES = [
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
 const DEFAULT_COLUMNS = {
   //                                  ┌─ edges in ─┐  ┌ nodes ┐  ┌─ edges out ─┐
-  //                                  inStart  nodeOn  outStart    flicker
-  input:      { inStart: 0,   nodeOn: 0.5,  outStart: 0.5,  flicker: 0.9 },
-  data:       { inStart: 0,   nodeOn: 0.5,  outStart: 0.5,  flicker: 0.9 },
-  extraction: { inStart: 0,   nodeOn: 1.5,  outStart: 2,    flicker: 0.7 },
-  events:     { inStart: 1.5, nodeOn: 4,    outStart: 5,    flicker: 0.5 },
-  bioVirus:   { inStart: 3,   nodeOn: 6,    outStart: 7,    flicker: 0.4 },
-  // bioTuber, bioPneum, bioMyco — randomized per playback (see component)
-  bioTuber:   { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3 },
-  bioPneum:   { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3 },
-  bioMyco:    { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3 },
-  bioWin:     { inStart: 12,  nodeOn: 18,   outStart: 19,   flicker: 0.2 },
-  layers:     { inStart: 5,   nodeOn: 9,    outStart: 10,   flicker: 0.3 },
-  profiles:   { inStart: 12,  nodeOn: 20,   outStart: 22,   flicker: 0.2 },
-  careers:    { inStart: 20,  nodeOn: 35,   outStart: 38,   flicker: 0.1 },
+  //                                  inStart  nodeOn  outStart    flicker  baseBright
+  input:      { inStart: 0,   nodeOn: 0.5,  outStart: 0.5,  flicker: 0.9, baseBright: 0.06 },
+  data:       { inStart: 0,   nodeOn: 0.5,  outStart: 0.5,  flicker: 0.9, baseBright: 0.06 },
+  extraction: { inStart: 0,   nodeOn: 1.5,  outStart: 2,    flicker: 0.7, baseBright: 0.06 },
+  events:     { inStart: 1.5, nodeOn: 4,    outStart: 5,    flicker: 0.5, baseBright: 0.06 },
+  bioVirus:   { inStart: 3,   nodeOn: 6,    outStart: 7,    flicker: 0.4, baseBright: 0.06 },
+  bioTuber:   { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3, baseBright: 0.06 },
+  bioPneum:   { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3, baseBright: 0.06 },
+  bioMyco:    { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3, baseBright: 0.06 },
+  bioWin:     { inStart: 12,  nodeOn: 18,   outStart: 19,   flicker: 0.2, baseBright: 0.06 },
+  layers:     { inStart: 5,   nodeOn: 9,    outStart: 10,   flicker: 0.3, baseBright: 0.06 },
+  profiles:   { inStart: 12,  nodeOn: 20,   outStart: 22,   flicker: 0.2, baseBright: 0.06 },
+  careers:    { inStart: 20,  nodeOn: 35,   outStart: 38,   flicker: 0.1, baseBright: 0.06 },
 };
 
 // Cognitive timescale-aligned saturation thresholds
@@ -1144,7 +1143,7 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v197") { localStorage.removeItem("pathogenika-columns"); localStorage.setItem("pathogenika-columns-ver", "v197"); }
+      if (ver !== "v198") { localStorage.removeItem("pathogenika-columns"); localStorage.setItem("pathogenika-columns-ver", "v198"); }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) { console.log("[TUNER] Restored from localStorage"); return JSON.parse(saved); }
     } catch (e) {}
@@ -1358,7 +1357,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v197</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v198</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -2573,6 +2572,7 @@ function TemporalReplay() {
         const getDestRamp = (toId) => COL_RAMP[getDestColumn(toId)] || 0;
         const getSourceOutRamp = (fromId) => COL_OUT[getDestColumn(fromId)] || 0;
         const getNodeGate = (nodeId) => COL_NODE[getDestColumn(nodeId)] || 0;
+        const getBaseBright = (nodeId) => colConfig[getDestColumn(nodeId)]?.baseBright ?? 0.06;
         const getDestFlicker = (toId) => colConfig[getDestColumn(toId)]?.flicker ?? 0.5;
 
         // Compute brightness for one edge
@@ -3207,10 +3207,11 @@ function TemporalReplay() {
             const pos = getDfPos(df.row);
             const activity = nodeBright[df.id] || 0;
             const extNodeGate = COL_NODE.extraction || 0;
+            const extBaseBright = colConfig.extraction?.baseBright ?? 0.06;
             const dfEdgeHint = (maxInEdge[df.id] || 0) * 0.08;
-            const dfVis = extNodeGate;
-            if (dfVis < 0.01 && dfEdgeHint < 0.01) return null;
-            const gf = activity * dfVis;
+            const dfVis = Math.max(extBaseBright, extNodeGate);
+            if (dfVis < 0.005) return null;
+            const gf = activity * extNodeGate;
             const bgOp = (0.01 * dfVis + gf * 0.15).toFixed(3);
             const borderOp = (0.05 * dfVis + dfEdgeHint + gf * 0.55).toFixed(3);
             const textOp = (0.1 * dfVis + gf * 0.9).toFixed(3);
@@ -3251,8 +3252,10 @@ function TemporalReplay() {
           const parent = TREE_SKILLS.find(s => s.id === sub.parent);
           if (!parent) return null;
           const skNodeGate = COL_NODE[SKILL_TO_COL[parent.id] || "bioVirus"] || 0;
+          const skBaseBright = colConfig[SKILL_TO_COL[parent.id] || "bioVirus"]?.baseBright ?? 0.06;
           const ssEdgeHint = (maxInEdge[sub.id] || 0) * 0.08;
-          if (skNodeGate <= 0 && ssEdgeHint <= 0) return null;
+          const ssVis = Math.max(skBaseBright, skNodeGate);
+          if (ssVis <= 0) return null;
           const pp = getPos(parent.col + 2, parent.row);
           const pw = nodeW[parent.col + 2];
           const sx = pp.x + pw - ssW;
@@ -3366,19 +3369,20 @@ function TemporalReplay() {
           const col = node.col + 2;
           const pos = getPos(col, node.row);
           const w = nodeW[col];
-          // ═══ NODE GATE: nodeOn controls visibility. Incoming edges add faint border hint only. ═══
+          // ═══ NODE VISIBILITY: baseBright floor always visible, nodeGate ramps to full ═══
           const colRamp = getDestRamp(node.id);
           const nodeGate = getNodeGate(node.id);
-          // Faint hint: if edges are hitting this node, show a subtle border (8% of incoming)
+          const baseBright = getBaseBright(node.id);
+          // Faint hint: if edges are hitting this node, add subtle border bump
           const edgeHint = (maxInEdge[node.id] || 0) * 0.08;
-          const emerged = nodeGate > 0.02 || edgeHint > 0.01;
-          const active = nodeGate > 0.02 && intensity > 0.05; // active requires nodeGate, not just edgeHint
+          // vis = baseBright floor (always) + nodeGate ramp (after nodeOn)
+          const vis = Math.max(baseBright, nodeGate);
+          const emerged = vis > 0.01;
+          const active = nodeGate > 0.02 && intensity > 0.05; // active requires nodeGate, not just baseBright
           const count = treeActivation.activeCounts[node.id] || 0;
           const blink = nodeGate > 0.02 && isBlinking(node.id);
-          // vis = nodeGate only. Text/fill controlled by nodeGate. Edge hint only adds to border.
-          const vis = nodeGate;
-          // Glow factor: combines intensity with vis for smooth ramping
-          const gf = intensity * vis;
+          // Glow factor: combines intensity with nodeGate (not baseBright) for smooth ramping
+          const gf = intensity * nodeGate;
           const hexR = (h, i) => parseInt(h.slice(i, i+2), 16);
           let fillColor, borderColor, textColor, labelSize, blinkColor;
           if (type === "layer") {
@@ -3587,9 +3591,9 @@ function TemporalReplay() {
               { keys: ["profiles"], cx: 1027, label: "PROF", w: 6 },
               { keys: ["careers"], cx: 1253, label: "CAREER", w: 7 },
             ];
-            const fields = ["inStart","nodeOn","outStart","flicker"];
-            const fieldLabels = ["pathway in","node on","pathway out","flk"];
-            const fieldColors = ["#00ff88","#00ccff","#ff8800","#aa55ff"];
+            const fields = ["inStart","nodeOn","outStart","flicker","baseBright"];
+            const fieldLabels = ["pathway in","node on","pathway out","flk","B"];
+            const fieldColors = ["#00ff88","#00ccff","#ff8800","#aa55ff","#ffffff"];
             const subLabels = { bioVirus:"V", bioTuber:"T", bioPneum:"P", bioMyco:"M", bioWin:"W" };
             const updateCol = (col, field, val) => {
               setColumns(prev => {
@@ -3627,7 +3631,7 @@ function TemporalReplay() {
                         <div key={f} style={{ display: "flex", gap: 1, marginTop: 1 }}>
                           {g.keys.map(k => (
                             <div key={k} style={{ flex: 1, minWidth: 0 }}>
-                              <input type="number" step={f === "flicker" ? 0.05 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
+                              <input type="number" step={f === "flicker" ? 0.05 : f === "baseBright" ? 0.02 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
                                 onChange={e => updateCol(k, f, e.target.value)}
                                 style={inputStyle(fieldColors[fi])} />
                               {f !== "flicker" && colConfig[k] && Math.abs((colConfig[k][f] || 0) - (COLUMNS[k]?.[f] || 0)) > 0.1 && (
@@ -4568,7 +4572,7 @@ function TemporalReplay() {
               {TREE_CAREERS.map(n => renderNode(n, "career"))}
 
               {/* ─── SOFTMAX PROBABILITY BARS — confidence distribution across careers ─── */}
-              {COL_NODE.careers > 0 && (() => {
+              {(COL_NODE.careers > 0 || (colConfig.careers?.baseBright || 0) > 0) && (() => {
                 const barW = nodeW[6]; // matches career node width
                 const barH = 5;
                 const barGap = 3;

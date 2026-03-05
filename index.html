@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v211 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v212 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -5445,86 +5445,55 @@ const LAYER_PROFILE_EDGES = [["L1", "pr_blitzer", 1.0], ["L1", "pr_mechmaster", 
 ];
 const PROFILE_CAREER_EDGES = [["pr_blitzer", "cr_rapid", 1.0], ["pr_blitzer", "cr_trades", 0.3], ["pr_mechmaster", "cr_precision", 1.0], ["pr_mechmaster", "cr_trades", 0.8], ["pr_mechmaster", "cr_techanalysis", 0.3], ["pr_adaptive", "cr_techanalysis", 1.0], ["pr_theory", "cr_techanalysis", 0.8], ["pr_theory", "cr_systems", 1.0], ["pr_planner", "cr_systems", 1.0], ["pr_shotcaller", "cr_leadership", 1.0], ["pr_catalyst", "cr_human", 1.0], ["pr_swiss", "cr_creative", 1.0], ["pr_swiss", "cr_leadership", 0.4], ["pr_swiss", "cr_systems", 0.3], ["pr_swiss", "cr_techanalysis", 0.3]];
 
-// ═══ COLUMN CONFIG — single source of truth ═══
-// start/end: wall-clock seconds for ramp (linear 0→1)
-// flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
-//   Controls duty cycle in calcEdge: high flicker = more random pops, low = sustained brightness
-// ═══ COLUMN CONFIG — default values, live-tunable via dashboard panel ═══
-// inStart/inEnd:   ramp for pathways IN (and node brightness)
-// outStart/outEnd: ramp for pathways OUT of this column to the next
-// flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
+// ═══ COLUMN CONFIG — simple: start (when) + speed (how long to ramp 0→1) ═══
 const DEFAULT_COLUMNS = {
   input: {
-    inStart: 0,
-    nodeOn: 0.5,
-    outStart: 0.5,
-    flicker: 0.9
+    start: 0,
+    speed: 0.5
   },
   data: {
-    inStart: 0,
-    nodeOn: 0.5,
-    outStart: 0.5,
-    flicker: 0.9
+    start: 0,
+    speed: 0.5
   },
   extraction: {
-    inStart: 0,
-    nodeOn: 1.5,
-    outStart: 2,
-    flicker: 0.7
+    start: 0,
+    speed: 3
   },
   events: {
-    inStart: 2.4,
-    nodeOn: 10,
-    outStart: 5,
-    flicker: 0.5
+    start: 4,
+    speed: 12
   },
   bioVirus: {
-    inStart: 3,
-    nodeOn: 6,
-    outStart: 7,
-    flicker: 0.4
+    start: 3,
+    speed: 8
   },
   bioTuber: {
-    inStart: 6,
-    nodeOn: 10,
-    outStart: 11,
-    flicker: 0.3
+    start: 6,
+    speed: 10
   },
   bioPneum: {
-    inStart: 6,
-    nodeOn: 10,
-    outStart: 11,
-    flicker: 0.3
+    start: 6,
+    speed: 10
   },
   bioMyco: {
-    inStart: 6,
-    nodeOn: 10,
-    outStart: 11,
-    flicker: 0.3
+    start: 6,
+    speed: 10
   },
   bioWin: {
-    inStart: 12,
-    nodeOn: 18,
-    outStart: 19,
-    flicker: 0.2
+    start: 12,
+    speed: 12
   },
   layers: {
-    inStart: 5,
-    nodeOn: 9,
-    outStart: 10,
-    flicker: 0.3
+    start: 5,
+    speed: 12
   },
   profiles: {
-    inStart: 12,
-    nodeOn: 20,
-    outStart: 22,
-    flicker: 0.2
+    start: 12,
+    speed: 16
   },
   careers: {
-    inStart: 20,
-    nodeOn: 35,
-    outStart: 38,
-    flicker: 0.1
+    start: 20,
+    speed: 20
   }
 };
 const DEFAULT_BASE_BRIGHT = 5;
@@ -6701,10 +6670,10 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v211") {
+      if (ver !== "v212") {
         localStorage.removeItem("pathogenika-columns");
         localStorage.removeItem("pathogenika-basebright");
-        localStorage.setItem("pathogenika-columns-ver", "v211");
+        localStorage.setItem("pathogenika-columns-ver", "v212");
       }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) {
@@ -7025,7 +6994,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v211"), /*#__PURE__*/React.createElement("span", {
+  }, "v212"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8037,29 +8006,27 @@ function TemporalReplay() {
     shuffled.forEach((key, i) => {
       const base = colConfig[key];
       const offsetJitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
-      const durationJitter = Math.sin(bioSeed * 3333 + i * 557) * 2;
       const offset = i * 2 + offsetJitter;
       colConfig[key] = {
         ...base,
-        inStart: base.inStart + offset,
-        nodeOn: base.nodeOn + offset,
-        outStart: base.outStart + offset
+        start: base.start + offset
       };
     });
 
-    // ═══ COL_RAMP (pathways IN), COL_OUT (pathways OUT), COL_NODE (node visibility gate) ═══
-    // inEnd is ALWAYS derived from nodeOn — pathways finish ramping when nodes appear.
-    // This eliminates the hidden stale inEnd bug where loaded configs had old inEnd values.
+    // ═══ DERIVE RAMPS FROM start/speed ═══
+    // COL_RAMP: 0→1 over [start, start+speed] — controls pathways IN + node gray ghost
+    // COL_NODE: same ramp — nodes appear alongside pathways
+    // COL_OUT:  starts 30% into the ramp — outgoing pathways lag slightly
+    // flicker: derived from speed (slow columns = steady, fast = popcorn)
     const COL_RAMP = {};
     const COL_OUT = {};
     const COL_NODE = {};
     for (const [key, cfg] of Object.entries(colConfig)) {
-      const nodeOnTime = cfg.nodeOn !== undefined ? cfg.nodeOn : (cfg.inStart + cfg.outStart) / 2;
-      // Pathways ramp from inStart to nodeOn (fully bright when nodes appear)
-      COL_RAMP[key] = lerp01(wt, cfg.inStart, nodeOnTime);
-      COL_OUT[key] = lerp01(wt, cfg.outStart, cfg.outStart + Math.max(2, nodeOnTime - cfg.inStart));
-      // Node gate: nodes invisible until nodeOn, then 1s fade-in
-      COL_NODE[key] = lerp01(wt, nodeOnTime, nodeOnTime + 1.0);
+      const s = cfg.start || 0;
+      const d = cfg.speed || 1;
+      COL_RAMP[key] = lerp01(wt, s, s + d);
+      COL_NODE[key] = COL_RAMP[key]; // nodes track pathways
+      COL_OUT[key] = lerp01(wt, s + d * 0.3, s + d * 1.2);
     }
     // Input/data need a floor for firehose to work
     COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
@@ -9436,7 +9403,10 @@ function TemporalReplay() {
     const getDestRamp = toId => COL_RAMP[getDestColumn(toId)] || 0;
     const getSourceOutRamp = fromId => COL_OUT[getDestColumn(fromId)] || 0;
     const getNodeGate = nodeId => COL_NODE[getDestColumn(nodeId)] || 0;
-    const getDestFlicker = toId => colConfig[getDestColumn(toId)]?.flicker ?? 0.5;
+    const getDestFlicker = toId => {
+      const spd = colConfig[getDestColumn(toId)]?.speed ?? 5;
+      return Math.max(0.1, Math.min(0.9, 1 - spd / 20)); // fast=popcorn, slow=steady
+    };
 
     // Compute brightness for one edge
     const calcEdge = (fromId, toId) => {
@@ -10811,9 +10781,9 @@ function TemporalReplay() {
         label: "CAREER",
         w: 7
       }];
-      const fields = ["inStart", "nodeOn", "outStart", "flicker"];
-      const fieldLabels = ["pathway in", "node on", "pathway out", "flk"];
-      const fieldColors = ["#00ff88", "#00ccff", "#ff8800", "#aa55ff"];
+      const fields = ["start", "speed"];
+      const fieldLabels = ["start ramp", "speed ramp"];
+      const fieldColors = ["#00ff88", "#00ccff"];
       const subLabels = {
         bioVirus: "V",
         bioTuber: "T",
@@ -10912,20 +10882,12 @@ function TemporalReplay() {
           }
         }, /*#__PURE__*/React.createElement("input", {
           type: "number",
-          step: f === "flicker" ? 0.05 : 0.5,
+          step: 0.5,
           value: COLUMNS[k]?.[f] ?? 0,
           onInput: e => updateCol(k, f, e.target.value),
           onChange: e => updateCol(k, f, e.target.value),
           style: inputStyle(fieldColors[fi])
-        }), f !== "flicker" && colConfig[k] && Math.abs((colConfig[k][f] || 0) - (COLUMNS[k]?.[f] || 0)) > 0.1 && /*#__PURE__*/React.createElement("div", {
-          style: {
-            fontSize: 6,
-            color: fieldColors[fi],
-            opacity: 0.4,
-            textAlign: "center",
-            fontFamily: mono
-          }
-        }, "\u2192", (colConfig[k][f] || 0).toFixed(1)))))));
+        }))))));
       }));
     })(), /*#__PURE__*/React.createElement("div", {
       style: {

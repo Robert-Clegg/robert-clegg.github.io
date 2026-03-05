@@ -5445,80 +5445,79 @@ const LAYER_PROFILE_EDGES = [["L1", "pr_blitzer", 1.0], ["L1", "pr_mechmaster", 
 ];
 const PROFILE_CAREER_EDGES = [["pr_blitzer", "cr_rapid", 1.0], ["pr_blitzer", "cr_trades", 0.3], ["pr_mechmaster", "cr_precision", 1.0], ["pr_mechmaster", "cr_trades", 0.8], ["pr_mechmaster", "cr_techanalysis", 0.3], ["pr_adaptive", "cr_techanalysis", 1.0], ["pr_theory", "cr_techanalysis", 0.8], ["pr_theory", "cr_systems", 1.0], ["pr_planner", "cr_systems", 1.0], ["pr_shotcaller", "cr_leadership", 1.0], ["pr_catalyst", "cr_human", 1.0], ["pr_swiss", "cr_creative", 1.0], ["pr_swiss", "cr_leadership", 0.4], ["pr_swiss", "cr_systems", 0.3], ["pr_swiss", "cr_techanalysis", 0.3]];
 
-// ═══ COLUMN CONFIG — start (when) + speed (ramp duration) + flicker (pop rate) + out (outgoing delay) ═══
-// out: seconds after start before this column sends signal to the next column
+// ═══ COLUMN CONFIG — nodes (gray ghosts) + pathways (signal start) + speed (ramp) + flicker (pop) ═══
 const DEFAULT_COLUMNS = {
   input: {
-    start: 0,
+    nodes: 0,
+    pathways: 0,
     speed: 1,
-    flicker: 9,
-    out: 0
+    flicker: 9
   },
   data: {
-    start: 0,
+    nodes: 0,
+    pathways: 0,
     speed: 1,
-    flicker: 9,
-    out: 0
+    flicker: 9
   },
   extraction: {
-    start: 0,
+    nodes: 0,
+    pathways: 1,
     speed: 3,
-    flicker: 7,
-    out: 2
+    flicker: 7
   },
   events: {
-    start: 4,
+    nodes: 4,
+    pathways: 8,
     speed: 12,
-    flicker: 5,
-    out: 8
+    flicker: 5
   },
   bioVirus: {
-    start: 3,
+    nodes: 3,
+    pathways: 5,
     speed: 8,
-    flicker: 4,
-    out: 6
+    flicker: 4
   },
   bioTuber: {
-    start: 6,
+    nodes: 6,
+    pathways: 8,
     speed: 10,
-    flicker: 3,
-    out: 8
+    flicker: 3
   },
   bioPneum: {
-    start: 6,
+    nodes: 6,
+    pathways: 8,
     speed: 10,
-    flicker: 3,
-    out: 8
+    flicker: 3
   },
   bioMyco: {
-    start: 6,
+    nodes: 6,
+    pathways: 8,
     speed: 10,
-    flicker: 3,
-    out: 8
+    flicker: 3
   },
   bioWin: {
-    start: 12,
+    nodes: 12,
+    pathways: 15,
     speed: 12,
-    flicker: 2,
-    out: 10
+    flicker: 2
   },
   layers: {
-    start: 5,
+    nodes: 5,
+    pathways: 8,
     speed: 12,
-    flicker: 3,
-    out: 10
+    flicker: 3
   },
   profiles: {
-    start: 12,
+    nodes: 12,
+    pathways: 16,
     speed: 16,
-    flicker: 2,
-    out: 14
+    flicker: 2
   },
   careers: {
-    start: 20,
+    nodes: 20,
+    pathways: 25,
     speed: 20,
-    flicker: 1,
-    out: 18
+    flicker: 1
   }
 };
 const DEFAULT_BASE_BRIGHT = 5;
@@ -8034,23 +8033,25 @@ function TemporalReplay() {
       const offset = i * 2 + offsetJitter;
       colConfig[key] = {
         ...base,
-        start: base.start + offset
+        nodes: base.nodes + offset,
+        pathways: base.pathways + offset
       };
     });
 
-    // COL_RAMP: 0→1 over [start, start+speed] — controls pathways IN + node gray ghost
-    // COL_NODE: same ramp — nodes appear alongside pathways
-    // COL_OUT:  0→1 from [start+out, start+out+speed*0.5] — outgoing pathways lag by tunable delay
+    // ═══ DERIVE RAMPS FROM nodes/pathways/speed ═══
+    // COL_NODE: gray ghosts appear at cfg.nodes, fade in over 2s
+    // COL_RAMP: pathways start at cfg.pathways, ramp over cfg.speed seconds
+    // COL_OUT:  outgoing pathways start 30% into the pathway ramp
     const COL_RAMP = {};
     const COL_OUT = {};
     const COL_NODE = {};
     for (const [key, cfg] of Object.entries(colConfig)) {
-      const s = cfg.start || 0;
+      const n = cfg.nodes || 0;
+      const p = cfg.pathways || 0;
       const d = cfg.speed || 1;
-      const o = cfg.out !== undefined ? cfg.out : d * 0.3;
-      COL_RAMP[key] = lerp01(wt, s, s + d);
-      COL_NODE[key] = COL_RAMP[key]; // nodes track pathways
-      COL_OUT[key] = lerp01(wt, s + o, s + o + d * 0.5);
+      COL_NODE[key] = lerp01(wt, n, n + 2); // gray ghosts fade in over 2s
+      COL_RAMP[key] = lerp01(wt, p, p + d); // pathways ramp
+      COL_OUT[key] = lerp01(wt, p + d * 0.3, p + d * 1.2); // outgoing lag
     }
     // Input/data need a floor for firehose to work
     COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
@@ -10805,9 +10806,9 @@ function TemporalReplay() {
         label: "CAREER",
         w: 7
       }];
-      const fields = ["start", "speed", "flicker", "out"];
-      const fieldLabels = ["start ramp", "speed ramp", "pop rate", "out delay"];
-      const fieldColors = ["#00ff88", "#00ccff", "#aa55ff", "#ff8800"];
+      const fields = ["nodes", "pathways", "speed", "flicker"];
+      const fieldLabels = ["nodes", "pathways", "speed", "pop rate"];
+      const fieldColors = ["#00ff88", "#ff8800", "#00ccff", "#aa55ff"];
       const subLabels = {
         bioVirus: "V",
         bioTuber: "T",

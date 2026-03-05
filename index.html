@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v220 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v221 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v220"), /*#__PURE__*/React.createElement("span", {
+  }, "v221"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9430,7 +9430,12 @@ function TemporalReplay() {
       if (TREE_CAREERS.some(n => n.id === toId)) return "careers";
       return "input";
     };
-    const getDestRamp = toId => COL_RAMP[getDestColumn(toId)] || 0;
+    // Early events that fire from immediate telemetry — their edges follow extraction timing
+    const EARLY_EVENTS = new Set(["ev_zoomIn", "ev_nearSwitch", "ev_wasd", "ev_mouseFollow", "ev_directKill", "ev_deathRespawn"]);
+    const getDestRamp = toId => {
+      if (EARLY_EVENTS.has(toId)) return Math.max(COL_RAMP.extraction || 0, COL_RAMP.events || 0);
+      return COL_RAMP[getDestColumn(toId)] || 0;
+    };
     const getSourceOutRamp = fromId => COL_OUT[getDestColumn(fromId)] || 0;
     const getNodeGate = nodeId => COL_NODE[getDestColumn(nodeId)] || 0;
     const getDestFlicker = toId => {

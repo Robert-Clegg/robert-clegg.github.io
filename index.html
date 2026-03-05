@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v217 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v218 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6680,18 +6680,39 @@ function TemporalReplay() {
   const [wallTime, setWallTime] = useState(0); // real elapsed seconds since play start
   const [bioSeed, setBioSeed] = useState(Math.random()); // randomize biology order each play
   const [COLUMNS, setColumns] = useState(() => {
-    // Clear stale localStorage on version change — ensures new tuned defaults take effect
+    // Migrate localStorage — never wipe, always preserve user tuning
     try {
-      const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v217") {
-        localStorage.removeItem("pathogenika-columns");
-        localStorage.removeItem("pathogenika-basebright");
-        localStorage.setItem("pathogenika-columns-ver", "v217");
-      }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) {
-        console.log("[TUNER] Restored from localStorage");
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Migrate old field names: start → pathways
+        let migrated = false;
+        for (const key of Object.keys(parsed)) {
+          if (parsed[key].start !== undefined && parsed[key].pathways === undefined) {
+            parsed[key].pathways = parsed[key].start;
+            delete parsed[key].start;
+            migrated = true;
+          }
+          // Migrate old nodeOn/inStart/outStart → pathways/speed
+          if (parsed[key].inStart !== undefined && parsed[key].pathways === undefined) {
+            parsed[key].pathways = parsed[key].inStart;
+            delete parsed[key].inStart;
+            delete parsed[key].nodeOn;
+            delete parsed[key].outStart;
+            migrated = true;
+          }
+          // Ensure all required fields exist with defaults
+          if (parsed[key].pathways === undefined) parsed[key].pathways = DEFAULT_COLUMNS[key]?.pathways ?? 0;
+          if (parsed[key].speed === undefined) parsed[key].speed = DEFAULT_COLUMNS[key]?.speed ?? 5;
+          if (parsed[key].flicker === undefined) parsed[key].flicker = DEFAULT_COLUMNS[key]?.flicker ?? 5;
+        }
+        // Add any missing columns from defaults
+        for (const key of Object.keys(DEFAULT_COLUMNS)) {
+          if (!parsed[key]) parsed[key] = JSON.parse(JSON.stringify(DEFAULT_COLUMNS[key]));
+        }
+        if (migrated) localStorage.setItem("pathogenika-columns", JSON.stringify(parsed));
+        console.log("[TUNER] Restored from localStorage" + (migrated ? " (migrated)" : ""));
+        return parsed;
       }
     } catch (e) {}
     return JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
@@ -7007,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v217"), /*#__PURE__*/React.createElement("span", {
+  }, "v218"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13128,4 +13149,4 @@ function TemporalReplay() {
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>
-</body></html><!-- v217 deploy Thu Mar  5 23:09:51 UTC 2026 -->
+</body></html>

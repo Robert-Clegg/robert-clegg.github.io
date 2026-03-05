@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v179 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v180 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -429,11 +429,11 @@ const PROFILE_CAREER_EDGES = [
 // start/end: wall-clock seconds for ramp (linear 0→1)
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
 //   Controls duty cycle in calcEdge: high flicker = more random pops, low = sustained brightness
-// ═══ COLUMN CONFIG — single source of truth ═══
-// inStart/inEnd:   ramp for pathways IN (and node brightness — node can't glow without incoming signal)
+// ═══ COLUMN CONFIG — default values, live-tunable via dashboard panel ═══
+// inStart/inEnd:   ramp for pathways IN (and node brightness)
 // outStart/outEnd: ramp for pathways OUT of this column to the next
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
-const COLUMNS = {
+const DEFAULT_COLUMNS = {
   input:      { inStart: 0,  inEnd: 3,  outStart: 1,  outEnd: 4,  flicker: 0.9 },
   data:       { inStart: 0,  inEnd: 3,  outStart: 1,  outEnd: 4,  flicker: 0.9 },
   extraction: { inStart: 1,  inEnd: 4,  outStart: 2,  outEnd: 5,  flicker: 0.7 },
@@ -1138,6 +1138,8 @@ function TemporalReplay() {
   const playingRef = useRef(false);
   const [wallTime, setWallTime] = useState(0); // real elapsed seconds since play start
   const [bioSeed, setBioSeed] = useState(Math.random()); // randomize biology order each play
+  const [COLUMNS, setColumns] = useState(() => JSON.parse(JSON.stringify(DEFAULT_COLUMNS)));
+  const [showTuner, setShowTuner] = useState(false);
 
 
   // ═══ TELEMETRY FILE LOADING ═══
@@ -1325,7 +1327,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v179</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v180</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1670,6 +1672,8 @@ function TemporalReplay() {
         // ═══ RANDOMIZE BIOLOGY ORDER — changes each playback ═══
         // Virus always first (bioVirus in COLUMNS). Other 3 get random staggered starts.
         // bioSeed changes on rewind/restart, giving a new order each time.
+        // colConfig = COLUMNS + bio randomization (local, not mutating state)
+        const colConfig = JSON.parse(JSON.stringify(COLUMNS));
         const bioOtherKeys = ["bioTuber", "bioPneum", "bioMyco"];
         const shuffled = [...bioOtherKeys].sort((a, b) => {
           const ha = Math.sin(bioSeed * 9999 + a.charCodeAt(3) * 127) * 10000;
@@ -1677,19 +1681,18 @@ function TemporalReplay() {
           return (ha % 1) - (hb % 1);
         });
         shuffled.forEach((key, i) => {
-          // Stagger: first non-virus at 5-7s, second at 7-10s, third at 9-14s
           const baseStart = 5 + i * 2.5;
           const jitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
           const inStart = Math.max(5, baseStart + jitter);
-          const rampDur = 8 + Math.sin(bioSeed * 3333 + i * 557) * 4; // 4-12s ramp duration
-          const outDelay = 2 + Math.sin(bioSeed * 5555 + i * 223) * 1; // 1-3s after inStart
-          COLUMNS[key] = { ...COLUMNS[key], inStart, inEnd: inStart + rampDur, outStart: inStart + outDelay, outEnd: inStart + rampDur + 2 };
+          const rampDur = 8 + Math.sin(bioSeed * 3333 + i * 557) * 4;
+          const outDelay = 2 + Math.sin(bioSeed * 5555 + i * 223) * 1;
+          colConfig[key] = { ...colConfig[key], inStart, inEnd: inStart + rampDur, outStart: inStart + outDelay, outEnd: inStart + rampDur + 2 };
         });
 
         // ═══ COL_RAMP (pathways IN + node brightness) and COL_OUT (pathways OUT) ═══
-        const COL_RAMP = {};     // pathways IN to this column + node brightness
-        const COL_OUT = {};      // pathways OUT from this column
-        for (const [key, cfg] of Object.entries(COLUMNS)) {
+        const COL_RAMP = {};
+        const COL_OUT = {};
+        for (const [key, cfg] of Object.entries(colConfig)) {
           COL_RAMP[key] = lerp01(wt, cfg.inStart, cfg.inEnd);
           COL_OUT[key] = lerp01(wt, cfg.outStart, cfg.outEnd);
         }
@@ -2527,7 +2530,7 @@ function TemporalReplay() {
         };
         const getDestRamp = (toId) => COL_RAMP[getDestColumn(toId)] || 0;
         const getSourceOutRamp = (fromId) => COL_OUT[getDestColumn(fromId)] || 0;
-        const getDestFlicker = (toId) => COLUMNS[getDestColumn(toId)]?.flicker ?? 0.5;
+        const getDestFlicker = (toId) => colConfig[getDestColumn(toId)]?.flicker ?? 0.5;
 
         // Compute brightness for one edge
         const calcEdge = (fromId, toId) => {
@@ -3424,6 +3427,76 @@ function TemporalReplay() {
           <div style={{ background: "rgba(255,0,0,0.15)", padding: "4px 8px", fontFamily: mono, fontSize: 9, color: "#ff8888", marginBottom: 4, borderRadius: 4 }}>
             wt={wallTime.toFixed(1)} t={time.toFixed(1)} playing={String(playing)} firehose={firehoseSet.size} edges={Object.keys(edgeBright).length} nodes={Object.keys(nodeBright).length} maxEB={Math.max(0,...Object.values(edgeBright)).toFixed(3)} maxNB={Math.max(0,...Object.values(nodeBright)).toFixed(3)} ext={COL_RAMP.extraction.toFixed(2)} ev={COL_RAMP.events.toFixed(2)} bio={COL_RAMP.bioVirus.toFixed(2)} lay={COL_RAMP.layers.toFixed(2)} pro={COL_RAMP.profiles.toFixed(2)} car={COL_RAMP.careers.toFixed(2)}
           </div>
+
+          {/* ═══ COLUMN TUNER PANEL ═══ */}
+          <div style={{ marginBottom: 4 }}>
+            <button onClick={() => setShowTuner(!showTuner)} style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", color: "#00ff88", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontFamily: mono, fontSize: 8, marginRight: 6 }}>
+              {showTuner ? "▼ TUNER" : "▶ TUNER"}
+            </button>
+            {showTuner && <>
+              <button onClick={() => {
+                const json = JSON.stringify(COLUMNS, null, 2);
+                const blob = new Blob([json], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a"); a.href = url; a.download = "column-config.json"; a.click();
+                URL.revokeObjectURL(url);
+              }} style={{ background: "rgba(0,200,255,0.1)", border: "1px solid rgba(0,200,255,0.3)", color: "#00ccff", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontFamily: mono, fontSize: 8, marginRight: 4 }}>
+                SAVE
+              </button>
+              <button onClick={() => {
+                const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json";
+                inp.onchange = (e) => {
+                  const f = e.target.files[0]; if (!f) return;
+                  const r = new FileReader();
+                  r.onload = () => { try { setColumns(JSON.parse(r.result)); } catch(err) { console.error(err); } };
+                  r.readAsText(f);
+                };
+                inp.click();
+              }} style={{ background: "rgba(255,170,0,0.1)", border: "1px solid rgba(255,170,0,0.3)", color: "#ffaa00", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontFamily: mono, fontSize: 8, marginRight: 4 }}>
+                LOAD
+              </button>
+              <button onClick={() => setColumns(JSON.parse(JSON.stringify(DEFAULT_COLUMNS)))} style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)", color: "#ff4444", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontFamily: mono, fontSize: 8 }}>
+                RESET
+              </button>
+            </>}
+          </div>
+          {showTuner && (() => {
+            const tunerKeys = ["extraction","events","bioVirus","bioTuber","bioPneum","bioMyco","layers","profiles","careers"];
+            const labels = { extraction:"EXT", events:"EVT", bioVirus:"VIRUS", bioTuber:"TUBER", bioPneum:"PNEUM", bioMyco:"MYCO", layers:"LAYER", profiles:"PROF", careers:"CAREER" };
+            const fields = ["inStart","inEnd","outStart","outEnd","flicker"];
+            const fieldLabels = ["in▸","in■","out▸","out■","flk"];
+            const fieldColors = ["#00ff88","#00cc66","#ff8800","#cc6600","#aa55ff"];
+            const updateCol = (col, field, val) => {
+              setColumns(prev => {
+                const next = JSON.parse(JSON.stringify(prev));
+                next[col][field] = parseFloat(val) || 0;
+                return next;
+              });
+            };
+            return (
+              <div style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 8px", marginBottom: 4, overflowX: "auto" }}>
+                <div style={{ display: "flex", gap: 2, fontFamily: mono, fontSize: 7, minWidth: 800 }}>
+                  <div style={{ width: 34, flexShrink: 0 }} />
+                  {tunerKeys.map(k => (
+                    <div key={k} style={{ flex: 1, textAlign: "center", color: "rgba(255,255,255,0.5)", fontWeight: 700, fontSize: 7, letterSpacing: 0.5 }}>{labels[k]}</div>
+                  ))}
+                </div>
+                {fields.map((f, fi) => (
+                  <div key={f} style={{ display: "flex", gap: 2, alignItems: "center", marginTop: 2 }}>
+                    <div style={{ width: 34, flexShrink: 0, color: fieldColors[fi], fontSize: 7, fontFamily: mono, fontWeight: 600, textAlign: "right", paddingRight: 4 }}>{fieldLabels[fi]}</div>
+                    {tunerKeys.map(k => (
+                      <div key={k} style={{ flex: 1 }}>
+                        <input type="number" step={f === "flicker" ? 0.05 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
+                          onChange={e => updateCol(k, f, e.target.value)}
+                          style={{ width: "100%", background: "rgba(0,0,0,0.5)", border: `1px solid ${fieldColors[fi]}44`, color: fieldColors[fi], borderRadius: 3, padding: "1px 3px", fontFamily: mono, fontSize: 9, textAlign: "center", outline: "none", boxSizing: "border-box" }} />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
           <div style={{ overflow: "hidden", direction: "ltr" }}>
             <svg width={W} height={H} viewBox={`-92 0 ${W + 92} ${H}`} style={{ display: "block", margin: "0 auto", direction: "ltr" }}>
               <defs>

@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v215 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v216 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -5445,76 +5445,65 @@ const LAYER_PROFILE_EDGES = [["L1", "pr_blitzer", 1.0], ["L1", "pr_mechmaster", 
 ];
 const PROFILE_CAREER_EDGES = [["pr_blitzer", "cr_rapid", 1.0], ["pr_blitzer", "cr_trades", 0.3], ["pr_mechmaster", "cr_precision", 1.0], ["pr_mechmaster", "cr_trades", 0.8], ["pr_mechmaster", "cr_techanalysis", 0.3], ["pr_adaptive", "cr_techanalysis", 1.0], ["pr_theory", "cr_techanalysis", 0.8], ["pr_theory", "cr_systems", 1.0], ["pr_planner", "cr_systems", 1.0], ["pr_shotcaller", "cr_leadership", 1.0], ["pr_catalyst", "cr_human", 1.0], ["pr_swiss", "cr_creative", 1.0], ["pr_swiss", "cr_leadership", 0.4], ["pr_swiss", "cr_systems", 0.3], ["pr_swiss", "cr_techanalysis", 0.3]];
 
-// ═══ COLUMN CONFIG — nodes (gray ghosts) + pathways (signal start) + speed (ramp) + flicker (pop) ═══
+// ═══ COLUMN CONFIG — pathways (when signal starts) + speed (ramp duration) + flicker (pop rate) ═══
+// Gray ghosts always visible from t=0. Color earned through signal.
 const DEFAULT_COLUMNS = {
   input: {
-    nodes: 0,
     pathways: 0,
     speed: 1,
     flicker: 9
   },
   data: {
-    nodes: 0,
     pathways: 0,
     speed: 1,
     flicker: 9
   },
   extraction: {
-    nodes: 0,
     pathways: 1,
     speed: 3,
     flicker: 7
   },
   events: {
-    nodes: 4,
     pathways: 8,
     speed: 12,
     flicker: 5
   },
   bioVirus: {
-    nodes: 3,
     pathways: 5,
     speed: 8,
     flicker: 4
   },
   bioTuber: {
-    nodes: 6,
     pathways: 8,
     speed: 10,
     flicker: 3
   },
   bioPneum: {
-    nodes: 6,
     pathways: 8,
     speed: 10,
     flicker: 3
   },
   bioMyco: {
-    nodes: 6,
     pathways: 8,
     speed: 10,
     flicker: 3
   },
   bioWin: {
-    nodes: 12,
     pathways: 15,
     speed: 12,
     flicker: 2
   },
   layers: {
-    nodes: 5,
     pathways: 8,
     speed: 12,
     flicker: 3
   },
   profiles: {
-    nodes: 12,
     pathways: 16,
     speed: 16,
     flicker: 2
   },
   careers: {
-    nodes: 20,
     pathways: 25,
     speed: 20,
     flicker: 1
@@ -6694,10 +6683,10 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v215") {
+      if (ver !== "v216") {
         localStorage.removeItem("pathogenika-columns");
         localStorage.removeItem("pathogenika-basebright");
-        localStorage.setItem("pathogenika-columns-ver", "v215");
+        localStorage.setItem("pathogenika-columns-ver", "v216");
       }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) {
@@ -7018,7 +7007,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v215"), /*#__PURE__*/React.createElement("span", {
+  }, "v216"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8033,23 +8022,18 @@ function TemporalReplay() {
       const offset = i * 2 + offsetJitter;
       colConfig[key] = {
         ...base,
-        nodes: base.nodes + offset,
         pathways: base.pathways + offset
       };
     });
 
-    // ═══ DERIVE RAMPS FROM nodes/pathways/speed ═══
-    // COL_NODE: gray ghosts appear at cfg.nodes, fade in over 2s
-    // COL_RAMP: pathways start at cfg.pathways, ramp over cfg.speed seconds
-    // COL_OUT:  outgoing pathways start 30% into the pathway ramp
+    // ═══ DERIVE RAMPS — gray ghosts always on, pathways ramp per config ═══
     const COL_RAMP = {};
     const COL_OUT = {};
     const COL_NODE = {};
     for (const [key, cfg] of Object.entries(colConfig)) {
-      const n = cfg.nodes || 0;
       const p = cfg.pathways || 0;
       const d = cfg.speed || 1;
-      COL_NODE[key] = lerp01(wt, n, n + 2); // gray ghosts fade in over 2s
+      COL_NODE[key] = 1; // gray ghosts always visible
       COL_RAMP[key] = lerp01(wt, p, p + d); // pathways ramp
       COL_OUT[key] = lerp01(wt, p + d * 0.3, p + d * 1.2); // outgoing lag
     }
@@ -10153,7 +10137,7 @@ function TemporalReplay() {
         const dfVis = Math.max(baseBright, extNodeGate);
         if (dfVis < 0.005) return null;
         const gf = activity * extNodeGate;
-        const dfColorMix = Math.min(1, extNodeGate);
+        const dfColorMix = Math.min(1, COL_RAMP.extraction || 0);
         const [dr, dg, db] = mixRGB(hexC(df.color, 1), hexC(df.color, 3), hexC(df.color, 5), dfColorMix);
         const dfCol = `${dr},${dg},${db}`;
         const bgOp = (0.01 * dfVis + gf * 0.15).toFixed(3);
@@ -10229,7 +10213,7 @@ function TemporalReplay() {
       const brightness = nodeBright[sub.id] || 0;
       const ssActive = brightness > 0.05;
       const fresh = brightness > 0.3;
-      const ssColorMix = Math.min(1, skNodeGate);
+      const ssColorMix = Math.min(1, COL_RAMP[SKILL_TO_COL[parent.id] || "bioVirus"] || 0);
       const [sr, sg, sb] = mixRGB(hexC(sub.color, 1), hexC(sub.color, 3), hexC(sub.color, 5), ssColorMix);
       const ssCol = `rgb(${sr},${sg},${sb})`;
       const ssColA = a => `rgba(${sr},${sg},${sb},${a})`;
@@ -10369,7 +10353,7 @@ function TemporalReplay() {
       const blink = nodeGate > 0.02 && isBlinking(node.id);
       const gf = intensity * nodeGate;
       // ═══ GRAYSCALE → COLOR: nodes start gray, color fades in with nodeGate ═══
-      const colorMix = Math.min(1, nodeGate); // 0=gray, 1=full color
+      const colorMix = Math.min(1, colRamp); // 0=gray, 1=full color — driven by pathway ramp
       let fillColor, borderColor, textColor, labelSize, blinkColor;
       if (type === "layer") {
         const layerDef = TREE_LAYERS.find(l => l.id === node.id);
@@ -10806,9 +10790,9 @@ function TemporalReplay() {
         label: "CAREER",
         w: 7
       }];
-      const fields = ["nodes", "pathways", "speed", "flicker"];
-      const fieldLabels = ["nodes", "pathways", "speed", "pop rate"];
-      const fieldColors = ["#00ff88", "#ff8800", "#00ccff", "#aa55ff"];
+      const fields = ["pathways", "speed", "flicker"];
+      const fieldLabels = ["pathways", "speed", "pop rate"];
+      const fieldColors = ["#ff8800", "#00ccff", "#aa55ff"];
       const subLabels = {
         bioVirus: "V",
         bioTuber: "T",

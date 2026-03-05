@@ -3433,7 +3433,7 @@ function TemporalReplay() {
             const preFire = derivedPreFire[node.id] || 0;
             const hasPreFire = emerged && preFire > 0.15 && !active;
             const isHeavy = HEAVY_EVENTS.has(node.id);
-            const glow = Math.max(intensity, hasPreFire ? preFire * 0.4 : 0) * vis;
+            const glow = Math.max(intensity, hasPreFire ? preFire * 0.4 : 0) * nodeGate;
             if (isHeavy && glow > 0.03) {
               const [r,g,b] = mixRGB(255, 220, 100, colorMix);
               fillColor = `rgba(${r},${g},${b},${(0.02 + glow * 0.15).toFixed(3)})`;

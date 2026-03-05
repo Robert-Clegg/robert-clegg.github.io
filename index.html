@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v161 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v162 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v161</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v162</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1645,13 +1645,13 @@ function TemporalReplay() {
         const COL_RAMP = {
           input:      Math.max(lerp01(wt, 0, 3), playing ? 0.05 : 0),  // 0-3s (always >0 when playing)
           data:       Math.max(lerp01(wt, 0, 3), playing ? 0.05 : 0),  // 0-3s (feeds firehose)
-          extraction: ease(lerp01(wt, 0, 10)),     // 0-10s (cubic: dim→bright gradient)
-          events:     ease(lerp01(wt, 7, 20)),     // 7-20s
-          bioVirus:   ease(lerp01(wt, 1, 10)),     // 1-10s
-          bioOther:   ease(lerp01(wt, 5, 30)),     // 5-30s
-          layers:     ease(lerp01(wt, 10, 25)),    // 10-25s
-          profiles:   ease(lerp01(wt, 15, 35)),    // 15-35s
-          careers:    ease(lerp01(wt, 20, 45)),    // 20-45s
+          extraction: ease(lerp01(wt, 0, 6)),      // 0-6s
+          events:     ease(lerp01(wt, 1, 12)),     // 1-12s (events happen from the start)
+          bioVirus:   ease(lerp01(wt, 2, 10)),     // 2-10s
+          bioOther:   ease(lerp01(wt, 4, 20)),     // 4-20s
+          layers:     ease(lerp01(wt, 4, 16)),     // 4-16s (overlaps with biology)
+          profiles:   ease(lerp01(wt, 7, 22)),     // 7-22s
+          careers:    ease(lerp01(wt, 10, 30)),    // 10-30s
         };
         const FIREHOSE_KEYS = [
           "mouseX","mouseY","velocity","LMB","RMB","scroll",
@@ -3329,7 +3329,7 @@ function TemporalReplay() {
 
           {/* DEBUG BAR — remove after fixing */}
           <div style={{ background: "rgba(255,0,0,0.15)", padding: "4px 8px", fontFamily: mono, fontSize: 9, color: "#ff8888", marginBottom: 4, borderRadius: 4 }}>
-            wt={wallTime.toFixed(1)} t={time.toFixed(1)} playing={String(playing)} firehose={firehoseSet.size} edges={Object.keys(edgeBright).length} nodes={Object.keys(nodeBright).length} maxEB={Math.max(0,...Object.values(edgeBright)).toFixed(3)} maxNB={Math.max(0,...Object.values(nodeBright)).toFixed(3)} ramp:data={COL_RAMP.data.toFixed(3)} ext={COL_RAMP.extraction.toFixed(3)} ev={COL_RAMP.events.toFixed(3)}
+            wt={wallTime.toFixed(1)} t={time.toFixed(1)} playing={String(playing)} firehose={firehoseSet.size} edges={Object.keys(edgeBright).length} nodes={Object.keys(nodeBright).length} maxEB={Math.max(0,...Object.values(edgeBright)).toFixed(3)} maxNB={Math.max(0,...Object.values(nodeBright)).toFixed(3)} ext={COL_RAMP.extraction.toFixed(2)} ev={COL_RAMP.events.toFixed(2)} bio={COL_RAMP.bioVirus.toFixed(2)} lay={COL_RAMP.layers.toFixed(2)} pro={COL_RAMP.profiles.toFixed(2)} car={COL_RAMP.careers.toFixed(2)}
           </div>
           <div style={{ overflow: "hidden", direction: "ltr" }}>
             <svg width={W} height={H} viewBox={`-92 0 ${W + 92} ${H}`} style={{ display: "block", margin: "0 auto", direction: "ltr" }}>

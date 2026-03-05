@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v222 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v223 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v222"), /*#__PURE__*/React.createElement("span", {
+  }, "v223"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8219,7 +8219,7 @@ function TemporalReplay() {
       id: "df_tracking",
       label: "Tracking",
       sources: ["LMB", "mouseX", "mouseY"],
-      feeds: ["ev_kill", "ev_mouseFollow"],
+      feeds: ["ev_kill", "ev_mouseFollow", "ev_zoomIn", "ev_nearSwitch", "ev_wasd"],
       color: "#ff8844",
       row: 3.5
     }, {
@@ -8258,7 +8258,7 @@ function TemporalReplay() {
       id: "df_zoomDelta",
       label: "Zoom Δ",
       sources: ["scroll"],
-      feeds: ["ev_zoomIn", "ev_zoomOut"],
+      feeds: ["ev_zoomIn", "ev_zoomOut", "ev_nearSwitch"],
       color: "#00bbdd",
       row: 7.8
     },
@@ -8315,7 +8315,7 @@ function TemporalReplay() {
       id: "df_spatialRead",
       label: "Spatial Read",
       sources: ["heatmap", "readout"],
-      feeds: ["ev_zoomOut", "ev_capture", "ev_worldDeath"],
+      feeds: ["ev_zoomOut", "ev_capture", "ev_worldDeath", "ev_zoomIn", "ev_nearSwitch"],
       color: "#ffaa44",
       row: 13.3
     }, {

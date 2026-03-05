@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v176 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v177 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -424,6 +424,22 @@ const PROFILE_CAREER_EDGES = [
   ["pr_swiss", "cr_creative", 1.0], ["pr_swiss", "cr_leadership", 0.4],
   ["pr_swiss", "cr_systems", 0.3], ["pr_swiss", "cr_techanalysis", 0.3],
 ];
+
+// ═══ COLUMN CONFIG — single source of truth ═══
+// start/end: wall-clock seconds for ramp (linear 0→1)
+// flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
+//   Controls duty cycle in calcEdge: high flicker = more random pops, low = sustained brightness
+const COLUMNS = {
+  input:      { start: 0,  end: 3,  flicker: 0.9 },
+  data:       { start: 0,  end: 3,  flicker: 0.9 },
+  extraction: { start: 1,  end: 4,  flicker: 0.7 },
+  events:     { start: 3,  end: 6,  flicker: 0.5 },
+  bioVirus:   { start: 4,  end: 10, flicker: 0.4 },
+  bioOther:   { start: 5,  end: 20, flicker: 0.3 },
+  layers:     { start: 5,  end: 16, flicker: 0.3 },
+  profiles:   { start: 8,  end: 22, flicker: 0.2 },
+  careers:    { start: 11, end: 30, flicker: 0.1 },
+};
 
 // Cognitive timescale-aligned saturation thresholds
 const LAYER_THRESHOLDS = { L1: 15, L2: 10, L3: 8, L4: 5 };
@@ -1300,7 +1316,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v176</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v177</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1642,17 +1658,14 @@ function TemporalReplay() {
         const lerp01 = (t, start, end) => clamp01((t - start) / (end - start));
         const ease = (v) => v * v; // quadratic ease-in: softer emergence than cubic
         const wt = wallTime; // real seconds since play started
-        const COL_RAMP = {
-          input:      Math.max(lerp01(wt, 0, 3), playing ? 0.05 : 0),  // 0-3s (always >0 when playing)
-          data:       Math.max(lerp01(wt, 0, 3), playing ? 0.05 : 0),  // 0-3s (feeds firehose)
-          extraction: lerp01(wt, 1, 4),      // 1-4s linear, no floor — ramps from 0
-          events:     lerp01(wt, 3, 6),              // 3-6s linear
-          bioVirus:   ease(lerp01(wt, 2, 10)),     // 2-10s
-          bioOther:   ease(lerp01(wt, 4, 20)),     // 4-20s
-          layers:     ease(lerp01(wt, 4, 16)),     // 4-16s (overlaps with biology)
-          profiles:   ease(lerp01(wt, 7, 22)),     // 7-22s
-          careers:    ease(lerp01(wt, 10, 30)),    // 10-30s
-        };
+        // ═══ COL_RAMP — computed from COLUMNS config ═══
+        const COL_RAMP = {};
+        for (const [key, cfg] of Object.entries(COLUMNS)) {
+          COL_RAMP[key] = lerp01(wt, cfg.start, cfg.end);
+        }
+        // Input/data need a floor for firehose to work
+        COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
+        COL_RAMP.data = Math.max(COL_RAMP.data, playing ? 0.05 : 0);
         const FIREHOSE_KEYS = [
           "mouseX","mouseY","velocity","LMB","RMB","scroll",
           "W","A","S","D","R","E","SPC","F",
@@ -2461,40 +2474,49 @@ function TemporalReplay() {
         };
 
         // COL_RAMP ceiling for a destination node
-        const getDestRamp = (toId) => {
-          if (DERIVED_FEATURES.some(d => d.id === toId)) return COL_RAMP.extraction;
-          if (TREE_EVENTS.some(n => n.id === toId)) return COL_RAMP.events;
+        // ═══ COLUMN LOOKUP — maps any node ID to its COLUMNS key ═══
+        const getDestColumn = (toId) => {
+          if (DERIVED_FEATURES.some(d => d.id === toId)) return "extraction";
+          if (TREE_EVENTS.some(n => n.id === toId)) return "events";
           const sk = TREE_SKILLS.find(n => n.id === toId);
-          if (sk) return sk.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
+          if (sk) return sk.id === "sk_virus" ? "bioVirus" : "bioOther";
           const ss = TREE_SUB_SKILLS.find(n => n.id === toId);
-          if (ss) { const p = TREE_SKILLS.find(s => s.id === ss.parent); return p && p.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther; }
-          if (["L1","L2","L3","L4"].includes(toId)) return COL_RAMP.layers;
-          if (TREE_PROFILES.some(n => n.id === toId)) return COL_RAMP.profiles;
-          if (TREE_CAREERS.some(n => n.id === toId)) return COL_RAMP.careers;
-          return 1;
+          if (ss) { const p = TREE_SKILLS.find(s => s.id === ss.parent); return p && p.id === "sk_virus" ? "bioVirus" : "bioOther"; }
+          if (["L1","L2","L3","L4"].includes(toId)) return "layers";
+          if (TREE_PROFILES.some(n => n.id === toId)) return "profiles";
+          if (TREE_CAREERS.some(n => n.id === toId)) return "careers";
+          return "input";
         };
+        const getDestRamp = (toId) => COL_RAMP[getDestColumn(toId)] || 0;
+        const getDestFlicker = (toId) => COLUMNS[getDestColumn(toId)]?.flicker ?? 0.5;
 
         // Compute brightness for one edge
         const calcEdge = (fromId, toId) => {
           _eIdx++;
           const destRamp = getDestRamp(toId);
           if (destRamp <= 0) return 0;
+          const flicker = getDestFlicker(toId);
           const key = `${fromId}:${toId}`;
           const fireCount = edgeFireCounts[key] || 0;
           // Myelin floor: permanent trail, capped by ramp (builds over time)
           const myelin = fireCount > 0 ? Math.min(0.4 * destRamp, 0.02 + fireCount * 0.005) : 0;
-          // Stochastic flash: ALWAYS visible when it pops (0.15-0.6)
-          // Ramp controls duty cycle: low ramp = rare pops, high ramp = frequent
+          // Stochastic flash vs steady glow — controlled by flicker setting
+          // flicker=1.0: full popcorn (duty cycle, random pops)
+          // flicker=0.0: steady brightness proportional to ramp
           let flash = 0;
           if (time > 0.1 && isLive(fromId)) {
-            const period = EDGE_PRIMES[_eIdx % EDGE_PRIMES.length];
-            const cycle = Math.floor(nowMs / period);
-            const phase = (fromId.length * 17 + toId.length * 31 + _eIdx * 7) % 11;
-            // Duty scales with ramp: at ramp=0.05 only 1-in-20 pops, at ramp=1.0 full 43%
-            const duty = Math.max(1, Math.round(3 * destRamp)); // 0-3
-            if ((cycle + phase) % 7 < duty) flash = 0.15 + 0.45 * destRamp;
+            if (flicker > 0.05) {
+              // Stochastic mode: duty cycle controls pop frequency
+              const period = EDGE_PRIMES[_eIdx % EDGE_PRIMES.length];
+              const cycle = Math.floor(nowMs / period);
+              const phase = (fromId.length * 17 + toId.length * 31 + _eIdx * 7) % 11;
+              const duty = Math.max(1, Math.round(3 * destRamp * flicker)); // flicker scales duty
+              if ((cycle + phase) % 7 < duty) flash = 0.15 + 0.45 * destRamp;
+            }
+            // Steady component: inverse of flicker — always present
+            const steady = (1 - flicker) * destRamp * 0.6;
+            flash = Math.max(flash, steady);
           }
-          // Flash is NOT capped by ramp — pops are always visible
           return Math.max(flash, myelin);
         };
 

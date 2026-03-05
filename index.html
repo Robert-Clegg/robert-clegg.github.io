@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v178 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v179 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -429,20 +429,24 @@ const PROFILE_CAREER_EDGES = [
 // start/end: wall-clock seconds for ramp (linear 0→1)
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
 //   Controls duty cycle in calcEdge: high flicker = more random pops, low = sustained brightness
+// ═══ COLUMN CONFIG — single source of truth ═══
+// inStart/inEnd:   ramp for pathways IN (and node brightness — node can't glow without incoming signal)
+// outStart/outEnd: ramp for pathways OUT of this column to the next
+// flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
 const COLUMNS = {
-  input:      { start: 0,  end: 3,  flicker: 0.9 },
-  data:       { start: 0,  end: 3,  flicker: 0.9 },
-  extraction: { start: 1,  end: 4,  flicker: 0.7 },
-  events:     { start: 3,  end: 6,  flicker: 0.5 },
-  bioVirus:   { start: 4,  end: 10, flicker: 0.4 },
+  input:      { inStart: 0,  inEnd: 3,  outStart: 1,  outEnd: 4,  flicker: 0.9 },
+  data:       { inStart: 0,  inEnd: 3,  outStart: 1,  outEnd: 4,  flicker: 0.9 },
+  extraction: { inStart: 1,  inEnd: 4,  outStart: 2,  outEnd: 5,  flicker: 0.7 },
+  events:     { inStart: 2,  inEnd: 5,  outStart: 3,  outEnd: 6,  flicker: 0.5 },
+  bioVirus:   { inStart: 3,  inEnd: 8,  outStart: 5,  outEnd: 10, flicker: 0.4 },
   // bioTuber, bioPneum, bioMyco — randomized per playback (see component)
-  bioTuber:   { start: 5,  end: 20, flicker: 0.3 },
-  bioPneum:   { start: 5,  end: 20, flicker: 0.3 },
-  bioMyco:    { start: 5,  end: 20, flicker: 0.3 },
-  bioWin:     { start: 8,  end: 20, flicker: 0.2 },
-  layers:     { start: 5,  end: 16, flicker: 0.3 },
-  profiles:   { start: 8,  end: 22, flicker: 0.2 },
-  careers:    { start: 11, end: 30, flicker: 0.1 },
+  bioTuber:   { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  bioPneum:   { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  bioMyco:    { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  bioWin:     { inStart: 8,  inEnd: 18, outStart: 10, outEnd: 20, flicker: 0.2 },
+  layers:     { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  profiles:   { inStart: 8,  inEnd: 20, outStart: 10, outEnd: 22, flicker: 0.2 },
+  careers:    { inStart: 11, inEnd: 28, outStart: 14, outEnd: 30, flicker: 0.1 },
 };
 
 // Cognitive timescale-aligned saturation thresholds
@@ -1321,7 +1325,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v178</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v179</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1676,19 +1680,24 @@ function TemporalReplay() {
           // Stagger: first non-virus at 5-7s, second at 7-10s, third at 9-14s
           const baseStart = 5 + i * 2.5;
           const jitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
-          const start = Math.max(5, baseStart + jitter);
+          const inStart = Math.max(5, baseStart + jitter);
           const rampDur = 8 + Math.sin(bioSeed * 3333 + i * 557) * 4; // 4-12s ramp duration
-          COLUMNS[key] = { ...COLUMNS[key], start: start, end: start + rampDur };
+          const outDelay = 2 + Math.sin(bioSeed * 5555 + i * 223) * 1; // 1-3s after inStart
+          COLUMNS[key] = { ...COLUMNS[key], inStart, inEnd: inStart + rampDur, outStart: inStart + outDelay, outEnd: inStart + rampDur + 2 };
         });
 
-        // ═══ COL_RAMP — computed from COLUMNS config ═══
-        const COL_RAMP = {};
+        // ═══ COL_RAMP (pathways IN + node brightness) and COL_OUT (pathways OUT) ═══
+        const COL_RAMP = {};     // pathways IN to this column + node brightness
+        const COL_OUT = {};      // pathways OUT from this column
         for (const [key, cfg] of Object.entries(COLUMNS)) {
-          COL_RAMP[key] = lerp01(wt, cfg.start, cfg.end);
+          COL_RAMP[key] = lerp01(wt, cfg.inStart, cfg.inEnd);
+          COL_OUT[key] = lerp01(wt, cfg.outStart, cfg.outEnd);
         }
         // Input/data need a floor for firehose to work
         COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
         COL_RAMP.data = Math.max(COL_RAMP.data, playing ? 0.05 : 0);
+        COL_OUT.input = Math.max(COL_OUT.input, playing ? 0.05 : 0);
+        COL_OUT.data = Math.max(COL_OUT.data, playing ? 0.05 : 0);
 
         // ═══ SKILL → COLUMN MAPPING ═══
         const SKILL_TO_COL = {
@@ -2517,6 +2526,7 @@ function TemporalReplay() {
           return "input";
         };
         const getDestRamp = (toId) => COL_RAMP[getDestColumn(toId)] || 0;
+        const getSourceOutRamp = (fromId) => COL_OUT[getDestColumn(fromId)] || 0;
         const getDestFlicker = (toId) => COLUMNS[getDestColumn(toId)]?.flicker ?? 0.5;
 
         // Compute brightness for one edge
@@ -2524,26 +2534,26 @@ function TemporalReplay() {
           _eIdx++;
           const destRamp = getDestRamp(toId);
           if (destRamp <= 0) return 0;
+          const sourceOut = getSourceOutRamp(fromId);
+          if (sourceOut <= 0) return 0;
+          // Edge brightness capped by the tighter of source-out and dest-in
+          const edgeCap = Math.min(sourceOut, destRamp);
           const flicker = getDestFlicker(toId);
           const key = `${fromId}:${toId}`;
           const fireCount = edgeFireCounts[key] || 0;
           // Myelin floor: permanent trail, capped by ramp (builds over time)
-          const myelin = fireCount > 0 ? Math.min(0.4 * destRamp, 0.02 + fireCount * 0.005) : 0;
+          const myelin = fireCount > 0 ? Math.min(0.4 * edgeCap, 0.02 + fireCount * 0.005) : 0;
           // Stochastic flash vs steady glow — controlled by flicker setting
-          // flicker=1.0: full popcorn (duty cycle, random pops)
-          // flicker=0.0: steady brightness proportional to ramp
           let flash = 0;
           if (time > 0.1 && isLive(fromId)) {
             if (flicker > 0.05) {
-              // Stochastic mode: duty cycle controls pop frequency
               const period = EDGE_PRIMES[_eIdx % EDGE_PRIMES.length];
               const cycle = Math.floor(nowMs / period);
               const phase = (fromId.length * 17 + toId.length * 31 + _eIdx * 7) % 11;
-              const duty = Math.max(1, Math.round(3 * destRamp * flicker)); // flicker scales duty
-              if ((cycle + phase) % 7 < duty) flash = 0.15 + 0.45 * destRamp;
+              const duty = Math.max(1, Math.round(3 * edgeCap * flicker));
+              if ((cycle + phase) % 7 < duty) flash = 0.15 + 0.45 * edgeCap;
             }
-            // Steady component: inverse of flicker — always present
-            const steady = (1 - flicker) * destRamp * 0.6;
+            const steady = (1 - flicker) * edgeCap * 0.6;
             flash = Math.max(flash, steady);
           }
           return Math.max(flash, myelin);
@@ -2617,39 +2627,44 @@ function TemporalReplay() {
           const fromBright = nodeBright[fromId] || 0;
           if (fromBright < 0.03) continue;
           const destRamp = getDestRamp(toId);
-          if (destRamp < 0.02) continue;
+          const sourceOut = getSourceOutRamp(fromId);
+          const edgeCap = Math.min(sourceOut, destRamp);
+          if (edgeCap < 0.02) continue;
           const key = `${fromId}:${toId}`;
-          // Propagated brightness: source × weight, capped by destination column ramp
-          const propagated = Math.min(fromBright * w, destRamp);
+          const propagated = Math.min(fromBright * w, edgeCap);
           edgeBright[key] = Math.max(edgeBright[key] || 0, propagated);
         }
         // Also propagate through channel→DF and DF→event edges
         INPUT_NODES.forEach(inp => {
           const fromBright = nodeBright[inp.fireKey] || 0;
           if (fromBright < 0.03) return;
+          const sourceOut = getSourceOutRamp(inp.fireKey);
+          if (sourceOut < 0.02) return;
           const dfIds = CHANNEL_TO_DF[inp.fireKey];
           if (dfIds) dfIds.forEach(dfId => {
             const destRamp = getDestRamp(dfId);
             if (destRamp < 0.02) return;
             const key = `${inp.fireKey}:${dfId}`;
-            edgeBright[key] = Math.max(edgeBright[key] || 0, Math.min(fromBright, destRamp));
+            edgeBright[key] = Math.max(edgeBright[key] || 0, Math.min(fromBright, sourceOut, destRamp));
           });
           const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
           if (evIds) evIds.forEach(evId => {
             const destRamp = getDestRamp(evId);
             if (destRamp < 0.02) return;
             const key = `${inp.fireKey}:${evId}`;
-            edgeBright[key] = Math.max(edgeBright[key] || 0, Math.min(fromBright, destRamp));
+            edgeBright[key] = Math.max(edgeBright[key] || 0, Math.min(fromBright, sourceOut, destRamp));
           });
         });
         DERIVED_FEATURES.forEach(df => {
           const fromBright = nodeBright[df.id] || 0;
           if (fromBright < 0.03) return;
+          const sourceOut = getSourceOutRamp(df.id);
+          if (sourceOut < 0.02) return;
           df.feeds.forEach(evId => {
             const destRamp = getDestRamp(evId);
             if (destRamp < 0.02) return;
             const key = `${df.id}:${evId}`;
-            edgeBright[key] = Math.max(edgeBright[key] || 0, Math.min(fromBright, destRamp));
+            edgeBright[key] = Math.max(edgeBright[key] || 0, Math.min(fromBright, sourceOut, destRamp));
           });
         });
         // Recompute nodeBright after forward propagation

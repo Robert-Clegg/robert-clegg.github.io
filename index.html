@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v155 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v156 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v155</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v156</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1634,7 +1634,7 @@ function TemporalReplay() {
         // ═══ FIREHOSE: rapid 16ms sampling visualization ═══
         // Each of 22 channels fires on its own staggered cycle via prime offsets
         // At 16ms sample rate (~62.5Hz), channels flicker near-constantly with brief gaps
-        const nowMs = playing ? Date.now() : 0;
+        const nowMs = time > 0.1 ? Date.now() : 0;
 
         // ═══ CHOREOGRAPHED COLUMN RAMPS — the emergence of learning ═══
         // Each column ramps 0→1 on its own timeline. All times are REAL WALL-CLOCK SECONDS.
@@ -1665,7 +1665,7 @@ function TemporalReplay() {
         // NOTE: firehoseSet computed AFTER inputNodeFire is populated (see below)
         let firehoseSet = new Set();
         // Container shimmer: subtle constant pulse when playing
-        const shimmerVal = playing && COL_RAMP.data > 0 ? (0.04 + Math.sin(nowMs / 200) * 0.03) * COL_RAMP.data : 0;
+        const shimmerVal = time > 0.1 && COL_RAMP.data > 0 ? (0.04 + Math.sin(nowMs / 200) * 0.03) * COL_RAMP.data : 0;
 
         // ═══ EVENT PRECEDENCE — staggered activation timing ═══
         // Events don't all pulse together. Each has a processing delay and phase offset.
@@ -2033,7 +2033,7 @@ function TemporalReplay() {
           if (e.type === "SwitchEvent") { inputNodeFire.teamPop = e.t; inputNodeFire.nodeOwner = e.t; }
         }
         // ═══ GATED FIREHOSE — only flicker channels with recent real data ═══
-        if (playing && COL_RAMP.data > 0) {
+        if (time > 0.1 && COL_RAMP.data > 0) {
           FIREHOSE_KEYS.forEach((key, i) => {
             const lastReal = inputNodeFire[key] !== undefined ? inputNodeFire[key] : -999;
             const realAge = time - lastReal;
@@ -2481,17 +2481,21 @@ function TemporalReplay() {
           if (destRamp <= 0) return 0;
           const key = `${fromId}:${toId}`;
           const fireCount = edgeFireCounts[key] || 0;
-          // Myelin floor: permanent trail from repeated firing
-          const myelin = fireCount > 0 ? Math.min(0.4, 0.02 + fireCount * 0.005) : 0;
-          // Stochastic flash when source is live
+          // Myelin floor: permanent trail, capped by ramp (builds over time)
+          const myelin = fireCount > 0 ? Math.min(0.4 * destRamp, 0.02 + fireCount * 0.005) : 0;
+          // Stochastic flash: ALWAYS visible when it pops (0.15-0.6)
+          // Ramp controls duty cycle: low ramp = rare pops, high ramp = frequent
           let flash = 0;
-          if (playing && isLive(fromId)) {
+          if (time > 0.1 && isLive(fromId)) {
             const period = EDGE_PRIMES[_eIdx % EDGE_PRIMES.length];
             const cycle = Math.floor(nowMs / period);
             const phase = (fromId.length * 17 + toId.length * 31 + _eIdx * 7) % 11;
-            if ((cycle + phase) % 7 < 3) flash = 0.15 + 0.45 * destRamp; // dim early, bright late
+            // Duty scales with ramp: at ramp=0.05 only 1-in-20 pops, at ramp=1.0 full 43%
+            const duty = Math.max(1, Math.round(3 * destRamp)); // 0-3
+            if ((cycle + phase) % 7 < duty) flash = 0.15 + 0.45 * destRamp;
           }
-          return Math.min(Math.max(flash, myelin), destRamp);
+          // Flash is NOT capped by ramp — pops are always visible
+          return Math.max(flash, myelin);
         };
 
         // Compute ALL edge brightnesses — every edge in the system
@@ -2836,7 +2840,7 @@ function TemporalReplay() {
         // Computes feature activation from channel data + renders pre-fire connections to game events
         const derivedActivation = {};
         const derivedPreFire = {}; // which game events are being pre-fired by derived features
-        if (playing && COL_RAMP.extraction > 0) {
+        if (time > 0.1 && COL_RAMP.extraction > 0) {
           for (const df of DERIVED_FEATURES) {
             // Feature activates when ANY of its source channels recently fired
             const sourceActivity = df.sources.map(s => {
@@ -3283,8 +3287,8 @@ function TemporalReplay() {
               {/* ─── COLUMN HEADERS — inside SVG so they stay locked to column positions ─── */}
               {[
                 { label: "INPUT",          sub: "devices",          x: boxX + boxW / 2,              color: "rgba(255,255,255,0.55)" },
-                { label: "DATA",           sub: "sample rate: 16ms",x: inputNodeX + inputNodeW / 2,  color: playing && COL_RAMP.data > 0 ? "#00e5ff" : "rgba(255,255,255,0.55)" },
-                { label: "EXTRACTION",     sub: "L1 processing",    x: dfColX + dfNodeW / 2,         color: playing && COL_RAMP.extraction > 0 ? "#ff6644" : "rgba(255,255,255,0.55)" },
+                { label: "DATA",           sub: "sample rate: 16ms",x: inputNodeX + inputNodeW / 2,  color: time > 0.1 && COL_RAMP.data > 0 ? "#00e5ff" : "rgba(255,255,255,0.55)" },
+                { label: "EXTRACTION",     sub: "L1 processing",    x: dfColX + dfNodeW / 2,         color: time > 0.1 && COL_RAMP.extraction > 0 ? "#ff6644" : "rgba(255,255,255,0.55)" },
                 { label: "GAME EVENTS",    sub: "classified",       x: colX[2] + nodeW[2] / 2,       color: "rgba(255,255,255,0.55)" },
                 { label: "BIOLOGY",        sub: "domain skills",    x: colX[3] + nodeW[3] / 2,  color: "rgba(255,255,255,0.55)" },
                 { label: "NEURAL ABSTRACTION",sub:"seconds",      x: colX[4] + nodeW[4] / 2,       color: "rgba(255,255,255,0.55)" },

@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v164 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v165 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v164</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v165</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -3548,9 +3548,9 @@ function TemporalReplay() {
                               fill="rgba(0,0,0,0.2)" stroke="rgba(85,204,255,0.12)" strokeWidth={0.3} />
                             {normDX > 0.02 && (<>
                               <rect x={xBarX} y={xBarY} width={xBarW} height={5} rx={1}
-                                fill="#55ccff" opacity={0.8 + normDX * 0.2} />
+                                fill="#88eeff" opacity={Math.min(1, 1.0 + normDX * 0.0)} />
                               <rect x={xBarX} y={xBarY - 1} width={xBarW} height={7} rx={2}
-                                fill="#55ccff" opacity={normDX * 0.3} filter="url(#glow)" />
+                                fill="#55ccff" opacity={normDX * 0.6} filter="url(#glow)" />
                             </>)}
                             {/* X needle — springs from center toward active direction */}
                             {(() => {
@@ -3563,8 +3563,8 @@ function TemporalReplay() {
                                   <line x1={xMid} y1={xBarY - 0.5} x2={xMid} y2={xBarY + 5.5}
                                     stroke="rgba(255,255,255,0.12)" strokeWidth={0.5} />
                                   <rect x={xNeedleX - 1} y={xBarY - 1} width={2} height={7} rx={0.5}
-                                    fill={needleIntensity > 0.1 ? "#88ddff" : "rgba(255,255,255,0.4)"}
-                                    opacity={0.7 + needleIntensity * 0.3}
+                                    fill="#bbf0ff"
+                                    opacity={0.9 + needleIntensity * 0.1}
                                     style={{ transition: "x 0.15s ease-out, opacity 0.15s ease-out" }} />
                                 </g>
                               );
@@ -3576,9 +3576,9 @@ function TemporalReplay() {
                               fill="rgba(0,0,0,0.2)" stroke="rgba(68,187,238,0.12)" strokeWidth={0.3} />
                             {normDY > 0.02 && (<>
                               <rect x={yBarX} y={yBarY} width={4} height={yBarH} rx={1}
-                                fill="#44bbee" opacity={0.8 + normDY * 0.2} />
+                                fill="#77ddff" opacity={Math.min(1, 1.0 + normDY * 0.0)} />
                               <rect x={yBarX - 1} y={yBarY} width={6} height={yBarH} rx={2}
-                                fill="#44bbee" opacity={normDY * 0.3} filter="url(#glow)" />
+                                fill="#44bbee" opacity={normDY * 0.6} filter="url(#glow)" />
                             </>)}
                             {/* Y needle — springs from center toward active direction */}
                             {(() => {
@@ -3591,8 +3591,8 @@ function TemporalReplay() {
                                   <line x1={yBarX - 0.5} y1={yMid} x2={yBarX + 4.5} y2={yMid}
                                     stroke="rgba(255,255,255,0.12)" strokeWidth={0.5} />
                                   <rect x={yBarX - 1} y={yNeedleY - 1} width={6} height={2} rx={0.5}
-                                    fill={needleIntensity > 0.1 ? "#77ddff" : "rgba(255,255,255,0.4)"}
-                                    opacity={0.7 + needleIntensity * 0.3}
+                                    fill="#aaeeff"
+                                    opacity={0.9 + needleIntensity * 0.1}
                                     style={{ transition: "y 0.15s ease-out, opacity 0.15s ease-out" }} />
                                 </g>
                               );
@@ -3908,10 +3908,10 @@ function TemporalReplay() {
                    const radarR = Math.min(radarGapW, contentH) / 2 - 1;
                    const radarCx = radarGapX + radarGapW / 2;
                    const radarCy = contentY + contentH / 2;
-                   const radarAngle = gameStarted ? (time * 0.6) % (Math.PI * 2) : 0;
+                   const radarAngle = gameStarted ? -Math.PI / 2 + (time * 1.2) % (Math.PI * 2) : -Math.PI / 2;
                    const radarOpacity = gameStarted ? Math.min(1, (time - 0.5) * 2) : 0;
                    // Blips reseed only when sweep crosses 12 o'clock (top = new revolution)
-                   const sweepCount = Math.floor(time * 0.6 / (Math.PI * 2));
+                   const sweepCount = Math.floor(time * 1.2 / (Math.PI * 2));
                    const radarBlips = Array.from({ length: 8 }, (_, bi) => {
                      const seed1 = Math.sin((bi + 1) * 127.1 + sweepCount * 311.7) * 43758.5453;
                      const blipAngle = ((seed1 % 1) + 1) % 1 * Math.PI * 2;

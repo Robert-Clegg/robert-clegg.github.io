@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v193 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v194 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -434,19 +434,21 @@ const PROFILE_CAREER_EDGES = [
 // outStart/outEnd: ramp for pathways OUT of this column to the next
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
 const DEFAULT_COLUMNS = {
-  input:      { inStart: 0,  inEnd: 3,  nodeOn: 0.5, outStart: 1,  outEnd: 4,  flicker: 0.9 },
-  data:       { inStart: 0,  inEnd: 3,  nodeOn: 0.5, outStart: 1,  outEnd: 4,  flicker: 0.9 },
-  extraction: { inStart: 0,  inEnd: 1,  nodeOn: 1,   outStart: 2,  outEnd: 4,  flicker: 0.7 },
-  events:     { inStart: 2,  inEnd: 5,  nodeOn: 3.5, outStart: 3,  outEnd: 6,  flicker: 0.5 },
-  bioVirus:   { inStart: 3,  inEnd: 8,  nodeOn: 5,   outStart: 5,  outEnd: 10, flicker: 0.4 },
+  //                                  ┌─ edges in ─┐  ┌ nodes ┐  ┌─ edges out ─┐
+  //                                  inStart  nodeOn  outStart    flicker
+  input:      { inStart: 0,   nodeOn: 0.5,  outStart: 0.5,  flicker: 0.9 },
+  data:       { inStart: 0,   nodeOn: 0.5,  outStart: 0.5,  flicker: 0.9 },
+  extraction: { inStart: 0,   nodeOn: 1.5,  outStart: 2,    flicker: 0.7 },
+  events:     { inStart: 1.5, nodeOn: 4,    outStart: 5,    flicker: 0.5 },
+  bioVirus:   { inStart: 3,   nodeOn: 6,    outStart: 7,    flicker: 0.4 },
   // bioTuber, bioPneum, bioMyco — randomized per playback (see component)
-  bioTuber:   { inStart: 5,  inEnd: 14, nodeOn: 7,   outStart: 7,  outEnd: 16, flicker: 0.3 },
-  bioPneum:   { inStart: 5,  inEnd: 14, nodeOn: 7,   outStart: 7,  outEnd: 16, flicker: 0.3 },
-  bioMyco:    { inStart: 5,  inEnd: 14, nodeOn: 7,   outStart: 7,  outEnd: 16, flicker: 0.3 },
-  bioWin:     { inStart: 8,  inEnd: 18, nodeOn: 12,  outStart: 10, outEnd: 20, flicker: 0.2 },
-  layers:     { inStart: 5,  inEnd: 14, nodeOn: 7,   outStart: 7,  outEnd: 16, flicker: 0.3 },
-  profiles:   { inStart: 8,  inEnd: 20, nodeOn: 12,  outStart: 10, outEnd: 22, flicker: 0.2 },
-  careers:    { inStart: 11, inEnd: 28, nodeOn: 16,  outStart: 14, outEnd: 30, flicker: 0.1 },
+  bioTuber:   { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3 },
+  bioPneum:   { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3 },
+  bioMyco:    { inStart: 6,   nodeOn: 10,   outStart: 11,   flicker: 0.3 },
+  bioWin:     { inStart: 12,  nodeOn: 18,   outStart: 19,   flicker: 0.2 },
+  layers:     { inStart: 5,   nodeOn: 9,    outStart: 10,   flicker: 0.3 },
+  profiles:   { inStart: 12,  nodeOn: 20,   outStart: 22,   flicker: 0.2 },
+  careers:    { inStart: 20,  nodeOn: 35,   outStart: 38,   flicker: 0.1 },
 };
 
 // Cognitive timescale-aligned saturation thresholds
@@ -1139,8 +1141,10 @@ function TemporalReplay() {
   const [wallTime, setWallTime] = useState(0); // real elapsed seconds since play start
   const [bioSeed, setBioSeed] = useState(Math.random()); // randomize biology order each play
   const [COLUMNS, setColumns] = useState(() => {
-    // Priority: localStorage (tuner edits) → DEFAULT_COLUMNS (fetch will override on mount)
+    // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
+      const ver = localStorage.getItem("pathogenika-columns-ver");
+      if (ver !== "v194") { localStorage.removeItem("pathogenika-columns"); localStorage.setItem("pathogenika-columns-ver", "v194"); }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) { console.log("[TUNER] Restored from localStorage"); return JSON.parse(saved); }
     } catch (e) {}
@@ -1354,7 +1358,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v193</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v194</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>

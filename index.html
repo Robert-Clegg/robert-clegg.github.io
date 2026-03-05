@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v160 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v161 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1300,7 +1300,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v160</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v161</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -2521,6 +2521,60 @@ function TemporalReplay() {
 
         // Node brightness = max incoming edge brightness
         // No additional ceiling — edges already gate via duty cycle + destRamp on frequency
+        for (const key of Object.keys(edgeBright)) {
+          const sep = key.indexOf(":");
+          const toId = key.substring(sep + 1);
+          nodeBright[toId] = Math.max(nodeBright[toId] || 0, edgeBright[key]);
+        }
+
+        // ═══ FORWARD PROPAGATION ENFORCEMENT ═══
+        // Rule: if a node is lit, its outgoing edges must carry signal at least as bright.
+        // Signal flows left→right: event→skill→layer→profile→career
+        // Each pass: outgoing edge brightness = max(current, sourceNode * edgeWeight * destRamp)
+        // Then recompute nodeBright from the updated edges.
+        const ALL_TREE_EDGES = [...EVENT_SUBSKILL_EDGES, ...EVENT_SKILL_EDGES,
+          ...SUBSKILL_LAYER_EDGES, ...LAYER_PROFILE_EDGES, ...PROFILE_CAREER_EDGES];
+        for (const edge of ALL_TREE_EDGES) {
+          const fromId = edge[0], toId = edge[1], w = edge[2] || 1.0;
+          const fromBright = nodeBright[fromId] || 0;
+          if (fromBright < 0.03) continue;
+          const destRamp = getDestRamp(toId);
+          if (destRamp < 0.02) continue;
+          const key = `${fromId}:${toId}`;
+          // Propagated brightness: source strength × edge weight × destination column ramp
+          const propagated = fromBright * w * destRamp;
+          edgeBright[key] = Math.max(edgeBright[key] || 0, propagated);
+        }
+        // Also propagate through channel→DF and DF→event edges
+        INPUT_NODES.forEach(inp => {
+          const fromBright = nodeBright[inp.fireKey] || 0;
+          if (fromBright < 0.03) return;
+          const dfIds = CHANNEL_TO_DF[inp.fireKey];
+          if (dfIds) dfIds.forEach(dfId => {
+            const destRamp = getDestRamp(dfId);
+            if (destRamp < 0.02) return;
+            const key = `${inp.fireKey}:${dfId}`;
+            edgeBright[key] = Math.max(edgeBright[key] || 0, fromBright * destRamp);
+          });
+          const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
+          if (evIds) evIds.forEach(evId => {
+            const destRamp = getDestRamp(evId);
+            if (destRamp < 0.02) return;
+            const key = `${inp.fireKey}:${evId}`;
+            edgeBright[key] = Math.max(edgeBright[key] || 0, fromBright * destRamp);
+          });
+        });
+        DERIVED_FEATURES.forEach(df => {
+          const fromBright = nodeBright[df.id] || 0;
+          if (fromBright < 0.03) return;
+          df.feeds.forEach(evId => {
+            const destRamp = getDestRamp(evId);
+            if (destRamp < 0.02) return;
+            const key = `${df.id}:${evId}`;
+            edgeBright[key] = Math.max(edgeBright[key] || 0, fromBright * destRamp);
+          });
+        });
+        // Recompute nodeBright after forward propagation
         for (const key of Object.keys(edgeBright)) {
           const sep = key.indexOf(":");
           const toId = key.substring(sep + 1);

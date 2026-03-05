@@ -447,7 +447,7 @@ const DEFAULT_COLUMNS = {
   profiles:   { inStart: 12,  nodeOn: 20,   outStart: 22,   flicker: 0.2 },
   careers:    { inStart: 20,  nodeOn: 35,   outStart: 38,   flicker: 0.1 },
 };
-const DEFAULT_BASE_BRIGHT = 0.06;
+const DEFAULT_BASE_BRIGHT = 0.15;
 
 // Cognitive timescale-aligned saturation thresholds
 const LAYER_THRESHOLDS = { L1: 15, L2: 10, L3: 8, L4: 5 };
@@ -1142,7 +1142,7 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v199") { localStorage.removeItem("pathogenika-columns"); localStorage.setItem("pathogenika-columns-ver", "v199"); }
+      if (ver !== "v199b") { localStorage.removeItem("pathogenika-columns"); localStorage.removeItem("pathogenika-basebright"); localStorage.setItem("pathogenika-columns-ver", "v199b"); }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) { console.log("[TUNER] Restored from localStorage"); return JSON.parse(saved); }
     } catch (e) {}
@@ -3574,8 +3574,8 @@ function TemporalReplay() {
                 RESET
               </button>
               <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 8, fontFamily: mono, marginRight: 4 }}>BRIGHT</span>
-              <input type="number" step={0.02} min={0} max={0.5} value={baseBright}
-                onChange={e => setBaseBright(Math.max(0, Math.min(0.5, parseFloat(e.target.value) || 0)))}
+              <input type="number" step={0.05} min={0} max={1} value={baseBright}
+                onChange={e => setBaseBright(Math.max(0, Math.min(1, parseFloat(e.target.value) || 0)))}
                 style={{ width: 44, background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 3, padding: "1px 3px", fontFamily: mono, fontSize: 9, textAlign: "center", outline: "none" }} />
             </>}
           </div>

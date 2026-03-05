@@ -429,25 +429,24 @@ const PROFILE_CAREER_EDGES = [
 // start/end: wall-clock seconds for ramp (linear 0→1)
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
 //   Controls duty cycle in calcEdge: high flicker = more random pops, low = sustained brightness
-// ═══ COLUMN CONFIG — single source of truth ═══
-// pathIn:  wall-clock second when pathways INTO this column start ramping (0→1 over 3s)
-// nodeOn:  wall-clock second when nodes in this column can start appearing
-// pathOut: wall-clock second when pathways OUT of this column start ramping (0→1 over 3s)
+// ═══ COLUMN CONFIG — default values, live-tunable via dashboard panel ═══
+// inStart/inEnd:   ramp for pathways IN (and node brightness)
+// outStart/outEnd: ramp for pathways OUT of this column to the next
 // flicker: 0.0 = steady glow, 1.0 = full stochastic popcorn
-const RAMP_DUR = 3; // seconds for each ramp to go 0→1
 const DEFAULT_COLUMNS = {
-  input:      { pathIn: 0,  nodeOn: 0,  pathOut: 0.5, flicker: 0.9 },
-  data:       { pathIn: 0,  nodeOn: 0,  pathOut: 0.5, flicker: 0.9 },
-  extraction: { pathIn: 1,  nodeOn: 1.5, pathOut: 2,  flicker: 0.7 },
-  events:     { pathIn: 2,  nodeOn: 3,  pathOut: 4,   flicker: 0.5 },
-  bioVirus:   { pathIn: 4,  nodeOn: 5,  pathOut: 6,   flicker: 0.4 },
-  bioTuber:   { pathIn: 6,  nodeOn: 7,  pathOut: 8,   flicker: 0.3 },
-  bioPneum:   { pathIn: 6,  nodeOn: 7,  pathOut: 8,   flicker: 0.3 },
-  bioMyco:    { pathIn: 6,  nodeOn: 7,  pathOut: 8,   flicker: 0.3 },
-  bioWin:     { pathIn: 8,  nodeOn: 9,  pathOut: 10,  flicker: 0.2 },
-  layers:     { pathIn: 6,  nodeOn: 7,  pathOut: 8,   flicker: 0.3 },
-  profiles:   { pathIn: 9,  nodeOn: 10, pathOut: 11,  flicker: 0.2 },
-  careers:    { pathIn: 12, nodeOn: 13, pathOut: 14,  flicker: 0.1 },
+  input:      { inStart: 0,  inEnd: 3,  outStart: 1,  outEnd: 4,  flicker: 0.9 },
+  data:       { inStart: 0,  inEnd: 3,  outStart: 1,  outEnd: 4,  flicker: 0.9 },
+  extraction: { inStart: 1,  inEnd: 4,  outStart: 2,  outEnd: 5,  flicker: 0.7 },
+  events:     { inStart: 2,  inEnd: 5,  outStart: 3,  outEnd: 6,  flicker: 0.5 },
+  bioVirus:   { inStart: 3,  inEnd: 8,  outStart: 5,  outEnd: 10, flicker: 0.4 },
+  // bioTuber, bioPneum, bioMyco — randomized per playback (see component)
+  bioTuber:   { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  bioPneum:   { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  bioMyco:    { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  bioWin:     { inStart: 8,  inEnd: 18, outStart: 10, outEnd: 20, flicker: 0.2 },
+  layers:     { inStart: 5,  inEnd: 14, outStart: 7,  outEnd: 16, flicker: 0.3 },
+  profiles:   { inStart: 8,  inEnd: 20, outStart: 10, outEnd: 22, flicker: 0.2 },
+  careers:    { inStart: 11, inEnd: 28, outStart: 14, outEnd: 30, flicker: 0.1 },
 };
 
 // Cognitive timescale-aligned saturation thresholds
@@ -1332,11 +1331,9 @@ function TemporalReplay() {
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
-        <button onClick={() => { setWallTime(prev => Math.max(0, prev - 0.5)); setTime(prev => Math.max(0, prev - 0.5 * speed * 0.8)); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"−.5"}</button>
         <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); setBioSeed(Math.random()); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
-        <button onClick={() => { setWallTime(prev => Math.min(200, prev + 0.5)); setTime(prev => Math.min(160, prev + 0.5 * speed * 0.8)); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"+.5"}</button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>
           {Math.floor(time / 60)}:{String(Math.floor(time % 60)).padStart(2, "0")} / {Math.floor(MAX_DUR / 60)}:{String(Math.floor(MAX_DUR % 60)).padStart(2, "0")}
         </div>
@@ -1673,6 +1670,9 @@ function TemporalReplay() {
         const ease = (v) => v * v; // quadratic ease-in: softer emergence than cubic
         const wt = wallTime; // real seconds since play started
         // ═══ RANDOMIZE BIOLOGY ORDER — changes each playback ═══
+        // Virus always first (bioVirus in COLUMNS). Other 3 get random staggered starts.
+        // bioSeed changes on rewind/restart, giving a new order each time.
+        // colConfig = COLUMNS + bio randomization (local, not mutating state)
         const colConfig = JSON.parse(JSON.stringify(COLUMNS));
         const bioOtherKeys = ["bioTuber", "bioPneum", "bioMyco"];
         const shuffled = [...bioOtherKeys].sort((a, b) => {
@@ -1681,26 +1681,24 @@ function TemporalReplay() {
           return (ha % 1) - (hb % 1);
         });
         shuffled.forEach((key, i) => {
-          const basePI = 6 + i * 2.5;
+          const baseStart = 5 + i * 2.5;
           const jitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
-          const pathIn = Math.max(5, basePI + jitter);
-          colConfig[key] = { ...colConfig[key], pathIn, nodeOn: pathIn + 1, pathOut: pathIn + 2 };
+          const inStart = Math.max(5, baseStart + jitter);
+          const rampDur = 8 + Math.sin(bioSeed * 3333 + i * 557) * 4;
+          const outDelay = 2 + Math.sin(bioSeed * 5555 + i * 223) * 1;
+          colConfig[key] = { ...colConfig[key], inStart, inEnd: inStart + rampDur, outStart: inStart + outDelay, outEnd: inStart + rampDur + 2 };
         });
 
-        // ═══ COL_RAMP (pathways IN), COL_NODE (node gate), COL_OUT (pathways OUT) ═══
-        const COL_RAMP = {};     // pathways IN: 0→1 ramp starting at pathIn
-        const COL_NODE = {};     // node visibility: 0 before nodeOn, ramps 0→1 over RAMP_DUR
-        const COL_OUT = {};      // pathways OUT: 0→1 ramp starting at pathOut
+        // ═══ COL_RAMP (pathways IN + node brightness) and COL_OUT (pathways OUT) ═══
+        const COL_RAMP = {};
+        const COL_OUT = {};
         for (const [key, cfg] of Object.entries(colConfig)) {
-          COL_RAMP[key] = lerp01(wt, cfg.pathIn, cfg.pathIn + RAMP_DUR);
-          COL_NODE[key] = lerp01(wt, cfg.nodeOn, cfg.nodeOn + RAMP_DUR);
-          COL_OUT[key] = lerp01(wt, cfg.pathOut, cfg.pathOut + RAMP_DUR);
+          COL_RAMP[key] = lerp01(wt, cfg.inStart, cfg.inEnd);
+          COL_OUT[key] = lerp01(wt, cfg.outStart, cfg.outEnd);
         }
         // Input/data need a floor for firehose to work
         COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
         COL_RAMP.data = Math.max(COL_RAMP.data, playing ? 0.05 : 0);
-        COL_NODE.input = Math.max(COL_NODE.input, playing ? 0.05 : 0);
-        COL_NODE.data = Math.max(COL_NODE.data, playing ? 0.05 : 0);
         COL_OUT.input = Math.max(COL_OUT.input, playing ? 0.05 : 0);
         COL_OUT.data = Math.max(COL_OUT.data, playing ? 0.05 : 0);
 
@@ -2508,6 +2506,7 @@ function TemporalReplay() {
 
         // Is a source currently live? (has signal flowing)
         const isLive = (id) => {
+          if (time < 2.0) return true; // warmup: everything live at start
           if (inputNodeFire[id] !== undefined) {
             return firehoseSet.has(id) || (time - inputNodeFire[id]) < 3.0;
           }
@@ -2530,7 +2529,6 @@ function TemporalReplay() {
           return "input";
         };
         const getDestRamp = (toId) => COL_RAMP[getDestColumn(toId)] || 0;
-        const getNodeGate = (toId) => COL_NODE[getDestColumn(toId)] || 0;
         const getSourceOutRamp = (fromId) => COL_OUT[getDestColumn(fromId)] || 0;
         const getDestFlicker = (toId) => colConfig[getDestColumn(toId)]?.flicker ?? 0.5;
 
@@ -2613,15 +2611,21 @@ function TemporalReplay() {
               nodeBright[inp.fireKey] = Math.max(nodeBright[inp.fireKey] || 0, bright);
             }
           });
-          // Seed extraction nodes — same principle: if any incoming channel→DF edge is lit,
-          // the DF node must have brightness so forward prop can push to DF→event edges.
+          // Seed extraction EDGES — brightness flows through edges, never directly to nodes.
+          // If a channel is active and extraction ramp is on, seed the channel→DF edges.
           if (COL_RAMP.extraction > 0) {
             DERIVED_FEATURES.forEach(df => {
-              // Check if any source channel is active
-              const maxSrc = Math.max(...df.sources.map(s => nodeBright[s] || 0));
-              if (maxSrc > 0.03) {
-                nodeBright[df.id] = Math.max(nodeBright[df.id] || 0, maxSrc * COL_RAMP.extraction);
-              }
+              df.sources.forEach(s => {
+                const srcBright = nodeBright[s] || 0;
+                if (srcBright < 0.03) return;
+                const sourceOut = COL_OUT[getDestColumn(s)] || 0;
+                if (sourceOut < 0.02) return;
+                const key = `${s}:${df.id}`;
+                const seeded = Math.min(srcBright, sourceOut, COL_RAMP.extraction);
+                edgeBright[key] = Math.max(edgeBright[key] || 0, seeded);
+                // Node brightness follows from edge
+                nodeBright[df.id] = Math.max(nodeBright[df.id] || 0, seeded);
+              });
             });
           }
         }
@@ -3266,8 +3270,8 @@ function TemporalReplay() {
           const pos = getPos(col, node.row);
           const w = nodeW[col];
           // ═══ COLUMN RAMP GATING: node can't glow if no incoming pathway is lit ═══
-          const colRamp = getNodeGate(node.id);
-          const emerged = colRamp > 0.02; // node visible after nodeOn time
+          const colRamp = getDestRamp(node.id);
+          const emerged = colRamp > 0.02; // column has started ramping
           const active = emerged && intensity > 0.05;
           const count = treeActivation.activeCounts[node.id] || 0;
           const blink = emerged && isBlinking(node.id);
@@ -3436,6 +3440,11 @@ function TemporalReplay() {
             </div>
           </div>
 
+          {/* DEBUG BAR — remove after fixing */}
+          <div style={{ background: "rgba(255,0,0,0.15)", padding: "4px 8px", fontFamily: mono, fontSize: 9, color: "#ff8888", marginBottom: 4, borderRadius: 4 }}>
+            wt={wallTime.toFixed(1)} t={time.toFixed(1)} playing={String(playing)} firehose={firehoseSet.size} edges={Object.keys(edgeBright).length} nodes={Object.keys(nodeBright).length} maxEB={Math.max(0,...Object.values(edgeBright)).toFixed(3)} maxNB={Math.max(0,...Object.values(nodeBright)).toFixed(3)} ext={COL_RAMP.extraction.toFixed(2)} ev={COL_RAMP.events.toFixed(2)} bio={COL_RAMP.bioVirus.toFixed(2)} lay={COL_RAMP.layers.toFixed(2)} pro={COL_RAMP.profiles.toFixed(2)} car={COL_RAMP.careers.toFixed(2)}
+          </div>
+
           {/* ═══ COLUMN TUNER PANEL ═══ */}
           <div style={{ marginBottom: 4 }}>
             <button onClick={() => setShowTuner(!showTuner)} style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", color: "#00ff88", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontFamily: mono, fontSize: 8, marginRight: 6 }}>
@@ -3481,7 +3490,7 @@ function TemporalReplay() {
               { keys: ["profiles"], cx: 1027, label: "PROF", w: 6 },
               { keys: ["careers"], cx: 1253, label: "CAREER", w: 7 },
             ];
-            const fields = ["pathIn","nodeOn","pathOut","flicker"];
+            const fields = ["inStart","inEnd","outStart","flicker"];
             const fieldLabels = ["pathway in","node on","pathway out","flk"];
             const fieldColors = ["#00ff88","#00ccff","#ff8800","#aa55ff"];
             const subLabels = { bioVirus:"V", bioTuber:"T", bioPneum:"P", bioMyco:"M" };
@@ -3489,6 +3498,10 @@ function TemporalReplay() {
               setColumns(prev => {
                 const next = JSON.parse(JSON.stringify(prev));
                 next[col][field] = parseFloat(val) || 0;
+                if (field === "outStart" || field === "inStart" || field === "inEnd") {
+                  const c = next[col];
+                  c.outEnd = c.outStart + Math.max(2, c.inEnd - c.inStart);
+                }
                 return next;
               });
             };

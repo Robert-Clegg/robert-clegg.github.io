@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v181 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v182 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1327,7 +1327,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v181</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v182</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -3461,16 +3461,26 @@ function TemporalReplay() {
             </>}
           </div>
           {showTuner && (() => {
-            const tunerKeys = ["extraction","events","bioVirus","bioTuber","bioPneum","bioMyco","layers","profiles","careers"];
-            const labels = { extraction:"EXT", events:"EVT", bioVirus:"VIRUS", bioTuber:"TUBER", bioPneum:"PNEUM", bioMyco:"MYCO", layers:"LAYER", profiles:"PROF", careers:"CAREER" };
+            // Map tuner columns to SVG x positions (viewBox: -92 0 1432 700)
+            const vbTotal = 1432;
+            const pct = (svgX) => ((svgX + 92) / vbTotal * 100).toFixed(2) + "%";
+            // Column groups: key(s), SVG center x, width %
+            const groups = [
+              { keys: ["extraction"], cx: 229, label: "EXT", w: 5 },
+              { keys: ["events"], cx: 376, label: "EVT", w: 6 },
+              { keys: ["bioVirus","bioTuber","bioPneum","bioMyco"], cx: 593, label: "BIOLOGY", w: 12 },
+              { keys: ["layers"], cx: 810, label: "LAYERS", w: 6 },
+              { keys: ["profiles"], cx: 1027, label: "PROF", w: 6 },
+              { keys: ["careers"], cx: 1253, label: "CAREER", w: 7 },
+            ];
             const fields = ["inStart","inEnd","outStart","flicker"];
             const fieldLabels = ["pathway in","node on","pathway out","flk"];
             const fieldColors = ["#00ff88","#00ccff","#ff8800","#aa55ff"];
+            const subLabels = { bioVirus:"V", bioTuber:"T", bioPneum:"P", bioMyco:"M" };
             const updateCol = (col, field, val) => {
               setColumns(prev => {
                 const next = JSON.parse(JSON.stringify(prev));
                 next[col][field] = parseFloat(val) || 0;
-                // Auto-derive outEnd: outStart + same duration as inStart→inEnd
                 if (field === "outStart" || field === "inStart" || field === "inEnd") {
                   const c = next[col];
                   c.outEnd = c.outStart + Math.max(2, c.inEnd - c.inStart);
@@ -3478,26 +3488,43 @@ function TemporalReplay() {
                 return next;
               });
             };
+            const inputStyle = (fc) => ({ width: "100%", background: "rgba(0,0,0,0.6)", border: `1px solid ${fc}44`, color: fc, borderRadius: 3, padding: "1px 2px", fontFamily: mono, fontSize: 9, textAlign: "center", outline: "none", boxSizing: "border-box" });
             return (
-              <div style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 8px", marginBottom: 4, overflowX: "auto" }}>
-                <div style={{ display: "flex", gap: 2, fontFamily: mono, fontSize: 7, minWidth: 800 }}>
-                  <div style={{ width: 60, flexShrink: 0 }} />
-                  {tunerKeys.map(k => (
-                    <div key={k} style={{ flex: 1, textAlign: "center", color: "rgba(255,255,255,0.5)", fontWeight: 700, fontSize: 7, letterSpacing: 0.5 }}>{labels[k]}</div>
-                  ))}
-                </div>
-                {fields.map((f, fi) => (
-                  <div key={f} style={{ display: "flex", gap: 2, alignItems: "center", marginTop: 2 }}>
-                    <div style={{ width: 60, flexShrink: 0, color: fieldColors[fi], fontSize: 7, fontFamily: mono, fontWeight: 600, textAlign: "right", paddingRight: 4 }}>{fieldLabels[fi]}</div>
-                    {tunerKeys.map(k => (
-                      <div key={k} style={{ flex: 1 }}>
-                        <input type="number" step={f === "flicker" ? 0.05 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
-                          onChange={e => updateCol(k, f, e.target.value)}
-                          style={{ width: "100%", background: "rgba(0,0,0,0.5)", border: `1px solid ${fieldColors[fi]}44`, color: fieldColors[fi], borderRadius: 3, padding: "1px 3px", fontFamily: mono, fontSize: 9, textAlign: "center", outline: "none", boxSizing: "border-box" }} />
-                      </div>
-                    ))}
-                  </div>
+              <div style={{ position: "relative", height: fields.length * 18 + 22, marginBottom: 4 }}>
+                {/* Row labels on left */}
+                {fieldLabels.map((fl, fi) => (
+                  <div key={fl} style={{ position: "absolute", left: 0, top: 16 + fi * 18, color: fieldColors[fi], fontSize: 7, fontFamily: mono, fontWeight: 600, width: 60, textAlign: "right", paddingRight: 4 }}>{fl}</div>
                 ))}
+                {/* Column groups */}
+                {groups.map(g => {
+                  const leftPct = ((g.cx + 92 - g.w * vbTotal / 200) / vbTotal * 100);
+                  const widthPct = g.w;
+                  const multi = g.keys.length > 1;
+                  return (
+                    <div key={g.label} style={{ position: "absolute", left: leftPct + "%", width: widthPct + "%", textAlign: "center" }}>
+                      {/* Group header */}
+                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 7, fontFamily: mono, fontWeight: 700, letterSpacing: 0.5, marginBottom: 2 }}>{g.label}</div>
+                      {/* Sub-labels for multi-key groups */}
+                      {multi && (
+                        <div style={{ display: "flex", gap: 1, marginBottom: 1 }}>
+                          {g.keys.map(k => (
+                            <div key={k} style={{ flex: 1, textAlign: "center", color: "rgba(255,255,255,0.35)", fontSize: 6, fontFamily: mono }}>{subLabels[k] || k}</div>
+                          ))}
+                        </div>
+                      )}
+                      {/* Input rows */}
+                      {fields.map((f, fi) => (
+                        <div key={f} style={{ display: "flex", gap: 1, marginTop: 1 }}>
+                          {g.keys.map(k => (
+                            <input key={k} type="number" step={f === "flicker" ? 0.05 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
+                              onChange={e => updateCol(k, f, e.target.value)}
+                              style={inputStyle(fieldColors[fi])} />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             );
           })()}

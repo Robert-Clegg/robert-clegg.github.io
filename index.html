@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v189 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v190 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1338,7 +1338,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v189</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v190</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -2706,14 +2706,34 @@ function TemporalReplay() {
           nodeBright[toId] = Math.max(nodeBright[toId] || 0, edgeBright[key]);
         }
 
-        // ═══ PARENT SKILL BRIGHTNESS = max of child sub-skill brightness ═══
-        // Sub-skills glow from EVENT_SUBSKILL_EDGES; parent skill nodes must inherit
+        // ═══ PARENT SKILL BRIGHTNESS — engagement-weighted, not flat max ═══
+        // Each skill's brightness reflects how much the player engaged with that cell type.
+        // Sum child sub-skill fire counts → normalize across skills → differentiated brightness.
+        const skillEngagement = {};
+        let maxSkillEngagement = 1;
         for (const sk of TREE_SKILLS) {
           const children = TREE_SUB_SKILLS.filter(ss => ss.parent === sk.id);
-          const maxChild = Math.max(0, ...children.map(c => nodeBright[c.id] || 0));
-          if (maxChild > (nodeBright[sk.id] || 0)) {
-            nodeBright[sk.id] = maxChild;
+          let totalFires = 0;
+          for (const child of children) {
+            for (const edge of EVENT_SUBSKILL_EDGES) {
+              if (edge[1] === child.id) {
+                totalFires += edgeFireCounts[`${edge[0]}:${edge[1]}`] || 0;
+              }
+            }
           }
+          skillEngagement[sk.id] = totalFires;
+          if (totalFires > maxSkillEngagement) maxSkillEngagement = totalFires;
+        }
+        for (const sk of TREE_SKILLS) {
+          const children = TREE_SUB_SKILLS.filter(ss => ss.parent === sk.id);
+          const engagement = skillEngagement[sk.id] / maxSkillEngagement; // 0→1 relative
+          // Sympathetic flash: when any child sub-skill is bright, parent gets a proportional bump
+          const maxChildBright = Math.max(0, ...children.map(c => nodeBright[c.id] || 0));
+          const sympatheticBump = maxChildBright * 0.4; // 40% of child's peak flash
+          // Base brightness from engagement level (dim for unused, bright for heavily used)
+          const engagementFloor = engagement * 0.35; // steady glow proportional to use
+          const finalBright = Math.max(engagementFloor, sympatheticBump, nodeBright[sk.id] || 0);
+          nodeBright[sk.id] = finalBright;
         }
 
         // ═══ FINAL PATHWAY — when stopped, ALL fired chains remain highlighted ═══
@@ -2906,6 +2926,15 @@ function TemporalReplay() {
         const isFinalEdge = (fromId, toId) => finalPathway.has(`${fromId}:${toId}`);
         const isFinalNode = (id) => finalPathway.has(id);
         const getFinalStrength = (key) => finalStrength[key] || 0;
+
+        // ═══ OVERRIDE final strength for parent skill nodes with engagement ═══
+        // Cells the player used heavily stay bright; cells barely used dim to near-zero.
+        for (const sk of TREE_SKILLS) {
+          const engagement = skillEngagement[sk.id] / maxSkillEngagement; // 0→1
+          finalPathway.add(sk.id);
+          // Top cell → 0.85, lowest → 0.08. Clear visual separation.
+          finalStrength[sk.id] = 0.08 + engagement * 0.77;
+        }
 
         // Apply final pathway floors to unified maps (only when demo nearly ended)
         for (const key of finalPathway) {

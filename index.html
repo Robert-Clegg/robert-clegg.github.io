@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v192 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v193 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1354,7 +1354,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v192</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v193</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1725,15 +1725,17 @@ function TemporalReplay() {
         }
 
         // ═══ COL_RAMP (pathways IN), COL_OUT (pathways OUT), COL_NODE (node visibility gate) ═══
+        // inEnd is ALWAYS derived from nodeOn — pathways finish ramping when nodes appear.
+        // This eliminates the hidden stale inEnd bug where loaded configs had old inEnd values.
         const COL_RAMP = {};
         const COL_OUT = {};
         const COL_NODE = {};
         for (const [key, cfg] of Object.entries(colConfig)) {
-          COL_RAMP[key] = lerp01(wt, cfg.inStart, cfg.inEnd);
-          COL_OUT[key] = lerp01(wt, cfg.outStart, cfg.outEnd);
-          // Node gate: nodes invisible until nodeOn, then 1s fade-in
-          // Backward compat: if no nodeOn in config, default to midpoint of inStart→outStart
           const nodeOnTime = cfg.nodeOn !== undefined ? cfg.nodeOn : (cfg.inStart + cfg.outStart) / 2;
+          // Pathways ramp from inStart to nodeOn (fully bright when nodes appear)
+          COL_RAMP[key] = lerp01(wt, cfg.inStart, nodeOnTime);
+          COL_OUT[key] = lerp01(wt, cfg.outStart, cfg.outStart + Math.max(2, nodeOnTime - cfg.inStart));
+          // Node gate: nodes invisible until nodeOn, then 1s fade-in
           COL_NODE[key] = lerp01(wt, nodeOnTime, nodeOnTime + 1.0);
         }
         // Input/data need a floor for firehose to work
@@ -3578,15 +3580,6 @@ function TemporalReplay() {
               setColumns(prev => {
                 const next = JSON.parse(JSON.stringify(prev));
                 next[col][field] = parseFloat(val) || 0;
-                const c = next[col];
-                // Auto-derive: inEnd = nodeOn (pathway fully ramped by node appearance)
-                if (field === "nodeOn" || field === "inStart") {
-                  c.inEnd = c.nodeOn !== undefined ? c.nodeOn : c.inStart + 3;
-                }
-                // Auto-derive: outEnd from outStart
-                if (field === "outStart" || field === "inStart" || field === "nodeOn") {
-                  c.outEnd = c.outStart + Math.max(2, (c.inEnd || c.nodeOn || c.inStart + 3) - c.inStart);
-                }
                 return next;
               });
             };

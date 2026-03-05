@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v213 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v214 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -5445,55 +5445,68 @@ const LAYER_PROFILE_EDGES = [["L1", "pr_blitzer", 1.0], ["L1", "pr_mechmaster", 
 ];
 const PROFILE_CAREER_EDGES = [["pr_blitzer", "cr_rapid", 1.0], ["pr_blitzer", "cr_trades", 0.3], ["pr_mechmaster", "cr_precision", 1.0], ["pr_mechmaster", "cr_trades", 0.8], ["pr_mechmaster", "cr_techanalysis", 0.3], ["pr_adaptive", "cr_techanalysis", 1.0], ["pr_theory", "cr_techanalysis", 0.8], ["pr_theory", "cr_systems", 1.0], ["pr_planner", "cr_systems", 1.0], ["pr_shotcaller", "cr_leadership", 1.0], ["pr_catalyst", "cr_human", 1.0], ["pr_swiss", "cr_creative", 1.0], ["pr_swiss", "cr_leadership", 0.4], ["pr_swiss", "cr_systems", 0.3], ["pr_swiss", "cr_techanalysis", 0.3]];
 
-// ═══ COLUMN CONFIG — simple: start (when) + speed (how long to ramp 0→1) ═══
+// ═══ COLUMN CONFIG — simple: start (when) + speed (ramp duration) + flicker (pop rate) ═══
+// flicker: 0 = steady glow, 10 = max popcorn. Controls how often pathways flash.
 const DEFAULT_COLUMNS = {
   input: {
     start: 0,
-    speed: 0.5
+    speed: 0.5,
+    flicker: 9
   },
   data: {
     start: 0,
-    speed: 0.5
+    speed: 0.5,
+    flicker: 9
   },
   extraction: {
     start: 0,
-    speed: 3
+    speed: 3,
+    flicker: 7
   },
   events: {
     start: 4,
-    speed: 12
+    speed: 12,
+    flicker: 5
   },
   bioVirus: {
     start: 3,
-    speed: 8
+    speed: 8,
+    flicker: 4
   },
   bioTuber: {
     start: 6,
-    speed: 10
+    speed: 10,
+    flicker: 3
   },
   bioPneum: {
     start: 6,
-    speed: 10
+    speed: 10,
+    flicker: 3
   },
   bioMyco: {
     start: 6,
-    speed: 10
+    speed: 10,
+    flicker: 3
   },
   bioWin: {
     start: 12,
-    speed: 12
+    speed: 12,
+    flicker: 2
   },
   layers: {
     start: 5,
-    speed: 12
+    speed: 12,
+    flicker: 3
   },
   profiles: {
     start: 12,
-    speed: 16
+    speed: 16,
+    flicker: 2
   },
   careers: {
     start: 20,
-    speed: 20
+    speed: 20,
+    flicker: 1
   }
 };
 const DEFAULT_BASE_BRIGHT = 5;
@@ -6670,10 +6683,10 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v213") {
+      if (ver !== "v214") {
         localStorage.removeItem("pathogenika-columns");
         localStorage.removeItem("pathogenika-basebright");
-        localStorage.setItem("pathogenika-columns-ver", "v213");
+        localStorage.setItem("pathogenika-columns-ver", "v214");
       }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) {
@@ -6994,7 +7007,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v213"), /*#__PURE__*/React.createElement("span", {
+  }, "v214"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9404,8 +9417,8 @@ function TemporalReplay() {
     const getSourceOutRamp = fromId => COL_OUT[getDestColumn(fromId)] || 0;
     const getNodeGate = nodeId => COL_NODE[getDestColumn(nodeId)] || 0;
     const getDestFlicker = toId => {
-      const spd = colConfig[getDestColumn(toId)]?.speed ?? 5;
-      return Math.max(0.1, Math.min(0.9, 1 - spd / 20)); // fast=popcorn, slow=steady
+      const f = colConfig[getDestColumn(toId)]?.flicker ?? 5;
+      return Math.max(0, Math.min(1, f / 10)); // 0-10 → 0.0-1.0
     };
 
     // Compute brightness for one edge
@@ -10781,9 +10794,9 @@ function TemporalReplay() {
         label: "CAREER",
         w: 7
       }];
-      const fields = ["start", "speed"];
-      const fieldLabels = ["start ramp", "speed ramp"];
-      const fieldColors = ["#00ff88", "#00ccff"];
+      const fields = ["start", "speed", "flicker"];
+      const fieldLabels = ["start ramp", "speed ramp", "pop rate"];
+      const fieldColors = ["#00ff88", "#00ccff", "#aa55ff"];
       const subLabels = {
         bioVirus: "V",
         bioTuber: "T",

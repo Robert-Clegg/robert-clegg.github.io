@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v219 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v220 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v219"), /*#__PURE__*/React.createElement("span", {
+  }, "v220"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8025,7 +8025,7 @@ function TemporalReplay() {
     const clamp01 = v => Math.max(0, Math.min(1, v));
     const lerp01 = (t, start, end) => clamp01((t - start) / (end - start));
     const ease = v => v * v; // quadratic ease-in: softer emergence than cubic
-    const wt = wallTime; // real seconds since play started
+    const wt = time; // use game time for ramps — matches displayed timer
     // ═══ RANDOMIZE BIOLOGY ORDER — ALWAYS applies ═══
     // Tuner edits the base timing. Randomization adds stagger offsets on top.
     // Virus always first. Other 3 get random staggered starts.

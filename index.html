@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v177 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v178 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -435,7 +435,11 @@ const COLUMNS = {
   extraction: { start: 1,  end: 4,  flicker: 0.7 },
   events:     { start: 3,  end: 6,  flicker: 0.5 },
   bioVirus:   { start: 4,  end: 10, flicker: 0.4 },
-  bioOther:   { start: 5,  end: 20, flicker: 0.3 },
+  // bioTuber, bioPneum, bioMyco — randomized per playback (see component)
+  bioTuber:   { start: 5,  end: 20, flicker: 0.3 },
+  bioPneum:   { start: 5,  end: 20, flicker: 0.3 },
+  bioMyco:    { start: 5,  end: 20, flicker: 0.3 },
+  bioWin:     { start: 8,  end: 20, flicker: 0.2 },
   layers:     { start: 5,  end: 16, flicker: 0.3 },
   profiles:   { start: 8,  end: 22, flicker: 0.2 },
   careers:    { start: 11, end: 30, flicker: 0.1 },
@@ -1129,6 +1133,7 @@ function TemporalReplay() {
   const lastFrameRef = useRef(null);
   const playingRef = useRef(false);
   const [wallTime, setWallTime] = useState(0); // real elapsed seconds since play start
+  const [bioSeed, setBioSeed] = useState(Math.random()); // randomize biology order each play
 
 
   // ═══ TELEMETRY FILE LOADING ═══
@@ -1316,11 +1321,11 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v177</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v178</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
-        <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
-        <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
+        <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
+        <button onClick={() => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { setTime(0); setWallTime(0); setBioSeed(Math.random()); } setPlaying(next); }} style={{ background: playing ? C_COLOR + "18" : S_COLOR + "18", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "3px 10px", cursor: "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700, minWidth: 36 }}>
           {playing ? "⏸" : "▶"}
         </button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>
@@ -1658,6 +1663,24 @@ function TemporalReplay() {
         const lerp01 = (t, start, end) => clamp01((t - start) / (end - start));
         const ease = (v) => v * v; // quadratic ease-in: softer emergence than cubic
         const wt = wallTime; // real seconds since play started
+        // ═══ RANDOMIZE BIOLOGY ORDER — changes each playback ═══
+        // Virus always first (bioVirus in COLUMNS). Other 3 get random staggered starts.
+        // bioSeed changes on rewind/restart, giving a new order each time.
+        const bioOtherKeys = ["bioTuber", "bioPneum", "bioMyco"];
+        const shuffled = [...bioOtherKeys].sort((a, b) => {
+          const ha = Math.sin(bioSeed * 9999 + a.charCodeAt(3) * 127) * 10000;
+          const hb = Math.sin(bioSeed * 9999 + b.charCodeAt(3) * 127) * 10000;
+          return (ha % 1) - (hb % 1);
+        });
+        shuffled.forEach((key, i) => {
+          // Stagger: first non-virus at 5-7s, second at 7-10s, third at 9-14s
+          const baseStart = 5 + i * 2.5;
+          const jitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
+          const start = Math.max(5, baseStart + jitter);
+          const rampDur = 8 + Math.sin(bioSeed * 3333 + i * 557) * 4; // 4-12s ramp duration
+          COLUMNS[key] = { ...COLUMNS[key], start: start, end: start + rampDur };
+        });
+
         // ═══ COL_RAMP — computed from COLUMNS config ═══
         const COL_RAMP = {};
         for (const [key, cfg] of Object.entries(COLUMNS)) {
@@ -1666,6 +1689,12 @@ function TemporalReplay() {
         // Input/data need a floor for firehose to work
         COL_RAMP.input = Math.max(COL_RAMP.input, playing ? 0.05 : 0);
         COL_RAMP.data = Math.max(COL_RAMP.data, playing ? 0.05 : 0);
+
+        // ═══ SKILL → COLUMN MAPPING ═══
+        const SKILL_TO_COL = {
+          sk_virus: "bioVirus", sk_tuber: "bioTuber",
+          sk_pneum: "bioPneum", sk_myco: "bioMyco", sk_win: "bioWin"
+        };
         const FIREHOSE_KEYS = [
           "mouseX","mouseY","velocity","LMB","RMB","scroll",
           "W","A","S","D","R","E","SPC","F",
@@ -2331,7 +2360,7 @@ function TemporalReplay() {
             if (MOVEMENT_EVENTS.has(ev.id)) return;
             TREE_SKILLS.forEach((sk, si) => {
               // Per-skill ramp: virus lights with events, others ramp 5-30s
-              const skRamp = sk.id === "sk_virus" ? COL_RAMP.bioVirus : sk.id === "sk_win" ? COL_RAMP.bioOther : COL_RAMP.bioOther;
+              const skRamp = COL_RAMP[SKILL_TO_COL[sk.id] || "bioVirus"] || 0;
               if (skRamp <= 0) return;
               const pairIdx = ei * TREE_SKILLS.length + si;
               const period = HALF_PRIMES[pairIdx % HALF_PRIMES.length];
@@ -2358,7 +2387,7 @@ function TemporalReplay() {
             if (!MOVEMENT_EVENTS.has(ev.id)) return;
             const movPrimes = [11, 17, 23, 29, 37];
             TREE_SKILLS.forEach((sk, si) => {
-              const skRamp = sk.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
+              const skRamp = COL_RAMP[SKILL_TO_COL[sk.id] || "bioVirus"] || 0;
               if (skRamp <= 0) return;
               const pairIdx = ei * TREE_SKILLS.length + si;
               const period = movPrimes[pairIdx % movPrimes.length];
@@ -2479,9 +2508,9 @@ function TemporalReplay() {
           if (DERIVED_FEATURES.some(d => d.id === toId)) return "extraction";
           if (TREE_EVENTS.some(n => n.id === toId)) return "events";
           const sk = TREE_SKILLS.find(n => n.id === toId);
-          if (sk) return sk.id === "sk_virus" ? "bioVirus" : "bioOther";
+          if (sk) return SKILL_TO_COL[sk.id] || "bioVirus";
           const ss = TREE_SUB_SKILLS.find(n => n.id === toId);
-          if (ss) { const p = TREE_SKILLS.find(s => s.id === ss.parent); return p && p.id === "sk_virus" ? "bioVirus" : "bioOther"; }
+          if (ss) { const p = TREE_SKILLS.find(s => s.id === ss.parent); return p ? (SKILL_TO_COL[p.id] || "bioVirus") : "bioVirus"; }
           if (["L1","L2","L3","L4"].includes(toId)) return "layers";
           if (TREE_PROFILES.some(n => n.id === toId)) return "profiles";
           if (TREE_CAREERS.some(n => n.id === toId)) return "careers";
@@ -3101,7 +3130,7 @@ function TemporalReplay() {
         const renderSubSkills = () => TREE_SUB_SKILLS.map(sub => {
           const parent = TREE_SKILLS.find(s => s.id === sub.parent);
           if (!parent) return null;
-          const skRamp = parent.id === "sk_virus" ? COL_RAMP.bioVirus : COL_RAMP.bioOther;
+          const skRamp = COL_RAMP[SKILL_TO_COL[parent.id] || "bioVirus"] || 0;
           if (skRamp <= 0) return null;
           const pp = getPos(parent.col + 2, parent.row);
           const pw = nodeW[parent.col + 2];
@@ -3399,7 +3428,7 @@ function TemporalReplay() {
                 { label: "DATA",           sub: "sample rate: 16ms",x: inputNodeX + inputNodeW / 2,  color: time > 0.1 && COL_RAMP.data > 0 ? "#00e5ff" : "rgba(255,255,255,0.55)", ramp: COL_RAMP.data },
                 { label: "EXTRACTION",     sub: "L1 processing",    x: dfColX + dfNodeW / 2,         color: time > 0.1 && COL_RAMP.extraction > 0 ? "#ff6644" : "rgba(255,255,255,0.55)", ramp: COL_RAMP.extraction },
                 { label: "GAME EVENTS",    sub: "classified",       x: colX[2] + nodeW[2] / 2,       color: "rgba(255,255,255,0.55)", ramp: COL_RAMP.events },
-                { label: "BIOLOGY",        sub: "domain skills",    x: colX[3] + nodeW[3] / 2,  color: "rgba(255,255,255,0.55)", ramp: Math.max(COL_RAMP.bioVirus, COL_RAMP.bioOther) },
+                { label: "BIOLOGY",        sub: "domain skills",    x: colX[3] + nodeW[3] / 2,  color: "rgba(255,255,255,0.55)", ramp: Math.max(COL_RAMP.bioVirus, COL_RAMP.bioTuber || 0, COL_RAMP.bioPneum || 0, COL_RAMP.bioMyco || 0, COL_RAMP.bioWin || 0) },
                 { label: "NEURAL ABSTRACTION",sub:"seconds",      x: colX[4] + nodeW[4] / 2,       color: "rgba(255,255,255,0.55)", ramp: COL_RAMP.layers },
                 { label: "PROFILES",        sub: "minutes",          x: colX[5] + nodeW[5] / 2,       color: "rgba(255,255,255,0.55)", ramp: COL_RAMP.profiles },
                 { label: "CAREER PATHWAYS",sub: "confidence →",     x: colX[6] + nodeW[6] / 2,       color: "rgba(255,255,255,0.55)", ramp: COL_RAMP.careers },

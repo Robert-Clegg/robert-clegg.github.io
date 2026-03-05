@@ -1,0 +1,86 @@
+{
+  "input": {
+    "inStart": 0,
+    "inEnd": 3,
+    "outStart": 1,
+    "outEnd": 4,
+    "flicker": 0.9
+  },
+  "data": {
+    "inStart": 0,
+    "inEnd": 3,
+    "outStart": 1,
+    "outEnd": 4,
+    "flicker": 0.9
+  },
+  "extraction": {
+    "inStart": 1,
+    "inEnd": 4,
+    "outStart": 2,
+    "outEnd": 5,
+    "flicker": 0.7
+  },
+  "events": {
+    "inStart": 2,
+    "inEnd": 5,
+    "outStart": 3,
+    "outEnd": 6,
+    "flicker": 0.5
+  },
+  "bioVirus": {
+    "inStart": 3,
+    "inEnd": 8,
+    "outStart": 5,
+    "outEnd": 10,
+    "flicker": 0.4
+  },
+  "bioTuber": {
+    "inStart": 5,
+    "inEnd": 14,
+    "outStart": 7,
+    "outEnd": 16,
+    "flicker": 0.3
+  },
+  "bioPneum": {
+    "inStart": 5,
+    "inEnd": 14,
+    "outStart": 7,
+    "outEnd": 16,
+    "flicker": 0.3
+  },
+  "bioMyco": {
+    "inStart": 5,
+    "inEnd": 14,
+    "outStart": 7,
+    "outEnd": 16,
+    "flicker": 0.3
+  },
+  "bioWin": {
+    "inStart": 8,
+    "inEnd": 18,
+    "outStart": 10,
+    "outEnd": 20,
+    "flicker": 0.2
+  },
+  "layers": {
+    "inStart": 5,
+    "inEnd": 14,
+    "outStart": 7,
+    "outEnd": 16,
+    "flicker": 0.3
+  },
+  "profiles": {
+    "inStart": 8,
+    "inEnd": 20,
+    "outStart": 10,
+    "outEnd": 22,
+    "flicker": 0.2
+  },
+  "careers": {
+    "inStart": 11,
+    "inEnd": 28,
+    "outStart": 14,
+    "outEnd": 30,
+    "flicker": 0.1
+  }
+}

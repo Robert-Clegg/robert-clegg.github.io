@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v207 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v208 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1142,7 +1142,7 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v207") { localStorage.removeItem("pathogenika-columns"); localStorage.removeItem("pathogenika-basebright"); localStorage.setItem("pathogenika-columns-ver", "v207"); }
+      if (ver !== "v208") { localStorage.removeItem("pathogenika-columns"); localStorage.removeItem("pathogenika-basebright"); localStorage.setItem("pathogenika-columns-ver", "v208"); }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) { console.log("[TUNER] Restored from localStorage"); return JSON.parse(saved); }
     } catch (e) {}
@@ -1361,7 +1361,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v207</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v208</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1369,7 +1369,7 @@ function TemporalReplay() {
           {playing ? "⏸" : "▶"}
         </button>
         <div style={{ fontFamily: mono, fontSize: 11, color: "rgba(255,255,255,0.5)", minWidth: 72, textAlign: "center" }}>
-          {Math.floor(time / 60)}:{String(Math.floor(time % 60)).padStart(2, "0")} / {Math.floor(MAX_DUR / 60)}:{String(Math.floor(MAX_DUR % 60)).padStart(2, "0")}
+          {Math.floor(time / 60)}:{String(Math.floor(time % 60)).padStart(2, "0")}.{Math.floor((time % 1) * 10)} / {Math.floor(MAX_DUR / 60)}:{String(Math.floor(MAX_DUR % 60)).padStart(2, "0")}
         </div>
         <div style={{ display: "flex", gap: 2 }}>
           {[1, 2, 4, 8].map(s => (
@@ -3431,7 +3431,7 @@ function TemporalReplay() {
           } else {
             // Event nodes — grayscale at base, white/yellow when active
             const preFire = derivedPreFire[node.id] || 0;
-            const hasPreFire = emerged && preFire > 0.15 && !active;
+            const hasPreFire = nodeGate > 0.02 && preFire > 0.15 && !active;
             const isHeavy = HEAVY_EVENTS.has(node.id);
             const glow = Math.max(intensity, hasPreFire ? preFire * 0.4 : 0) * nodeGate;
             if (isHeavy && glow > 0.03) {

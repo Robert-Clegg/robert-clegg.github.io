@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v199 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v200 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -447,7 +447,7 @@ const DEFAULT_COLUMNS = {
   profiles:   { inStart: 12,  nodeOn: 20,   outStart: 22,   flicker: 0.2 },
   careers:    { inStart: 20,  nodeOn: 35,   outStart: 38,   flicker: 0.1 },
 };
-const DEFAULT_BASE_BRIGHT = 0.15;
+const DEFAULT_BASE_BRIGHT = 5;
 
 // Cognitive timescale-aligned saturation thresholds
 const LAYER_THRESHOLDS = { L1: 15, L2: 10, L3: 8, L4: 5 };
@@ -1142,7 +1142,7 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v199b") { localStorage.removeItem("pathogenika-columns"); localStorage.removeItem("pathogenika-basebright"); localStorage.setItem("pathogenika-columns-ver", "v199b"); }
+      if (ver !== "v200") { localStorage.removeItem("pathogenika-columns"); localStorage.removeItem("pathogenika-basebright"); localStorage.setItem("pathogenika-columns-ver", "v200"); }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) { console.log("[TUNER] Restored from localStorage"); return JSON.parse(saved); }
     } catch (e) {}
@@ -1361,7 +1361,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v199</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v200</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -2982,6 +2982,14 @@ function TemporalReplay() {
           if (val > (maxInEdge[toId] || 0)) maxInEdge[toId] = val;
         }
 
+        // ═══ GRAYSCALE HELPERS — pre-nodeOn nodes are gray, color fades in with nodeGate ═══
+        const hexC = (h, i) => parseInt(h.slice(i, i+2), 16);
+        const grayLum = (r, g, b) => Math.round(r * 0.3 + g * 0.59 + b * 0.11);
+        const mixRGB = (r, g, b, colorMix) => {
+          const gr = grayLum(r, g, b);
+          return [Math.round(gr + (r - gr) * colorMix), Math.round(gr + (g - gr) * colorMix), Math.round(gr + (b - gr) * colorMix)];
+        };
+
         // Sub-skill channel dimensions (matching data channel size)
         const ssW = 48, ssH = 14, ssGap = 1, ssXGap = 3;
 
@@ -3214,14 +3222,17 @@ function TemporalReplay() {
             const dfVis = Math.max(baseBright, extNodeGate);
             if (dfVis < 0.005) return null;
             const gf = activity * extNodeGate;
+            const dfColorMix = Math.min(1, extNodeGate);
+            const [dr,dg,db] = mixRGB(hexC(df.color, 1), hexC(df.color, 3), hexC(df.color, 5), dfColorMix);
+            const dfCol = `${dr},${dg},${db}`;
             const bgOp = (0.01 * dfVis + gf * 0.15).toFixed(3);
             const borderOp = (0.05 * dfVis + dfEdgeHint + gf * 0.55).toFixed(3);
             const textOp = (0.1 * dfVis + gf * 0.9).toFixed(3);
             return (
               <g key={`df-node-${df.id}`}>
                 {gf > 0.3 && <rect x={pos.x - 2} y={pos.y - 2} width={dfNodeW + 4} height={dfNodeH + 4} rx={5} fill={df.color} opacity={gf * 0.12} filter="url(#glow)" />}
-                <rect x={pos.x} y={pos.y} width={dfNodeW} height={dfNodeH} rx={4} fill={`${df.color}${Math.round(parseFloat(bgOp) * 255).toString(16).padStart(2,'0')}`} stroke={`${df.color}${Math.round(Math.min(1, parseFloat(borderOp)) * 255).toString(16).padStart(2,'0')}`} strokeWidth={gf > 0.3 ? 0.8 : 0.4} />
-                <text x={pos.x + dfNodeW / 2} y={pos.y + dfNodeH / 2 + 3} textAnchor="middle" fill={`${df.color}${Math.round(Math.min(1, parseFloat(textOp)) * 255).toString(16).padStart(2,'0')}`} fontSize={6.5} fontFamily={mono} fontWeight={gf > 0.3 ? 600 : 400}>{df.label}</text>
+                <rect x={pos.x} y={pos.y} width={dfNodeW} height={dfNodeH} rx={4} fill={`rgba(${dfCol},${bgOp})`} stroke={`rgba(${dfCol},${Math.min(1, parseFloat(borderOp)).toFixed(3)})`} strokeWidth={gf > 0.3 ? 0.8 : 0.4} />
+                <text x={pos.x + dfNodeW / 2} y={pos.y + dfNodeH / 2 + 3} textAnchor="middle" fill={`rgba(${dfCol},${Math.min(1, parseFloat(textOp)).toFixed(3)})`} fontSize={6.5} fontFamily={mono} fontWeight={gf > 0.3 ? 600 : 400}>{df.label}</text>
               </g>
             );
           });
@@ -3263,24 +3274,27 @@ function TemporalReplay() {
           const ssDropGap = 4;
           const sy = pp.y + nodeH + ssDropGap + sub.offset * (ssH + ssGap);
           const brightness = nodeBright[sub.id] || 0;
-          const active = brightness > 0.05;
+          const ssActive = brightness > 0.05;
           const fresh = brightness > 0.3;
-          const hexBr = (v) => Math.round(v).toString(16).padStart(2, "0");
+          const ssColorMix = Math.min(1, skNodeGate);
+          const [sr,sg,sb] = mixRGB(hexC(sub.color, 1), hexC(sub.color, 3), hexC(sub.color, 5), ssColorMix);
+          const ssCol = `rgb(${sr},${sg},${sb})`;
+          const ssColA = (a) => `rgba(${sr},${sg},${sb},${a})`;
           return (
             <g key={sub.id}>
               <rect x={sx} y={sy} width={ssW} height={ssH} rx={2}
-                fill={fresh ? sub.color + hexBr(brightness * 48) : active ? sub.color + "12" : "rgba(255,255,255,0.01)"}
-                stroke={fresh ? sub.color + hexBr(brightness * 170) : active ? sub.color + "44" : "rgba(255,255,255,0.05)"}
+                fill={fresh ? ssColA((brightness * 0.19).toFixed(3)) : ssActive ? ssColA("0.07") : "rgba(255,255,255,0.01)"}
+                stroke={fresh ? ssColA((brightness * 0.67).toFixed(3)) : ssActive ? ssColA("0.27") : `rgba(${sr},${sg},${sb},${(0.03 * ssVis).toFixed(3)})`}
                 strokeWidth={fresh ? 1 : 0.4} />
               <text x={sx + ssW / 2} y={sy + ssH / 2 + 3}
-                textAnchor="middle" fill={active ? sub.color : "rgba(255,255,255,0.15)"}
+                textAnchor="middle" fill={ssActive ? ssCol : `rgba(${sr},${sg},${sb},${(0.15 * ssVis).toFixed(3)})`}
                 fontSize={7} fontFamily={mono} fontWeight={fresh ? 700 : brightness >= 0.4 ? 600 : 400}>
                 {sub.label}
               </text>
-              {active && (
+              {ssActive && (
                 <line x1={sx + ssW} y1={sy}
                   x2={pp.x + pw - 2} y2={pp.y + nodeH}
-                  stroke={sub.color} strokeWidth={fresh ? 1 : 0.5}
+                  stroke={ssCol} strokeWidth={fresh ? 1 : 0.5}
                   opacity={fresh ? brightness * 0.5 : 0.15} />
               )}
               {fresh && playing && (
@@ -3380,56 +3394,64 @@ function TemporalReplay() {
           const count = treeActivation.activeCounts[node.id] || 0;
           const blink = nodeGate > 0.02 && isBlinking(node.id);
           const gf = intensity * nodeGate;
-          const hexR = (h, i) => parseInt(h.slice(i, i+2), 16);
+          // ═══ GRAYSCALE → COLOR: nodes start gray, color fades in with nodeGate ═══
+          const colorMix = Math.min(1, nodeGate); // 0=gray, 1=full color
           let fillColor, borderColor, textColor, labelSize, blinkColor;
           if (type === "layer") {
             const layerDef = TREE_LAYERS.find(l => l.id === node.id);
-            const r = hexR(layerDef.color, 1), g = hexR(layerDef.color, 3), b = hexR(layerDef.color, 5);
+            const [r,g,b] = mixRGB(hexC(layerDef.color, 1), hexC(layerDef.color, 3), hexC(layerDef.color, 5), colorMix);
             fillColor = `rgba(${r},${g},${b},${(0.02 * vis + gf * 0.12).toFixed(3)})`;
             borderColor = `rgba(${r},${g},${b},${(0.08 * vis + edgeHint + gf * 0.45).toFixed(3)})`;
             textColor = `rgba(${r},${g},${b},${(0.12 * vis + gf * 0.88).toFixed(3)})`;
             blinkColor = layerDef.color;
             labelSize = 10;
           } else if (type === "career") {
-            fillColor = `rgba(168,85,247,${(0.01 * vis + gf * 0.12).toFixed(3)})`;
-            borderColor = `rgba(168,85,247,${(0.06 * vis + edgeHint + gf * 0.45).toFixed(3)})`;
-            textColor = `rgba(168,85,247,${(0.1 * vis + gf * 0.9).toFixed(3)})`;
+            const [r,g,b] = mixRGB(168, 85, 247, colorMix);
+            fillColor = `rgba(${r},${g},${b},${(0.01 * vis + gf * 0.12).toFixed(3)})`;
+            borderColor = `rgba(${r},${g},${b},${(0.06 * vis + edgeHint + gf * 0.45).toFixed(3)})`;
+            textColor = `rgba(${r},${g},${b},${(0.1 * vis + gf * 0.9).toFixed(3)})`;
             blinkColor = "#a855f7";
             labelSize = 9;
           } else if (type === "profile") {
-            fillColor = `rgba(0,212,255,${(0.01 * vis + gf * 0.08).toFixed(3)})`;
-            borderColor = `rgba(0,212,255,${(0.05 * vis + edgeHint + gf * 0.35).toFixed(3)})`;
-            textColor = `rgba(0,212,255,${(0.1 * vis + gf * 0.9).toFixed(3)})`;
+            const [r,g,b] = mixRGB(0, 212, 255, colorMix);
+            fillColor = `rgba(${r},${g},${b},${(0.01 * vis + gf * 0.08).toFixed(3)})`;
+            borderColor = `rgba(${r},${g},${b},${(0.05 * vis + edgeHint + gf * 0.35).toFixed(3)})`;
+            textColor = `rgba(${r},${g},${b},${(0.1 * vis + gf * 0.9).toFixed(3)})`;
             blinkColor = "#00d4ff";
             labelSize = 9;
           } else if (type === "skill") {
             const skillDef = TREE_SKILLS.find(s => s.id === node.id);
             const sColor = skillDef ? skillDef.color : "#88ff88";
-            const r = hexR(sColor, 1), g = hexR(sColor, 3), b = hexR(sColor, 5);
+            const [r,g,b] = mixRGB(hexC(sColor, 1), hexC(sColor, 3), hexC(sColor, 5), colorMix);
             fillColor = `rgba(${r},${g},${b},${(0.01 * vis + gf * 0.1).toFixed(3)})`;
             borderColor = `rgba(${r},${g},${b},${(0.05 * vis + edgeHint + gf * 0.35).toFixed(3)})`;
             textColor = `rgba(${r},${g},${b},${(0.1 * vis + gf * 0.85).toFixed(3)})`;
             blinkColor = sColor;
             labelSize = 8;
           } else {
-            // Event nodes — intensity-scaled, no binary pop
+            // Event nodes — grayscale at base, white/yellow when active
             const preFire = derivedPreFire[node.id] || 0;
             const hasPreFire = emerged && preFire > 0.15 && !active;
             const isHeavy = HEAVY_EVENTS.has(node.id);
-            // Smooth ramp: scale styling by intensity (0→1), gated by vis
             const glow = Math.max(intensity, hasPreFire ? preFire * 0.4 : 0) * vis;
             if (isHeavy && glow > 0.03) {
-              fillColor = `rgba(255,220,100,${(0.02 + glow * 0.15).toFixed(3)})`;
-              borderColor = `rgba(255,200,50,${(0.05 + edgeHint + glow * 0.5).toFixed(3)})`;
-              textColor = `rgba(255,240,180,${(0.1 + glow * 0.7).toFixed(3)})`;
+              const [r,g,b] = mixRGB(255, 220, 100, colorMix);
+              fillColor = `rgba(${r},${g},${b},${(0.02 + glow * 0.15).toFixed(3)})`;
+              const [rb,gb,bb] = mixRGB(255, 200, 50, colorMix);
+              borderColor = `rgba(${rb},${gb},${bb},${(0.05 + edgeHint + glow * 0.5).toFixed(3)})`;
+              const [rt,gt,bt] = mixRGB(255, 240, 180, colorMix);
+              textColor = `rgba(${rt},${gt},${bt},${(0.1 + glow * 0.7).toFixed(3)})`;
             } else if (hasPreFire) {
-              fillColor = `rgba(255,170,0,${(preFire * 0.08 * vis).toFixed(3)})`;
-              borderColor = `rgba(255,170,0,${(edgeHint + preFire * 0.3 * vis).toFixed(3)})`;
-              textColor = `rgba(255,200,100,${(preFire * 0.3 * vis).toFixed(3)})`;
+              const [r,g,b] = mixRGB(255, 170, 0, colorMix);
+              fillColor = `rgba(${r},${g},${b},${(preFire * 0.08 * vis).toFixed(3)})`;
+              borderColor = `rgba(${r},${g},${b},${(edgeHint + preFire * 0.3 * vis).toFixed(3)})`;
+              const [rt,gt,bt] = mixRGB(255, 200, 100, colorMix);
+              textColor = `rgba(${rt},${gt},${bt},${(preFire * 0.3 * vis).toFixed(3)})`;
             } else {
-              fillColor = `rgba(255,255,255,${(0.01 + glow * 0.06).toFixed(4)})`;
-              borderColor = `rgba(255,255,255,${(0.03 * vis + edgeHint + glow * 0.25).toFixed(3)})`;
-              textColor = `rgba(255,255,255,${(0.06 * vis + glow * 0.75).toFixed(3)})`;
+              const gg = Math.round(255 * (1 - colorMix) + 255 * colorMix);
+              fillColor = `rgba(${gg},${gg},${gg},${(0.01 + glow * 0.06).toFixed(4)})`;
+              borderColor = `rgba(${gg},${gg},${gg},${(0.03 * vis + edgeHint + glow * 0.25).toFixed(3)})`;
+              textColor = `rgba(${gg},${gg},${gg},${(0.06 * vis + glow * 0.75).toFixed(3)})`;
             }
             blinkColor = isHeavy ? "#ffcc00" : "#00e5ff";
             labelSize = 8;

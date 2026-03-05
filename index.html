@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v195 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v196 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1144,7 +1144,7 @@ function TemporalReplay() {
     // Clear stale localStorage on version change — ensures new tuned defaults take effect
     try {
       const ver = localStorage.getItem("pathogenika-columns-ver");
-      if (ver !== "v195") { localStorage.removeItem("pathogenika-columns"); localStorage.setItem("pathogenika-columns-ver", "v195"); }
+      if (ver !== "v196") { localStorage.removeItem("pathogenika-columns"); localStorage.setItem("pathogenika-columns-ver", "v196"); }
       const saved = localStorage.getItem("pathogenika-columns");
       if (saved) { console.log("[TUNER] Restored from localStorage"); return JSON.parse(saved); }
     } catch (e) {}
@@ -1358,7 +1358,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v195</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v196</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -1700,33 +1700,29 @@ function TemporalReplay() {
         const lerp01 = (t, start, end) => clamp01((t - start) / (end - start));
         const ease = (v) => v * v; // quadratic ease-in: softer emergence than cubic
         const wt = wallTime; // real seconds since play started
-        // ═══ RANDOMIZE BIOLOGY ORDER — changes each playback ═══
-        // Virus always first (bioVirus in COLUMNS). Other 3 get random staggered starts.
+        // ═══ RANDOMIZE BIOLOGY ORDER — ALWAYS applies ═══
+        // Tuner edits the base timing. Randomization adds stagger offsets on top.
+        // Virus always first. Other 3 get random staggered starts.
         // bioSeed changes on rewind/restart, giving a new order each time.
-        // DISABLED when tuner is open — tuner values must be what you see.
         const colConfig = JSON.parse(JSON.stringify(COLUMNS));
-        if (!showTuner) {
-          const bioOtherKeys = ["bioTuber", "bioPneum", "bioMyco"];
-          const shuffled = [...bioOtherKeys].sort((a, b) => {
-            const ha = Math.sin(bioSeed * 9999 + a.charCodeAt(3) * 127) * 10000;
-            const hb = Math.sin(bioSeed * 9999 + b.charCodeAt(3) * 127) * 10000;
-            return (ha % 1) - (hb % 1);
-          });
-          shuffled.forEach((key, i) => {
-            const base = colConfig[key];
-            const offsetJitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
-            const durationJitter = Math.sin(bioSeed * 3333 + i * 557) * 2;
-            const offset = i * 2 + offsetJitter;
-            colConfig[key] = {
-              ...base,
-              inStart: base.inStart + offset,
-              inEnd: base.inEnd + offset + durationJitter,
-              nodeOn: base.nodeOn + offset,
-              outStart: base.outStart + offset,
-              outEnd: base.outEnd + offset + durationJitter,
-            };
-          });
-        }
+        const bioOtherKeys = ["bioTuber", "bioPneum", "bioMyco"];
+        const shuffled = [...bioOtherKeys].sort((a, b) => {
+          const ha = Math.sin(bioSeed * 9999 + a.charCodeAt(3) * 127) * 10000;
+          const hb = Math.sin(bioSeed * 9999 + b.charCodeAt(3) * 127) * 10000;
+          return (ha % 1) - (hb % 1);
+        });
+        shuffled.forEach((key, i) => {
+          const base = colConfig[key];
+          const offsetJitter = Math.sin(bioSeed * 7777 + i * 331) * 1.5;
+          const durationJitter = Math.sin(bioSeed * 3333 + i * 557) * 2;
+          const offset = i * 2 + offsetJitter;
+          colConfig[key] = {
+            ...base,
+            inStart: base.inStart + offset,
+            nodeOn: base.nodeOn + offset,
+            outStart: base.outStart + offset,
+          };
+        });
 
         // ═══ COL_RAMP (pathways IN), COL_OUT (pathways OUT), COL_NODE (node visibility gate) ═══
         // inEnd is ALWAYS derived from nodeOn — pathways finish ramping when nodes appear.
@@ -3630,9 +3626,14 @@ function TemporalReplay() {
                       {fields.map((f, fi) => (
                         <div key={f} style={{ display: "flex", gap: 1, marginTop: 1 }}>
                           {g.keys.map(k => (
-                            <input key={k} type="number" step={f === "flicker" ? 0.05 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
-                              onChange={e => updateCol(k, f, e.target.value)}
-                              style={inputStyle(fieldColors[fi])} />
+                            <div key={k} style={{ flex: 1, minWidth: 0 }}>
+                              <input type="number" step={f === "flicker" ? 0.05 : 0.5} value={COLUMNS[k]?.[f] ?? 0}
+                                onChange={e => updateCol(k, f, e.target.value)}
+                                style={inputStyle(fieldColors[fi])} />
+                              {f !== "flicker" && colConfig[k] && Math.abs((colConfig[k][f] || 0) - (COLUMNS[k]?.[f] || 0)) > 0.1 && (
+                                <div style={{ fontSize: 6, color: fieldColors[fi], opacity: 0.4, textAlign: "center", fontFamily: mono }}>→{(colConfig[k][f] || 0).toFixed(1)}</div>
+                              )}
+                            </div>
                           ))}
                         </div>
                       ))}

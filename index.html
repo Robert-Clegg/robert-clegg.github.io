@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v184 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v185 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1327,7 +1327,7 @@ function TemporalReplay() {
       {/* TRANSPORT + TITLE — single compact row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
         <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1, color: "white", marginRight: 8, whiteSpace: "nowrap" }}>Cognitive Mechanics</div>
-        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v184</span>
+        <span style={{ fontSize: 10, color: "#00ff88", fontFamily: mono, fontWeight: 700, textShadow: "0 0 8px #00ff8866", marginRight: 4 }}>v185</span>
         <span style={{ fontSize: 8, color: "#ff8888", fontFamily: mono }}>t={time.toFixed(1)} wt={wallTime.toFixed(1)} tab={tab}</span>
         <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 2px" }} />
         <button onClick={() => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); setTime(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); }} style={{ background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 6px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>{"⏮"}</button>
@@ -3111,18 +3111,20 @@ function TemporalReplay() {
 
         // ═══ DERIVED FEATURE NODE RENDERING ═══
         const renderDerivedFeatureNodes = () => {
+          const extRamp = COL_RAMP.extraction || 0;
+          if (extRamp < 0.01) return null; // column hasn't emerged
           return DERIVED_FEATURES.map(df => {
             const pos = getDfPos(df.row);
             const activity = nodeBright[df.id] || 0;
-            const active = activity > 0.1;
-            const fresh = activity > 0.3;
-            const bgOp = fresh ? Math.round(activity * 40).toString(16).padStart(2,'0') : active ? "08" : "05";
-            const borderOp = fresh ? Math.round(activity * 180).toString(16).padStart(2,'0') : active ? "30" : "18";
+            const gf = activity * extRamp;
+            const bgOp = (0.01 * extRamp + gf * 0.15).toFixed(3);
+            const borderOp = (0.05 * extRamp + gf * 0.55).toFixed(3);
+            const textOp = (0.1 * extRamp + gf * 0.9).toFixed(3);
             return (
               <g key={`df-node-${df.id}`}>
-                {fresh && <rect x={pos.x - 2} y={pos.y - 2} width={dfNodeW + 4} height={dfNodeH + 4} rx={5} fill={df.color} opacity={activity * 0.12} filter="url(#glow)" />}
-                <rect x={pos.x} y={pos.y} width={dfNodeW} height={dfNodeH} rx={4} fill={df.color + bgOp} stroke={df.color + borderOp} strokeWidth={fresh ? 0.8 : 0.4} />
-                <text x={pos.x + dfNodeW / 2} y={pos.y + dfNodeH / 2 + 3} textAnchor="middle" fill={active ? df.color : df.color + "55"} fontSize={6.5} fontFamily={mono} fontWeight={fresh ? 600 : 400}>{df.label}</text>
+                {gf > 0.3 && <rect x={pos.x - 2} y={pos.y - 2} width={dfNodeW + 4} height={dfNodeH + 4} rx={5} fill={df.color} opacity={gf * 0.12} filter="url(#glow)" />}
+                <rect x={pos.x} y={pos.y} width={dfNodeW} height={dfNodeH} rx={4} fill={`${df.color}${Math.round(parseFloat(bgOp) * 255).toString(16).padStart(2,'0')}`} stroke={`${df.color}${Math.round(Math.min(1, parseFloat(borderOp)) * 255).toString(16).padStart(2,'0')}`} strokeWidth={gf > 0.3 ? 0.8 : 0.4} />
+                <text x={pos.x + dfNodeW / 2} y={pos.y + dfNodeH / 2 + 3} textAnchor="middle" fill={`${df.color}${Math.round(Math.min(1, parseFloat(textOp)) * 255).toString(16).padStart(2,'0')}`} fontSize={6.5} fontFamily={mono} fontWeight={gf > 0.3 ? 600 : 400}>{df.label}</text>
               </g>
             );
           });

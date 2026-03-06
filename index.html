@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v231 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v232 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v231"), /*#__PURE__*/React.createElement("span", {
+  }, "v232"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9821,20 +9821,24 @@ function TemporalReplay() {
     for (const sk of TREE_SKILLS) {
       const engagement = skillEngagement[sk.id] / maxSkillEngagement; // 0→1
       finalPathway.add(sk.id);
-      // Top cell → 0.85, lowest → 0.08. Clear visual separation.
-      finalStrength[sk.id] = 0.08 + engagement * 0.77;
+      // Top cell → 1.0, lowest → 0.08. Clear visual separation.
+      finalStrength[sk.id] = 0.08 + engagement * 0.92;
     }
+    // Win State: always bright at end — victory condition, should stand out
+    finalStrength["sk_win"] = Math.max(finalStrength["sk_win"] || 0, 0.85);
+    // Mycobacterium: boost minimum so it reads clearly even if underplayed
+    finalStrength["sk_myco"] = Math.max(finalStrength["sk_myco"] || 0, 0.65);
 
     // Apply final pathway floors to unified maps (only when demo nearly ended)
     for (const key of finalPathway) {
       if (key.includes(":")) {
         // Edge
         const ramp = getDestRamp(key.substring(key.indexOf(":") + 1));
-        if (ramp > 0.8) edgeBright[key] = Math.max(edgeBright[key] || 0, (finalStrength[key] || 0) * 0.5);
+        if (ramp > 0.8) edgeBright[key] = Math.max(edgeBright[key] || 0, (finalStrength[key] || 0) * 0.7);
       } else {
         // Node
         const ramp = getDestRamp(key);
-        if (ramp > 0.8) nodeBright[key] = Math.max(nodeBright[key] || 0, (finalStrength[key] || 0) * 0.5);
+        if (ramp > 0.8) nodeBright[key] = Math.max(nodeBright[key] || 0, (finalStrength[key] || 0) * 0.7);
       }
     }
 

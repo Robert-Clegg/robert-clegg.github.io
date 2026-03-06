@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v244";
+  var v = "v245";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v244 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v245 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v244"), /*#__PURE__*/React.createElement("span", {
+  }, "v245"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -11635,39 +11635,51 @@ function TemporalReplay() {
       if (box.id === "audio") {
         const fxAge = time - inputNodeFire.audio;
         const spAge = time - inputNodeFire.linguistic;
-        const fxActive = fxAge < 1.5 && time > 0.1;
-        const spActive = spAge < 2.0 && time > 0.1;
-        const fxIntensity = fxActive ? Math.exp(-fxAge * 1.2) : 0;
-        const spIntensity = spActive ? Math.exp(-spAge * 0.6) : 0;
+        // Mission briefing: both channels alive from t=0 until first real events take over
+        const briefing = time <= 6.0;
+        const briefingFade = briefing ? Math.max(0, 1 - time / 6.0) : 0;
+        const fxActive = fxAge < 1.5 && time > 0.1 || briefing;
+        const spActive = spAge < 2.0 && time > 0.1 || briefing;
+        const fxEventIntensity = fxAge < 1.5 && time > 0.1 ? Math.exp(-fxAge * 1.2) : 0;
+        const spEventIntensity = spAge < 2.0 && time > 0.1 ? Math.exp(-spAge * 0.6) : 0;
+        // Briefing base level fades out as real events take over
+        const fxIntensity = Math.max(fxEventIntensity, briefingFade * 0.55);
+        const spIntensity = Math.max(spEventIntensity, briefingFade * 0.7);
         const innerPad = 3;
         const pillH = 14;
         const pillW = bw - innerPad * 2;
         const fxY = y + 14;
         const spY = fxY + pillH + 2;
-        // dB meter: 8 bars
-        const dbBars = 8;
-        const barW = (pillW - 16) / dbBars;
-        const barH = 8;
-        const dbX = bx + innerPad + 14;
-        const dbY = fxY + 3;
-        // dB level from intensity + noise
-        const dbLevel = fxActive ? Math.min(dbBars, Math.round(fxIntensity * dbBars + (playing ? Math.random() * 1.5 : 0))) : 0;
-        // Speech waveform — 6 bars, syllable cadence ~4Hz, each bar phase-offset
-        const spBars = 6;
-        const spBarW = 4;
-        const spBarMaxH = 8;
-        const spPhase = spActive && playing ? nowMs / 250 : 0; // ~4Hz syllable cycle
-        const spLevels = Array.from({
-          length: spBars
+
+        // FX — sine wave drawn as SVG polyline points
+        const fxWaveX = bx + innerPad + 14;
+        const fxWaveW = pillW - 16;
+        const fxWaveCY = fxY + pillH / 2;
+        const fxWaveAmp = (pillH / 2 - 2) * fxIntensity;
+        // FX frequency: fast punchy transient (~18Hz feel)
+        const fxPhase = playing ? nowMs / 55 : 0;
+        const fxPts = Array.from({
+          length: 28
         }, (_, i) => {
-          if (!spActive) return 0;
-          const offset = i * (Math.PI / spBars) * 1.8;
-          const wave = 0.45 + 0.55 * Math.abs(Math.sin(spPhase + offset));
+          const px = fxWaveX + i / 27 * fxWaveW;
+          const py = fxWaveCY - fxWaveAmp * Math.sin(fxPhase + i * 0.72);
+          return `${px.toFixed(1)},${py.toFixed(1)}`;
+        }).join(" ");
+
+        // SPCH — dB bar meter, slower syllable cadence ~3Hz
+        const dbBars = 8;
+        const dbBarW = (pillW - 16) / dbBars;
+        const dbBarMaxH = 8;
+        const dbX = bx + innerPad + 14;
+        const dbY = spY + 3;
+        const spPhase = playing ? nowMs / 330 : 0; // ~3Hz syllable
+        const spLevels = Array.from({
+          length: dbBars
+        }, (_, i) => {
+          const offset = i * (Math.PI * 2 / dbBars);
+          const wave = 0.35 + 0.65 * Math.abs(Math.sin(spPhase + offset));
           return wave * spIntensity;
         });
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const spCharIdx = spActive && playing ? Math.floor(nowMs / 60) % alphabet.length : 0;
-        const spChar = spActive ? alphabet[spCharIdx] : "_";
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, (fxActive || spActive) && /*#__PURE__*/React.createElement("rect", {
@@ -11714,21 +11726,20 @@ function TemporalReplay() {
           fontSize: 5.5,
           fontFamily: mono,
           fontWeight: 600
-        }, "FX"), Array.from({
-          length: dbBars
-        }, (_, bi) => {
-          const lit = bi < dbLevel;
-          const barColor = bi < 5 ? "#44ff88" : bi < 7 ? "#ffcc00" : "#ff4444";
-          return /*#__PURE__*/React.createElement("rect", {
-            key: `db-${bi}`,
-            x: dbX + bi * barW + 0.5,
-            y: dbY,
-            width: barW - 1,
-            height: barH,
-            rx: 1,
-            fill: lit ? barColor : "rgba(255,255,255,0.04)",
-            opacity: lit ? 0.7 + fxIntensity * 0.3 : 0.3
-          });
+        }, "FX"), fxIntensity > 0.01 && /*#__PURE__*/React.createElement("polyline", {
+          points: fxPts,
+          fill: "none",
+          stroke: `rgba(204,102,255,${(0.4 + fxIntensity * 0.6).toFixed(3)})`,
+          strokeWidth: 1.2,
+          strokeLinecap: "round",
+          strokeLinejoin: "round"
+        }), fxIntensity <= 0.01 && /*#__PURE__*/React.createElement("line", {
+          x1: fxWaveX,
+          y1: fxWaveCY,
+          x2: fxWaveX + fxWaveW,
+          y2: fxWaveCY,
+          stroke: "rgba(204,102,255,0.12)",
+          strokeWidth: 0.6
         }), /*#__PURE__*/React.createElement("rect", {
           x: bx + innerPad,
           y: spY,
@@ -11746,18 +11757,17 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 600
         }, "SPCH"), spLevels.map((lv, i) => {
-          const bh = Math.max(1, lv * spBarMaxH);
-          const bx2 = bx + innerPad + 18 + i * (spBarW + 1);
-          const by2 = spY + (pillH - bh) / 2;
+          const bh = Math.max(1, lv * dbBarMaxH);
+          const barColor = i < 5 ? "#aa88ff" : i < 7 ? "#cc66ff" : "#ff88ff";
           return /*#__PURE__*/React.createElement("rect", {
             key: `sp-${i}`,
-            x: bx2,
-            y: by2,
-            width: spBarW - 1,
+            x: dbX + i * dbBarW + 0.5,
+            y: dbY + (dbBarMaxH - bh),
+            width: dbBarW - 1,
             height: bh,
             rx: 1,
-            fill: `rgba(170,136,255,${(0.3 + lv * 0.7).toFixed(3)})`,
-            opacity: spActive ? 1 : 0.15
+            fill: lv > 0.05 ? barColor : "rgba(170,136,255,0.08)",
+            opacity: lv > 0.05 ? 0.5 + lv * 0.5 : 0.3
           });
         }));
       }

@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v228 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v229 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v228"), /*#__PURE__*/React.createElement("span", {
+  }, "v229"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10424,8 +10424,9 @@ function TemporalReplay() {
         const hasPreFire = preFire > 0.15 && !active;
         const isHeavy = HEAVY_EVENTS.has(node.id);
         const glow = Math.max(intensity, hasPreFire ? preFire * 0.4 : 0) * colRamp;
-        // Don't render nodes that have never received signal — keep them invisible
-        if (glow < 0.01 && !hasPreFire) return null;
+        // Don't render nodes until glow is substantial — prevents early-ramp bleed
+        // At colRamp=0.1, needs intensity>1.0 (impossible). At colRamp=1.0, needs intensity>0.1.
+        if (glow < 0.1 && !hasPreFire) return null;
         const evVis = colRamp; // fades in from 0 with the events column ramp
         // Events earn color through signal, not nodeGate — stays gray until fired
         const evtColorMix = Math.min(1, glow * 3);

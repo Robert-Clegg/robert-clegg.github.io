@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v226 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v227 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v226"), /*#__PURE__*/React.createElement("span", {
+  }, "v227"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9870,6 +9870,8 @@ function TemporalReplay() {
         const fromNode = fromNodes.find(n => n.id === fromId);
         const toNode = toNodes.find(n => n.id === toId);
         if (!fromNode || !toNode) return null;
+        // Gate event-source edges off until events column ramps
+        if (fromType === "event" && (COL_RAMP.events || 0) <= 0.02) return null;
 
         // ═══ UNIFIED: read from edgeBright map ═══
         const fireKey = `${fromId}:${toId}`;
@@ -10415,31 +10417,34 @@ function TemporalReplay() {
         blinkColor = sColor;
         labelSize = 8;
       } else {
-        // Event nodes — grayscale at base, white/yellow when active
+        // Event nodes — completely off until pathways ramp arrives, then fade in from zero.
+        // No ghost floor: colRamp drives everything. nodeGate/ghostDim do not apply.
+        if (colRamp <= 0.02) return null;
+        const evVis = colRamp; // fades in from 0 with the events column ramp
         const preFire = derivedPreFire[node.id] || 0;
-        const hasPreFire = colRamp > 0.02 && preFire > 0.15 && !active;
+        const hasPreFire = preFire > 0.15 && !active;
         const isHeavy = HEAVY_EVENTS.has(node.id);
         const glow = Math.max(intensity, hasPreFire ? preFire * 0.4 : 0) * colRamp;
         // Events earn color through signal, not nodeGate — stays gray until fired
         const evtColorMix = Math.min(1, glow * 3);
         if (isHeavy && glow > 0.03) {
           const [r, g, b] = mixRGB(255, 220, 100, evtColorMix);
-          fillColor = `rgba(${r},${g},${b},${(0.01 * vis + glow * 0.15).toFixed(3)})`;
+          fillColor = `rgba(${r},${g},${b},${(0.01 * evVis + glow * 0.15).toFixed(3)})`;
           const [rb, gb, bb] = mixRGB(255, 200, 50, evtColorMix);
-          borderColor = `rgba(${rb},${gb},${bb},${(0.06 * vis + edgeHint + glow * 0.5).toFixed(3)})`;
+          borderColor = `rgba(${rb},${gb},${bb},${(0.06 * evVis + edgeHint + glow * 0.5).toFixed(3)})`;
           const [rt, gt, bt] = mixRGB(255, 240, 180, evtColorMix);
-          textColor = `rgba(${rt},${gt},${bt},${(0.1 * vis + glow * 0.7).toFixed(3)})`;
+          textColor = `rgba(${rt},${gt},${bt},${(0.1 * evVis + glow * 0.7).toFixed(3)})`;
         } else if (hasPreFire) {
           const [r, g, b] = mixRGB(255, 170, 0, evtColorMix);
-          fillColor = `rgba(${r},${g},${b},${(preFire * 0.08 * vis).toFixed(3)})`;
-          borderColor = `rgba(${r},${g},${b},${(edgeHint + preFire * 0.3 * vis).toFixed(3)})`;
+          fillColor = `rgba(${r},${g},${b},${(preFire * 0.08 * evVis).toFixed(3)})`;
+          borderColor = `rgba(${r},${g},${b},${(edgeHint + preFire * 0.3 * evVis).toFixed(3)})`;
           const [rt, gt, bt] = mixRGB(255, 200, 100, evtColorMix);
-          textColor = `rgba(${rt},${gt},${bt},${(preFire * 0.3 * vis).toFixed(3)})`;
+          textColor = `rgba(${rt},${gt},${bt},${(preFire * 0.3 * evVis).toFixed(3)})`;
         } else {
           const gg = Math.round(150 + 105 * evtColorMix); // 150 gray → 255 white
-          fillColor = `rgba(${gg},${gg},${gg},${(0.01 * vis + glow * 0.06).toFixed(4)})`;
-          borderColor = `rgba(${gg},${gg},${gg},${(0.06 * vis + edgeHint + glow * 0.25).toFixed(3)})`;
-          textColor = `rgba(${gg},${gg},${gg},${(0.1 * vis + glow * 0.75).toFixed(3)})`;
+          fillColor = `rgba(${gg},${gg},${gg},${(0.01 * evVis + glow * 0.06).toFixed(4)})`;
+          borderColor = `rgba(${gg},${gg},${gg},${(0.06 * evVis + edgeHint + glow * 0.25).toFixed(3)})`;
+          textColor = `rgba(${gg},${gg},${gg},${(0.1 * evVis + glow * 0.75).toFixed(3)})`;
         }
         blinkColor = isHeavy ? "#ffcc00" : "#00e5ff";
         labelSize = 8;

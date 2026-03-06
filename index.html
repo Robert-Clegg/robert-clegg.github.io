@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v229 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v230 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v229"), /*#__PURE__*/React.createElement("span", {
+  }, "v230"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10419,7 +10419,9 @@ function TemporalReplay() {
       } else {
         // Event nodes — completely off until pathways ramp arrives AND node has received signal.
         // No ghost floor: colRamp drives everything. nodeGate/ghostDim do not apply.
-        if (colRamp <= 0.02) return null;
+        // Hard floor: nothing shows until the column is at least 30% ramped.
+        // Prevents single-frame stochastic flicker at ramp start from crossing the glow gate.
+        if (colRamp < 0.3) return null;
         const preFire = derivedPreFire[node.id] || 0;
         const hasPreFire = preFire > 0.15 && !active;
         const isHeavy = HEAVY_EVENTS.has(node.id);

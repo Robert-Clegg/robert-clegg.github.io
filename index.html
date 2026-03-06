@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<title>Pathogenika v240 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v241 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7031,7 +7031,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v240"), /*#__PURE__*/React.createElement("span", {
+  }, "v241"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8022,11 +8022,7 @@ function TemporalReplay() {
     // Each of 22 channels fires on its own staggered cycle via prime offsets
     // At 16ms sample rate (~62.5Hz), channels flicker near-constantly with brief gaps
     const nowMs = time > 0.1 ? Date.now() : 0;
-    // preGame: true until the first column starts meaningfully ramping
-    // Keeps all nodes visible as ghosts during the pre-signal gap
-    const minColRamp = Math.min(...Object.values(COL_RAMP));
-    const anyRamping = Object.values(COL_RAMP).some(r => r > 0.05);
-    const preGame = !anyRamping;
+    // preGame computed below after COL_RAMP is initialized
 
     // ═══ CHOREOGRAPHED COLUMN RAMPS — the emergence of learning ═══
     // Each column ramps 0→1 on its own timeline. All times are REAL WALL-CLOCK SECONDS.
@@ -8071,6 +8067,9 @@ function TemporalReplay() {
     COL_RAMP.data = Math.max(COL_RAMP.data, playing ? 0.05 : 0);
     COL_OUT.input = Math.max(COL_OUT.input, playing ? 0.05 : 0);
     COL_OUT.data = Math.max(COL_OUT.data, playing ? 0.05 : 0);
+    // preGame: no column has started ramping yet — ghost floor is the only content
+    const anyRamping = Object.values(COL_RAMP).some(r => r > 0.05);
+    const preGame = !anyRamping;
 
     // ═══ SKILL → COLUMN MAPPING ═══
     const SKILL_TO_COL = {

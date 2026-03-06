@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<title>Pathogenika v238 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v239 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7031,7 +7031,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v238"), /*#__PURE__*/React.createElement("span", {
+  }, "v239"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8022,8 +8022,11 @@ function TemporalReplay() {
     // Each of 22 channels fires on its own staggered cycle via prime offsets
     // At 16ms sample rate (~62.5Hz), channels flicker near-constantly with brief gaps
     const nowMs = time > 0.1 ? Date.now() : 0;
-    // preGame: before playback starts — show all nodes as dim gray ghosts
-    const preGame = time < 0.5;
+    // preGame: true until the first column starts meaningfully ramping
+    // Keeps all nodes visible as ghosts during the pre-signal gap
+    const minColRamp = Math.min(...Object.values(COL_RAMP));
+    const anyRamping = Object.values(COL_RAMP).some(r => r > 0.05);
+    const preGame = !anyRamping;
 
     // ═══ CHOREOGRAPHED COLUMN RAMPS — the emergence of learning ═══
     // Each column ramps 0→1 on its own timeline. All times are REAL WALL-CLOCK SECONDS.

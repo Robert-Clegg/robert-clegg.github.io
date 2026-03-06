@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v252";
+  var v = "v253";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v252 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v253 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7015,7 +7015,73 @@ function TemporalReplay() {
       padding: "20px 16px",
       overflow: "hidden"
     }
-  }, /*#__PURE__*/React.createElement("link", {
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      left: 0,
+      top: "50%",
+      transform: "translateY(-50%)",
+      zIndex: 100,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 6,
+      padding: "8px 4px",
+      background: "rgba(6,6,16,0.85)",
+      borderRight: "1px solid rgba(255,255,255,0.06)",
+      borderRadius: "0 6px 6px 0"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      playingRef.current = false;
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      setTime(0);
+      setWallTime(0);
+      setBioSeed(Math.random());
+      setPlaying(false);
+    },
+    style: {
+      background: "none",
+      border: "1px solid rgba(255,255,255,0.1)",
+      color: "rgba(255,255,255,0.4)",
+      borderRadius: 4,
+      padding: "4px 6px",
+      cursor: "pointer",
+      fontFamily: mono,
+      fontSize: 11
+    }
+  }, "\u23EE"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      const next = !playing;
+      playingRef.current = next;
+      if (!next && animRef.current) cancelAnimationFrame(animRef.current);
+      if (!playing && time >= MAX_DUR - 0.1) {
+        setTime(0);
+        setWallTime(0);
+        setBioSeed(Math.random());
+      }
+      setPlaying(next);
+    },
+    style: {
+      background: playing ? C_COLOR + "22" : S_COLOR + "22",
+      border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "66",
+      color: playing ? C_COLOR : S_COLOR,
+      borderRadius: 4,
+      padding: "6px 8px",
+      cursor: "pointer",
+      fontFamily: mono,
+      fontSize: 16,
+      fontWeight: 700
+    }
+  }, playing ? "⏸" : "▶"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: mono,
+      fontSize: 7,
+      color: "rgba(255,255,255,0.25)",
+      textAlign: "center",
+      lineHeight: 1.4
+    }
+  }, String(Math.floor(time % 60)).padStart(2, "0"), /*#__PURE__*/React.createElement("br", null), ".", Math.floor(time % 1 * 10))), /*#__PURE__*/React.createElement("link", {
     href: "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap",
     rel: "stylesheet"
   }), /*#__PURE__*/React.createElement("div", {
@@ -7043,63 +7109,13 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v252"), /*#__PURE__*/React.createElement("span", {
+  }, "v253"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
       fontFamily: mono
     }
   }, "t=", time.toFixed(1), " wt=", wallTime.toFixed(1), " tab=", tab), /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 1,
-      height: 16,
-      background: "rgba(255,255,255,0.08)",
-      margin: "0 2px"
-    }
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      playingRef.current = false;
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      setTime(0);
-      setWallTime(0);
-      setBioSeed(Math.random());
-      setPlaying(false);
-    },
-    style: {
-      background: "none",
-      border: "1px solid rgba(255,255,255,0.1)",
-      color: "rgba(255,255,255,0.4)",
-      borderRadius: 4,
-      padding: "3px 6px",
-      cursor: "pointer",
-      fontFamily: mono,
-      fontSize: 10
-    }
-  }, "⏮"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      const next = !playing;
-      playingRef.current = next;
-      if (!next && animRef.current) cancelAnimationFrame(animRef.current);
-      if (!playing && time >= MAX_DUR - 0.1) {
-        setTime(0);
-        setWallTime(0);
-        setBioSeed(Math.random());
-      }
-      setPlaying(next);
-    },
-    style: {
-      background: playing ? C_COLOR + "18" : S_COLOR + "18",
-      border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "44",
-      color: playing ? C_COLOR : S_COLOR,
-      borderRadius: 4,
-      padding: "3px 10px",
-      cursor: "pointer",
-      fontFamily: mono,
-      fontSize: 11,
-      fontWeight: 700,
-      minWidth: 36
-    }
-  }, playing ? "⏸" : "▶"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: mono,
       fontSize: 11,

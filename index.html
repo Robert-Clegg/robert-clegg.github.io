@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v250";
+  var v = "v251";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v250 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v251 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v250"), /*#__PURE__*/React.createElement("span", {
+  }, "v251"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10714,365 +10714,6 @@ function TemporalReplay() {
     }
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        marginBottom: 4,
-        padding: "0 10px"
-      }
-    }, [{
-      id: "commander",
-      label: "CMD",
-      color: C_COLOR
-    }, {
-      id: "soldier",
-      label: "SLD",
-      color: S_COLOR
-    }].map(s => /*#__PURE__*/React.createElement("button", {
-      key: s.id,
-      onClick: () => setTreeSession(s.id),
-      style: {
-        background: treeSession === s.id ? `${s.color}18` : "transparent",
-        border: `1px solid ${treeSession === s.id ? s.color + "44" : "rgba(255,255,255,0.06)"}`,
-        color: treeSession === s.id ? s.color : "rgba(255,255,255,0.25)",
-        padding: "2px 8px",
-        borderRadius: 4,
-        cursor: "pointer",
-        fontFamily: mono,
-        fontSize: 8,
-        letterSpacing: 1.5,
-        fontWeight: 600
-      }
-    }, s.label)), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 8,
-        color: "rgba(255,255,255,0.2)",
-        fontFamily: mono,
-        letterSpacing: 1,
-        marginLeft: 4
-      }
-    }, treeSession.toUpperCase(), " \u2022 ", Math.round(time), "s"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1,
-        position: "relative",
-        height: 14,
-        cursor: "pointer",
-        marginLeft: 8
-      },
-      onClick: e => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        setTime((e.clientX - rect.left) / rect.width * MAX_DUR);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: 5,
-        left: 0,
-        right: 0,
-        height: 3,
-        background: "rgba(255,255,255,0.05)",
-        borderRadius: 2
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: 3,
-        left: SOLDIER_DUR / MAX_DUR * 100 + "%",
-        width: 1,
-        height: 8,
-        background: S_COLOR,
-        opacity: 0.2
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: 5,
-        left: 0,
-        width: time / MAX_DUR * 100 + "%",
-        height: 3,
-        background: `linear-gradient(90deg, ${S_COLOR}, ${C_COLOR})`,
-        borderRadius: 2,
-        transition: playing ? "none" : "width 0.15s"
-      }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: 2,
-        left: time / MAX_DUR * 100 + "%",
-        width: 8,
-        height: 10,
-        background: "white",
-        borderRadius: 2,
-        transform: "translateX(-4px)",
-        boxShadow: "0 0 6px rgba(255,255,255,0.3)"
-      }
-    }))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 4
-      }
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => setShowTuner(!showTuner),
-      style: {
-        background: "rgba(0,255,136,0.1)",
-        border: "1px solid rgba(0,255,136,0.3)",
-        color: "#00ff88",
-        borderRadius: 4,
-        padding: "2px 8px",
-        cursor: "pointer",
-        fontFamily: mono,
-        fontSize: 8,
-        marginRight: 6
-      }
-    }, showTuner ? "▼ TUNER" : "▶ TUNER"), showTuner && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        const json = JSON.stringify(COLUMNS, null, 2);
-        const blob = new Blob([json], {
-          type: "application/json"
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "column-config.json";
-        a.click();
-        URL.revokeObjectURL(url);
-      },
-      style: {
-        background: "rgba(0,200,255,0.1)",
-        border: "1px solid rgba(0,200,255,0.3)",
-        color: "#00ccff",
-        borderRadius: 4,
-        padding: "2px 8px",
-        cursor: "pointer",
-        fontFamily: mono,
-        fontSize: 8,
-        marginRight: 4
-      }
-    }, "SAVE"), /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        const inp = document.createElement("input");
-        inp.type = "file";
-        inp.accept = ".json";
-        inp.onchange = e => {
-          const f = e.target.files[0];
-          if (!f) return;
-          const r = new FileReader();
-          r.onload = () => {
-            try {
-              setColumns(JSON.parse(r.result));
-            } catch (err) {
-              console.error(err);
-            }
-          };
-          r.readAsText(f);
-        };
-        inp.click();
-      },
-      style: {
-        background: "rgba(255,170,0,0.1)",
-        border: "1px solid rgba(255,170,0,0.3)",
-        color: "#ffaa00",
-        borderRadius: 4,
-        padding: "2px 8px",
-        cursor: "pointer",
-        fontFamily: mono,
-        fontSize: 8,
-        marginRight: 4
-      }
-    }, "LOAD"), /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        try {
-          localStorage.removeItem("pathogenika-columns");
-          localStorage.removeItem("pathogenika-basebright");
-        } catch (e) {}
-        setColumns(JSON.parse(JSON.stringify(DEFAULT_COLUMNS)));
-        setBaseBright(DEFAULT_BASE_BRIGHT);
-      },
-      style: {
-        background: "rgba(255,68,68,0.1)",
-        border: "1px solid rgba(255,68,68,0.3)",
-        color: "#ff4444",
-        borderRadius: 4,
-        padding: "2px 8px",
-        cursor: "pointer",
-        fontFamily: mono,
-        fontSize: 8,
-        marginRight: 8
-      }
-    }, "RESET"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: "rgba(255,255,255,0.5)",
-        fontSize: 8,
-        fontFamily: mono,
-        marginRight: 4
-      }
-    }, "BRIGHT"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      step: 0.5,
-      min: 0,
-      max: 50,
-      value: baseBright,
-      onInput: e => setBaseBright(Math.max(0, parseFloat(e.target.value) || 0)),
-      onChange: e => setBaseBright(Math.max(0, parseFloat(e.target.value) || 0)),
-      style: {
-        width: 44,
-        background: "rgba(0,0,0,0.6)",
-        border: "1px solid rgba(255,255,255,0.3)",
-        color: "white",
-        borderRadius: 3,
-        padding: "1px 3px",
-        fontFamily: mono,
-        fontSize: 9,
-        textAlign: "center",
-        outline: "none"
-      }
-    }))), showTuner && (() => {
-      // Map tuner columns to SVG x positions (viewBox: -92 0 1432 700)
-      const vbTotal = 1432;
-      const pct = svgX => ((svgX + 92) / vbTotal * 100).toFixed(2) + "%";
-      // Column groups: key(s), SVG center x, width %
-      const groups = [{
-        keys: ["extraction"],
-        cx: 229,
-        label: "EXT",
-        w: 5
-      }, {
-        keys: ["events"],
-        cx: 376,
-        label: "EVT",
-        w: 6
-      }, {
-        keys: ["bioVirus", "bioTuber", "bioPneum", "bioMyco", "bioWin"],
-        cx: 593,
-        label: "BIOLOGY",
-        w: 14
-      }, {
-        keys: ["layers"],
-        cx: 810,
-        label: "LAYERS",
-        w: 6
-      }, {
-        keys: ["profiles"],
-        cx: 1027,
-        label: "PROF",
-        w: 6
-      }, {
-        keys: ["careers"],
-        cx: 1253,
-        label: "CAREER",
-        w: 7
-      }];
-      const fields = ["pathways", "speed", "flicker"];
-      const fieldLabels = ["pathways", "speed", "pop rate"];
-      const fieldColors = ["#ff8800", "#00ccff", "#aa55ff"];
-      const subLabels = {
-        bioVirus: "V",
-        bioTuber: "T",
-        bioPneum: "P",
-        bioMyco: "M",
-        bioWin: "W"
-      };
-      const updateCol = (col, field, val) => {
-        setColumns(prev => {
-          const next = JSON.parse(JSON.stringify(prev));
-          next[col][field] = parseFloat(val) || 0;
-          return next;
-        });
-      };
-      const inputStyle = fc => ({
-        width: "100%",
-        background: "rgba(0,0,0,0.6)",
-        border: `1px solid ${fc}44`,
-        color: fc,
-        borderRadius: 3,
-        padding: "1px 2px",
-        fontFamily: mono,
-        fontSize: 9,
-        textAlign: "center",
-        outline: "none",
-        boxSizing: "border-box"
-      });
-      return /*#__PURE__*/React.createElement("div", {
-        style: {
-          position: "relative",
-          height: fields.length * 18 + 22,
-          marginBottom: 4
-        }
-      }, fieldLabels.map((fl, fi) => /*#__PURE__*/React.createElement("div", {
-        key: fl,
-        style: {
-          position: "absolute",
-          left: 0,
-          top: 16 + fi * 18,
-          color: fieldColors[fi],
-          fontSize: 7,
-          fontFamily: mono,
-          fontWeight: 600,
-          width: 60,
-          textAlign: "right",
-          paddingRight: 4
-        }
-      }, fl)), groups.map(g => {
-        const leftPct = (g.cx + 92 - g.w * vbTotal / 200) / vbTotal * 100;
-        const widthPct = g.w;
-        const multi = g.keys.length > 1;
-        return /*#__PURE__*/React.createElement("div", {
-          key: g.label,
-          style: {
-            position: "absolute",
-            left: leftPct + "%",
-            width: widthPct + "%",
-            textAlign: "center"
-          }
-        }, /*#__PURE__*/React.createElement("div", {
-          style: {
-            color: "rgba(255,255,255,0.5)",
-            fontSize: 7,
-            fontFamily: mono,
-            fontWeight: 700,
-            letterSpacing: 0.5,
-            marginBottom: 2
-          }
-        }, g.label), multi && /*#__PURE__*/React.createElement("div", {
-          style: {
-            display: "flex",
-            gap: 1,
-            marginBottom: 1
-          }
-        }, g.keys.map(k => /*#__PURE__*/React.createElement("div", {
-          key: k,
-          style: {
-            flex: 1,
-            textAlign: "center",
-            color: "rgba(255,255,255,0.35)",
-            fontSize: 6,
-            fontFamily: mono
-          }
-        }, subLabels[k] || k))), fields.map((f, fi) => /*#__PURE__*/React.createElement("div", {
-          key: f,
-          style: {
-            display: "flex",
-            gap: 1,
-            marginTop: 1
-          }
-        }, g.keys.map(k => /*#__PURE__*/React.createElement("div", {
-          key: k,
-          style: {
-            flex: 1,
-            minWidth: 0
-          }
-        }, /*#__PURE__*/React.createElement("input", {
-          type: "number",
-          step: 1,
-          min: 0,
-          max: 50,
-          value: COLUMNS[k]?.[f] ?? 0,
-          onInput: e => updateCol(k, f, e.target.value),
-          onChange: e => updateCol(k, f, e.target.value),
-          style: inputStyle(fieldColors[fi])
-        }))))));
-      }));
-    })(), /*#__PURE__*/React.createElement("div", {
-      style: {
         overflow: "hidden",
         direction: "ltr"
       }
@@ -12860,6 +12501,99 @@ function TemporalReplay() {
         fontSize: 7,
         fontFamily: mono
       }, "GAP"));
+    }))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "6px 10px 4px"
+      }
+    }, [{
+      id: "commander",
+      label: "CMD",
+      color: C_COLOR
+    }, {
+      id: "soldier",
+      label: "SLD",
+      color: S_COLOR
+    }].map(s => /*#__PURE__*/React.createElement("button", {
+      key: s.id,
+      onClick: () => setTreeSession(s.id),
+      style: {
+        background: treeSession === s.id ? `${s.color}18` : "transparent",
+        border: `1px solid ${treeSession === s.id ? s.color + "44" : "rgba(255,255,255,0.06)"}`,
+        color: treeSession === s.id ? s.color : "rgba(255,255,255,0.25)",
+        padding: "2px 8px",
+        borderRadius: 4,
+        cursor: "pointer",
+        fontFamily: mono,
+        fontSize: 8,
+        letterSpacing: 1.5,
+        fontWeight: 600
+      }
+    }, s.label)), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontSize: 8,
+        color: "rgba(255,255,255,0.2)",
+        fontFamily: mono,
+        letterSpacing: 1,
+        marginLeft: 4
+      }
+    }, treeSession.toUpperCase(), " \u2022 ", Math.round(time), "s"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        position: "relative",
+        height: 14,
+        cursor: "pointer",
+        marginLeft: 8
+      },
+      onClick: e => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setTime((e.clientX - rect.left) / rect.width * MAX_DUR);
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 5,
+        left: 0,
+        right: 0,
+        height: 3,
+        background: "rgba(255,255,255,0.05)",
+        borderRadius: 2
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 3,
+        left: SOLDIER_DUR / MAX_DUR * 100 + "%",
+        width: 1,
+        height: 8,
+        background: S_COLOR,
+        opacity: 0.2
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 5,
+        left: 0,
+        width: time / MAX_DUR * 100 + "%",
+        height: 3,
+        background: `linear-gradient(90deg, ${S_COLOR}, ${C_COLOR})`,
+        borderRadius: 2,
+        transition: playing ? "none" : "width 0.15s"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        top: 2,
+        left: time / MAX_DUR * 100 + "%",
+        width: 8,
+        height: 10,
+        background: "white",
+        borderRadius: 2,
+        transform: "translateX(-4px)",
+        boxShadow: "0 0 6px rgba(255,255,255,0.3)"
+      }
     }))));
   })(), tab === "compare" && (() => {
     const CW = 1100,

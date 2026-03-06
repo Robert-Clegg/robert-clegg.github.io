@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v233 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v234 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v233"), /*#__PURE__*/React.createElement("span", {
+  }, "v234"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9620,7 +9620,7 @@ function TemporalReplay() {
       const engagement = skillEngagement[sk.id] / maxSkillEngagement; // 0→1 relative
       // Sympathetic flash: when any child sub-skill is bright, parent gets a proportional bump
       const maxChildBright = Math.max(0, ...children.map(c => nodeBright[c.id] || 0));
-      const sympatheticBump = maxChildBright * 0.4; // 40% of child's peak flash
+      const sympatheticBump = maxChildBright * 1.0; // parent tracks child peak directly
       // Base brightness from engagement level (dim for unused, bright for heavily used)
       const engagementFloor = engagement * 0.35; // steady glow proportional to use
       const finalBright = Math.max(engagementFloor, sympatheticBump, nodeBright[sk.id] || 0);
@@ -10283,14 +10283,14 @@ function TemporalReplay() {
         width: ssW,
         height: ssH,
         rx: 2,
-        fill: isFreshDisplay ? ssColA((displayBright * 0.19).toFixed(3)) : ssActive ? ssColA("0.07") : `rgba(${sr},${sg},${sb},${(0.01 * ssVis).toFixed(3)})`,
-        stroke: isFreshDisplay ? ssColA((displayBright * 0.67).toFixed(3)) : ssActive ? ssColA("0.27") : `rgba(${sr},${sg},${sb},${(0.06 * ssVis).toFixed(3)})`,
+        fill: isFreshDisplay ? ssColA((displayBright * 0.19).toFixed(3)) : ssActive ? ssColA("0.07") : `rgba(${sr},${sg},${sb},${(preGame ? 0.04 : 0.01 * ssVis).toFixed(3)})`,
+        stroke: isFreshDisplay ? ssColA((displayBright * 0.67).toFixed(3)) : ssActive ? ssColA("0.27") : `rgba(${sr},${sg},${sb},${(preGame ? 0.14 : 0.06 * ssVis).toFixed(3)})`,
         strokeWidth: isFreshDisplay ? 1 : 0.4
       }), /*#__PURE__*/React.createElement("text", {
         x: sx + ssW / 2,
         y: sy + ssH / 2 + 3,
         textAnchor: "middle",
-        fill: ssActive ? ssColA((0.4 + displayBright * 0.6).toFixed(2)) : `rgba(${sr},${sg},${sb},${(0.1 * ssVis).toFixed(3)})`,
+        fill: ssActive ? ssColA((0.4 + displayBright * 0.6).toFixed(2)) : `rgba(${sr},${sg},${sb},${(preGame ? 0.25 : 0.1 * ssVis).toFixed(3)})`,
         fontSize: 7,
         fontFamily: mono,
         fontWeight: isFreshDisplay ? 700 : brightness >= 0.4 ? 600 : 400
@@ -10481,14 +10481,14 @@ function TemporalReplay() {
             width: w,
             height: nodeH,
             rx: 4,
-            fill: "rgba(150,150,150,0.03)",
-            stroke: "rgba(150,150,150,0.10)",
+            fill: "rgba(150,150,150,0.04)",
+            stroke: "rgba(150,150,150,0.14)",
             strokeWidth: 0.4
           }), /*#__PURE__*/React.createElement("text", {
             x: pos.x + w / 2,
             y: pos.y + nodeH / 2 + 3,
             textAnchor: "middle",
-            fill: "rgba(150,150,150,0.18)",
+            fill: "rgba(150,150,150,0.25)",
             fontSize: 8,
             fontFamily: mono
           }, node.label));

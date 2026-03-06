@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v236 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v237 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v236"), /*#__PURE__*/React.createElement("span", {
+  }, "v237"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10166,6 +10166,27 @@ function TemporalReplay() {
         const dfEdgeHint = (maxInEdge[df.id] || 0) * 0.08;
         const dfGhostDim = 0.25 + 0.75 * extRamp;
         const dfVis = Math.max(baseBright, extNodeGate) * dfGhostDim;
+        if (preGame) {
+          return /*#__PURE__*/React.createElement("g", {
+            key: `df-node-${df.id}`
+          }, /*#__PURE__*/React.createElement("rect", {
+            x: pos.x,
+            y: pos.y,
+            width: dfNodeW,
+            height: dfNodeH,
+            rx: 4,
+            fill: "rgba(150,150,150,0.10)",
+            stroke: "rgba(150,150,150,0.35)",
+            strokeWidth: 0.4
+          }), /*#__PURE__*/React.createElement("text", {
+            x: pos.x + dfNodeW / 2,
+            y: pos.y + dfNodeH / 2 + 3,
+            textAnchor: "middle",
+            fill: "rgba(150,150,150,0.60)",
+            fontSize: 6.5,
+            fontFamily: mono
+          }, df.label));
+        }
         if (dfVis < 0.005) return null;
         const gf = activity * (COL_RAMP.extraction || 0);
         const dfColorMix = Math.min(1, COL_RAMP.extraction || 0);
@@ -10422,6 +10443,28 @@ function TemporalReplay() {
       const col = node.col + 2;
       const pos = getPos(col, node.row);
       const w = nodeW[col];
+      // ═══ PRE-GAME: uniform gray ghost for ALL node types before play ═══
+      if (preGame) {
+        return /*#__PURE__*/React.createElement("g", {
+          key: node.id
+        }, /*#__PURE__*/React.createElement("rect", {
+          x: pos.x,
+          y: pos.y,
+          width: w,
+          height: nodeH,
+          rx: 4,
+          fill: "rgba(150,150,150,0.10)",
+          stroke: "rgba(150,150,150,0.35)",
+          strokeWidth: 0.4
+        }), /*#__PURE__*/React.createElement("text", {
+          x: pos.x + w / 2,
+          y: pos.y + nodeH / 2 + 3,
+          textAnchor: "middle",
+          fill: "rgba(150,150,150,0.60)",
+          fontSize: type === "event" ? 8 : type === "layer" ? 10 : 9,
+          fontFamily: mono
+        }, node.label));
+      }
       // ═══ NODE VISIBILITY: legible ghost at rest, bright when pathways arrive ═══
       const colRamp = getDestRamp(node.id);
       const nodeGate = getNodeGate(node.id);

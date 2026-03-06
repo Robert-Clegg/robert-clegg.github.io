@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v235 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v236 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v235"), /*#__PURE__*/React.createElement("span", {
+  }, "v236"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10471,8 +10471,8 @@ function TemporalReplay() {
       } else {
         // Event nodes — completely off until pathways ramp arrives AND node has received signal.
         // No ghost floor: colRamp drives everything. nodeGate/ghostDim do not apply.
-        // PRE-GAME exception: show dim gray ghost so viewer sees all nodes before play.
-        if (preGame) {
+        // Show dim gray ghost until column is 30% ramped (covers pre-game + early ramp gap)
+        if (colRamp < 0.3) {
           return /*#__PURE__*/React.createElement("g", {
             key: node.id
           }, /*#__PURE__*/React.createElement("rect", {
@@ -10493,8 +10493,6 @@ function TemporalReplay() {
             fontFamily: mono
           }, node.label));
         }
-        // Hard floor: nothing shows until the column is at least 30% ramped.
-        if (colRamp < 0.3) return null;
         const preFire = derivedPreFire[node.id] || 0;
         const hasPreFire = preFire > 0.15 && !active;
         const isHeavy = HEAVY_EVENTS.has(node.id);

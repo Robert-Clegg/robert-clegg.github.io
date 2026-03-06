@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v242";
+  var v = "v243";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v242 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v243 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v242"), /*#__PURE__*/React.createElement("span", {
+  }, "v243"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12633,110 +12633,7 @@ function TemporalReplay() {
         fontSize: 8,
         fontFamily: mono
       }, box.sub));
-    }), renderChannelToDerivedEdges(), renderDerivedToEventEdges(), renderDerivedFeatureNodes(), (() => {
-      const G_FILL = "rgba(150,150,150,0.10)";
-      const G_STROKE = "rgba(150,150,150,0.35)";
-      const G_TEXT = "rgba(150,150,150,0.60)";
-      const sw = 0.4;
-      const ghosts = [];
-      // All main tree nodes (events, skills, layers, profiles, careers)
-      const allNodes = [...TREE_EVENTS.map(n => ({
-        n,
-        type: "event"
-      })), ...TREE_SKILLS.map(n => ({
-        n,
-        type: "skill"
-      })), ...TREE_LAYERS.map(n => ({
-        n,
-        type: "layer"
-      })), ...TREE_PROFILES.map(n => ({
-        n,
-        type: "profile"
-      })), ...TREE_CAREERS.map(n => ({
-        n,
-        type: "career"
-      }))];
-      allNodes.forEach(({
-        n,
-        type
-      }) => {
-        const col = n.col + 2;
-        const pos = getPos(col, n.row);
-        const w = nodeW[col];
-        const fs = type === "layer" ? 10 : type === "event" ? 8 : 9;
-        ghosts.push(/*#__PURE__*/React.createElement("g", {
-          key: `ghost-${n.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: pos.x,
-          y: pos.y,
-          width: w,
-          height: nodeH,
-          rx: 4,
-          fill: G_FILL,
-          stroke: G_STROKE,
-          strokeWidth: sw
-        }), /*#__PURE__*/React.createElement("text", {
-          x: pos.x + w / 2,
-          y: pos.y + nodeH / 2 + 3,
-          textAnchor: "middle",
-          fill: G_TEXT,
-          fontSize: fs,
-          fontFamily: mono
-        }, n.label)));
-      });
-      // Derived feature nodes (extraction column)
-      DERIVED_FEATURES.forEach(df => {
-        const pos = getDfPos(df.row);
-        ghosts.push(/*#__PURE__*/React.createElement("g", {
-          key: `ghost-${df.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: pos.x,
-          y: pos.y,
-          width: dfNodeW,
-          height: dfNodeH,
-          rx: 4,
-          fill: G_FILL,
-          stroke: G_STROKE,
-          strokeWidth: sw
-        }), /*#__PURE__*/React.createElement("text", {
-          x: pos.x + dfNodeW / 2,
-          y: pos.y + dfNodeH / 2 + 3,
-          textAnchor: "middle",
-          fill: G_TEXT,
-          fontSize: 6.5,
-          fontFamily: mono
-        }, df.label)));
-      });
-      // Sub-skill nodes
-      TREE_SUB_SKILLS.forEach(sub => {
-        const parent = TREE_SKILLS.find(s => s.id === sub.parent);
-        if (!parent) return;
-        const pp = getPos(parent.col + 2, parent.row);
-        const pw = nodeW[parent.col + 2];
-        const sx = pp.x + pw - ssW;
-        const sy = pp.y + nodeH + 4 + sub.offset * (ssH + ssGap);
-        ghosts.push(/*#__PURE__*/React.createElement("g", {
-          key: `ghost-${sub.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: sx,
-          y: sy,
-          width: ssW,
-          height: ssH,
-          rx: 2,
-          fill: G_FILL,
-          stroke: G_STROKE,
-          strokeWidth: sw
-        }), /*#__PURE__*/React.createElement("text", {
-          x: sx + ssW / 2,
-          y: sy + ssH / 2 + 3,
-          textAnchor: "middle",
-          fill: G_TEXT,
-          fontSize: 7,
-          fontFamily: mono
-        }, sub.label)));
-      });
-      return ghosts;
-    })(), renderEdges(EVENT_SKILL_EDGES, TREE_EVENTS, TREE_SKILLS, "event", "skill"), renderSubSkillToLayerEdges(), renderEdges(LAYER_PROFILE_EDGES, TREE_LAYERS, TREE_PROFILES, "layer", "profile"), renderEdges(PROFILE_CAREER_EDGES, TREE_PROFILES, TREE_CAREERS, "profile", "career"), TREE_EVENTS.map(n => renderNode(n, "event")), TREE_SKILLS.map(n => renderNode(n, "skill")), renderSubSkills(), TREE_LAYERS.map(n => renderNode(n, "layer")), TREE_PROFILES.map(n => renderNode(n, "profile")), TREE_CAREERS.map(n => renderNode(n, "career")), (COL_NODE.careers > 0 || baseBright > 0) && (() => {
+    }), renderChannelToDerivedEdges(), renderDerivedToEventEdges(), renderDerivedFeatureNodes(), renderEdges(EVENT_SKILL_EDGES, TREE_EVENTS, TREE_SKILLS, "event", "skill"), renderSubSkillToLayerEdges(), renderEdges(LAYER_PROFILE_EDGES, TREE_LAYERS, TREE_PROFILES, "layer", "profile"), renderEdges(PROFILE_CAREER_EDGES, TREE_PROFILES, TREE_CAREERS, "profile", "career"), TREE_EVENTS.map(n => renderNode(n, "event")), TREE_SKILLS.map(n => renderNode(n, "skill")), renderSubSkills(), TREE_LAYERS.map(n => renderNode(n, "layer")), TREE_PROFILES.map(n => renderNode(n, "profile")), TREE_CAREERS.map(n => renderNode(n, "career")), (COL_NODE.careers > 0 || baseBright > 0) && (() => {
       const barW = nodeW[6]; // matches career node width
       const barH = 5;
       const barGap = 3;

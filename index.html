@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v223 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v224 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v223"), /*#__PURE__*/React.createElement("span", {
+  }, "v224"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9430,12 +9430,7 @@ function TemporalReplay() {
       if (TREE_CAREERS.some(n => n.id === toId)) return "careers";
       return "input";
     };
-    // Early events that fire from immediate telemetry — their edges follow extraction timing
-    const EARLY_EVENTS = new Set(["ev_zoomIn", "ev_nearSwitch", "ev_wasd", "ev_mouseFollow", "ev_directKill", "ev_deathRespawn"]);
-    const getDestRamp = toId => {
-      if (EARLY_EVENTS.has(toId)) return Math.max(COL_RAMP.extraction || 0, COL_RAMP.events || 0);
-      return COL_RAMP[getDestColumn(toId)] || 0;
-    };
+    const getDestRamp = toId => COL_RAMP[getDestColumn(toId)] || 0;
     const getSourceOutRamp = fromId => COL_OUT[getDestColumn(fromId)] || 0;
     const getNodeGate = nodeId => COL_NODE[getDestColumn(nodeId)] || 0;
     const getDestFlicker = toId => {
@@ -10011,19 +10006,16 @@ function TemporalReplay() {
 
     // ═══ CHANNEL → EVENT EDGES — reads from edgeBright ═══
     const renderChannelToEventEdges = () => {
-      if (COL_RAMP.events <= 0 && (COL_RAMP.extraction || 0) <= 0) return null;
+      if (COL_RAMP.events <= 0) return null;
       const edges = [];
       INPUT_NODES.forEach(inp => {
         const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
         if (!evIds) return;
-        // Filter to only early events if events ramp hasn't started
-        const activeEvIds = COL_RAMP.events > 0 ? evIds : [...evIds].filter(id => EARLY_EVENTS.has(id));
-        if (activeEvIds.length === 0) return;
         const boxY = getRawBoxY(inp.boxIdx);
         const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
         const nodeIdx = nodesForBox.indexOf(inp);
         const srcY = boxY + 4 + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
-        for (const evId of activeEvIds) {
+        for (const evId of evIds) {
           const eventNode = TREE_EVENTS.find(n => n.id === evId);
           if (!eventNode) continue;
           const key = `${inp.fireKey}:${evId}`;
@@ -10114,13 +10106,11 @@ function TemporalReplay() {
 
     // ═══ DERIVED FEATURE → GAME EVENT EDGES — reads from edgeBright ═══
     const renderDerivedToEventEdges = () => {
-      if (COL_RAMP.events <= 0 && (COL_RAMP.extraction || 0) <= 0) return null;
+      if (COL_RAMP.events <= 0) return null;
       const edges = [];
       for (const df of DERIVED_FEATURES) {
         const dfPos = getDfPos(df.row);
         for (const evId of df.feeds) {
-          // Skip non-early events if events ramp hasn't started
-          if (!EARLY_EVENTS.has(evId) && COL_RAMP.events <= 0) continue;
           const eventNode = TREE_EVENTS.find(n => n.id === evId);
           if (!eventNode) continue;
           const key = `${df.id}:${evId}`;

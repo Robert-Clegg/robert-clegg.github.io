@@ -5,6 +5,18 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
+<script>
+// Force reload if browser is serving a cached version
+(function(){
+  var v = "v241";
+  var key = "pathogenika-version";
+  var stored = sessionStorage.getItem(key);
+  if (stored !== v) {
+    sessionStorage.setItem(key, v);
+    if (stored !== null) { window.location.reload(true); }
+  }
+})();
+</script>
 <title>Pathogenika v241 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>

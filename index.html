@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v225 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v226 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v225"), /*#__PURE__*/React.createElement("span", {
+  }, "v226"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10153,10 +10153,11 @@ function TemporalReplay() {
       return DERIVED_FEATURES.map(df => {
         const pos = getDfPos(df.row);
         const activity = nodeBright[df.id] || 0;
-        const extRamp = COL_RAMP.extraction || 0;
         const extNodeGate = COL_NODE.extraction || 0;
-        const dfEdgeHint = (maxInEdge[df.id] || 0) * 0.08 * extRamp;
-        const dfVis = extRamp < 0.01 ? 0 : baseBright * extRamp;
+        const extRamp = COL_RAMP.extraction || 0;
+        const dfEdgeHint = (maxInEdge[df.id] || 0) * 0.08;
+        const dfGhostDim = 0.25 + 0.75 * extRamp;
+        const dfVis = Math.max(baseBright, extNodeGate) * dfGhostDim;
         if (dfVis < 0.005) return null;
         const gf = activity * (COL_RAMP.extraction || 0);
         const dfColorMix = Math.min(1, COL_RAMP.extraction || 0);
@@ -10224,9 +10225,10 @@ function TemporalReplay() {
       const parent = TREE_SKILLS.find(s => s.id === sub.parent);
       if (!parent) return null;
       const skNodeGate = COL_NODE[SKILL_TO_COL[parent.id] || "bioVirus"] || 0;
-      const skColRamp = COL_RAMP[SKILL_TO_COL[parent.id] || "bioVirus"] || 0;
-      const ssEdgeHint = (maxInEdge[sub.id] || 0) * 0.08 * skColRamp;
-      const ssVis = skColRamp < 0.01 ? 0 : baseBright * skColRamp;
+      const skRamp = COL_RAMP[SKILL_TO_COL[parent.id] || "bioVirus"] || 0;
+      const ssEdgeHint = (maxInEdge[sub.id] || 0) * 0.08;
+      const ssGhostDim = 0.25 + 0.75 * skRamp;
+      const ssVis = Math.max(baseBright, skNodeGate) * ssGhostDim;
       if (ssVis <= 0) return null;
       const pp = getPos(parent.col + 2, parent.row);
       const pw = nodeW[parent.col + 2];
@@ -10234,6 +10236,7 @@ function TemporalReplay() {
       const ssDropGap = 4;
       const sy = pp.y + nodeH + ssDropGap + sub.offset * (ssH + ssGap);
       const brightness = nodeBright[sub.id] || 0;
+      const skColRamp = COL_RAMP[SKILL_TO_COL[parent.id] || "bioVirus"] || 0;
       const ssActive = skColRamp > 0.02 && brightness > 0.05;
       const fresh = brightness > 0.3;
       const ssColorMix = Math.min(1, COL_RAMP[SKILL_TO_COL[parent.id] || "bioVirus"] || 0);
@@ -10365,11 +10368,13 @@ function TemporalReplay() {
       const col = node.col + 2;
       const pos = getPos(col, node.row);
       const w = nodeW[col];
-      // ═══ NODE VISIBILITY: invisible until pathways start ═══
+      // ═══ NODE VISIBILITY: legible ghost at rest, bright when pathways arrive ═══
       const colRamp = getDestRamp(node.id);
       const nodeGate = getNodeGate(node.id);
-      const edgeHint = (maxInEdge[node.id] || 0) * 0.08 * colRamp;
-      const vis = colRamp < 0.01 ? 0 : baseBright * colRamp;
+      const edgeHint = (maxInEdge[node.id] || 0) * 0.08;
+      // ghostDim: 0.25 at rest → 1.0 with full pathways. Keeps ghosts legible but clearly dimmer.
+      const ghostDim = 0.25 + 0.75 * colRamp;
+      const vis = Math.max(baseBright, nodeGate) * ghostDim;
       const emerged = vis > 0.01;
       const active = colRamp > 0.02 && intensity > 0.05;
       const count = treeActivation.activeCounts[node.id] || 0;

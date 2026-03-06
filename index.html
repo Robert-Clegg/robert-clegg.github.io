@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v232 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v233 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v232"), /*#__PURE__*/React.createElement("span", {
+  }, "v233"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8019,6 +8019,8 @@ function TemporalReplay() {
     // Each of 22 channels fires on its own staggered cycle via prime offsets
     // At 16ms sample rate (~62.5Hz), channels flicker near-constantly with brief gaps
     const nowMs = time > 0.1 ? Date.now() : 0;
+    // preGame: before playback starts — show all nodes as dim gray ghosts
+    const preGame = time < 0.5;
 
     // ═══ CHOREOGRAPHED COLUMN RAMPS — the emergence of learning ═══
     // Each column ramps 0→1 on its own timeline. All times are REAL WALL-CLOCK SECONDS.
@@ -10235,7 +10237,7 @@ function TemporalReplay() {
       const ssEdgeHint = (maxInEdge[sub.id] || 0) * 0.08;
       const ssGhostDim = 0.25 + 0.75 * skRamp;
       const ssVis = Math.max(baseBright, skNodeGate) * ssGhostDim;
-      if (ssVis <= 0) return null;
+      if (!preGame && ssVis <= 0) return null;
       const pp = getPos(parent.col + 2, parent.row);
       const pw = nodeW[parent.col + 2];
       const sx = pp.x + pw - ssW;
@@ -10258,11 +10260,18 @@ function TemporalReplay() {
       const flickerOn = isMove && ssActive ? (Math.floor(nowMs / 125) + sub.id.charCodeAt(3)) % 3 !== 0 : true; // non-move nodes always "on"
       const flickerBright = isMove && ssActive ? flickerOn ? brightness : brightness * 0.08 : brightness;
 
-      // BURST-DECAY: spike at fire time, exponential decay over ~1.5s
+      // BURST-DECAY: periodic burst every ~3.5s, high intensity, 1s decay.
+      // Each sub-skill gets a staggered phase so they don't all fire together.
+      const BURST_PERIOD = 3500; // ms between bursts
+      const burstPhaseOffset = (sub.id.charCodeAt(3) + sub.id.charCodeAt(4)) * 311; // stagger per sub-skill
+      const burstPhaseMs = (Date.now() + burstPhaseOffset) % BURST_PERIOD;
+      const periodicBurst = isBurst && ssActive ? Math.exp(-(burstPhaseMs / 1000) * 3.0) // sharp 1s decay: 100%→5% over 1s
+      : 0;
+      // Also keep event-driven spike from propArrival for responsiveness
       const lastArrival = propArrival[sub.id] !== undefined ? propArrival[sub.id] : -999;
       const burstAge = time - lastArrival;
-      const burstBright = isBurst && lastArrival > -900 && burstAge >= 0 ? Math.exp(-burstAge * 1.8) // fast decay: ~0.5s to 20%, ~1.5s to near zero
-      : 0;
+      const eventBurst = isBurst && lastArrival > -900 && burstAge >= 0 ? Math.exp(-burstAge * 2.5) : 0;
+      const burstBright = Math.max(periodicBurst, eventBurst);
       const displayBright = isBurst ? Math.max(burstBright, brightness * 0.3) // base dim glow + burst spike
       : flickerBright;
       const isFreshDisplay = displayBright > 0.3;
@@ -10462,8 +10471,29 @@ function TemporalReplay() {
       } else {
         // Event nodes — completely off until pathways ramp arrives AND node has received signal.
         // No ghost floor: colRamp drives everything. nodeGate/ghostDim do not apply.
+        // PRE-GAME exception: show dim gray ghost so viewer sees all nodes before play.
+        if (preGame) {
+          return /*#__PURE__*/React.createElement("g", {
+            key: node.id
+          }, /*#__PURE__*/React.createElement("rect", {
+            x: pos.x,
+            y: pos.y,
+            width: w,
+            height: nodeH,
+            rx: 4,
+            fill: "rgba(150,150,150,0.03)",
+            stroke: "rgba(150,150,150,0.10)",
+            strokeWidth: 0.4
+          }), /*#__PURE__*/React.createElement("text", {
+            x: pos.x + w / 2,
+            y: pos.y + nodeH / 2 + 3,
+            textAnchor: "middle",
+            fill: "rgba(150,150,150,0.18)",
+            fontSize: 8,
+            fontFamily: mono
+          }, node.label));
+        }
         // Hard floor: nothing shows until the column is at least 30% ramped.
-        // Prevents single-frame stochastic flicker at ramp start from crossing the glow gate.
         if (colRamp < 0.3) return null;
         const preFire = derivedPreFire[node.id] || 0;
         const hasPreFire = preFire > 0.15 && !active;

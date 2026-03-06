@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v251";
+  var v = "v252";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v251 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v252 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6843,10 +6843,10 @@ function TemporalReplay() {
       setWallTime(prev => prev + realDt);
       setTime(prev => {
         const next = prev + dt;
-        if (next >= 160) {
+        if (next >= 34.9) {
           playingRef.current = false;
           setPlaying(false);
-          return 160;
+          return 34.9;
         }
         return next;
       });
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v251"), /*#__PURE__*/React.createElement("span", {
+  }, "v252"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",

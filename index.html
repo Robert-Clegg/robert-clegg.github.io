@@ -10184,6 +10184,7 @@ function TemporalReplay() {
         const dfGhostDim = 0.25 + 0.75 * extRamp;
         const dfVis = Math.max(baseBright, extNodeGate) * dfGhostDim;
         if (dfVis < 0.005 && !preGame) return null;
+        const gf = activity * extRamp;
         const dfColorMix = Math.min(1, COL_RAMP.extraction || 0);
         const [dr, dg, db] = mixRGB(hexC(df.color, 1), hexC(df.color, 3), hexC(df.color, 5), dfColorMix);
         const dfCol = `${dr},${dg},${db}`;

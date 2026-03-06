@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pathogenika v230 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v231 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7028,7 +7028,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v230"), /*#__PURE__*/React.createElement("span", {
+  }, "v231"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10245,6 +10245,23 @@ function TemporalReplay() {
       const [sr, sg, sb] = mixRGB(hexC(sub.color, 1), hexC(sub.color, 3), hexC(sub.color, 5), ssColorMix);
       const ssCol = `rgb(${sr},${sg},${sb})`;
       const ssColA = a => `rgba(${sr},${sg},${sb},${a})`;
+
+      // ═══ SUB-SKILL BEHAVIOUR TYPES ═══
+      const isMove = sub.label === "Move";
+      const isBurst = sub.label === "Emit" || sub.label === "Replicate" || sub.label === "Shedding" || sub.label === "Fission";
+
+      // MOVE: rapid stochastic flicker — alternates on/off at ~8Hz
+      const flickerOn = isMove && ssActive ? (Math.floor(nowMs / 125) + sub.id.charCodeAt(3)) % 3 !== 0 : true; // non-move nodes always "on"
+      const flickerBright = isMove && ssActive ? flickerOn ? brightness : brightness * 0.08 : brightness;
+
+      // BURST-DECAY: spike at fire time, exponential decay over ~1.5s
+      const lastArrival = propArrival[sub.id] !== undefined ? propArrival[sub.id] : -999;
+      const burstAge = time - lastArrival;
+      const burstBright = isBurst && lastArrival > -900 && burstAge >= 0 ? Math.exp(-burstAge * 1.8) // fast decay: ~0.5s to 20%, ~1.5s to near zero
+      : 0;
+      const displayBright = isBurst ? Math.max(burstBright, brightness * 0.3) // base dim glow + burst spike
+      : flickerBright;
+      const isFreshDisplay = displayBright > 0.3;
       return /*#__PURE__*/React.createElement("g", {
         key: sub.id
       }, /*#__PURE__*/React.createElement("rect", {
@@ -10253,26 +10270,48 @@ function TemporalReplay() {
         width: ssW,
         height: ssH,
         rx: 2,
-        fill: fresh ? ssColA((brightness * 0.19).toFixed(3)) : ssActive ? ssColA("0.07") : `rgba(${sr},${sg},${sb},${(0.01 * ssVis).toFixed(3)})`,
-        stroke: fresh ? ssColA((brightness * 0.67).toFixed(3)) : ssActive ? ssColA("0.27") : `rgba(${sr},${sg},${sb},${(0.06 * ssVis).toFixed(3)})`,
-        strokeWidth: fresh ? 1 : 0.4
+        fill: isFreshDisplay ? ssColA((displayBright * 0.19).toFixed(3)) : ssActive ? ssColA("0.07") : `rgba(${sr},${sg},${sb},${(0.01 * ssVis).toFixed(3)})`,
+        stroke: isFreshDisplay ? ssColA((displayBright * 0.67).toFixed(3)) : ssActive ? ssColA("0.27") : `rgba(${sr},${sg},${sb},${(0.06 * ssVis).toFixed(3)})`,
+        strokeWidth: isFreshDisplay ? 1 : 0.4
       }), /*#__PURE__*/React.createElement("text", {
         x: sx + ssW / 2,
         y: sy + ssH / 2 + 3,
         textAnchor: "middle",
-        fill: ssActive ? ssCol : `rgba(${sr},${sg},${sb},${(0.1 * ssVis).toFixed(3)})`,
+        fill: ssActive ? ssColA((0.4 + displayBright * 0.6).toFixed(2)) : `rgba(${sr},${sg},${sb},${(0.1 * ssVis).toFixed(3)})`,
         fontSize: 7,
         fontFamily: mono,
-        fontWeight: fresh ? 700 : brightness >= 0.4 ? 600 : 400
+        fontWeight: isFreshDisplay ? 700 : brightness >= 0.4 ? 600 : 400
       }, sub.label), ssActive && /*#__PURE__*/React.createElement("line", {
         x1: sx + ssW,
         y1: sy,
         x2: pp.x + pw - 2,
         y2: pp.y + nodeH,
         stroke: ssCol,
-        strokeWidth: fresh ? 1 : 0.5,
-        opacity: fresh ? brightness * 0.5 : 0.15
-      }), fresh && playing && /*#__PURE__*/React.createElement("rect", {
+        strokeWidth: isFreshDisplay ? 1 : 0.5,
+        opacity: isFreshDisplay ? displayBright * 0.5 : 0.15
+      }), isMove && ssActive && flickerOn && fresh && playing && /*#__PURE__*/React.createElement("rect", {
+        x: sx - 1,
+        y: sy - 1,
+        width: ssW + 2,
+        height: ssH + 2,
+        rx: 3,
+        fill: "none",
+        stroke: sub.color,
+        strokeWidth: 1.0,
+        opacity: brightness * 0.55,
+        filter: "url(#glow)"
+      }), isBurst && burstBright > 0.05 && /*#__PURE__*/React.createElement("rect", {
+        x: sx - 1,
+        y: sy - 1,
+        width: ssW + 2,
+        height: ssH + 2,
+        rx: 3,
+        fill: "none",
+        stroke: sub.color,
+        strokeWidth: 1.4,
+        opacity: (burstBright * 0.8).toFixed(3),
+        filter: "url(#glow)"
+      }), !isMove && !isBurst && fresh && playing && /*#__PURE__*/React.createElement("rect", {
         x: sx - 1,
         y: sy - 1,
         width: ssW + 2,

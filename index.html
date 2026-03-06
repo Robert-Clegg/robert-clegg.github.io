@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v247";
+  var v = "v248";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v247 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v248 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v247"), /*#__PURE__*/React.createElement("span", {
+  }, "v248"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10208,7 +10208,7 @@ function TemporalReplay() {
           width: dfNodeW,
           height: dfNodeH,
           rx: 4,
-          fill: "rgba(10,10,15,0.92)",
+          fill: `rgba(10,10,15,${Math.min(0.92, extRamp * 4).toFixed(3)})`,
           stroke: "none"
         }), /*#__PURE__*/React.createElement("rect", {
           x: pos.x,
@@ -10308,7 +10308,7 @@ function TemporalReplay() {
         width: ssW,
         height: ssH,
         rx: 2,
-        fill: "rgba(10,10,15,0.92)",
+        fill: `rgba(10,10,15,${Math.min(0.92, skRamp * 4).toFixed(3)})`,
         stroke: "none"
       }), /*#__PURE__*/React.createElement("rect", {
         x: sx,
@@ -10649,7 +10649,7 @@ function TemporalReplay() {
         width: w,
         height: nodeH,
         rx: 6,
-        fill: "rgba(10,10,15,0.92)",
+        fill: `rgba(10,10,15,${Math.min(0.92, colRamp * 4).toFixed(3)})`,
         stroke: "none"
       }), /*#__PURE__*/React.createElement("rect", {
         x: pos.x,

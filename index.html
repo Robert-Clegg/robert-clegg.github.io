@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v249";
+  var v = "v250";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v249 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v250 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v249"), /*#__PURE__*/React.createElement("span", {
+  }, "v250"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9484,7 +9484,7 @@ function TemporalReplay() {
         const steady = (1 - flicker) * edgeCap * 0.6;
         flash = Math.max(flash, steady);
       }
-      return Math.max(flash, myelin);
+      return Math.min(edgeCap, Math.max(flash, myelin));
     };
 
     // Compute ALL edge brightnesses — every edge in the system

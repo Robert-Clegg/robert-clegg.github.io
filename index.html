@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v243";
+  var v = "v244";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v243 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v244 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7043,7 +7043,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v243"), /*#__PURE__*/React.createElement("span", {
+  }, "v244"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -11652,7 +11652,19 @@ function TemporalReplay() {
         const dbY = fxY + 3;
         // dB level from intensity + noise
         const dbLevel = fxActive ? Math.min(dbBars, Math.round(fxIntensity * dbBars + (playing ? Math.random() * 1.5 : 0))) : 0;
-        // Speech alphabet
+        // Speech waveform — 6 bars, syllable cadence ~4Hz, each bar phase-offset
+        const spBars = 6;
+        const spBarW = 4;
+        const spBarMaxH = 8;
+        const spPhase = spActive && playing ? nowMs / 250 : 0; // ~4Hz syllable cycle
+        const spLevels = Array.from({
+          length: spBars
+        }, (_, i) => {
+          if (!spActive) return 0;
+          const offset = i * (Math.PI / spBars) * 1.8;
+          const wave = 0.45 + 0.55 * Math.abs(Math.sin(spPhase + offset));
+          return wave * spIntensity;
+        });
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const spCharIdx = spActive && playing ? Math.floor(nowMs / 60) % alphabet.length : 0;
         const spChar = spActive ? alphabet[spCharIdx] : "_";
@@ -11733,24 +11745,21 @@ function TemporalReplay() {
           fontSize: 5,
           fontFamily: mono,
           fontWeight: 600
-        }, "SPCH"), /*#__PURE__*/React.createElement("rect", {
-          x: bx + innerPad + pillW - 16,
-          y: spY + 2,
-          width: 14,
-          height: 10,
-          rx: 2,
-          fill: spActive ? "rgba(170,136,255,0.15)" : "rgba(255,255,255,0.03)",
-          stroke: spActive ? "#aa88ff55" : "#aa88ff22",
-          strokeWidth: 0.4
-        }), /*#__PURE__*/React.createElement("text", {
-          x: bx + innerPad + pillW - 9,
-          y: spY + 10,
-          textAnchor: "middle",
-          fill: spActive ? "#aa88ff" : "#aa88ff44",
-          fontSize: 7,
-          fontFamily: mono,
-          fontWeight: 700
-        }, spChar));
+        }, "SPCH"), spLevels.map((lv, i) => {
+          const bh = Math.max(1, lv * spBarMaxH);
+          const bx2 = bx + innerPad + 18 + i * (spBarW + 1);
+          const by2 = spY + (pillH - bh) / 2;
+          return /*#__PURE__*/React.createElement("rect", {
+            key: `sp-${i}`,
+            x: bx2,
+            y: by2,
+            width: spBarW - 1,
+            height: bh,
+            rx: 1,
+            fill: `rgba(170,136,255,${(0.3 + lv * 0.7).toFixed(3)})`,
+            opacity: spActive ? 1 : 0.15
+          });
+        }));
       }
 
       // — TXT box: Language | Symbolic | Icon pills —

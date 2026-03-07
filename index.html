@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v262";
+  var v = "v263";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v262 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v263 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v262"), /*#__PURE__*/React.createElement("span", {
+  }, "v263"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12537,72 +12537,98 @@ function TemporalReplay() {
         }, "▲"), "Z"));
       }
 
-      // — CELLS box: minimap + yellow kill splashes + population bars —
-      // v35: WORLD uses full 2× container width
+      // WORLD container -- isometric terrain with buildings and player
       if (box.id === "cam") {
-        const worldX = bx;
-        const worldW = bw;
-        const labelH = 14;
-        const pad = 4;
-        const mapX = worldX + pad;
-        const mapY = y + labelH + pad;
-        const mapW = worldW - pad * 2;
-        const mapH = boxH - labelH - pad * 2;
+        const worldX = bx,
+          worldW = bw,
+          labelH = 14;
+        const areaX = worldX + 2,
+          areaY = y + labelH + 2;
+        const areaW = worldW - 4,
+          areaH = boxH - labelH - 4;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        // Player position: starts lower-left, approaches upper-right red zone
-        const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
-        // Winding path with pauses
-        const pathT = progress;
-        const wobbleX = Math.sin(time * 0.7) * 0.06 + Math.sin(time * 1.3) * 0.03;
-        const wobbleY = Math.sin(time * 0.5) * 0.04 + Math.cos(time * 0.9) * 0.02;
-        const playerFracX = 0.1 + pathT * 0.75 + wobbleX + Math.sin(pathT * Math.PI * 2) * 0.08;
-        const playerFracY = 0.85 - pathT * 0.7 + wobbleY - Math.sin(pathT * Math.PI * 1.5) * 0.06;
-        const px = mapX + playerFracX * mapW;
-        const py = mapY + playerFracY * mapH;
-        // Buildings as rectangles
+        // Isometric projection for world map
+        const wcx = areaX + areaW * 0.5,
+          wcy = areaY + areaH * 0.55;
+        const wScale = Math.min(areaW, areaH) * 0.42;
+        const wIsoX = (gx, gy, gz) => wcx + (gx - gy) * 0.866 * wScale / 100;
+        const wIsoY = (gx, gy, gz) => wcy + (gx + gy) * 0.5 * wScale / 100 - gz * wScale / 100;
+        // Ground plane corners (100x100 grid, z=0)
+        const gp = [[0, 0], [100, 0], [100, 100], [0, 100]].map(p => `${wIsoX(p[0], p[1], 0)},${wIsoY(p[0], p[1], 0)}`).join(" ");
+        // Terrain height map — hills at certain positions
+        const terrainH = (gx, gy) => {
+          const h1 = Math.max(0, 12 - Math.sqrt((gx - 70) * (gx - 70) + (gy - 25) * (gy - 25)) * 0.4);
+          const h2 = Math.max(0, 8 - Math.sqrt((gx - 30) * (gx - 30) + (gy - 60) * (gy - 60)) * 0.35);
+          const h3 = Math.max(0, 6 - Math.sqrt((gx - 55) * (gx - 55) + (gy - 45) * (gy - 45)) * 0.3);
+          return h1 + h2 + h3;
+        };
+        // Buildings with height
         const buildings = [{
-          x: 0.25,
-          y: 0.65,
-          w: 0.08,
-          h: 0.05,
+          gx: 25,
+          gy: 65,
+          w: 8,
+          d: 5,
+          h: 7,
           label: "DEPOT",
           color: "#4488aa"
         }, {
-          x: 0.4,
-          y: 0.45,
-          w: 0.1,
-          h: 0.06,
+          gx: 40,
+          gy: 45,
+          w: 10,
+          d: 6,
+          h: 10,
           label: "HANGAR",
           color: "#5599aa"
         }, {
-          x: 0.55,
-          y: 0.55,
-          w: 0.06,
-          h: 0.08,
+          gx: 55,
+          gy: 55,
+          w: 5,
+          d: 5,
+          h: 14,
           label: "TOWER",
           color: "#448888"
         }, {
-          x: 0.35,
-          y: 0.3,
-          w: 0.12,
-          h: 0.05,
+          gx: 35,
+          gy: 30,
+          w: 12,
+          d: 5,
+          h: 8,
           label: "ARMORY",
           color: "#556688"
         }, {
-          x: 0.6,
-          y: 0.25,
-          w: 0.07,
-          h: 0.07,
+          gx: 65,
+          gy: 25,
+          w: 6,
+          d: 6,
+          h: 9,
           label: "COMM",
           color: "#557799"
         }, {
-          x: 0.15,
-          y: 0.4,
-          w: 0.06,
-          h: 0.1,
+          gx: 15,
+          gy: 42,
+          w: 5,
+          d: 8,
+          h: 6,
           label: "FUEL",
           color: "#448866"
         }];
+        // Player position: lower-left to upper-right
+        const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
+        const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
+        const wobY = Math.sin(time * 0.5) * 3 + Math.cos(time * 0.9) * 1.5;
+        const pgx = 10 + progress * 75 + wobX + Math.sin(progress * Math.PI * 2) * 6;
+        const pgy = 85 - progress * 65 + wobY - Math.sin(progress * Math.PI * 1.5) * 5;
+        const pgz = terrainH(pgx, pgy);
+        const ppx = wIsoX(pgx, pgy, pgz);
+        const ppy = wIsoY(pgx, pgy, pgz);
+        // View cone from VIEW container sim
+        const driftYaw = time > 0.1 ? Math.sin(time * 0.23) * 80 + Math.sin(time * 0.11) * 40 : 0;
+        const microJ = time > 0.1 ? Math.sin(nowMs * 0.013) * 3.5 + Math.sin(nowMs * 0.0071) * 2 : 0;
+        const sacP = time > 0.1 ? time % 3.7 : 99;
+        const sacYaw = sacP < 0.4 ? Math.sin(Math.floor(time / 3.7) * 7.3) * 55 : 0;
+        const viewYaw = (driftYaw + microJ + sacYaw) * Math.PI / 180;
+        const fovHalf = 35 * Math.PI / 180;
+        const coneLen = 12;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
@@ -12633,140 +12659,174 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1.5
-        }, "WORLD"), /*#__PURE__*/React.createElement("rect", {
-          x: mapX,
-          y: mapY,
-          width: mapW,
-          height: mapH,
-          rx: 2,
-          fill: "rgba(0,0,0,0.5)",
+        }, "WORLD"), /*#__PURE__*/React.createElement("polygon", {
+          points: gp,
+          fill: "rgba(20,40,30,0.6)",
           stroke: "rgba(255,255,255,0.2)",
-          strokeWidth: 0.8
-        }), [0.2, 0.4, 0.6, 0.8].map(frac => /*#__PURE__*/React.createElement("g", {
-          key: `mg-${frac}`
+          strokeWidth: 0.6
+        }), [20, 40, 60, 80].map(g => /*#__PURE__*/React.createElement("g", {
+          key: `wg-${g}`
         }, /*#__PURE__*/React.createElement("line", {
-          x1: mapX + mapW * frac,
-          y1: mapY,
-          x2: mapX + mapW * frac,
-          y2: mapY + mapH,
-          stroke: "rgba(255,255,255,0.1)",
-          strokeWidth: 0.5,
-          strokeDasharray: "2,3"
+          x1: wIsoX(g, 0, 0),
+          y1: wIsoY(g, 0, 0),
+          x2: wIsoX(g, 100, 0),
+          y2: wIsoY(g, 100, 0),
+          stroke: "rgba(255,255,255,0.08)",
+          strokeWidth: 0.4
         }), /*#__PURE__*/React.createElement("line", {
-          x1: mapX,
-          y1: mapY + mapH * frac,
-          x2: mapX + mapW,
-          y2: mapY + mapH * frac,
-          stroke: "rgba(255,255,255,0.1)",
-          strokeWidth: 0.5,
-          strokeDasharray: "2,3"
-        }))), /*#__PURE__*/React.createElement("rect", {
-          x: mapX + mapW * 0.7,
-          y: mapY,
-          width: mapW * 0.3,
-          height: mapH * 0.35,
-          rx: 2,
-          fill: "rgba(255,40,40,0.12)",
-          stroke: "rgba(255,60,60,0.35)",
-          strokeWidth: 0.8,
-          strokeDasharray: "3,2"
-        }), time > 0.1 && /*#__PURE__*/React.createElement("text", {
-          x: mapX + mapW * 0.85,
-          y: mapY + mapH * 0.08,
-          textAnchor: "middle",
-          fill: "rgba(255,80,80,0.6)",
-          fontSize: 4,
-          fontFamily: mono,
-          fontWeight: 700
-        }, "HOSTILE"), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
-          x: mapX + mapW * 0.7,
-          y: mapY,
-          width: mapW * 0.3,
-          height: mapH * 0.35,
-          rx: 2,
-          fill: "rgba(255,30,30,0.06)",
-          opacity: 0.4 + Math.sin(time * 1.5) * 0.3
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: mapX,
-          y: mapY + mapH * 0.7,
-          width: mapW * 0.25,
-          height: mapH * 0.3,
-          rx: 2,
-          fill: "rgba(40,200,100,0.08)",
-          stroke: "rgba(60,200,100,0.25)",
-          strokeWidth: 0.6,
-          strokeDasharray: "3,2"
-        }), time > 0.1 && /*#__PURE__*/React.createElement("text", {
-          x: mapX + mapW * 0.125,
-          y: mapY + mapH * 0.76,
-          textAnchor: "middle",
-          fill: "rgba(60,200,100,0.5)",
-          fontSize: 4,
-          fontFamily: mono,
-          fontWeight: 700
-        }, "BASE"), buildings.map((b, bi) => {
-          const bx2 = mapX + b.x * mapW;
-          const by2 = mapY + b.y * mapH;
-          const bw2 = b.w * mapW;
-          const bh2 = b.h * mapH;
+          x1: wIsoX(0, g, 0),
+          y1: wIsoY(0, g, 0),
+          x2: wIsoX(100, g, 0),
+          y2: wIsoY(100, g, 0),
+          stroke: "rgba(255,255,255,0.08)",
+          strokeWidth: 0.4
+        }))), [{
+          cx: 70,
+          cy: 25,
+          r: 18,
+          h: 12,
+          color: "rgba(80,60,40,0.4)"
+        }, {
+          cx: 30,
+          cy: 60,
+          r: 14,
+          h: 8,
+          color: "rgba(60,80,50,0.35)"
+        }, {
+          cx: 55,
+          cy: 45,
+          r: 12,
+          h: 6,
+          color: "rgba(70,70,50,0.3)"
+        }].map((hill, hi) => {
+          const pts = [];
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+            const hx = hill.cx + Math.cos(a) * hill.r;
+            const hy = hill.cy + Math.sin(a) * hill.r;
+            pts.push(`${wIsoX(hx, hy, hill.h * 0.5)},${wIsoY(hx, hy, hill.h * 0.5)}`);
+          }
+          return /*#__PURE__*/React.createElement("polygon", {
+            key: `hill-${hi}`,
+            points: pts.join(" "),
+            fill: hill.color,
+            stroke: "rgba(255,255,255,0.06)",
+            strokeWidth: 0.4
+          });
+        }), (() => {
+          const hz = [[70, 0], [100, 0], [100, 30], [70, 30]].map(p => `${wIsoX(p[0], p[1], 0.5)},${wIsoY(p[0], p[1], 0.5)}`).join(" ");
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
+            points: hz,
+            fill: "rgba(255,30,30,0.1)",
+            stroke: "rgba(255,60,60,0.35)",
+            strokeWidth: 0.6,
+            strokeDasharray: "3,2"
+          }), time > 0.1 && /*#__PURE__*/React.createElement("polygon", {
+            points: hz,
+            fill: "rgba(255,30,30,0.05)",
+            opacity: 0.4 + Math.sin(time * 1.5) * 0.3
+          }), /*#__PURE__*/React.createElement("text", {
+            x: wIsoX(85, 15, 1),
+            y: wIsoY(85, 15, 1),
+            textAnchor: "middle",
+            fill: "rgba(255,80,80,0.6)",
+            fontSize: 4,
+            fontFamily: mono,
+            fontWeight: 700
+          }, "HOSTILE"));
+        })(), (() => {
+          const bz = [[0, 75], [20, 75], [20, 100], [0, 100]].map(p => `${wIsoX(p[0], p[1], 0.5)},${wIsoY(p[0], p[1], 0.5)}`).join(" ");
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
+            points: bz,
+            fill: "rgba(40,200,100,0.08)",
+            stroke: "rgba(60,200,100,0.25)",
+            strokeWidth: 0.5,
+            strokeDasharray: "3,2"
+          }), /*#__PURE__*/React.createElement("text", {
+            x: wIsoX(10, 87, 1),
+            y: wIsoY(10, 87, 1),
+            textAnchor: "middle",
+            fill: "rgba(60,200,100,0.5)",
+            fontSize: 4,
+            fontFamily: mono,
+            fontWeight: 700
+          }, "BASE"));
+        })(), buildings.map((b, bi) => {
+          const gz = terrainH(b.gx + b.w / 2, b.gy + b.d / 2);
+          const base = [[b.gx, b.gy], [b.gx + b.w, b.gy], [b.gx + b.w, b.gy + b.d], [b.gx, b.gy + b.d]];
+          const top = base.map(p => [p[0], p[1]]);
+          const topPts = top.map(p => `${wIsoX(p[0], p[1], gz + b.h)},${wIsoY(p[0], p[1], gz + b.h)}`).join(" ");
+          // Right face
+          const rf = `${wIsoX(base[1][0], base[1][1], gz)},${wIsoY(base[1][0], base[1][1], gz)} ${wIsoX(base[2][0], base[2][1], gz)},${wIsoY(base[2][0], base[2][1], gz)} ${wIsoX(top[2][0], top[2][1], gz + b.h)},${wIsoY(top[2][0], top[2][1], gz + b.h)} ${wIsoX(top[1][0], top[1][1], gz + b.h)},${wIsoY(top[1][0], top[1][1], gz + b.h)}`;
+          // Front face
+          const ff = `${wIsoX(base[2][0], base[2][1], gz)},${wIsoY(base[2][0], base[2][1], gz)} ${wIsoX(base[3][0], base[3][1], gz)},${wIsoY(base[3][0], base[3][1], gz)} ${wIsoX(top[3][0], top[3][1], gz + b.h)},${wIsoY(top[3][0], top[3][1], gz + b.h)} ${wIsoX(top[2][0], top[2][1], gz + b.h)},${wIsoY(top[2][0], top[2][1], gz + b.h)}`;
+          const tcx = wIsoX(b.gx + b.w / 2, b.gy + b.d / 2, gz + b.h + 1);
+          const tcy = wIsoY(b.gx + b.w / 2, b.gy + b.d / 2, gz + b.h + 1);
           return /*#__PURE__*/React.createElement("g", {
             key: `bld-${bi}`
-          }, /*#__PURE__*/React.createElement("rect", {
-            x: bx2,
-            y: by2,
-            width: bw2,
-            height: bh2,
-            rx: 1,
+          }, /*#__PURE__*/React.createElement("polygon", {
+            points: rf,
+            fill: `${b.color}40`,
+            stroke: `${b.color}88`,
+            strokeWidth: 0.6
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: ff,
             fill: `${b.color}30`,
             stroke: `${b.color}88`,
-            strokeWidth: 0.8
+            strokeWidth: 0.6
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: topPts,
+            fill: `${b.color}55`,
+            stroke: `${b.color}aa`,
+            strokeWidth: 0.7
           }), /*#__PURE__*/React.createElement("text", {
-            x: bx2 + bw2 / 2,
-            y: by2 + bh2 / 2 + 1.5,
+            x: tcx,
+            y: tcy,
             textAnchor: "middle",
-            fill: `${b.color}cc`,
+            fill: `${b.color}dd`,
             fontSize: 3.5,
             fontFamily: mono,
             fontWeight: 700
           }, b.label));
         }), time > 0.1 && Array.from({
-          length: 12
+          length: 10
         }, (_, i) => {
-          const trailT = Math.max(0, progress - i * 0.03);
-          const tw = Math.sin(trailT * 30 * 0.7) * 0.06 + Math.sin(trailT * 30 * 1.3) * 0.03;
-          const th = Math.sin(trailT * 30 * 0.5) * 0.04 + Math.cos(trailT * 30 * 0.9) * 0.02;
-          const tx = mapX + (0.1 + trailT * 0.75 + tw + Math.sin(trailT * Math.PI * 2) * 0.08) * mapW;
-          const ty = mapY + (0.85 - trailT * 0.7 + th - Math.sin(trailT * Math.PI * 1.5) * 0.06) * mapH;
-          const opacity = Math.max(0, 0.4 - i * 0.03);
+          const tt = Math.max(0, progress - i * 0.035);
+          const tw = Math.sin(tt * 30 * 0.7) * 4 + Math.sin(tt * 30 * 1.3) * 2;
+          const th = Math.sin(tt * 30 * 0.5) * 3 + Math.cos(tt * 30 * 0.9) * 1.5;
+          const tgx = 10 + tt * 75 + tw + Math.sin(tt * Math.PI * 2) * 6;
+          const tgy = 85 - tt * 65 + th - Math.sin(tt * Math.PI * 1.5) * 5;
+          const tgz = terrainH(tgx, tgy);
           return /*#__PURE__*/React.createElement("circle", {
             key: `trail-${i}`,
-            cx: tx,
-            cy: ty,
+            cx: wIsoX(tgx, tgy, tgz),
+            cy: wIsoY(tgx, tgy, tgz),
             r: 1,
             fill: "#44ffaa",
-            opacity: opacity
+            opacity: Math.max(0, 0.4 - i * 0.035)
           });
         }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
-          const headAngle = Math.atan2(wobbleX * 10 + 0.5, -(wobbleY * 10 - 0.5));
-          const lineLen = 6;
-          return /*#__PURE__*/React.createElement("line", {
-            x1: px,
-            y1: py,
-            x2: px + Math.sin(headAngle) * lineLen,
-            y2: py - Math.cos(headAngle) * lineLen,
-            stroke: "#44ffaa",
-            strokeWidth: 0.8,
-            opacity: 0.5
+          const cR = coneLen;
+          const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;
+          const ly = pgy - Math.cos(viewYaw - fovHalf) * cR;
+          const rx = pgx + Math.sin(viewYaw + fovHalf) * cR;
+          const ry = pgy - Math.cos(viewYaw + fovHalf) * cR;
+          const lz = terrainH(lx, ly),
+            rz = terrainH(rx, ry);
+          return /*#__PURE__*/React.createElement("polygon", {
+            points: `${ppx},${ppy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
+            fill: "rgba(0,255,238,0.15)",
+            stroke: "rgba(0,255,238,0.35)",
+            strokeWidth: 0.5
           });
         })(), /*#__PURE__*/React.createElement("polygon", {
-          points: `${px},${py - 4} ${px + 3},${py} ${px},${py + 3} ${px - 3},${py}`,
+          points: `${ppx},${ppy - 4} ${ppx + 3},${ppy} ${ppx},${ppy + 2.5} ${ppx - 3},${ppy}`,
           fill: "#44ffaa",
           stroke: "#88ffdd",
           strokeWidth: 0.8,
           opacity: 0.9
         }), /*#__PURE__*/React.createElement("circle", {
-          cx: px,
-          cy: py,
+          cx: ppx,
+          cy: ppy,
           r: 5,
           fill: "none",
           stroke: "#44ffaa",

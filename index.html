@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v276";
+  var v = "v277";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v276 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v277 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v276"), /*#__PURE__*/React.createElement("span", {
+  }, "v277"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8449,7 +8449,8 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVEMENT|HUD (squares), Row 4: WORLD
+    const hudH = 48;
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: HUD (full width), Row 4: MOVEMENT (full width), Row 5: WORLD
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
@@ -8457,17 +8458,16 @@ function TemporalReplay() {
     const row1H = Math.max(viewH, keyH);
     const row2H = Math.max(audioH, textH);
     const moveH = halfW; // square
-    const hudH = halfW; // square
-    const row3H = Math.max(moveH, hudH);
     const boxGap = 4;
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
     const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
-    const rowY4 = rowY3 + row3H + boxGap;
+    const rowY4 = rowY3 + hudH + boxGap;
+    const rowY5 = rowY4 + moveH + boxGap;
     // WinState bottom
     const winStateBottom = 683;
-    const worldH = winStateBottom - rowY4;
+    const worldH = winStateBottom - rowY5;
     const worldW = boxW * 3.5;
     const worldLeftX = boxX + boxW - worldW;
     const rawBoxLayouts = [{
@@ -8499,12 +8499,12 @@ function TemporalReplay() {
     },
     // 3: TXT (right)
     {
-      x: rightX,
+      x: leftX,
       y: rowY3,
-      w: halfW,
+      w: boxW,
       h: hudH
     },
-    // 4: HUD (right, square)
+    // 4: HUD (full width)
     {
       x: leftX,
       y: rowY1,
@@ -8514,14 +8514,14 @@ function TemporalReplay() {
     // 5: VIEW (left of KB)
     {
       x: leftX,
-      y: rowY3,
-      w: halfW,
+      y: rowY4,
+      w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (left of HUD, square)
+    // 6: MOVEMENT (full width, square height)
     {
       x: worldLeftX,
-      y: rowY4,
+      y: rowY5,
       w: worldW,
       h: worldH
     } // 7: WORLD

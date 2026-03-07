@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v254";
+  var v = "v255";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v254 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v255 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v254"), /*#__PURE__*/React.createElement("span", {
+  }, "v255"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12250,21 +12250,7 @@ function TemporalReplay() {
             fontSize: 5,
             fontFamily: mono
           }, d);
-        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
-          x1: vcx,
-          y1: vcy,
-          x2: vcx + Math.sin(yawRad) * vr * 0.85,
-          y2: vcy - Math.cos(yawRad) * vr * 0.85,
-          stroke: "#00ffee",
-          strokeWidth: 1.8,
-          opacity: 0.7 + containerBr * 0.3
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: vcx + Math.sin(yawRad) * vr * 0.85,
-          cy: vcy - Math.cos(yawRad) * vr * 0.85,
-          r: 2,
-          fill: "#00ffee",
-          opacity: 0.9
-        }), /*#__PURE__*/React.createElement("text", {
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("text", {
           x: vx + 3,
           y: vy + vh - 3,
           fill: "rgba(255,255,255,0.4)",
@@ -12288,15 +12274,15 @@ function TemporalReplay() {
           opacity: 0.5
         })), time > 0.1 && (() => {
           const fovHalf = (30 + zoomLvl * 40) * Math.PI / 180;
-          const coneR = vr * 0.7;
+          const coneR = vr * 0.85;
           return /*#__PURE__*/React.createElement("path", {
             d: `M ${vcx} ${vcy}
                             L ${vcx + Math.sin(yawRad - fovHalf) * coneR} ${vcy - Math.cos(yawRad - fovHalf) * coneR}
                             A ${coneR} ${coneR} 0 0 1 ${vcx + Math.sin(yawRad + fovHalf) * coneR} ${vcy - Math.cos(yawRad + fovHalf) * coneR}
                             Z`,
-            fill: "rgba(0,255,238,0.06)",
-            stroke: "rgba(0,255,238,0.15)",
-            strokeWidth: 0.5
+            fill: "rgba(0,255,238,0.25)",
+            stroke: "rgba(0,255,238,0.5)",
+            strokeWidth: 0.8
           });
         })());
       }
@@ -12367,50 +12353,65 @@ function TemporalReplay() {
           fill: "none",
           stroke: "rgba(255,255,255,0.08)",
           strokeWidth: 0.5
-        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
-          x1: mcx,
-          y1: mcy,
-          x2: mcx + Math.sin(legsRad) * mr * 0.8,
-          y2: mcy - Math.cos(legsRad) * mr * 0.8,
-          stroke: "#44ff44",
-          strokeWidth: 2.2,
-          opacity: 0.8
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: mcx + Math.sin(legsRad) * mr * 0.8,
-          cy: mcy - Math.cos(legsRad) * mr * 0.8,
-          r: 2.5,
-          fill: "#44ff44",
-          opacity: 0.9
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: mcx,
-          y1: mcy,
-          x2: mcx + Math.sin(torsoRad) * mr * 0.65,
-          y2: mcy - Math.cos(torsoRad) * mr * 0.65,
-          stroke: "#ffdd00",
-          strokeWidth: 1.5,
-          opacity: 0.7
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: mcx + Math.sin(torsoRad) * mr * 0.65,
-          cy: mcy - Math.cos(torsoRad) * mr * 0.65,
-          r: 2,
-          fill: "#ffdd00",
-          opacity: 0.8
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: mcx,
-          y1: mcy,
-          x2: mcx + Math.sin(lookRad) * mr * 0.5,
-          y2: mcy - Math.cos(lookRad) * mr * 0.5,
-          stroke: "#00ffee",
-          strokeWidth: 1,
-          opacity: 0.6,
-          strokeDasharray: "3,2"
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: mcx + Math.sin(lookRad) * mr * 0.5,
-          cy: mcy - Math.cos(lookRad) * mr * 0.5,
-          r: 1.5,
-          fill: "#00ffee",
-          opacity: 0.7
-        }), /*#__PURE__*/React.createElement("rect", {
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
+          const tipX = mcx + Math.sin(legsRad) * mr * 0.8;
+          const tipY = mcy - Math.cos(legsRad) * mr * 0.8;
+          const hs = 5; // arrowhead size
+          const a1 = legsRad + Math.PI + 0.4;
+          const a2 = legsRad + Math.PI - 0.4;
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+            x1: mcx,
+            y1: mcy,
+            x2: tipX,
+            y2: tipY,
+            stroke: "#44ff44",
+            strokeWidth: 2.2,
+            opacity: 0.8
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${tipX},${tipY} ${tipX + Math.sin(a1) * hs},${tipY - Math.cos(a1) * hs} ${tipX + Math.sin(a2) * hs},${tipY - Math.cos(a2) * hs}`,
+            fill: "#44ff44",
+            opacity: 0.9
+          }));
+        })(), (() => {
+          const tipX = mcx + Math.sin(torsoRad) * mr * 0.65;
+          const tipY = mcy - Math.cos(torsoRad) * mr * 0.65;
+          const hs = 4;
+          const a1 = torsoRad + Math.PI + 0.45;
+          const a2 = torsoRad + Math.PI - 0.45;
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+            x1: mcx,
+            y1: mcy,
+            x2: tipX,
+            y2: tipY,
+            stroke: "#ffdd00",
+            strokeWidth: 1.5,
+            opacity: 0.7
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${tipX},${tipY} ${tipX + Math.sin(a1) * hs},${tipY - Math.cos(a1) * hs} ${tipX + Math.sin(a2) * hs},${tipY - Math.cos(a2) * hs}`,
+            fill: "#ffdd00",
+            opacity: 0.8
+          }));
+        })(), (() => {
+          const tipX = mcx + Math.sin(lookRad) * mr * 0.5;
+          const tipY = mcy - Math.cos(lookRad) * mr * 0.5;
+          const hs = 3.5;
+          const a1 = lookRad + Math.PI + 0.5;
+          const a2 = lookRad + Math.PI - 0.5;
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+            x1: mcx,
+            y1: mcy,
+            x2: tipX,
+            y2: tipY,
+            stroke: "#00ffee",
+            strokeWidth: 1,
+            opacity: 0.6,
+            strokeDasharray: "3,2"
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${tipX},${tipY} ${tipX + Math.sin(a1) * hs},${tipY - Math.cos(a1) * hs} ${tipX + Math.sin(a2) * hs},${tipY - Math.cos(a2) * hs}`,
+            fill: "#00ffee",
+            opacity: 0.7
+          }));
+        })(), /*#__PURE__*/React.createElement("rect", {
           x: mx + 2,
           y: my + mh - 8,
           width: (mw - 4) * (spd / maxSpd),

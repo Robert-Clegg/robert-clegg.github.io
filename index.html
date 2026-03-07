@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v260";
+  var v = "v261";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v260 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v261 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v260"), /*#__PURE__*/React.createElement("span", {
+  }, "v261"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12307,28 +12307,39 @@ function TemporalReplay() {
           mw = bw,
           mh = boxH;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        const jit = seed => Math.sin(nowMs * 0.009 + seed * 3.1) * 1.0 + Math.sin(nowMs * 0.005 + seed * 7.7) * 0.6;
         const cubeArea = Math.min(mw * 0.45, mh - 18);
         const ccx = mx + cubeArea * 0.5 + 4;
         const ccy = my + 14 + (mh - 16) / 2;
         const cs = cubeArea * 0.28;
         const isoX = (x3, y3, z3) => ccx + (x3 - z3) * 0.866;
         const isoY = (x3, y3, z3) => ccy - y3 + (x3 + z3) * 0.5;
-        // Sustained direction holds: slow base + occasional step changes
-        const step = (t, period) => Math.floor(t / period);
-        const holdX = Math.sin(step(time, 4.2) * 7.3) * 10;
-        const holdZ = Math.sin(step(time, 3.5) * 5.1) * 15 + 8;
-        const fx = time > 0.1 ? holdX + Math.sin(time * 0.25) * 3 + jit(1) : 0;
-        const fy = time > 0.1 ? -9.81 * 3 + Math.sin(time * 0.15) * 2 + jit(2) * 0.8 : 0;
-        const fz = time > 0.1 ? holdZ + Math.sin(time * 0.18) * 5 + jit(3) : 0;
+        // Smooth forces — hold steady, change direction every 5-8s
+        // smoothstep transition over ~1s when direction changes
+        const dirPeriod = 6.0;
+        const dirPhase = time > 0.1 ? time % dirPeriod / dirPeriod : 0;
+        const dirIdx = time > 0.1 ? Math.floor(time / dirPeriod) : 0;
+        // Transition: smooth ramp over first 15% of each period
+        const trans = dirPhase < 0.15 ? dirPhase / 0.15 : 1;
+        const smooth = trans * trans * (3 - 2 * trans); // smoothstep
+        // Target forces per direction change (deterministic from dirIdx)
+        const targX = Math.sin(dirIdx * 7.3) * 10 + Math.sin(dirIdx * 2.1) * 5;
+        const targY = -9.81 * 3 + Math.sin(dirIdx * 3.7) * 3;
+        const targZ = Math.sin(dirIdx * 5.1) * 12 + 10;
+        // Previous targets
+        const prevX = Math.sin((dirIdx - 1) * 7.3) * 10 + Math.sin((dirIdx - 1) * 2.1) * 5;
+        const prevY = -9.81 * 3 + Math.sin((dirIdx - 1) * 3.7) * 3;
+        const prevZ = Math.sin((dirIdx - 1) * 5.1) * 12 + 10;
+        const fx = time > 0.1 ? prevX + (targX - prevX) * smooth : 0;
+        const fy = time > 0.1 ? prevY + (targY - prevY) * smooth : 0;
+        const fz = time > 0.1 ? prevZ + (targZ - prevZ) * smooth : 0;
         const maxF = 35;
         const vScale = cs * 0.7 / maxF;
         const axLen = fx * vScale,
           ayLen = fy * vScale,
           azLen = fz * vScale;
-        const spd = time > 0.1 ? Math.abs(fz * 0.8 + jit(4) * 0.5) : 0;
-        const accel = time > 0.1 ? fz * 0.12 + jit(5) * 0.15 : 0;
-        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(time * 0.18) * 25 + jit(6) * 0.8) : 0;
+        const spd = time > 0.1 ? Math.abs(fz * 0.8) : 0;
+        const accel = time > 0.1 ? fz * 0.12 : 0;
+        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(dirIdx * 4.3) * 20 + 5) : 0;
         const numX = mx + cubeArea + 6;
         const numW = mw - cubeArea - 10;
         const isoArr = (ox, oy, tx, ty, color, sw) => {
@@ -12338,7 +12349,7 @@ function TemporalReplay() {
           if (len < 2) return null;
           const nx2 = ddx / len,
             ny2 = ddy / len;
-          const hs = 4,
+          const hs = 5,
             ppx = -ny2,
             ppy = nx2;
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
@@ -12348,11 +12359,11 @@ function TemporalReplay() {
             y2: ty,
             stroke: color,
             strokeWidth: sw,
-            opacity: 0.85
+            opacity: 0.95
           }), /*#__PURE__*/React.createElement("polygon", {
             points: `${tx},${ty} ${tx - nx2 * hs + ppx * hs * 0.4},${ty - ny2 * hs + ppy * hs * 0.4} ${tx - nx2 * hs - ppx * hs * 0.4},${ty - ny2 * hs - ppy * hs * 0.4}`,
             fill: color,
-            opacity: 0.9
+            opacity: 1
           }));
         };
         return /*#__PURE__*/React.createElement("g", {
@@ -12396,55 +12407,55 @@ function TemporalReplay() {
             y1: proj[a][1],
             x2: proj[b][0],
             y2: proj[b][1],
-            stroke: "rgba(255,255,255,0.25)",
-            strokeWidth: 0.8
+            stroke: "rgba(255,255,255,0.4)",
+            strokeWidth: 1.0
           }));
         })(), /*#__PURE__*/React.createElement("line", {
           x1: isoX(0, 0, 0),
           y1: isoY(0, 0, 0),
           x2: isoX(cs, 0, 0),
           y2: isoY(cs, 0, 0),
-          stroke: "rgba(255,68,68,0.35)",
-          strokeWidth: 0.6,
+          stroke: "rgba(255,68,68,0.5)",
+          strokeWidth: 0.7,
           strokeDasharray: "2,2"
         }), /*#__PURE__*/React.createElement("line", {
           x1: isoX(0, 0, 0),
           y1: isoY(0, 0, 0),
           x2: isoX(0, cs, 0),
           y2: isoY(0, cs, 0),
-          stroke: "rgba(68,255,68,0.35)",
-          strokeWidth: 0.6,
+          stroke: "rgba(68,255,68,0.5)",
+          strokeWidth: 0.7,
           strokeDasharray: "2,2"
         }), /*#__PURE__*/React.createElement("line", {
           x1: isoX(0, 0, 0),
           y1: isoY(0, 0, 0),
           x2: isoX(0, 0, cs),
           y2: isoY(0, 0, cs),
-          stroke: "rgba(68,136,255,0.35)",
-          strokeWidth: 0.6,
+          stroke: "rgba(68,136,255,0.5)",
+          strokeWidth: 0.7,
           strokeDasharray: "2,2"
         }), /*#__PURE__*/React.createElement("text", {
           x: isoX(cs + 3, 0, 0),
           y: isoY(cs + 3, 0, 0) + 2,
-          fill: "rgba(255,68,68,0.7)",
-          fontSize: 5,
+          fill: "rgba(255,68,68,0.85)",
+          fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
         }, "X"), /*#__PURE__*/React.createElement("text", {
           x: isoX(0, cs + 3, 0),
           y: isoY(0, cs + 3, 0) + 2,
-          fill: "rgba(68,255,68,0.7)",
-          fontSize: 5,
+          fill: "rgba(68,255,68,0.85)",
+          fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
         }, "Y"), /*#__PURE__*/React.createElement("text", {
           x: isoX(0, 0, cs + 3),
           y: isoY(0, 0, cs + 3) + 2,
-          fill: "rgba(68,136,255,0.7)",
-          fontSize: 5,
+          fill: "rgba(68,136,255,0.85)",
+          fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
-        }, "Z"), time > 0.1 && /*#__PURE__*/React.createElement("g", null, isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(axLen, 0, 0), isoY(axLen, 0, 0), "#ff4444", 1.8), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, ayLen, 0), isoY(0, ayLen, 0), "#44ff44", 1.8), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, 0, azLen), isoY(0, 0, azLen), "#4488ff", 1.8)), time > 0.1 && /*#__PURE__*/React.createElement("g", null, [{
+        }, "Z"), time > 0.1 && /*#__PURE__*/React.createElement("g", null, isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(axLen, 0, 0), isoY(axLen, 0, 0), "#ff4444", 2.2), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, ayLen, 0), isoY(0, ayLen, 0), "#44ff44", 2.2), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, 0, azLen), isoY(0, 0, azLen), "#4488ff", 2.2)), time > 0.1 && /*#__PURE__*/React.createElement("g", null, [{
           label: "Fx",
           val: fx.toFixed(1),
           unit: "kN",

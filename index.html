@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v266";
+  var v = "v267";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v266 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v267 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v266"), /*#__PURE__*/React.createElement("span", {
+  }, "v267"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8449,25 +8449,25 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    const hudH = 55;
-    const moveH = 130;
+    const hudH = 80;
+    const moveH = 80;
     const cellsH = 330;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: HUD, Row 4: MOVEMENT (big), Row 5: WORLD
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVEMENT|HUD, Row 4: WORLD
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
     const rightX = boxX + halfW + pairGap;
     const row1H = Math.max(viewH, keyH);
     const row2H = Math.max(audioH, textH);
-    const totalUsed = mouseH + row1H + row2H + hudH + moveH + cellsH;
+    const row3H = Math.max(moveH, hudH);
+    const totalUsed = mouseH + row1H + row2H + row3H + cellsH;
     const totalAvail = H - topPad - 16;
-    const boxGap = Math.max(3, Math.floor((totalAvail - totalUsed) / 5));
+    const boxGap = Math.max(3, Math.floor((totalAvail - totalUsed) / 4));
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
     const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
-    const rowY4 = rowY3 + hudH + boxGap;
-    const rowY5 = rowY4 + moveH + boxGap;
+    const rowY4 = rowY3 + row3H + boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8497,12 +8497,12 @@ function TemporalReplay() {
     },
     // 3: TXT (right)
     {
-      x: leftX,
+      x: rightX,
       y: rowY3,
-      w: boxW,
+      w: halfW,
       h: hudH
     },
-    // 4: HUD (full width)
+    // 4: HUD (right)
     {
       x: leftX,
       y: rowY1,
@@ -8512,17 +8512,17 @@ function TemporalReplay() {
     // 5: VIEW (left of KB)
     {
       x: leftX,
-      y: rowY4,
-      w: boxW,
+      y: rowY3,
+      w: halfW,
       h: moveH
     },
-    // 6: MOVEMENT (full width, tall)
+    // 6: MOVEMENT (left of HUD)
     {
       x: boxX + boxW - boxW * 2,
-      y: rowY5,
+      y: rowY4,
       w: boxW * 2,
-      h: Math.min(cellsH, totalAvail - (rowY5 - topPad))
-    } // 7: WORLD (right edge aligned with containers, extends left)
+      h: Math.min(cellsH, totalAvail - (rowY4 - topPad))
+    } // 7: WORLD
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -12555,12 +12555,22 @@ function TemporalReplay() {
         const wIsoY = (gx, gy, gz) => wcy + (gx + gy) * 0.5 * wScale / 100 - gz * wScale / 100;
         // Ground plane corners (100x100 grid, z=0)
         const gp = [[0, 0], [100, 0], [100, 100], [0, 100]].map(p => `${wIsoX(p[0], p[1], 0)},${wIsoY(p[0], p[1], 0)}`).join(" ");
-        // Terrain height map — hills at certain positions
+        // Terrain height map — hills, upper bumps, bottom valley
         const terrainH = (gx, gy) => {
+          // Original hills
           const h1 = Math.max(0, 12 - Math.sqrt((gx - 70) * (gx - 70) + (gy - 25) * (gy - 25)) * 0.4);
           const h2 = Math.max(0, 8 - Math.sqrt((gx - 30) * (gx - 30) + (gy - 60) * (gy - 60)) * 0.35);
           const h3 = Math.max(0, 6 - Math.sqrt((gx - 55) * (gx - 55) + (gy - 45) * (gy - 45)) * 0.3);
-          return h1 + h2 + h3;
+          // Upper area bumps (low gy = upper in world space)
+          const b1 = Math.max(0, 7 - Math.sqrt((gx - 25) * (gx - 25) + (gy - 12) * (gy - 12)) * 0.5);
+          const b2 = Math.max(0, 9 - Math.sqrt((gx - 45) * (gx - 45) + (gy - 8) * (gy - 8)) * 0.45);
+          const b3 = Math.max(0, 5 - Math.sqrt((gx - 85) * (gx - 85) + (gy - 15) * (gy - 15)) * 0.4);
+          const b4 = Math.max(0, 6 - Math.sqrt((gx - 60) * (gx - 60) + (gy - 18) * (gy - 18)) * 0.5);
+          // Valley along bottom (high gy = bottom): negative height = depression
+          const valleyCenter = 90 + Math.sin(gx * 0.08) * 4;
+          const valleyDist = Math.abs(gy - valleyCenter);
+          const valley = valleyDist < 8 ? -(4 - valleyDist * 0.5) : 0;
+          return Math.max(-3, h1 + h2 + h3 + b1 + b2 + b3 + b4 + valley);
         };
         // Buildings with height
         const buildings = [{
@@ -12678,6 +12688,30 @@ function TemporalReplay() {
           r: 12,
           h: 6,
           color: "rgba(70,70,50,0.3)"
+        }, {
+          cx: 25,
+          cy: 12,
+          r: 10,
+          h: 7,
+          color: "rgba(90,70,45,0.35)"
+        }, {
+          cx: 45,
+          cy: 8,
+          r: 12,
+          h: 9,
+          color: "rgba(85,65,40,0.4)"
+        }, {
+          cx: 85,
+          cy: 15,
+          r: 8,
+          h: 5,
+          color: "rgba(75,65,45,0.3)"
+        }, {
+          cx: 60,
+          cy: 18,
+          r: 9,
+          h: 6,
+          color: "rgba(80,70,50,0.3)"
         }].map((hill, hi) => {
           const pts = [];
           for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
@@ -12693,6 +12727,37 @@ function TemporalReplay() {
             strokeWidth: 0.4
           });
         }), (() => {
+          const riverPts = [];
+          const riverPtsBot = [];
+          for (let gx = 0; gx <= 100; gx += 4) {
+            const vc = 90 + Math.sin(gx * 0.08) * 4;
+            const topGy = vc - 6;
+            const botGy = vc + 6;
+            const topZ = terrainH(gx, topGy);
+            const botZ = terrainH(gx, botGy);
+            riverPts.push(`${wIsoX(gx, topGy, topZ)},${wIsoY(gx, topGy, topZ)}`);
+            riverPtsBot.unshift(`${wIsoX(gx, botGy, botZ)},${wIsoY(gx, botGy, botZ)}`);
+          }
+          return /*#__PURE__*/React.createElement("polygon", {
+            points: [...riverPts, ...riverPtsBot].join(" "),
+            fill: "rgba(30,60,90,0.35)",
+            stroke: "rgba(60,120,180,0.25)",
+            strokeWidth: 0.5
+          });
+        })(), (() => {
+          const pts = [];
+          for (let gx = 0; gx <= 100; gx += 3) {
+            const vc = 90 + Math.sin(gx * 0.08) * 4;
+            const z = terrainH(gx, vc);
+            pts.push(`${wIsoX(gx, vc, z)},${wIsoY(gx, vc, z)}`);
+          }
+          return /*#__PURE__*/React.createElement("polyline", {
+            points: pts.join(" "),
+            fill: "none",
+            stroke: "rgba(60,140,200,0.4)",
+            strokeWidth: 1
+          });
+        })(), (() => {
           const hz = [[70, 0], [100, 0], [100, 30], [70, 30]].map(p => `${wIsoX(p[0], p[1], 0.5)},${wIsoY(p[0], p[1], 0.5)}`).join(" ");
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: hz,

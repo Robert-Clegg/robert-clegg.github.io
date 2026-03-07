@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v253";
+  var v = "v254";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v253 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v254 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v253"), /*#__PURE__*/React.createElement("span", {
+  }, "v254"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8107,10 +8107,10 @@ function TemporalReplay() {
       sk_myco: "bioMyco",
       sk_win: "bioWin"
     };
-    const FIREHOSE_KEYS = ["mouseX", "mouseY", "velocity", "LMB", "RMB", "scroll", "W", "A", "S", "D", "R", "E", "SPC", "F", "unitHP", "unitPos", "enemyDist", "nodeDist", "teamPop", "cellCount", "nodeOwner"];
+    const FIREHOSE_KEYS = ["mouseX", "mouseY", "velocity", "LMB", "RMB", "scroll", "W", "A", "S", "D", "R", "E", "SPC", "F", "unitHP", "unitPos", "enemyDist", "nodeDist", "teamPop", "cellCount", "nodeOwner", "lookYaw", "lookPitch", "zoomLvl", "viewMode", "scanRate", "heading", "mechSpeed", "turnRate", "torsoYaw", "divergeAngle"];
     // Small primes → fast cycling (7-31ms range ≈ 30-140Hz, matching 16ms sample rate)
     // Each channel has its own rhythm so they never fully sync
-    const PRIMES = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89];
+    const PRIMES = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149];
     const FIREHOSE_RECENCY = 4.0; // seconds — channel must have real data within this window to flicker
     // NOTE: firehoseSet computed AFTER inputNodeFire is populated (see below)
     let firehoseSet = new Set();
@@ -8426,32 +8426,48 @@ function TemporalReplay() {
       color: "#ffaa44",
       rawTypes: ["hud"]
     }, {
+      id: "view",
+      label: "VIEW",
+      sub: "look direction",
+      color: "#ff66aa",
+      rawTypes: ["view"]
+    }, {
+      id: "movement",
+      label: "MOVEMENT",
+      sub: "heading + velocity",
+      color: "#44ffaa",
+      rawTypes: ["movement"]
+    }, {
       id: "cam",
       label: "WORLD",
       sub: "game state",
       color: "#00ddff",
       rawTypes: ["world"]
     }];
-    const mouseH = 80;
-    const keyH = 80;
-    const audioH = 62;
-    const textH = 62;
-    const hudH = 80;
-    const cellsH = 196;
-    // Layout: Row 0: MOUSE, Row 1: KB, Row 2: AUDIO|TXT paired, Row 3: HUD, Row 4: WORLD
+    const mouseH = 55;
+    const keyH = 55;
+    const audioH = 48;
+    const textH = 48;
+    const hudH = 55;
+    const viewH = 75;
+    const moveH = 75;
+    const cellsH = 140;
+    // Layout: Row 0: MOUSE, Row 1: KB, Row 2: AUDIO|TXT, Row 3: HUD, Row 4: VIEW|MOVE, Row 5: WORLD
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
     const rightX = boxX + halfW + pairGap;
     const row2H = Math.max(audioH, textH);
-    const totalUsed = mouseH + keyH + row2H + hudH + cellsH;
+    const row4H = Math.max(viewH, moveH);
+    const totalUsed = mouseH + keyH + row2H + hudH + row4H + cellsH;
     const totalAvail = H - topPad - 16;
-    const boxGap = Math.max(4, Math.floor((totalAvail - totalUsed) / 4));
+    const boxGap = Math.max(3, Math.floor((totalAvail - totalUsed) / 5));
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
     const rowY2 = rowY1 + keyH + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
     const rowY4 = rowY3 + hudH + boxGap;
+    const rowY5 = rowY4 + row4H + boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8488,11 +8504,25 @@ function TemporalReplay() {
     },
     // 4: HUD (full width, UNIT inset right)
     {
-      x: boxX,
+      x: leftX,
       y: rowY4,
+      w: halfW,
+      h: viewH
+    },
+    // 5: VIEW (left)
+    {
+      x: rightX,
+      y: rowY4,
+      w: halfW,
+      h: moveH
+    },
+    // 6: MOVEMENT (right)
+    {
+      x: boxX,
+      y: rowY5,
       w: boxW,
-      h: Math.min(cellsH, totalAvail - (rowY4 - topPad))
-    } // 5: WORLD
+      h: Math.min(cellsH, totalAvail - (rowY5 - topPad))
+    } // 7: WORLD
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -9043,39 +9073,93 @@ function TemporalReplay() {
       fireKey: "readout",
       color: "#ffcc66"
     },
-    // WORLD container (boxIdx 6) — 7 channels
+    // VIEW container (boxIdx 5) — 5 channels
     {
       boxIdx: 5,
+      label: "lookYaw",
+      fireKey: "lookYaw",
+      color: "#ff66aa"
+    }, {
+      boxIdx: 5,
+      label: "lookPitch",
+      fireKey: "lookPitch",
+      color: "#ff88cc"
+    }, {
+      boxIdx: 5,
+      label: "zoom",
+      fireKey: "zoomLvl",
+      color: "#ff44aa"
+    }, {
+      boxIdx: 5,
+      label: "FPP/TPP",
+      fireKey: "viewMode",
+      color: "#dd66aa"
+    }, {
+      boxIdx: 5,
+      label: "scanRate",
+      fireKey: "scanRate",
+      color: "#ff99bb"
+    },
+    // MOVEMENT container (boxIdx 6) — 5 channels
+    {
+      boxIdx: 6,
+      label: "heading",
+      fireKey: "heading",
+      color: "#44ffaa"
+    }, {
+      boxIdx: 6,
+      label: "speed",
+      fireKey: "mechSpeed",
+      color: "#66ffcc"
+    }, {
+      boxIdx: 6,
+      label: "turnRate",
+      fireKey: "turnRate",
+      color: "#22dd88"
+    }, {
+      boxIdx: 6,
+      label: "torsoYaw",
+      fireKey: "torsoYaw",
+      color: "#88ffdd"
+    }, {
+      boxIdx: 6,
+      label: "diverge",
+      fireKey: "divergeAngle",
+      color: "#aaffee"
+    },
+    // WORLD container (boxIdx 7) — 7 channels
+    {
+      boxIdx: 7,
       label: "unitHP",
       fireKey: "unitHP",
       color: "#44ffaa"
     }, {
-      boxIdx: 5,
+      boxIdx: 7,
       label: "unitPos",
       fireKey: "unitPos",
       color: "#00ddff"
     }, {
-      boxIdx: 5,
+      boxIdx: 7,
       label: "enemyDist",
       fireKey: "enemyDist",
       color: "#ff4466"
     }, {
-      boxIdx: 5,
+      boxIdx: 7,
       label: "nodeDist",
       fireKey: "nodeDist",
       color: "#66ddff"
     }, {
-      boxIdx: 5,
+      boxIdx: 7,
       label: "teamPop",
       fireKey: "teamPop",
       color: "#44dd88"
     }, {
-      boxIdx: 5,
+      boxIdx: 7,
       label: "cellCount",
       fireKey: "cellCount",
       color: "#88eeff"
     }, {
-      boxIdx: 5,
+      boxIdx: 7,
       label: "nodeOwner",
       fireKey: "nodeOwner",
       color: "#aaddff"
@@ -12089,6 +12173,271 @@ function TemporalReplay() {
           fontSize: 6,
           fontFamily: mono
         }, "?"));
+      }
+
+      // — CELLS box: minimap + yellow kill splashes + population bars —
+
+      // ═══ VIEW container — compass rose + look direction indicators ═══
+      if (box.id === "view") {
+        const vx = bx,
+          vy = y,
+          vw = bw,
+          vh = boxH;
+        const vcx = vx + vw / 2,
+          vcy = vy + 14 + (vh - 14) / 2;
+        const vr = Math.min(vw, vh - 16) / 2 - 6;
+        // Simulated look angles — driven by game events when available
+        const lookYaw = time > 0.1 ? Math.sin(time * 0.7) * 140 + Math.sin(time * 1.3) * 40 : 0;
+        const lookPitch = time > 0.1 ? Math.sin(time * 0.5) * 20 - 5 : 0;
+        const yawRad = lookYaw * Math.PI / 180;
+        const zoomLvl = time > 0.1 ? 0.5 + Math.sin(time * 0.3) * 0.3 : 0.5;
+        const isTPP = time > 0.1 && Math.sin(time * 0.15) > 0;
+        const scanIntensity = time > 0.1 ? Math.abs(Math.cos(time * 1.1)) : 0;
+        const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
+        return /*#__PURE__*/React.createElement("g", {
+          key: `raw-${box.id}`
+        }, /*#__PURE__*/React.createElement("rect", {
+          x: vx - 2,
+          y: vy - 2,
+          width: vw + 4,
+          height: vh + 4,
+          rx: 8,
+          fill: "none",
+          stroke: "#ff66aa20",
+          strokeWidth: 3,
+          filter: "url(#glow)"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: vx,
+          y: vy,
+          width: vw,
+          height: vh,
+          rx: 6,
+          fill: "#ff66aa08",
+          stroke: `rgba(255,102,170,${0.3 + containerBr * 0.5})`,
+          strokeWidth: 1
+        }), /*#__PURE__*/React.createElement("text", {
+          x: vcx,
+          y: vy + 9,
+          textAnchor: "middle",
+          fill: "#ff66aa",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700,
+          letterSpacing: 1.2
+        }, "VIEW"), /*#__PURE__*/React.createElement("circle", {
+          cx: vcx,
+          cy: vcy,
+          r: vr,
+          fill: "none",
+          stroke: `rgba(255,102,170,${0.15 + containerBr * 0.3})`,
+          strokeWidth: 0.8
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: vcx,
+          cy: vcy,
+          r: vr * 0.5,
+          fill: "none",
+          stroke: "rgba(255,255,255,0.08)",
+          strokeWidth: 0.5,
+          strokeDasharray: "2,3"
+        }), ["N", "E", "S", "W"].map((d, i) => {
+          const a = i * 90 * Math.PI / 180 - Math.PI / 2;
+          return /*#__PURE__*/React.createElement("text", {
+            key: d,
+            x: vcx + Math.cos(a) * (vr + 5),
+            y: vcy + Math.sin(a) * (vr + 5) + 2,
+            textAnchor: "middle",
+            fill: "rgba(255,255,255,0.25)",
+            fontSize: 5,
+            fontFamily: mono
+          }, d);
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+          x1: vcx,
+          y1: vcy,
+          x2: vcx + Math.sin(yawRad) * vr * 0.85,
+          y2: vcy - Math.cos(yawRad) * vr * 0.85,
+          stroke: "#00ffee",
+          strokeWidth: 1.8,
+          opacity: 0.7 + containerBr * 0.3
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: vcx + Math.sin(yawRad) * vr * 0.85,
+          cy: vcy - Math.cos(yawRad) * vr * 0.85,
+          r: 2,
+          fill: "#00ffee",
+          opacity: 0.9
+        }), /*#__PURE__*/React.createElement("text", {
+          x: vx + 3,
+          y: vy + vh - 3,
+          fill: "rgba(255,255,255,0.4)",
+          fontSize: 5,
+          fontFamily: mono
+        }, "P:", lookPitch.toFixed(0), "\xB0"), /*#__PURE__*/React.createElement("text", {
+          x: vx + vw - 3,
+          y: vy + vh - 3,
+          textAnchor: "end",
+          fill: isTPP ? "#ff66aa" : "rgba(255,255,255,0.3)",
+          fontSize: 5,
+          fontFamily: mono,
+          fontWeight: 700
+        }, isTPP ? "TPP" : "FPP"), /*#__PURE__*/React.createElement("rect", {
+          x: vx + 2,
+          y: vy + vh - 8,
+          width: (vw - 4) * scanIntensity,
+          height: 2,
+          rx: 1,
+          fill: "#ff66aa",
+          opacity: 0.5
+        })), time > 0.1 && (() => {
+          const fovHalf = (30 + zoomLvl * 40) * Math.PI / 180;
+          const coneR = vr * 0.7;
+          return /*#__PURE__*/React.createElement("path", {
+            d: `M ${vcx} ${vcy}
+                            L ${vcx + Math.sin(yawRad - fovHalf) * coneR} ${vcy - Math.cos(yawRad - fovHalf) * coneR}
+                            A ${coneR} ${coneR} 0 0 1 ${vcx + Math.sin(yawRad + fovHalf) * coneR} ${vcy - Math.cos(yawRad + fovHalf) * coneR}
+                            Z`,
+            fill: "rgba(0,255,238,0.06)",
+            stroke: "rgba(0,255,238,0.15)",
+            strokeWidth: 0.5
+          });
+        })());
+      }
+
+      // ═══ MOVEMENT container — 3-vector heading display ═══
+      if (box.id === "movement") {
+        const mx = bx,
+          my = y,
+          mw = bw,
+          mh = boxH;
+        const mcx = mx + mw / 2,
+          mcy = my + 14 + (mh - 14) / 2;
+        const mr = Math.min(mw, mh - 16) / 2 - 6;
+        // Simulated vectors — driven by game events when available
+        const legsYaw = time > 0.1 ? (Math.sin(time * 0.4) * 60 + time * 15) % 360 : 0;
+        const torsoYaw = time > 0.1 ? legsYaw + Math.sin(time * 0.9) * 45 : 0;
+        const lookYaw = time > 0.1 ? legsYaw + Math.sin(time * 1.3) * 70 + Math.sin(time * 0.5) * 30 : 0;
+        const spd = time > 0.1 ? Math.abs(Math.sin(time * 0.6)) * 25 : 0;
+        const maxSpd = 30;
+        const legsRad = legsYaw * Math.PI / 180;
+        const torsoRad = torsoYaw * Math.PI / 180;
+        const lookRad = lookYaw * Math.PI / 180;
+        const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
+        // Divergence angles
+        const torsoDiv = Math.abs((torsoYaw - legsYaw + 540) % 360 - 180);
+        const lookDiv = Math.abs((lookYaw - legsYaw + 540) % 360 - 180);
+        return /*#__PURE__*/React.createElement("g", {
+          key: `raw-${box.id}`
+        }, /*#__PURE__*/React.createElement("rect", {
+          x: mx - 2,
+          y: my - 2,
+          width: mw + 4,
+          height: mh + 4,
+          rx: 8,
+          fill: "none",
+          stroke: "#44ffaa20",
+          strokeWidth: 3,
+          filter: "url(#glow)"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: mx,
+          y: my,
+          width: mw,
+          height: mh,
+          rx: 6,
+          fill: "#44ffaa08",
+          stroke: `rgba(68,255,170,${0.3 + containerBr * 0.5})`,
+          strokeWidth: 1
+        }), /*#__PURE__*/React.createElement("text", {
+          x: mcx,
+          y: my + 9,
+          textAnchor: "middle",
+          fill: "#44ffaa",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700,
+          letterSpacing: 1
+        }, "MOVEMENT"), /*#__PURE__*/React.createElement("circle", {
+          cx: mcx,
+          cy: mcy,
+          r: mr,
+          fill: "none",
+          stroke: `rgba(68,255,170,${0.15 + containerBr * 0.3})`,
+          strokeWidth: 0.8
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: mcx,
+          cy: mcy,
+          r: mr * 0.3,
+          fill: "none",
+          stroke: "rgba(255,255,255,0.08)",
+          strokeWidth: 0.5
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+          x1: mcx,
+          y1: mcy,
+          x2: mcx + Math.sin(legsRad) * mr * 0.8,
+          y2: mcy - Math.cos(legsRad) * mr * 0.8,
+          stroke: "#44ff44",
+          strokeWidth: 2.2,
+          opacity: 0.8
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: mcx + Math.sin(legsRad) * mr * 0.8,
+          cy: mcy - Math.cos(legsRad) * mr * 0.8,
+          r: 2.5,
+          fill: "#44ff44",
+          opacity: 0.9
+        }), /*#__PURE__*/React.createElement("line", {
+          x1: mcx,
+          y1: mcy,
+          x2: mcx + Math.sin(torsoRad) * mr * 0.65,
+          y2: mcy - Math.cos(torsoRad) * mr * 0.65,
+          stroke: "#ffdd00",
+          strokeWidth: 1.5,
+          opacity: 0.7
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: mcx + Math.sin(torsoRad) * mr * 0.65,
+          cy: mcy - Math.cos(torsoRad) * mr * 0.65,
+          r: 2,
+          fill: "#ffdd00",
+          opacity: 0.8
+        }), /*#__PURE__*/React.createElement("line", {
+          x1: mcx,
+          y1: mcy,
+          x2: mcx + Math.sin(lookRad) * mr * 0.5,
+          y2: mcy - Math.cos(lookRad) * mr * 0.5,
+          stroke: "#00ffee",
+          strokeWidth: 1,
+          opacity: 0.6,
+          strokeDasharray: "3,2"
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: mcx + Math.sin(lookRad) * mr * 0.5,
+          cy: mcy - Math.cos(lookRad) * mr * 0.5,
+          r: 1.5,
+          fill: "#00ffee",
+          opacity: 0.7
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: mx + 2,
+          y: my + mh - 8,
+          width: (mw - 4) * (spd / maxSpd),
+          height: 2.5,
+          rx: 1,
+          fill: "#44ffaa",
+          opacity: 0.6
+        }), /*#__PURE__*/React.createElement("text", {
+          x: mx + 3,
+          y: my + mh - 3,
+          fill: "rgba(255,255,255,0.35)",
+          fontSize: 4.5,
+          fontFamily: mono
+        }, "T:", torsoDiv.toFixed(0), "\xB0 L:", lookDiv.toFixed(0), "\xB0"), /*#__PURE__*/React.createElement("text", {
+          x: mx + mw - 3,
+          y: my + mh - 3,
+          textAnchor: "end",
+          fill: "rgba(255,255,255,0.25)",
+          fontSize: 4,
+          fontFamily: mono
+        }, /*#__PURE__*/React.createElement("tspan", {
+          fill: "#44ff44"
+        }, "\u25CF"), "LEG ", /*#__PURE__*/React.createElement("tspan", {
+          fill: "#ffdd00"
+        }, "\u25CF"), "TRS ", /*#__PURE__*/React.createElement("tspan", {
+          fill: "#00ffee"
+        }, "\u25CF"), "EYE")));
       }
 
       // — CELLS box: minimap + yellow kill splashes + population bars —

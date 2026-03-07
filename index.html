@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v268";
+  var v = "v269";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v268 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v269 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v268"), /*#__PURE__*/React.createElement("span", {
+  }, "v269"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12654,10 +12654,11 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1.5
-        }, "WORLD"), [20, 40, 60, 80].map(g => {
-          const step = 5;
-          const ptsA = []; // constant gx=g, varying gy
-          const ptsB = []; // constant gy=g, varying gx
+        }, "WORLD"), [10, 20, 30, 40, 50, 60, 70, 80, 90].map(g => {
+          const step = 4;
+          const isMajor = g % 20 === 0;
+          const ptsA = [],
+            ptsB = [];
           for (let t = 0; t <= 100; t += step) {
             const zA = terrainH(g, t);
             ptsA.push(`${wIsoX(g, t, zA)},${wIsoY(g, t, zA)}`);
@@ -12669,13 +12670,13 @@ function TemporalReplay() {
           }, /*#__PURE__*/React.createElement("polyline", {
             points: ptsA.join(" "),
             fill: "none",
-            stroke: "rgba(255,255,255,0.13)",
-            strokeWidth: 0.5
+            stroke: isMajor ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.16)",
+            strokeWidth: isMajor ? 0.6 : 0.4
           }), /*#__PURE__*/React.createElement("polyline", {
             points: ptsB.join(" "),
             fill: "none",
-            stroke: "rgba(255,255,255,0.13)",
-            strokeWidth: 0.5
+            stroke: isMajor ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.16)",
+            strokeWidth: isMajor ? 0.6 : 0.4
           }));
         }), [{
           cx: 70,

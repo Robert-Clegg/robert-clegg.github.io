@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v279";
+  var v = "v280";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v279 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v280 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v279"), /*#__PURE__*/React.createElement("span", {
+  }, "v280"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -10983,21 +10983,7 @@ function TemporalReplay() {
         fontFamily: mono,
         fontWeight: isFresh ? 700 : 400,
         opacity: isMouseXY && isActive ? erratic : 1
-      }, inp.label), isActive && !needsRoute && /*#__PURE__*/React.createElement("line", {
-        x1: containerRightX,
-        y1: nodeCenterY,
-        x2: inputNodeX,
-        y2: nodeCenterY,
-        stroke: inp.color,
-        strokeWidth: firehoseHit ? 1 : isFinal ? 0.8 : 0.5,
-        opacity: Math.min(firehoseHit ? displayBrightness * 0.5 : isFinal ? 0.3 : eventFresh ? 0.4 : 0.1, COL_RAMP.data)
-      }), isActive && needsRoute && /*#__PURE__*/React.createElement("path", {
-        d: `M${containerRightX},${containerCenterY} L${routeX},${containerCenterY} L${routeX},${nodeCenterY} L${inputNodeX},${nodeCenterY}`,
-        fill: "none",
-        stroke: inp.color,
-        strokeWidth: firehoseHit ? 0.8 : isFinal ? 0.6 : 0.4,
-        opacity: Math.min(firehoseHit ? displayBrightness * 0.4 : isFinal ? 0.25 : eventFresh ? 0.3 : 0.08, COL_RAMP.data)
-      }));
+      }, inp.label));
     }), RAW_BOXES.map((box, i) => {
       const bl = boxLayout[i];
       const y = bl.y;

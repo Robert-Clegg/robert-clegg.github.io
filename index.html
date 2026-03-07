@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v289";
+  var v = "v290";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v289 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v290 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v289"), /*#__PURE__*/React.createElement("span", {
+  }, "v290"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13033,13 +13033,76 @@ function TemporalReplay() {
         }];
         // Player position: starts lower-left, approaches upper-right
         const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
-        const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
-        const wobY = Math.sin(time * 0.5) * 3 + Math.cos(time * 0.9) * 1.5;
-        const pgx = 10 + progress * 75 + wobX + Math.sin(progress * Math.PI * 2) * 6;
-        const pgy = 85 - progress * 65 + wobY - Math.sin(progress * Math.PI * 1.5) * 5;
-        const pgz = terrainH(pgx, pgy);
-        const ppx = wIsoX(pgx, pgy, pgz);
-        const ppy = wIsoY(pgx, pgy, pgz);
+        // ═══ TERRAIN SCROLL — world drifts past the mech ═══
+        const scrollSpeed = 3.5; // grid units per second
+        const scrollOffset = time > 0.1 ? time * scrollSpeed % 100 : 0;
+        const scrollGx = gx => ((gx - scrollOffset) % 100 + 100) % 100;
+
+        // ═══ MECH POSITION — fixed center of terrain, world scrolls around it ═══
+        const mechGx = 50,
+          mechGy = 50;
+        const mechGz = terrainH(mechGx, mechGy) + 0.5;
+        const mpx = wIsoX(mechGx, mechGy, mechGz);
+        const mpy = wIsoY(mechGx, mechGy, mechGz);
+        const mechScale = wScale / 100 * 1.8;
+
+        // Walking cycle — leg pistons alternate
+        const walkCycle = time > 0.1 ? time * 2.5 % (Math.PI * 2) : 0;
+        const leftLegLift = Math.max(0, Math.sin(walkCycle)) * 3.5;
+        const rightLegLift = Math.max(0, Math.sin(walkCycle + Math.PI)) * 3.5;
+        const bodyBob = Math.sin(walkCycle * 2) * 0.8;
+
+        // Torso rotation — independent of legs
+        const torsoYaw = time > 0.1 ? Math.sin(time * 0.4) * 0.15 : 0;
+
+        // ═══ PROJECTILE ARCS ═══
+        const projectiles = time > 0.1 ? [{
+          sx: 50,
+          sy: 48,
+          tx: 75 - scrollOffset * 0.3,
+          ty: 25,
+          phase: time * 1.1 % 3.0,
+          color: "#ff4444",
+          duration: 2.5
+        }, {
+          sx: 52,
+          sy: 52,
+          tx: 30 - scrollOffset * 0.2,
+          ty: 70,
+          phase: (time * 0.7 + 1.2) % 4.0,
+          color: "#ff8844",
+          duration: 3.5
+        }, {
+          sx: 48,
+          sy: 50,
+          tx: 80 - scrollOffset * 0.4,
+          ty: 60,
+          phase: (time * 0.9 + 2.5) % 3.2,
+          color: "#ffcc44",
+          duration: 2.8
+        }] : [];
+
+        // ═══ DRONES ═══
+        const drones = time > 0.1 ? [{
+          gx: 30 + Math.sin(time * 0.3) * 20,
+          gy: 40 + Math.cos(time * 0.25) * 15,
+          alt: 18,
+          size: 2.5,
+          color: "#44ddff"
+        }, {
+          gx: 70 + Math.sin(time * 0.22 + 1) * 15,
+          gy: 30 + Math.cos(time * 0.35 + 2) * 20,
+          alt: 22,
+          size: 2,
+          color: "#88ffaa"
+        }, {
+          gx: 55 + Math.sin(time * 0.18 + 3) * 25,
+          gy: 65 + Math.cos(time * 0.28 + 1) * 10,
+          alt: 15,
+          size: 3,
+          color: "#ff88dd"
+        }] : [];
+
         // View cone from VIEW container sim
         const driftYaw = time > 0.1 ? Math.sin(time * 0.23) * 80 + Math.sin(time * 0.11) * 40 : 0;
         const microJ = time > 0.1 ? Math.sin(nowMs * 0.013) * 3.5 + Math.sin(nowMs * 0.0071) * 2 : 0;
@@ -13132,9 +13195,12 @@ function TemporalReplay() {
             strokeWidth: 1
           });
         })(), (() => {
-          const hzCorners = [[70, 0], [100, 0], [100, 30], [70, 30]];
+          const hzGx = [scrollGx(70), scrollGx(100)];
+          if (Math.abs(hzGx[1] - hzGx[0]) < 10) return null; // wrapping
+          const hzCorners = [[hzGx[0], 0], [hzGx[1], 0], [hzGx[1], 30], [hzGx[0], 30]];
           const hz = hzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(85, 15);
+          const lGx = (hzGx[0] + hzGx[1]) / 2;
+          const labelZ = terrainH(lGx, 15);
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: hz,
             fill: "rgba(255,30,30,0.1)",
@@ -13146,8 +13212,8 @@ function TemporalReplay() {
             fill: "rgba(255,30,30,0.05)",
             opacity: 0.4 + Math.sin(time * 1.5) * 0.3
           }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(85, 15, labelZ + 1),
-            y: wIsoY(85, 15, labelZ + 1),
+            x: wIsoX(lGx, 15, labelZ + 1),
+            y: wIsoY(lGx, 15, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(255,80,80,0.6)",
             fontSize: 8,
@@ -13155,9 +13221,12 @@ function TemporalReplay() {
             fontWeight: 700
           }, "HOSTILE"));
         })(), (() => {
-          const bzCorners = [[0, 75], [20, 75], [20, 100], [0, 100]];
+          const bzGx = [scrollGx(0), scrollGx(20)];
+          if (Math.abs(bzGx[1] - bzGx[0]) < 5) return null;
+          const bzCorners = [[bzGx[0], 75], [bzGx[1], 75], [bzGx[1], 100], [bzGx[0], 100]];
           const bz = bzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(10, 87);
+          const lGx = (bzGx[0] + bzGx[1]) / 2;
+          const labelZ = terrainH(lGx, 87);
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: bz,
             fill: "rgba(40,200,100,0.08)",
@@ -13165,8 +13234,8 @@ function TemporalReplay() {
             strokeWidth: 0.5,
             strokeDasharray: "3,2"
           }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(10, 87, labelZ + 1),
-            y: wIsoY(10, 87, labelZ + 1),
+            x: wIsoX(lGx, 87, labelZ + 1),
+            y: wIsoY(lGx, 87, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(60,200,100,0.5)",
             fontSize: 8,
@@ -13174,8 +13243,12 @@ function TemporalReplay() {
             fontWeight: 700
           }, "BASE"));
         })(), buildings.map((b, bi) => {
+          // Apply terrain scroll to building positions
+          const sgx = scrollGx(b.gx);
+          // Skip buildings that wrap around edge awkwardly
+          if (sgx + b.w > 98 || sgx < 2) return null;
           // Four base corners, each at own terrain height
-          const corners = [[b.gx, b.gy], [b.gx + b.w, b.gy], [b.gx + b.w, b.gy + b.d], [b.gx, b.gy + b.d]];
+          const corners = [[sgx, b.gy], [sgx + b.w, b.gy], [sgx + b.w, b.gy + b.d], [sgx, b.gy + b.d]];
           const gz = corners.map(c => terrainH(c[0], c[1]));
           // Top = terrain at each corner + building height
           const topPts = corners.map((c, i) => `${wIsoX(c[0], c[1], gz[i] + b.h)},${wIsoY(c[0], c[1], gz[i] + b.h)}`).join(" ");
@@ -13183,9 +13256,9 @@ function TemporalReplay() {
           const rf = `${wIsoX(corners[1][0], corners[1][1], gz[1])},${wIsoY(corners[1][0], corners[1][1], gz[1])} ${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)} ${wIsoX(corners[1][0], corners[1][1], gz[1] + b.h)},${wIsoY(corners[1][0], corners[1][1], gz[1] + b.h)}`;
           // Front face: corners 2→3 base to top
           const ff = `${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[3][0], corners[3][1], gz[3])},${wIsoY(corners[3][0], corners[3][1], gz[3])} ${wIsoX(corners[3][0], corners[3][1], gz[3] + b.h)},${wIsoY(corners[3][0], corners[3][1], gz[3] + b.h)} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)}`;
-          const ctrZ = terrainH(b.gx + b.w / 2, b.gy + b.d / 2);
-          const tcx = wIsoX(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
-          const tcy = wIsoY(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
+          const ctrZ = terrainH(sgx + b.w / 2, b.gy + b.d / 2);
+          const tcx = wIsoX(sgx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
+          const tcy = wIsoY(sgx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
           return /*#__PURE__*/React.createElement("g", {
             key: `bld-${bi}`
           }, /*#__PURE__*/React.createElement("polygon", {
@@ -13212,63 +13285,314 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700
           }, b.label));
-        }), time > 0.1 && Array.from({
-          length: 10
-        }, (_, i) => {
-          const tt = Math.max(0, progress - i * 0.035);
-          const tw = Math.sin(tt * 30 * 0.7) * 4 + Math.sin(tt * 30 * 1.3) * 2;
-          const th = Math.sin(tt * 30 * 0.5) * 3 + Math.cos(tt * 30 * 0.9) * 1.5;
-          const tgx = 10 + tt * 75 + tw + Math.sin(tt * Math.PI * 2) * 6;
-          const tgy = 85 - tt * 65 + th - Math.sin(tt * Math.PI * 1.5) * 5;
-          const tgz = terrainH(tgx, tgy);
-          return /*#__PURE__*/React.createElement("circle", {
-            key: `trail-${i}`,
-            cx: wIsoX(tgx, tgy, tgz),
-            cy: wIsoY(tgx, tgy, tgz),
+        }), projectiles.map((proj, pi) => {
+          const t = proj.phase / proj.duration;
+          if (t > 1) return null;
+          const sx = wIsoX(proj.sx, proj.sy, mechGz + 6);
+          const sy = wIsoY(proj.sx, proj.sy, mechGz + 6);
+          const tx2 = wIsoX((proj.tx % 100 + 100) % 100, proj.ty, 0);
+          const ty2 = wIsoY((proj.tx % 100 + 100) % 100, proj.ty, 0);
+          const midX = (sx + tx2) / 2;
+          const midY = Math.min(sy, ty2) - 35 - pi * 8;
+          const cx2 = sx + (tx2 - sx) * t;
+          const cy2 = sy + (ty2 - sy) * t + (midY - sy) * 4 * t * (1 - t);
+          return /*#__PURE__*/React.createElement("g", {
+            key: `proj-${pi}`
+          }, /*#__PURE__*/React.createElement("path", {
+            d: `M ${sx} ${sy} Q ${midX} ${midY} ${tx2} ${ty2}`,
+            fill: "none",
+            stroke: proj.color,
+            strokeWidth: 0.6,
+            opacity: 0.2,
+            strokeDasharray: "3,4"
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: cx2,
+            cy: cy2,
             r: 2.5,
+            fill: proj.color,
+            opacity: 0.9
+          }, /*#__PURE__*/React.createElement("animate", {
+            attributeName: "r",
+            values: "2;3.5;2",
+            dur: "0.3s",
+            repeatCount: "indefinite"
+          })), /*#__PURE__*/React.createElement("circle", {
+            cx: cx2,
+            cy: cy2,
+            r: 6,
+            fill: proj.color,
+            opacity: 0.15,
+            filter: "url(#glow)"
+          }), t > 0.9 && /*#__PURE__*/React.createElement("circle", {
+            cx: tx2,
+            cy: ty2,
+            r: 4 + (t - 0.9) * 40,
+            fill: proj.color,
+            opacity: Math.max(0, 0.4 - (t - 0.9) * 4),
+            filter: "url(#glow)"
+          }));
+        }), drones.map((dr, di) => {
+          const shadowX = wIsoX(dr.gx, dr.gy, 0);
+          const shadowY = wIsoY(dr.gx, dr.gy, 0);
+          return /*#__PURE__*/React.createElement("ellipse", {
+            key: `ds-${di}`,
+            cx: shadowX,
+            cy: shadowY,
+            rx: dr.size * 2.5,
+            ry: dr.size * 1.2,
+            fill: "rgba(0,0,0,0.25)"
+          });
+        }), time > 0.1 && (() => {
+          const ms = mechScale;
+          const mx2 = mpx,
+            my2 = mpy + bodyBob * ms;
+          // Iso helper for mech parts (relative to mech center)
+          const mIso = (dx, dz) => [mx2 + dx * ms * 0.866, my2 - dz * ms + dx * ms * 0.5];
+          // ── LEG LEFT (front-left in iso) ──
+          const llBase = mIso(-3, 0 + leftLegLift);
+          const llTop = mIso(-3, 5 + leftLegLift * 0.3);
+          const llFoot = mIso(-3.5, -1 + leftLegLift * 0.8);
+          // ── LEG RIGHT (back-right in iso) ──
+          const rlBase = mIso(3, 0 + rightLegLift);
+          const rlTop = mIso(3, 5 + rightLegLift * 0.3);
+          const rlFoot = mIso(3.5, -1 + rightLegLift * 0.8);
+          // ── TORSO ──
+          const torsoBase = 6 + bodyBob;
+          const torsoShift = torsoYaw * 3;
+          const tw = 6,
+            th = 5;
+          // Torso as an isometric box (top face + front face + side face)
+          const tl = mIso(-tw / 2 + torsoShift, torsoBase + th);
+          const tr = mIso(tw / 2 + torsoShift, torsoBase + th);
+          const br = mIso(tw / 2 + torsoShift, torsoBase);
+          const bl2 = mIso(-tw / 2 + torsoShift, torsoBase);
+          // Top face offset (depth illusion)
+          const tlUp = [tl[0], tl[1] - 2 * ms];
+          const trUp = [tr[0], tr[1] - 2 * ms];
+          // ── WEAPON ARMS ──
+          const laBase = mIso(-tw / 2 - 1 + torsoShift, torsoBase + th - 1);
+          const laTip = mIso(-tw / 2 - 5 + torsoShift, torsoBase + th + 1);
+          const raBase = mIso(tw / 2 + 1 + torsoShift, torsoBase + th - 1);
+          const raTip = mIso(tw / 2 + 5 + torsoShift, torsoBase + th + 1);
+          // Muzzle flash
+          const firing = Math.sin(time * 7) > 0.85;
+          // ── COCKPIT ──
+          const cockpit = mIso(torsoShift, torsoBase + th + 2.5);
+          // ── THRUSTER GLOW ──
+          const thrusterL = mIso(-2 + torsoShift, torsoBase - 0.5);
+          const thrusterR = mIso(2 + torsoShift, torsoBase - 0.5);
+          const thrusterIntensity = 0.4 + Math.sin(time * 12) * 0.2;
+          return /*#__PURE__*/React.createElement("g", null, (() => {
+            const cR = coneLen;
+            const lx = mechGx + Math.sin(viewYaw - fovHalf) * cR;
+            const ly = mechGy - Math.cos(viewYaw - fovHalf) * cR;
+            const rx = mechGx + Math.sin(viewYaw + fovHalf) * cR;
+            const ry = mechGy - Math.cos(viewYaw + fovHalf) * cR;
+            const lz = terrainH(lx, ly),
+              rz = terrainH(rx, ry);
+            return /*#__PURE__*/React.createElement("polygon", {
+              points: `${mpx},${mpy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
+              fill: "rgba(0,255,238,0.12)",
+              stroke: "rgba(0,255,238,0.35)",
+              strokeWidth: 0.8
+            });
+          })(), /*#__PURE__*/React.createElement("ellipse", {
+            cx: thrusterL[0],
+            cy: thrusterL[1],
+            rx: 2 * ms,
+            ry: 1.2 * ms,
+            fill: "#ff6633",
+            opacity: thrusterIntensity * 0.6,
+            filter: "url(#glow)"
+          }), /*#__PURE__*/React.createElement("ellipse", {
+            cx: thrusterR[0],
+            cy: thrusterR[1],
+            rx: 2 * ms,
+            ry: 1.2 * ms,
+            fill: "#ff6633",
+            opacity: thrusterIntensity * 0.6,
+            filter: "url(#glow)"
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: llFoot[0],
+            y1: llFoot[1],
+            x2: llBase[0],
+            y2: llBase[1],
+            stroke: "#668899",
+            strokeWidth: 3 * ms,
+            strokeLinecap: "round"
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: llBase[0],
+            y1: llBase[1],
+            x2: llTop[0],
+            y2: llTop[1],
+            stroke: "#7799aa",
+            strokeWidth: 2.5 * ms,
+            strokeLinecap: "round"
+          }), /*#__PURE__*/React.createElement("ellipse", {
+            cx: llFoot[0],
+            cy: llFoot[1],
+            rx: 2.5 * ms,
+            ry: 1 * ms,
+            fill: "#556677",
+            stroke: "#7799aa",
+            strokeWidth: 0.5
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: rlFoot[0],
+            y1: rlFoot[1],
+            x2: rlBase[0],
+            y2: rlBase[1],
+            stroke: "#556677",
+            strokeWidth: 3 * ms,
+            strokeLinecap: "round"
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: rlBase[0],
+            y1: rlBase[1],
+            x2: rlTop[0],
+            y2: rlTop[1],
+            stroke: "#668899",
+            strokeWidth: 2.5 * ms,
+            strokeLinecap: "round"
+          }), /*#__PURE__*/React.createElement("ellipse", {
+            cx: rlFoot[0],
+            cy: rlFoot[1],
+            rx: 2.5 * ms,
+            ry: 1 * ms,
+            fill: "#445566",
+            stroke: "#668899",
+            strokeWidth: 0.5
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${bl2[0]},${bl2[1]} ${br[0]},${br[1]} ${tr[0]},${tr[1]} ${tl[0]},${tl[1]}`,
+            fill: "#3a5a6a",
+            stroke: "#5a8a9a",
+            strokeWidth: 0.8
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${tl[0]},${tl[1]} ${tr[0]},${tr[1]} ${trUp[0]},${trUp[1]} ${tlUp[0]},${tlUp[1]}`,
+            fill: "#4a7a8a",
+            stroke: "#6aaa",
+            strokeWidth: 0.6
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: (bl2[0] + tl[0]) / 2,
+            y1: (bl2[1] + tl[1]) / 2,
+            x2: (br[0] + tr[0]) / 2,
+            y2: (br[1] + tr[1]) / 2,
+            stroke: "#44ffaa",
+            strokeWidth: 1,
+            opacity: 0.6
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: laBase[0],
+            y1: laBase[1],
+            x2: laTip[0],
+            y2: laTip[1],
+            stroke: "#7799aa",
+            strokeWidth: 2 * ms,
+            strokeLinecap: "round"
+          }), firing && /*#__PURE__*/React.createElement("circle", {
+            cx: laTip[0],
+            cy: laTip[1],
+            r: 3 * ms,
+            fill: "#ff4444",
+            opacity: 0.8,
+            filter: "url(#glow)"
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: raBase[0],
+            y1: raBase[1],
+            x2: raTip[0],
+            y2: raTip[1],
+            stroke: "#7799aa",
+            strokeWidth: 2 * ms,
+            strokeLinecap: "round"
+          }), firing && /*#__PURE__*/React.createElement("circle", {
+            cx: raTip[0],
+            cy: raTip[1],
+            r: 3 * ms,
+            fill: "#ff4444",
+            opacity: 0.8,
+            filter: "url(#glow)"
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${cockpit[0]},${cockpit[1] - 2.5 * ms} ${cockpit[0] + 2.5 * ms},${cockpit[1] + 0.5 * ms} ${cockpit[0] - 2.5 * ms},${cockpit[1] + 0.5 * ms}`,
+            fill: "#225566",
+            stroke: "#44ddff",
+            strokeWidth: 0.8,
+            opacity: 0.9
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: cockpit[0],
+            cy: cockpit[1] - 0.5 * ms,
+            r: 1 * ms,
+            fill: "#44ddff",
+            opacity: 0.7
+          }), /*#__PURE__*/React.createElement("ellipse", {
+            cx: mx2,
+            cy: my2 + 2 * ms,
+            rx: 5 * ms,
+            ry: 2 * ms,
             fill: "#44ffaa",
-            opacity: Math.max(0, 0.4 - i * 0.035)
-          });
-        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
-          const cR = coneLen;
-          const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;
-          const ly = pgy - Math.cos(viewYaw - fovHalf) * cR;
-          const rx = pgx + Math.sin(viewYaw + fovHalf) * cR;
-          const ry = pgy - Math.cos(viewYaw + fovHalf) * cR;
-          const lz = terrainH(lx, ly),
-            rz = terrainH(rx, ry);
-          return /*#__PURE__*/React.createElement("polygon", {
-            points: `${ppx},${ppy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
-            fill: "rgba(0,255,238,0.15)",
-            stroke: "rgba(0,255,238,0.4)",
-            strokeWidth: 1.0
-          });
-        })(), /*#__PURE__*/React.createElement("polygon", {
-          points: `${ppx},${ppy - 8} ${ppx + 5.5},${ppy} ${ppx},${ppy + 5} ${ppx - 5.5},${ppy}`,
-          fill: "#44ffaa",
-          stroke: "#88ffdd",
-          strokeWidth: 1.2,
-          opacity: 0.9
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: ppx,
-          cy: ppy,
-          r: 9,
-          fill: "none",
-          stroke: "#44ffaa",
-          strokeWidth: 0.7,
-          opacity: 0.3
-        }, /*#__PURE__*/React.createElement("animate", {
-          attributeName: "r",
-          values: "8;15;8",
-          dur: "2s",
-          repeatCount: "indefinite"
-        }), /*#__PURE__*/React.createElement("animate", {
-          attributeName: "opacity",
-          values: "0.3;0.05;0.3",
-          dur: "2s",
-          repeatCount: "indefinite"
-        }))), (() => {
-          const towerGx = 60,
+            opacity: 0.1,
+            filter: "url(#glow)"
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: mx2,
+            cy: my2,
+            r: 12 * ms,
+            fill: "none",
+            stroke: "#44ffaa",
+            strokeWidth: 0.7,
+            opacity: 0.3
+          }, /*#__PURE__*/React.createElement("animate", {
+            attributeName: "r",
+            values: `${10 * ms};${18 * ms};${10 * ms}`,
+            dur: "2s",
+            repeatCount: "indefinite"
+          }), /*#__PURE__*/React.createElement("animate", {
+            attributeName: "opacity",
+            values: "0.3;0.05;0.3",
+            dur: "2s",
+            repeatCount: "indefinite"
+          })));
+        })(), drones.map((dr, di) => {
+          const dx = wIsoX(dr.gx, dr.gy, dr.alt);
+          const dy = wIsoY(dr.gx, dr.gy, dr.alt);
+          const rotorSpin = (nowMs * 0.02 + di * 120) % 360;
+          const rs = dr.size;
+          return /*#__PURE__*/React.createElement("g", {
+            key: `drone-${di}`
+          }, /*#__PURE__*/React.createElement("polygon", {
+            points: `${dx},${dy - rs * 1.8} ${dx + rs * 1.2},${dy} ${dx},${dy + rs * 0.8} ${dx - rs * 1.2},${dy}`,
+            fill: dr.color,
+            opacity: 0.7,
+            stroke: dr.color,
+            strokeWidth: 0.5
+          }), /*#__PURE__*/React.createElement("ellipse", {
+            cx: dx,
+            cy: dy - rs * 1.2,
+            rx: rs * 2.5,
+            ry: rs * 0.6,
+            fill: "none",
+            stroke: dr.color,
+            strokeWidth: 0.5,
+            opacity: 0.35,
+            transform: `rotate(${rotorSpin} ${dx} ${dy - rs * 1.2})`
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: dx,
+            y1: dy,
+            x2: wIsoX(dr.gx, dr.gy, 0),
+            y2: wIsoY(dr.gx, dr.gy, 0),
+            stroke: dr.color,
+            strokeWidth: 0.3,
+            opacity: 0.15,
+            strokeDasharray: "2,3"
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: dx,
+            cy: dy - rs,
+            r: 0.8,
+            fill: dr.color,
+            opacity: 0.9
+          }, /*#__PURE__*/React.createElement("animate", {
+            attributeName: "opacity",
+            values: "0.9;0.2;0.9",
+            dur: `${1.2 + di * 0.3}s`,
+            repeatCount: "indefinite"
+          })));
+        }), (() => {
+          const towerGx = scrollGx(60),
             towerGy = 50;
           const towerBaseZ = terrainH(towerGx, towerGy);
           const towerH = 16;

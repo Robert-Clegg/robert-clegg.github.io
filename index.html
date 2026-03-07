@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v285";
+  var v = "v286";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v285 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v286 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v285"), /*#__PURE__*/React.createElement("span", {
+  }, "v286"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8031,7 +8031,7 @@ function TemporalReplay() {
     }, unit, " ", e.data.switchMethod === "DeathRespawn" ? "💀" : "");
   })))), tab === "career" && (() => {
     const W = 1340,
-      H = 700;
+      H = 870;
     // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
     // Derived features and channels are positioned independently (left of colX[2])
     const colX = [4, 108, 316, 533, 750, 967, 1185];
@@ -8107,10 +8107,10 @@ function TemporalReplay() {
       sk_myco: "bioMyco",
       sk_win: "bioWin"
     };
-    const FIREHOSE_KEYS = ["mouseX", "mouseY", "velocity", "LMB", "RMB", "scroll", "W", "A", "S", "D", "R", "E", "SPC", "F", "unitHP", "unitPos", "enemyDist", "nodeDist", "teamPop", "cellCount", "nodeOwner", "lookYaw", "lookPitch", "zoomLvl", "viewMode", "scanRate", "heading", "mechSpeed", "turnRate", "torsoYaw", "divergeAngle", "envTemp", "envAlt", "envHumid", "envWind", "envO2", "envCO2", "envPress", "envPartic", "envTract", "envGrade", "envDepth", "envVis", "envLight", "envEMI", "envRad", "envSeism"];
+    const FIREHOSE_KEYS = ["mouseX", "mouseY", "velocity", "LMB", "RMB", "scroll", "W", "A", "S", "D", "R", "E", "SPC", "F", "unitHP", "unitPos", "enemyDist", "nodeDist", "teamPop", "cellCount", "nodeOwner", "lookYaw", "lookPitch", "zoomLvl", "viewMode", "scanRate", "heading", "mechSpeed", "turnRate", "torsoYaw", "divergeAngle", "weather"];
     // Small primes → fast cycling (7-31ms range ≈ 30-140Hz, matching 16ms sample rate)
     // Each channel has its own rhythm so they never fully sync
-    const PRIMES = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233];
+    const PRIMES = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151];
     const FIREHOSE_RECENCY = 4.0; // seconds — channel must have real data within this window to flicker
     // NOTE: firehoseSet computed AFTER inputNodeFire is populated (see below)
     let firehoseSet = new Set();
@@ -8360,6 +8360,120 @@ function TemporalReplay() {
       feeds: ["ev_dock", "ev_replicate", "ev_emit", "ev_farSwitch"],
       color: "#ff8833",
       row: 14.1
+    },
+    // Weather / Environmental derivatives — fed by single Weather data channel
+    {
+      id: "df_temp",
+      label: "Temp",
+      sources: ["weather"],
+      feeds: ["ev_nearSwitch", "ev_wasd"],
+      color: "#ff8844",
+      row: 15.2
+    }, {
+      id: "df_alt",
+      label: "Altitude",
+      sources: ["weather"],
+      feeds: ["ev_zoomOut", "ev_farSwitch"],
+      color: "#ffaa44",
+      row: 15.7
+    }, {
+      id: "df_humid",
+      label: "Humidity",
+      sources: ["weather"],
+      feeds: ["ev_nearSwitch"],
+      color: "#44aaff",
+      row: 16.2
+    }, {
+      id: "df_wind",
+      label: "Wind",
+      sources: ["weather"],
+      feeds: ["ev_wasd", "ev_mouseFollow"],
+      color: "#88ccff",
+      row: 16.7
+    }, {
+      id: "df_o2",
+      label: "O\u2082",
+      sources: ["weather"],
+      feeds: ["ev_death", "ev_nearSwitch"],
+      color: "#44ff88",
+      row: 17.2
+    }, {
+      id: "df_co2",
+      label: "CO\u2082",
+      sources: ["weather"],
+      feeds: ["ev_death"],
+      color: "#ff6644",
+      row: 17.7
+    }, {
+      id: "df_pressure",
+      label: "Pressure",
+      sources: ["weather"],
+      feeds: ["ev_wasd"],
+      color: "#cc88ff",
+      row: 18.2
+    }, {
+      id: "df_partic",
+      label: "Particulate",
+      sources: ["weather"],
+      feeds: ["ev_zoomIn", "ev_nearSwitch"],
+      color: "#aa8866",
+      row: 18.7
+    }, {
+      id: "df_traction",
+      label: "Traction",
+      sources: ["weather"],
+      feeds: ["ev_wasd", "ev_nearSwitch"],
+      color: "#88ff44",
+      row: 19.2
+    }, {
+      id: "df_grade",
+      label: "Grade",
+      sources: ["weather"],
+      feeds: ["ev_wasd", "ev_zoomOut"],
+      color: "#ffcc44",
+      row: 19.7
+    }, {
+      id: "df_depth",
+      label: "Depth",
+      sources: ["weather"],
+      feeds: ["ev_nearSwitch", "ev_dock"],
+      color: "#4488cc",
+      row: 20.2
+    }, {
+      id: "df_vis",
+      label: "Visibility",
+      sources: ["weather"],
+      feeds: ["ev_zoomIn", "ev_zoomOut"],
+      color: "#aaccff",
+      row: 20.7
+    }, {
+      id: "df_light",
+      label: "Light",
+      sources: ["weather"],
+      feeds: ["ev_zoomIn"],
+      color: "#ffee66",
+      row: 21.2
+    }, {
+      id: "df_emi",
+      label: "EMI",
+      sources: ["weather"],
+      feeds: ["ev_farSwitch", "ev_midSwitch"],
+      color: "#ff44aa",
+      row: 21.7
+    }, {
+      id: "df_rad",
+      label: "Radiation",
+      sources: ["weather"],
+      feeds: ["ev_death", "ev_nearSwitch"],
+      color: "#ff4444",
+      row: 22.2
+    }, {
+      id: "df_seismic",
+      label: "Seismic",
+      sources: ["weather"],
+      feeds: ["ev_nearSwitch", "ev_wasd"],
+      color: "#ff8800",
+      row: 22.7
     }];
     const getDfPos = row => ({
       x: dfColX,
@@ -8443,12 +8557,6 @@ function TemporalReplay() {
       sub: "game state",
       color: "#00ddff",
       rawTypes: ["world"]
-    }, {
-      id: "env",
-      label: "ENV",
-      sub: "sensors",
-      color: "#ffaa00",
-      rawTypes: ["env"]
     }];
     const mouseH = 55;
     const keyH = 55;
@@ -8532,14 +8640,7 @@ function TemporalReplay() {
       y: rowY3,
       w: worldW,
       h: worldH
-    },
-    // 7: WORLD
-    {
-      x: worldLeftX,
-      y: rowY3,
-      w: 0,
-      h: 0
-    } // 8: ENV (no box — SE edge is visual)
+    } // 7: WORLD
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -9181,87 +9282,12 @@ function TemporalReplay() {
       fireKey: "nodeOwner",
       color: "#aaddff"
     },
-    // ENV container (boxIdx 8) — 16 environmental sensor channels
+    // ENV — single Weather data channel
     {
-      boxIdx: 8,
-      label: "Temp",
-      fireKey: "envTemp",
-      color: "#ff8844"
-    }, {
-      boxIdx: 8,
-      label: "Alt",
-      fireKey: "envAlt",
-      color: "#ffaa44"
-    }, {
-      boxIdx: 8,
-      label: "Humid",
-      fireKey: "envHumid",
-      color: "#44aaff"
-    }, {
-      boxIdx: 8,
-      label: "Wind",
-      fireKey: "envWind",
-      color: "#88ccff"
-    }, {
-      boxIdx: 8,
-      label: "O2",
-      fireKey: "envO2",
-      color: "#44ff88"
-    }, {
-      boxIdx: 8,
-      label: "CO2",
-      fireKey: "envCO2",
-      color: "#ff6644"
-    }, {
-      boxIdx: 8,
-      label: "Press",
-      fireKey: "envPress",
-      color: "#cc88ff"
-    }, {
-      boxIdx: 8,
-      label: "Partic",
-      fireKey: "envPartic",
-      color: "#aa8866"
-    }, {
-      boxIdx: 8,
-      label: "Tract",
-      fireKey: "envTract",
-      color: "#88ff44"
-    }, {
-      boxIdx: 8,
-      label: "Grade",
-      fireKey: "envGrade",
-      color: "#ffcc44"
-    }, {
-      boxIdx: 8,
-      label: "Depth",
-      fireKey: "envDepth",
-      color: "#4488cc"
-    }, {
-      boxIdx: 8,
-      label: "Vis",
-      fireKey: "envVis",
-      color: "#aaccff"
-    }, {
-      boxIdx: 8,
-      label: "Light",
-      fireKey: "envLight",
-      color: "#ffee66"
-    }, {
-      boxIdx: 8,
-      label: "EMI",
-      fireKey: "envEMI",
-      color: "#ff44aa"
-    }, {
-      boxIdx: 8,
-      label: "Rad",
-      fireKey: "envRad",
-      color: "#ff4444"
-    }, {
-      boxIdx: 8,
-      label: "Seism",
-      fireKey: "envSeism",
-      color: "#ff8800"
+      boxIdx: 7,
+      label: "Weather",
+      fireKey: "weather",
+      color: "#ffaa00"
     }];
     const inputNodeH = 14; // half game event height (28/2)
     const inputNodeGap = 1;
@@ -12997,145 +13023,8 @@ function TemporalReplay() {
               strokeDasharray: time > 0.1 ? "none" : "2,3"
             }));
           });
-        })(), (() => {
-          // SE edge: [100,0] (east) to [100,100] (south)
-          const envChannels = [{
-            t: 0.03,
-            dataIdx: 32,
-            color: "#ff8844",
-            label: "Temp"
-          }, {
-            t: 0.09,
-            dataIdx: 33,
-            color: "#ffaa44",
-            label: "Alt"
-          }, {
-            t: 0.15,
-            dataIdx: 34,
-            color: "#44aaff",
-            label: "Humid"
-          }, {
-            t: 0.21,
-            dataIdx: 35,
-            color: "#88ccff",
-            label: "Wind"
-          }, {
-            t: 0.27,
-            dataIdx: 36,
-            color: "#44ff88",
-            label: "O2"
-          }, {
-            t: 0.33,
-            dataIdx: 37,
-            color: "#ff6644",
-            label: "CO2"
-          }, {
-            t: 0.39,
-            dataIdx: 38,
-            color: "#cc88ff",
-            label: "Press"
-          }, {
-            t: 0.45,
-            dataIdx: 39,
-            color: "#aa8866",
-            label: "Partic"
-          }, {
-            t: 0.51,
-            dataIdx: 40,
-            color: "#88ff44",
-            label: "Tract"
-          }, {
-            t: 0.57,
-            dataIdx: 41,
-            color: "#ffcc44",
-            label: "Grade"
-          }, {
-            t: 0.63,
-            dataIdx: 42,
-            color: "#4488cc",
-            label: "Depth"
-          }, {
-            t: 0.69,
-            dataIdx: 43,
-            color: "#aaccff",
-            label: "Vis"
-          }, {
-            t: 0.75,
-            dataIdx: 44,
-            color: "#ffee66",
-            label: "Light"
-          }, {
-            t: 0.81,
-            dataIdx: 45,
-            color: "#ff44aa",
-            label: "EMI"
-          }, {
-            t: 0.87,
-            dataIdx: 46,
-            color: "#ff4444",
-            label: "Rad"
-          }, {
-            t: 0.93,
-            dataIdx: 47,
-            color: "#ff8800",
-            label: "Seism"
-          }];
-          // Circuit board bus: vertical line just left of DATA column
-          const busX = inputNodeX - 4;
-          return envChannels.map((ec, ci) => {
-            // Point on SE edge: lerp from [100,0] to [100,100]
-            const gx = 100,
-              gy = ec.t * 100;
-            const epx = wIsoX(gx, gy, 0);
-            const epy = wIsoY(gx, gy, 0);
-            const dataY = getInputNodeY(ec.dataIdx) + inputNodeH / 2;
-            const dataX = inputNodeX;
-            const bright = time > 0.1 ? Math.min(1, COL_RAMP.data || 0.05) : 0;
-            const pulse = time > 0.1 ? 0.12 + Math.sin(nowMs * 0.004 + ci * 1.3) * 0.08 : 0;
-            const op = pulse + bright * 0.12;
-            const sw = 0.4 + bright * 0.4;
-            // Circuit board route: SE dot → RIGHT to bus → UP to dataY → RIGHT to DATA node
-            return /*#__PURE__*/React.createElement("g", {
-              key: `se-${ci}`
-            }, /*#__PURE__*/React.createElement("circle", {
-              cx: epx,
-              cy: epy,
-              r: 2.5,
-              fill: ec.color,
-              opacity: 0.3 + bright * 0.5
-            }), /*#__PURE__*/React.createElement("text", {
-              x: epx + 5,
-              y: epy + 3,
-              fill: ec.color,
-              fontSize: 4,
-              fontFamily: mono,
-              fontWeight: 700,
-              opacity: 0.5 + bright * 0.3
-            }, ec.label), /*#__PURE__*/React.createElement("path", {
-              d: `M${epx},${epy} L${busX},${epy} L${busX},${dataY} L${dataX},${dataY}`,
-              fill: "none",
-              stroke: ec.color,
-              strokeWidth: sw,
-              opacity: op
-            }), /*#__PURE__*/React.createElement("circle", {
-              cx: busX,
-              cy: epy,
-              r: 1,
-              fill: ec.color,
-              opacity: op * 1.5
-            }), /*#__PURE__*/React.createElement("circle", {
-              cx: busX,
-              cy: dataY,
-              r: 1,
-              fill: ec.color,
-              opacity: op * 1.5
-            }));
-          });
         })());
       }
-
-      // ENV container — no visual box (SE edge is the visual)
-      if (box.id === "env") return null;
 
       // — Default box rendering (fallback) —
       return /*#__PURE__*/React.createElement("g", {

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v265";
+  var v = "v266";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v265 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v266 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v265"), /*#__PURE__*/React.createElement("span", {
+  }, "v266"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12631,40 +12631,20 @@ function TemporalReplay() {
         const coneLen = 18;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: worldX - 3,
-          y: y - 3,
-          width: worldW + 6,
-          height: boxH + 6,
-          rx: 10,
-          fill: "none",
-          stroke: "#00ddff30",
-          strokeWidth: 4,
-          filter: "url(#glow)"
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: worldX,
-          y: y,
-          width: worldW,
-          height: boxH,
-          rx: 8,
-          fill: "#00ddff12",
-          stroke: "#00ddffcc",
+        }, /*#__PURE__*/React.createElement("polygon", {
+          points: gp,
+          fill: "rgba(20,40,30,0.6)",
+          stroke: "#00ddff",
           strokeWidth: 1.2
         }), /*#__PURE__*/React.createElement("text", {
-          x: worldX + worldW / 2,
-          y: y + 10,
-          textAnchor: "middle",
+          x: wIsoX(0, 0, 0) + 4,
+          y: wIsoY(0, 0, 0) - 4,
           fill: "#00ddff",
           fontSize: 7,
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1.5
-        }, "WORLD"), /*#__PURE__*/React.createElement("polygon", {
-          points: gp,
-          fill: "rgba(20,40,30,0.6)",
-          stroke: "rgba(255,255,255,0.2)",
-          strokeWidth: 0.6
-        }), [20, 40, 60, 80].map(g => /*#__PURE__*/React.createElement("g", {
+        }, "WORLD"), [20, 40, 60, 80].map(g => /*#__PURE__*/React.createElement("g", {
           key: `wg-${g}`
         }, /*#__PURE__*/React.createElement("line", {
           x1: wIsoX(g, 0, 0),

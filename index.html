@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v255";
+  var v = "v256";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v255 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v256 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v255"), /*#__PURE__*/React.createElement("span", {
+  }, "v256"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12177,7 +12177,7 @@ function TemporalReplay() {
 
       // — CELLS box: minimap + yellow kill splashes + population bars —
 
-      // ═══ VIEW container — compass rose + look direction indicators ═══
+      // ═══ VIEW container — compass rose + FOV sweep ═══
       if (box.id === "view") {
         const vx = bx,
           vy = y,
@@ -12186,13 +12186,26 @@ function TemporalReplay() {
         const vcx = vx + vw / 2,
           vcy = vy + 14 + (vh - 14) / 2;
         const vr = Math.min(vw, vh - 16) / 2 - 6;
-        // Simulated look angles — driven by game events when available
-        const lookYaw = time > 0.1 ? Math.sin(time * 0.7) * 140 + Math.sin(time * 1.3) * 40 : 0;
-        const lookPitch = time > 0.1 ? Math.sin(time * 0.5) * 20 - 5 : 0;
+        // Simulated look: micro-jitter base + occasional large saccades
+        // nowMs gives frame-rate jitter, time gives slower drift
+        const microJitterY = time > 0.1 ? Math.sin(nowMs * 0.013) * 3.5 + Math.sin(nowMs * 0.0071) * 2 + Math.cos(nowMs * 0.019) * 1.5 : 0;
+        const microJitterP = time > 0.1 ? Math.sin(nowMs * 0.011) * 1.8 + Math.cos(nowMs * 0.0083) * 1.2 : 0;
+        // Saccades: sharp jumps every ~2-5s, hold for ~0.5s then drift back
+        const saccadePhase = time > 0.1 ? time % 3.7 : 99;
+        const saccadeActive = saccadePhase < 0.4;
+        const saccadeYaw = saccadeActive ? Math.sin(Math.floor(time / 3.7) * 7.3) * 55 : 0;
+        const saccadePitch = saccadeActive ? Math.sin(Math.floor(time / 3.7) * 4.1) * 15 : 0;
+        // Slow drift base (heading changes over time)
+        const driftYaw = time > 0.1 ? Math.sin(time * 0.23) * 80 + Math.sin(time * 0.11) * 40 : 0;
+        const driftPitch = time > 0.1 ? Math.sin(time * 0.17) * 12 - 3 : 0;
+        const lookYaw = driftYaw + microJitterY + saccadeYaw;
+        const lookPitch = driftPitch + microJitterP + saccadePitch;
         const yawRad = lookYaw * Math.PI / 180;
         const zoomLvl = time > 0.1 ? 0.5 + Math.sin(time * 0.3) * 0.3 : 0.5;
         const isTPP = time > 0.1 && Math.sin(time * 0.15) > 0;
-        const scanIntensity = time > 0.1 ? Math.abs(Math.cos(time * 1.1)) : 0;
+        // Scan intensity from jitter magnitude
+        const jitterMag = Math.abs(microJitterY) + (saccadeActive ? 20 : 0);
+        const scanIntensity = time > 0.1 ? Math.min(1, jitterMag / 15) : 0;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
@@ -12287,21 +12300,43 @@ function TemporalReplay() {
         })());
       }
 
-      // ═══ MOVEMENT container — 3-vector heading display ═══
+      // ═══ MOVEMENT container — 3-vector heading + numeric readout ═══
       if (box.id === "movement") {
         const mx = bx,
           my = y,
           mw = bw,
           mh = boxH;
-        const mcx = mx + mw / 2,
+        // Compass rose shifted left to make room for numeric panel
+        const compassR = Math.min(mw * 0.45, (mh - 16) / 2) - 4;
+        const mcx = mx + compassR + 6,
           mcy = my + 14 + (mh - 14) / 2;
-        const mr = Math.min(mw, mh - 16) / 2 - 6;
-        // Simulated vectors — driven by game events when available
-        const legsYaw = time > 0.1 ? (Math.sin(time * 0.4) * 60 + time * 15) % 360 : 0;
-        const torsoYaw = time > 0.1 ? legsYaw + Math.sin(time * 0.9) * 45 : 0;
-        const lookYaw = time > 0.1 ? legsYaw + Math.sin(time * 1.3) * 70 + Math.sin(time * 0.5) * 30 : 0;
-        const spd = time > 0.1 ? Math.abs(Math.sin(time * 0.6)) * 25 : 0;
+        const mr = compassR;
+        // Numeric panel on right
+        const numX = mx + compassR * 2 + 14;
+        const numW = mw - (compassR * 2 + 16);
+        // Jittery simulation — high-frequency noise on top of slow drift
+        const jit = seed => Math.sin(nowMs * 0.017 + seed * 3.1) * 2.5 + Math.sin(nowMs * 0.0091 + seed * 7.7) * 1.5 + Math.cos(nowMs * 0.023 + seed * 5.3) * 1.0;
+        const legsBase = time > 0.1 ? (Math.sin(time * 0.4) * 60 + time * 15) % 360 : 0;
+        const legsYaw = legsBase + jit(1);
+        const torsoBase = time > 0.1 ? legsBase + Math.sin(time * 0.9) * 45 : 0;
+        const torsoYaw = torsoBase + jit(2) * 1.8;
+        const lookBase = time > 0.1 ? legsBase + Math.sin(time * 1.3) * 70 + Math.sin(time * 0.5) * 30 : 0;
+        const lookYaw = lookBase + jit(3) * 2.5;
+        // Speed with jitter
+        const spdBase = time > 0.1 ? Math.abs(Math.sin(time * 0.6)) * 25 : 0;
+        const spd = Math.max(0, spdBase + jit(4) * 1.5);
         const maxSpd = 30;
+        // Forces — changing with terrain and speed
+        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(time * 0.35) * 28 + jit(5) * 2) : 0;
+        const mechMass = 30000; // kg
+        const g = 9.81;
+        const mgForce = mechMass * g;
+        const thetaRad = slopeAngle * Math.PI / 180;
+        const normalF = mgForce * Math.cos(thetaRad);
+        const slopeF = mgForce * Math.sin(thetaRad);
+        const thrustF = time > 0.1 ? Math.sin(time * 0.8) * 80000 + jit(6) * 15000 : 0;
+        const accel = time > 0.1 ? (thrustF - slopeF) / mechMass + jit(7) * 0.3 : 0;
+        const turnRate = time > 0.1 ? Math.sin(time * 1.1) * 12 + jit(8) * 3 : 0;
         const legsRad = legsYaw * Math.PI / 180;
         const torsoRad = torsoYaw * Math.PI / 180;
         const lookRad = lookYaw * Math.PI / 180;
@@ -12331,7 +12366,7 @@ function TemporalReplay() {
           stroke: `rgba(68,255,170,${0.3 + containerBr * 0.5})`,
           strokeWidth: 1
         }), /*#__PURE__*/React.createElement("text", {
-          x: mcx,
+          x: mx + mw / 2,
           y: my + 9,
           textAnchor: "middle",
           fill: "#44ffaa",
@@ -12356,7 +12391,7 @@ function TemporalReplay() {
         }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
           const tipX = mcx + Math.sin(legsRad) * mr * 0.8;
           const tipY = mcy - Math.cos(legsRad) * mr * 0.8;
-          const hs = 5; // arrowhead size
+          const hs = 5;
           const a1 = legsRad + Math.PI + 0.4;
           const a2 = legsRad + Math.PI - 0.4;
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
@@ -12411,7 +12446,70 @@ function TemporalReplay() {
             fill: "#00ffee",
             opacity: 0.7
           }));
-        })(), /*#__PURE__*/React.createElement("rect", {
+        })()), time > 0.1 && /*#__PURE__*/React.createElement("g", null, [{
+          label: "SPD",
+          val: spd.toFixed(1),
+          unit: "m/s",
+          color: "#44ffaa"
+        }, {
+          label: "ACC",
+          val: accel.toFixed(1),
+          unit: "m/s\u00B2",
+          color: accel > 0 ? "#44ff44" : "#ff6644"
+        }, {
+          label: "HDG",
+          val: (legsYaw % 360).toFixed(0),
+          unit: "\u00B0",
+          color: "#44ff44"
+        }, {
+          label: "TRS",
+          val: torsoDiv.toFixed(0),
+          unit: "\u00B0\u0394",
+          color: "#ffdd00"
+        }, {
+          label: "EYE",
+          val: lookDiv.toFixed(0),
+          unit: "\u00B0\u0394",
+          color: "#00ffee"
+        }, {
+          label: "\u0398",
+          val: slopeAngle.toFixed(1),
+          unit: "\u00B0",
+          color: "#ff88aa"
+        }, {
+          label: "N",
+          val: (normalF / 1000).toFixed(0),
+          unit: "kN",
+          color: "#88ffdd"
+        }, {
+          label: "F\u2225",
+          val: (slopeF / 1000).toFixed(0),
+          unit: "kN",
+          color: "#ffaa44"
+        }].map((row, ri) => {
+          const ry = my + 16 + ri * 7.5;
+          return /*#__PURE__*/React.createElement("g", {
+            key: `nr-${ri}`
+          }, /*#__PURE__*/React.createElement("text", {
+            x: numX,
+            y: ry,
+            fill: "rgba(255,255,255,0.4)",
+            fontSize: 4.5,
+            fontFamily: mono,
+            fontWeight: 700
+          }, row.label), /*#__PURE__*/React.createElement("text", {
+            x: numX + numW,
+            y: ry,
+            textAnchor: "end",
+            fill: row.color,
+            fontSize: 4.5,
+            fontFamily: mono,
+            fontWeight: 700
+          }, row.val, /*#__PURE__*/React.createElement("tspan", {
+            fill: "rgba(255,255,255,0.3)",
+            fontSize: 3.5
+          }, row.unit)));
+        })), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
           x: mx + 2,
           y: my + mh - 8,
           width: (mw - 4) * (spd / maxSpd),
@@ -12420,12 +12518,6 @@ function TemporalReplay() {
           fill: "#44ffaa",
           opacity: 0.6
         }), /*#__PURE__*/React.createElement("text", {
-          x: mx + 3,
-          y: my + mh - 3,
-          fill: "rgba(255,255,255,0.35)",
-          fontSize: 4.5,
-          fontFamily: mono
-        }, "T:", torsoDiv.toFixed(0), "\xB0 L:", lookDiv.toFixed(0), "\xB0"), /*#__PURE__*/React.createElement("text", {
           x: mx + mw - 3,
           y: my + mh - 3,
           textAnchor: "end",
@@ -12434,11 +12526,11 @@ function TemporalReplay() {
           fontFamily: mono
         }, /*#__PURE__*/React.createElement("tspan", {
           fill: "#44ff44"
-        }, "\u25CF"), "LEG ", /*#__PURE__*/React.createElement("tspan", {
+        }, "\u25B2"), "LEG ", /*#__PURE__*/React.createElement("tspan", {
           fill: "#ffdd00"
-        }, "\u25CF"), "TRS ", /*#__PURE__*/React.createElement("tspan", {
+        }, "\u25B2"), "TRS ", /*#__PURE__*/React.createElement("tspan", {
           fill: "#00ffee"
-        }, "\u25CF"), "EYE")));
+        }, "\u25B2"), "EYE"));
       }
 
       // — CELLS box: minimap + yellow kill splashes + population bars —

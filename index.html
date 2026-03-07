@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v286";
+  var v = "v287";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v286 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v287 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v286"), /*#__PURE__*/React.createElement("span", {
+  }, "v287"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8031,7 +8031,7 @@ function TemporalReplay() {
     }, unit, " ", e.data.switchMethod === "DeathRespawn" ? "💀" : "");
   })))), tab === "career" && (() => {
     const W = 1340,
-      H = 870;
+      H = 910;
     // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
     // Derived features and channels are positioned independently (left of colX[2])
     const colX = [4, 108, 316, 533, 750, 967, 1185];
@@ -8361,119 +8361,123 @@ function TemporalReplay() {
       color: "#ff8833",
       row: 14.1
     },
-    // Weather / Environmental derivatives — fed by single Weather data channel
+    // ── WEATHER group (atmospheric) ──
     {
       id: "df_temp",
       label: "Temp",
       sources: ["weather"],
       feeds: ["ev_nearSwitch", "ev_wasd"],
       color: "#ff8844",
-      row: 15.2
+      row: 15.5
     }, {
       id: "df_alt",
       label: "Altitude",
       sources: ["weather"],
       feeds: ["ev_zoomOut", "ev_farSwitch"],
       color: "#ffaa44",
-      row: 15.7
+      row: 16.0
     }, {
       id: "df_humid",
       label: "Humidity",
       sources: ["weather"],
       feeds: ["ev_nearSwitch"],
       color: "#44aaff",
-      row: 16.2
+      row: 16.5
     }, {
       id: "df_wind",
       label: "Wind",
       sources: ["weather"],
       feeds: ["ev_wasd", "ev_mouseFollow"],
       color: "#88ccff",
-      row: 16.7
+      row: 17.0
     }, {
       id: "df_o2",
       label: "O\u2082",
       sources: ["weather"],
       feeds: ["ev_death", "ev_nearSwitch"],
       color: "#44ff88",
-      row: 17.2
+      row: 17.5
     }, {
       id: "df_co2",
       label: "CO\u2082",
       sources: ["weather"],
       feeds: ["ev_death"],
       color: "#ff6644",
-      row: 17.7
+      row: 18.0
     }, {
       id: "df_pressure",
       label: "Pressure",
       sources: ["weather"],
       feeds: ["ev_wasd"],
       color: "#cc88ff",
-      row: 18.2
+      row: 18.5
     }, {
       id: "df_partic",
       label: "Particulate",
       sources: ["weather"],
       feeds: ["ev_zoomIn", "ev_nearSwitch"],
       color: "#aa8866",
-      row: 18.7
-    }, {
+      row: 19.0
+    },
+    // ── TERRAIN group (surface) ──
+    {
       id: "df_traction",
       label: "Traction",
       sources: ["weather"],
       feeds: ["ev_wasd", "ev_nearSwitch"],
       color: "#88ff44",
-      row: 19.2
+      row: 20.0
     }, {
       id: "df_grade",
       label: "Grade",
       sources: ["weather"],
       feeds: ["ev_wasd", "ev_zoomOut"],
       color: "#ffcc44",
-      row: 19.7
+      row: 20.5
     }, {
       id: "df_depth",
       label: "Depth",
       sources: ["weather"],
       feeds: ["ev_nearSwitch", "ev_dock"],
       color: "#4488cc",
-      row: 20.2
+      row: 21.0
     }, {
       id: "df_vis",
       label: "Visibility",
       sources: ["weather"],
       feeds: ["ev_zoomIn", "ev_zoomOut"],
       color: "#aaccff",
-      row: 20.7
+      row: 21.5
     }, {
       id: "df_light",
       label: "Light",
       sources: ["weather"],
       feeds: ["ev_zoomIn"],
       color: "#ffee66",
-      row: 21.2
-    }, {
+      row: 22.0
+    },
+    // ── RADIATION group (hazard) ──
+    {
       id: "df_emi",
       label: "EMI",
       sources: ["weather"],
       feeds: ["ev_farSwitch", "ev_midSwitch"],
       color: "#ff44aa",
-      row: 21.7
+      row: 23.0
     }, {
       id: "df_rad",
       label: "Radiation",
       sources: ["weather"],
       feeds: ["ev_death", "ev_nearSwitch"],
       color: "#ff4444",
-      row: 22.2
+      row: 23.5
     }, {
       id: "df_seismic",
       label: "Seismic",
       sources: ["weather"],
       feeds: ["ev_nearSwitch", "ev_wasd"],
       color: "#ff8800",
-      row: 22.7
+      row: 24.0
     }];
     const getDfPos = row => ({
       x: dfColX,
@@ -10399,7 +10403,7 @@ function TemporalReplay() {
 
     // ═══ DERIVED FEATURE NODE RENDERING ═══
     const renderDerivedFeatureNodes = () => {
-      return DERIVED_FEATURES.map(df => {
+      const nodes = DERIVED_FEATURES.map(df => {
         const pos = getDfPos(df.row);
         const activity = nodeBright[df.id] || 0;
         const extNodeGate = COL_NODE.extraction || 0;
@@ -10453,6 +10457,52 @@ function TemporalReplay() {
           fontWeight: gf > 0.3 ? 600 : 400
         }, df.label));
       });
+      // Group labels for Weather/Terrain/Radiation
+      const extRamp = COL_RAMP.extraction || 0;
+      const groupLabels = [{
+        label: "WEATHER",
+        row: 15.0,
+        color: "#ffaa44"
+      }, {
+        label: "TERRAIN",
+        row: 19.5,
+        color: "#88ff44"
+      }, {
+        label: "RADIATION",
+        row: 22.5,
+        color: "#ff4444"
+      }].map(gl => {
+        const gy = topPad + gl.row * rowH;
+        return /*#__PURE__*/React.createElement("g", {
+          key: `df-grp-${gl.label}`
+        }, /*#__PURE__*/React.createElement("line", {
+          x1: dfColX,
+          y1: gy + 2,
+          x2: dfColX + dfNodeW,
+          y2: gy + 2,
+          stroke: gl.color,
+          strokeWidth: 0.5,
+          opacity: 0.15 + extRamp * 0.3
+        }), /*#__PURE__*/React.createElement("text", {
+          x: dfColX,
+          y: gy - 1,
+          fill: gl.color,
+          fontSize: 5,
+          fontFamily: mono,
+          fontWeight: 700,
+          opacity: 0.3 + extRamp * 0.5,
+          letterSpacing: 1
+        }, gl.label), /*#__PURE__*/React.createElement("text", {
+          x: dfColX + dfNodeW,
+          y: gy - 1,
+          textAnchor: "end",
+          fill: gl.color,
+          fontSize: 4,
+          fontFamily: mono,
+          opacity: 0.2 + extRamp * 0.3
+        }, "📡"));
+      });
+      return [...nodes, ...groupLabels];
     };
 
     // ═══ SUB-SKILL MASTERY + RENDERING ═══
@@ -12955,74 +13005,108 @@ function TemporalReplay() {
           dur: "2s",
           repeatCount: "indefinite"
         }))), (() => {
-          // NE edge: [0,0] (north) to [100,0] (east)
-          const neConns = [{
-            t: 0.05,
-            dataIdx: 0,
-            color: "#44aaff"
-          }, {
-            t: 0.15,
-            dataIdx: 6,
-            color: "#ffcc00"
-          }, {
-            t: 0.25,
-            dataIdx: 14,
-            color: "#cc66ff"
-          }, {
-            t: 0.35,
-            dataIdx: 17,
-            color: "#88ffaa"
-          }, {
-            t: 0.45,
-            dataIdx: 20,
-            color: "#ff66aa"
-          }, {
-            t: 0.55,
-            dataIdx: 23,
-            color: "#dd66aa"
-          }, {
-            t: 0.65,
-            dataIdx: 25,
-            color: "#44ffaa"
-          }, {
-            t: 0.75,
-            dataIdx: 28,
-            color: "#aaffee"
-          }, {
-            t: 0.85,
-            dataIdx: 29,
-            color: "#00ddff"
-          }, {
-            t: 0.95,
-            dataIdx: 31,
-            color: "#aaddff"
-          }];
-          return neConns.map((nc, ci) => {
-            const gx = nc.t * 100,
-              gy = 0;
-            const epx = wIsoX(gx, gy, 0);
-            const epy = wIsoY(gx, gy, 0);
-            const dataY = getInputNodeY(nc.dataIdx) + inputNodeH / 2;
-            const dataX = inputNodeX;
-            const bright = time > 0.1 ? Math.min(1, COL_RAMP.data || 0.05) : 0;
-            const pulse = time > 0.1 ? 0.15 + Math.sin(nowMs * 0.003 + ci * 1.7) * 0.1 : 0;
-            return /*#__PURE__*/React.createElement("g", {
-              key: `ne-${ci}`
-            }, /*#__PURE__*/React.createElement("circle", {
-              cx: epx,
-              cy: epy,
-              r: 2.5,
-              fill: nc.color,
-              opacity: 0.3 + bright * 0.5
-            }), /*#__PURE__*/React.createElement("path", {
-              d: `M${epx},${epy} C${epx + 40},${epy} ${dataX - 30},${dataY} ${dataX},${dataY}`,
+          const towerGx = 80,
+            towerGy = 15;
+          const towerBaseZ = terrainH(towerGx, towerGy);
+          const towerH = 16;
+          const bx2 = wIsoX(towerGx, towerGy, towerBaseZ);
+          const by2 = wIsoY(towerGx, towerGy, towerBaseZ);
+          const tx = wIsoX(towerGx, towerGy, towerBaseZ + towerH);
+          const ty = wIsoY(towerGx, towerGy, towerBaseZ + towerH);
+          const dishX = tx,
+            dishY = ty - 3;
+          // RF target: extraction column weather group start
+          const weatherGroupY = topPad + 15.5 * rowH;
+          const terrainGroupY = topPad + 20.0 * rowH;
+          const radGroupY = topPad + 23.0 * rowH;
+          const dfX = dfColX + dfNodeW / 2;
+          const bright = time > 0.1 ? Math.min(1, COL_RAMP.extraction || 0.05) : 0;
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+            x1: bx2,
+            y1: by2,
+            x2: tx,
+            y2: ty,
+            stroke: "#88aacc",
+            strokeWidth: 1.5,
+            opacity: 0.7
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: bx2 - 3,
+            y1: by2,
+            x2: bx2 + 3,
+            y2: by2,
+            stroke: "#88aacc",
+            strokeWidth: 1,
+            opacity: 0.5
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: tx - 2,
+            y1: ty + 3,
+            x2: tx + 2,
+            y2: ty + 3,
+            stroke: "#88aacc",
+            strokeWidth: 0.8,
+            opacity: 0.5
+          }), /*#__PURE__*/React.createElement("ellipse", {
+            cx: dishX,
+            cy: dishY,
+            rx: 4,
+            ry: 2,
+            fill: "none",
+            stroke: "#aaccee",
+            strokeWidth: 1,
+            opacity: 0.8
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: dishX,
+            cy: dishY,
+            r: 1.2,
+            fill: "#44ffaa",
+            opacity: 0.9
+          }), /*#__PURE__*/React.createElement("text", {
+            x: bx2,
+            y: by2 + 8,
+            textAnchor: "middle",
+            fill: "#88aacc",
+            fontSize: 4,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: 0.6
+          }, "RADAR"), time > 0.1 && [0, 1, 2].map(wi => {
+            const phase = (nowMs * 0.002 + wi * 0.33) % 1;
+            const arcR = 4 + phase * 12;
+            return /*#__PURE__*/React.createElement("circle", {
+              key: `rf-${wi}`,
+              cx: dishX,
+              cy: dishY,
+              r: arcR,
               fill: "none",
-              stroke: nc.color,
-              strokeWidth: 0.4 + bright * 0.6,
-              opacity: pulse + bright * 0.15,
-              strokeDasharray: time > 0.1 ? "none" : "2,3"
+              stroke: "#44ffaa",
+              strokeWidth: 0.6,
+              opacity: (1 - phase) * 0.4 * bright
+            });
+          }), time > 0.1 && [{
+            targetY: weatherGroupY,
+            color: "#ffaa44",
+            label: "WX"
+          }, {
+            targetY: terrainGroupY,
+            color: "#88ff44",
+            label: "TRN"
+          }, {
+            targetY: radGroupY,
+            color: "#ff4444",
+            label: "RAD"
+          }].map((beam, bi) => {
+            const rfPulse = 0.15 + Math.sin(nowMs * 0.003 + bi * 2.1) * 0.1;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `rf-beam-${bi}`
+            }, /*#__PURE__*/React.createElement("path", {
+              d: `M${dishX},${dishY} C${dishX + 60},${dishY} ${dfX - 40},${beam.targetY} ${dfX},${beam.targetY}`,
+              fill: "none",
+              stroke: beam.color,
+              strokeWidth: 0.5 + bright * 0.8,
+              opacity: rfPulse * bright,
+              strokeDasharray: "4,3"
             }));
-          });
+          }));
         })());
       }
 

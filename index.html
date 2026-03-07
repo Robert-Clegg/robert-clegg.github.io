@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v278";
+  var v = "v279";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v278 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v279 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v278"), /*#__PURE__*/React.createElement("span", {
+  }, "v279"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9175,6 +9175,11 @@ function TemporalReplay() {
       color: "#aaddff"
     }];
     const inputNodeH = 14; // half game event height (28/2)
+    const inputNodeGap = 1;
+    // Sequential layout: all 32 channel nodes stacked vertically, no overlaps
+    const getInputNodeY = globalIdx => topPad + 2 + globalIdx * (inputNodeH + inputNodeGap);
+    // Route connector X: left edge for routing distant containers
+    const routeX = boxX - 8;
 
     // v30: eventToBoxIds removed — was only used by legacy synapse system
 
@@ -10143,13 +10148,10 @@ function TemporalReplay() {
     const renderChannelToEventEdges = () => {
       if (COL_RAMP.events <= 0) return null;
       const edges = [];
-      INPUT_NODES.forEach(inp => {
+      INPUT_NODES.forEach((inp, globalIdx) => {
         const evIds = CHANNEL_TO_EVENTS[inp.fireKey];
         if (!evIds) return;
-        const boxY = getRawBoxY(inp.boxIdx);
-        const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
-        const nodeIdx = nodesForBox.indexOf(inp);
-        const srcY = boxY + 4 + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
+        const srcY = getInputNodeY(globalIdx) + inputNodeH / 2;
         for (const evId of evIds) {
           const eventNode = TREE_EVENTS.find(n => n.id === evId);
           if (!eventNode) continue;
@@ -10194,13 +10196,10 @@ function TemporalReplay() {
     const renderChannelToDerivedEdges = () => {
       if (COL_RAMP.extraction <= 0) return null;
       const edges = [];
-      INPUT_NODES.forEach(inp => {
+      INPUT_NODES.forEach((inp, globalIdx) => {
         const dfIds = CHANNEL_TO_DF[inp.fireKey];
         if (!dfIds) return;
-        const boxY = getRawBoxY(inp.boxIdx);
-        const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
-        const nodeIdx = nodesForBox.indexOf(inp);
-        const srcY = boxY + 4 + nodeIdx * (inputNodeH + 1) + inputNodeH / 2;
+        const srcY = getInputNodeY(globalIdx) + inputNodeH / 2;
         for (const dfId of dfIds) {
           const df = DERIVED_FEATURES.find(d => d.id === dfId);
           if (!df) continue;
@@ -10935,13 +10934,7 @@ function TemporalReplay() {
         letterSpacing: 1
       }, h.sub));
     }), INPUT_NODES.map((inp, idx) => {
-      const boxY = getRawBoxY(inp.boxIdx);
-      const nodesForBox = INPUT_NODES.filter(n => n.boxIdx === inp.boxIdx);
-      const nodeIdx = nodesForBox.indexOf(inp);
-      const nodeGap = 1;
-      // v36: top-align channels with their input container
-      const startY = boxY + 4;
-      const ny = startY + nodeIdx * (inputNodeH + nodeGap);
+      const ny = getInputNodeY(idx);
       const fireAge = time - (inputNodeFire[inp.fireKey] || -999);
       const eventActive = fireAge < BLINK_WINDOW;
       const eventFresh = fireAge < 0.4;
@@ -10962,6 +10955,14 @@ function TemporalReplay() {
       const displayBrightness = Math.max(brightness, finalBright) * erratic;
       const isActive = active || isFinal;
       const isFresh = fresh || isFinal;
+      // Container connector: route from container right edge to node
+      const bl = boxLayout[inp.boxIdx];
+      const containerRightX = bl.x + bl.w;
+      const containerCenterY = bl.y + bl.h / 2;
+      const nodeCenterY = ny + inputNodeH / 2;
+      // If container is far from node, route via left side
+      const yDist = Math.abs(containerCenterY - nodeCenterY);
+      const needsRoute = yDist > 30;
       return /*#__PURE__*/React.createElement("g", {
         key: `inp-${inp.label}`
       }, /*#__PURE__*/React.createElement("rect", {
@@ -10982,14 +10983,20 @@ function TemporalReplay() {
         fontFamily: mono,
         fontWeight: isFresh ? 700 : 400,
         opacity: isMouseXY && isActive ? erratic : 1
-      }, inp.label), isActive && /*#__PURE__*/React.createElement("line", {
-        x1: boxLayout[inp.boxIdx].x + boxLayout[inp.boxIdx].w,
-        y1: ny + inputNodeH / 2,
+      }, inp.label), isActive && !needsRoute && /*#__PURE__*/React.createElement("line", {
+        x1: containerRightX,
+        y1: nodeCenterY,
         x2: inputNodeX,
-        y2: ny + inputNodeH / 2,
+        y2: nodeCenterY,
         stroke: inp.color,
         strokeWidth: firehoseHit ? 1 : isFinal ? 0.8 : 0.5,
         opacity: Math.min(firehoseHit ? displayBrightness * 0.5 : isFinal ? 0.3 : eventFresh ? 0.4 : 0.1, COL_RAMP.data)
+      }), isActive && needsRoute && /*#__PURE__*/React.createElement("path", {
+        d: `M${containerRightX},${containerCenterY} L${routeX},${containerCenterY} L${routeX},${nodeCenterY} L${inputNodeX},${nodeCenterY}`,
+        fill: "none",
+        stroke: inp.color,
+        strokeWidth: firehoseHit ? 0.8 : isFinal ? 0.6 : 0.4,
+        opacity: Math.min(firehoseHit ? displayBrightness * 0.4 : isFinal ? 0.25 : eventFresh ? 0.3 : 0.08, COL_RAMP.data)
       }));
     }), RAW_BOXES.map((box, i) => {
       const bl = boxLayout[i];

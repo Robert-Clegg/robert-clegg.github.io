@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v292";
+  var v = "v293";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v292 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v293 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v292"), /*#__PURE__*/React.createElement("span", {
+  }, "v293"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13126,16 +13126,7 @@ function TemporalReplay() {
           stroke: "#88ddff",
           strokeWidth: 1.5,
           opacity: 0.5
-        })), /*#__PURE__*/React.createElement("clipPath", {
-          id: "auto-clip"
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: ax + 3,
-          y: ay + 14,
-          width: aw - 6,
-          height: ah - 18
-        })), /*#__PURE__*/React.createElement("g", {
-          clipPath: "url(#auto-clip)"
-        }, Array.from({
+        })), Array.from({
           length: visibleLines
         }, (_, i) => {
           const cmdIdx = (startIdx + i) % commands.length;
@@ -13174,7 +13165,7 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: isExec ? 700 : 400
           }, cmd.cmd));
-        })), time > 0.1 && /*#__PURE__*/React.createElement("g", {
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", {
           opacity: 0.5
         }, /*#__PURE__*/React.createElement("text", {
           x: ax + packetX,
@@ -13621,7 +13612,84 @@ function TemporalReplay() {
           values: "0.3;0.05;0.3",
           dur: "2s",
           repeatCount: "indefinite"
-        }))), drones.map((dr, di) => {
+        }))), time > 0.1 && buildings.map((b, bi) => {
+          const sw = b.w * objScale,
+            sd = b.d * objScale,
+            sh = b.h * objScale;
+          const bcx = b.gx + sw / 2,
+            bcy = b.gy + sd / 2;
+          const btz = terrainH(bcx, bcy) + sh / 2;
+          const tbx = wIsoX(bcx, bcy, btz),
+            tby = wIsoY(bcx, bcy, btz);
+          // Distance in grid units
+          const dx2 = bcx - mechGx,
+            dy2 = bcy - mechGy;
+          const dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+          // Only show beams to buildings within range (50 units)
+          if (dist > 50) return null;
+          // Beam sweeps — each building gets activated in sequence
+          const sweepCycle = (time * 0.8 + bi * 0.7) % (buildings.length * 0.7);
+          const beamActive = sweepCycle < 0.5;
+          const beamFade = sweepCycle < 0.5 ? 1 : sweepCycle < 1.2 ? Math.max(0, 1 - (sweepCycle - 0.5) / 0.7) : 0;
+          if (beamFade < 0.02) return null;
+          const distLabel = (dist * 2.5).toFixed(1) + "m";
+          const midPx = (mpx + tbx) / 2,
+            midPy = (mpy + tby) / 2;
+          return /*#__PURE__*/React.createElement("g", {
+            key: `dist-${bi}`
+          }, /*#__PURE__*/React.createElement("line", {
+            x1: mpx,
+            y1: mpy,
+            x2: tbx,
+            y2: tby,
+            stroke: "#00ff88",
+            strokeWidth: beamActive ? 1.2 : 0.6,
+            opacity: beamFade * 0.5,
+            strokeDasharray: beamActive ? "none" : "3,4"
+          }), beamActive && /*#__PURE__*/React.createElement("line", {
+            x1: mpx,
+            y1: mpy,
+            x2: tbx,
+            y2: tby,
+            stroke: "#00ff88",
+            strokeWidth: 3,
+            opacity: beamFade * 0.12,
+            filter: "url(#glow)"
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: tbx,
+            cy: tby,
+            r: 3 * beamFade,
+            fill: "none",
+            stroke: "#00ff88",
+            strokeWidth: 1,
+            opacity: beamFade * 0.7
+          }), beamActive && /*#__PURE__*/React.createElement("circle", {
+            cx: tbx,
+            cy: tby,
+            r: 6,
+            fill: "#00ff88",
+            opacity: 0.15,
+            filter: "url(#glow)"
+          }), beamFade > 0.3 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+            x: midPx - 12,
+            y: midPy - 5,
+            width: 24,
+            height: 9,
+            rx: 2,
+            fill: "rgba(0,10,5,0.7)",
+            stroke: "#00ff8855",
+            strokeWidth: 0.5
+          }), /*#__PURE__*/React.createElement("text", {
+            x: midPx,
+            y: midPy + 2,
+            textAnchor: "middle",
+            fill: "#00ff88",
+            fontSize: 5,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: beamFade
+          }, distLabel)));
+        }), drones.map((dr, di) => {
           const dx = wIsoX(dr.gx, dr.gy, dr.alt);
           const dy = wIsoY(dr.gx, dr.gy, dr.alt);
           const rotorSpin = (nowMs * 0.02 + di * 120) % 360;

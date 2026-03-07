@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v261";
+  var v = "v262";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v261 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v262 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v261"), /*#__PURE__*/React.createElement("span", {
+  }, "v262"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12307,10 +12307,10 @@ function TemporalReplay() {
           mw = bw,
           mh = boxH;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        const cubeArea = Math.min(mw * 0.45, mh - 18);
+        const cubeArea = Math.min(mw * 0.65, mh - 18);
         const ccx = mx + cubeArea * 0.5 + 4;
         const ccy = my + 14 + (mh - 16) / 2;
-        const cs = cubeArea * 0.28;
+        const cs = cubeArea * 0.32;
         const isoX = (x3, y3, z3) => ccx + (x3 - z3) * 0.866;
         const isoY = (x3, y3, z3) => ccy - y3 + (x3 + z3) * 0.5;
         // Smooth forces — hold steady, change direction every 5-8s
@@ -12340,8 +12340,8 @@ function TemporalReplay() {
         const spd = time > 0.1 ? Math.abs(fz * 0.8) : 0;
         const accel = time > 0.1 ? fz * 0.12 : 0;
         const slopeAngle = time > 0.1 ? Math.abs(Math.sin(dirIdx * 4.3) * 20 + 5) : 0;
-        const numX = mx + cubeArea + 6;
-        const numW = mw - cubeArea - 10;
+        const numX = mx + mw * 0.67;
+        const numW = mw * 0.30;
         const isoArr = (ox, oy, tx, ty, color, sw) => {
           const ddx = tx - ox,
             ddy = ty - oy;

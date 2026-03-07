@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v258";
+  var v = "v259";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v258 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v259 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v258"), /*#__PURE__*/React.createElement("span", {
+  }, "v259"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12307,26 +12307,30 @@ function TemporalReplay() {
           mw = bw,
           mh = boxH;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        const jit = seed => Math.sin(nowMs * 0.017 + seed * 3.1) * 2.5 + Math.sin(nowMs * 0.0091 + seed * 7.7) * 1.5 + Math.cos(nowMs * 0.023 + seed * 5.3) * 1.0;
-        const cubeArea = Math.min(mw * 0.55, mh - 18);
+        const jit = seed => Math.sin(nowMs * 0.009 + seed * 3.1) * 1.0 + Math.sin(nowMs * 0.005 + seed * 7.7) * 0.6;
+        const cubeArea = Math.min(mw * 0.45, mh - 18);
         const ccx = mx + cubeArea * 0.5 + 4;
         const ccy = my + 14 + (mh - 16) / 2;
         const cs = cubeArea * 0.28;
         const isoX = (x3, y3, z3) => ccx + (x3 - z3) * 0.866;
         const isoY = (x3, y3, z3) => ccy - y3 + (x3 + z3) * 0.5;
-        const fx = time > 0.1 ? Math.sin(time * 0.8) * 12 + jit(1) * 2.5 : 0;
-        const fy = time > 0.1 ? -9.81 * 3 + Math.sin(time * 0.3) * 4 + jit(2) * 1.5 : 0;
-        const fz = time > 0.1 ? Math.sin(time * 0.5) * 18 + Math.cos(time * 0.35) * 8 + jit(3) * 3 : 0;
+        // Sustained direction holds: slow base + occasional step changes
+        const step = (t, period) => Math.floor(t / period);
+        const holdX = Math.sin(step(time, 4.2) * 7.3) * 10;
+        const holdZ = Math.sin(step(time, 3.5) * 5.1) * 15 + 8;
+        const fx = time > 0.1 ? holdX + Math.sin(time * 0.25) * 3 + jit(1) : 0;
+        const fy = time > 0.1 ? -9.81 * 3 + Math.sin(time * 0.15) * 2 + jit(2) * 0.8 : 0;
+        const fz = time > 0.1 ? holdZ + Math.sin(time * 0.18) * 5 + jit(3) : 0;
         const maxF = 35;
         const vScale = cs * 0.7 / maxF;
         const axLen = fx * vScale,
           ayLen = fy * vScale,
           azLen = fz * vScale;
-        const spd = time > 0.1 ? Math.abs(fz * 0.8 + jit(4) * 1.5) : 0;
-        const accel = time > 0.1 ? fz * 0.12 + jit(5) * 0.4 : 0;
-        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(time * 0.35) * 25 + jit(6) * 2) : 0;
-        const numX = mx + cubeArea + 8;
-        const numW = mw - cubeArea - 12;
+        const spd = time > 0.1 ? Math.abs(fz * 0.8 + jit(4) * 0.5) : 0;
+        const accel = time > 0.1 ? fz * 0.12 + jit(5) * 0.15 : 0;
+        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(time * 0.18) * 25 + jit(6) * 0.8) : 0;
+        const numX = mx + cubeArea + 6;
+        const numW = mw - cubeArea - 10;
         const isoArr = (ox, oy, tx, ty, color, sw) => {
           const ddx = tx - ox,
             ddy = ty - oy;
@@ -12392,51 +12396,51 @@ function TemporalReplay() {
             y1: proj[a][1],
             x2: proj[b][0],
             y2: proj[b][1],
-            stroke: "rgba(255,255,255,0.15)",
-            strokeWidth: 0.6
+            stroke: "rgba(255,255,255,0.25)",
+            strokeWidth: 0.8
           }));
         })(), /*#__PURE__*/React.createElement("line", {
           x1: isoX(0, 0, 0),
           y1: isoY(0, 0, 0),
           x2: isoX(cs, 0, 0),
           y2: isoY(cs, 0, 0),
-          stroke: "rgba(255,68,68,0.2)",
-          strokeWidth: 0.5,
+          stroke: "rgba(255,68,68,0.35)",
+          strokeWidth: 0.6,
           strokeDasharray: "2,2"
         }), /*#__PURE__*/React.createElement("line", {
           x1: isoX(0, 0, 0),
           y1: isoY(0, 0, 0),
           x2: isoX(0, cs, 0),
           y2: isoY(0, cs, 0),
-          stroke: "rgba(68,255,68,0.2)",
-          strokeWidth: 0.5,
+          stroke: "rgba(68,255,68,0.35)",
+          strokeWidth: 0.6,
           strokeDasharray: "2,2"
         }), /*#__PURE__*/React.createElement("line", {
           x1: isoX(0, 0, 0),
           y1: isoY(0, 0, 0),
           x2: isoX(0, 0, cs),
           y2: isoY(0, 0, cs),
-          stroke: "rgba(68,136,255,0.2)",
-          strokeWidth: 0.5,
+          stroke: "rgba(68,136,255,0.35)",
+          strokeWidth: 0.6,
           strokeDasharray: "2,2"
         }), /*#__PURE__*/React.createElement("text", {
           x: isoX(cs + 3, 0, 0),
           y: isoY(cs + 3, 0, 0) + 2,
-          fill: "rgba(255,68,68,0.5)",
+          fill: "rgba(255,68,68,0.7)",
           fontSize: 5,
           fontFamily: mono,
           fontWeight: 700
         }, "X"), /*#__PURE__*/React.createElement("text", {
           x: isoX(0, cs + 3, 0),
           y: isoY(0, cs + 3, 0) + 2,
-          fill: "rgba(68,255,68,0.5)",
+          fill: "rgba(68,255,68,0.7)",
           fontSize: 5,
           fontFamily: mono,
           fontWeight: 700
         }, "Y"), /*#__PURE__*/React.createElement("text", {
           x: isoX(0, 0, cs + 3),
           y: isoY(0, 0, cs + 3) + 2,
-          fill: "rgba(68,136,255,0.5)",
+          fill: "rgba(68,136,255,0.7)",
           fontSize: 5,
           fontFamily: mono,
           fontWeight: 700
@@ -12476,14 +12480,14 @@ function TemporalReplay() {
           unit: "°",
           color: "#ff88aa"
         }].map((row, ri) => {
-          const ry = my + 17 + ri * 8;
+          const ry = my + 20 + ri * 13;
           return /*#__PURE__*/React.createElement("g", {
             key: `nr-${ri}`
           }, /*#__PURE__*/React.createElement("text", {
             x: numX,
             y: ry,
-            fill: "rgba(255,255,255,0.4)",
-            fontSize: 4.5,
+            fill: "rgba(255,255,255,0.5)",
+            fontSize: 7,
             fontFamily: mono,
             fontWeight: 700
           }, row.label), /*#__PURE__*/React.createElement("text", {
@@ -12491,13 +12495,13 @@ function TemporalReplay() {
             y: ry,
             textAnchor: "end",
             fill: row.color,
-            fontSize: 4.5,
+            fontSize: 8,
             fontFamily: mono,
             fontWeight: 700
           }, row.val, /*#__PURE__*/React.createElement("tspan", {
-            fill: "rgba(255,255,255,0.3)",
-            fontSize: 3.5
-          }, row.unit)));
+            fill: "rgba(255,255,255,0.35)",
+            fontSize: 5.5
+          }, " ", row.unit)));
         })), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
           x: mx + 2,
           y: my + mh - 8,

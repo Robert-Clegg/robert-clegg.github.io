@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v259";
+  var v = "v260";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v259 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v260 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v259"), /*#__PURE__*/React.createElement("span", {
+  }, "v260"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12529,18 +12529,69 @@ function TemporalReplay() {
       // — CELLS box: minimap + yellow kill splashes + population bars —
       // v35: WORLD uses full 2× container width
       if (box.id === "cam") {
-        const worldX = bx; // full container left edge
-        const worldW = bw; // full container width
+        const worldX = bx;
+        const worldW = bw;
         const labelH = 14;
         const pad = 4;
         const mapX = worldX + pad;
         const mapY = y + labelH + pad;
         const mapW = worldW - pad * 2;
         const mapH = boxH - labelH - pad * 2;
-        const hasDots = cellSightings.length > 0;
-        const GAME_SIZE = 450; // v36: expanded to show cells near edges/spawning off-field
-        // Max age for opacity scaling
-        const maxAge = Math.max(10, time);
+        const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
+        // Player position: starts lower-left, approaches upper-right red zone
+        const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
+        // Winding path with pauses
+        const pathT = progress;
+        const wobbleX = Math.sin(time * 0.7) * 0.06 + Math.sin(time * 1.3) * 0.03;
+        const wobbleY = Math.sin(time * 0.5) * 0.04 + Math.cos(time * 0.9) * 0.02;
+        const playerFracX = 0.1 + pathT * 0.75 + wobbleX + Math.sin(pathT * Math.PI * 2) * 0.08;
+        const playerFracY = 0.85 - pathT * 0.7 + wobbleY - Math.sin(pathT * Math.PI * 1.5) * 0.06;
+        const px = mapX + playerFracX * mapW;
+        const py = mapY + playerFracY * mapH;
+        // Buildings as rectangles
+        const buildings = [{
+          x: 0.25,
+          y: 0.65,
+          w: 0.08,
+          h: 0.05,
+          label: "DEPOT",
+          color: "#4488aa"
+        }, {
+          x: 0.4,
+          y: 0.45,
+          w: 0.1,
+          h: 0.06,
+          label: "HANGAR",
+          color: "#5599aa"
+        }, {
+          x: 0.55,
+          y: 0.55,
+          w: 0.06,
+          h: 0.08,
+          label: "TOWER",
+          color: "#448888"
+        }, {
+          x: 0.35,
+          y: 0.3,
+          w: 0.12,
+          h: 0.05,
+          label: "ARMORY",
+          color: "#556688"
+        }, {
+          x: 0.6,
+          y: 0.25,
+          w: 0.07,
+          h: 0.07,
+          label: "COMM",
+          color: "#557799"
+        }, {
+          x: 0.15,
+          y: 0.4,
+          w: 0.06,
+          h: 0.1,
+          label: "FUEL",
+          color: "#448866"
+        }];
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
@@ -12587,7 +12638,7 @@ function TemporalReplay() {
           y1: mapY,
           x2: mapX + mapW * frac,
           y2: mapY + mapH,
-          stroke: "rgba(255,255,255,0.15)",
+          stroke: "rgba(255,255,255,0.1)",
           strokeWidth: 0.5,
           strokeDasharray: "2,3"
         }), /*#__PURE__*/React.createElement("line", {
@@ -12595,128 +12646,132 @@ function TemporalReplay() {
           y1: mapY + mapH * frac,
           x2: mapX + mapW,
           y2: mapY + mapH * frac,
-          stroke: "rgba(255,255,255,0.15)",
+          stroke: "rgba(255,255,255,0.1)",
           strokeWidth: 0.5,
           strokeDasharray: "2,3"
-        }))), time > 0.1 && cellSightings.filter(dot => dot.x >= 0 && dot.x <= GAME_SIZE && dot.z >= 0 && dot.z <= GAME_SIZE).map((dot, di) => {
-          const nx = mapX + Math.max(0, Math.min(1, dot.x / GAME_SIZE)) * mapW;
-          const nz = mapY + mapH - Math.max(0, Math.min(1, dot.z / GAME_SIZE)) * mapH;
-          const color = dot.team === "imm" ? "#66bbff" : dot.team === "path" ? "#ff5555" : "#777777";
-          // Live cells stay bright; trails decay; player cell always full brightness
-          const opacity = dot.player ? 1.0 : dot.dead ? 0.2 : dot.age < 0.5 ? 1.0 // just placed — full bright
-          : dot.age < 3 ? 0.85 // recent — still bright
-          : dot.age < 8 ? 0.4 // trail — fading
-          : 0.15; // old ghost
-          const sz = dot.dead ? 2 : dot.team === "node" ? 6 : dot.player ? 5 : 3.5;
-          return /*#__PURE__*/React.createElement("rect", {
-            key: `cs-${di}`,
-            x: nx - sz / 2,
-            y: nz - sz / 2,
-            width: sz,
-            height: sz,
-            rx: dot.team === "node" ? 1 : 0.5,
-            fill: dot.dead ? "rgba(100,100,100,0.3)" : color,
+        }))), /*#__PURE__*/React.createElement("rect", {
+          x: mapX + mapW * 0.7,
+          y: mapY,
+          width: mapW * 0.3,
+          height: mapH * 0.35,
+          rx: 2,
+          fill: "rgba(255,40,40,0.12)",
+          stroke: "rgba(255,60,60,0.35)",
+          strokeWidth: 0.8,
+          strokeDasharray: "3,2"
+        }), time > 0.1 && /*#__PURE__*/React.createElement("text", {
+          x: mapX + mapW * 0.85,
+          y: mapY + mapH * 0.08,
+          textAnchor: "middle",
+          fill: "rgba(255,80,80,0.6)",
+          fontSize: 4,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "HOSTILE"), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
+          x: mapX + mapW * 0.7,
+          y: mapY,
+          width: mapW * 0.3,
+          height: mapH * 0.35,
+          rx: 2,
+          fill: "rgba(255,30,30,0.06)",
+          opacity: 0.4 + Math.sin(time * 1.5) * 0.3
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: mapX,
+          y: mapY + mapH * 0.7,
+          width: mapW * 0.25,
+          height: mapH * 0.3,
+          rx: 2,
+          fill: "rgba(40,200,100,0.08)",
+          stroke: "rgba(60,200,100,0.25)",
+          strokeWidth: 0.6,
+          strokeDasharray: "3,2"
+        }), time > 0.1 && /*#__PURE__*/React.createElement("text", {
+          x: mapX + mapW * 0.125,
+          y: mapY + mapH * 0.76,
+          textAnchor: "middle",
+          fill: "rgba(60,200,100,0.5)",
+          fontSize: 4,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "BASE"), buildings.map((b, bi) => {
+          const bx2 = mapX + b.x * mapW;
+          const by2 = mapY + b.y * mapH;
+          const bw2 = b.w * mapW;
+          const bh2 = b.h * mapH;
+          return /*#__PURE__*/React.createElement("g", {
+            key: `bld-${bi}`
+          }, /*#__PURE__*/React.createElement("rect", {
+            x: bx2,
+            y: by2,
+            width: bw2,
+            height: bh2,
+            rx: 1,
+            fill: `${b.color}30`,
+            stroke: `${b.color}88`,
+            strokeWidth: 0.8
+          }), /*#__PURE__*/React.createElement("text", {
+            x: bx2 + bw2 / 2,
+            y: by2 + bh2 / 2 + 1.5,
+            textAnchor: "middle",
+            fill: `${b.color}cc`,
+            fontSize: 3.5,
+            fontFamily: mono,
+            fontWeight: 700
+          }, b.label));
+        }), time > 0.1 && Array.from({
+          length: 12
+        }, (_, i) => {
+          const trailT = Math.max(0, progress - i * 0.03);
+          const tw = Math.sin(trailT * 30 * 0.7) * 0.06 + Math.sin(trailT * 30 * 1.3) * 0.03;
+          const th = Math.sin(trailT * 30 * 0.5) * 0.04 + Math.cos(trailT * 30 * 0.9) * 0.02;
+          const tx = mapX + (0.1 + trailT * 0.75 + tw + Math.sin(trailT * Math.PI * 2) * 0.08) * mapW;
+          const ty = mapY + (0.85 - trailT * 0.7 + th - Math.sin(trailT * Math.PI * 1.5) * 0.06) * mapH;
+          const opacity = Math.max(0, 0.4 - i * 0.03);
+          return /*#__PURE__*/React.createElement("circle", {
+            key: `trail-${i}`,
+            cx: tx,
+            cy: ty,
+            r: 1,
+            fill: "#44ffaa",
             opacity: opacity
           });
-        }), time > 0.1 && killSplashes.filter(ks => ks.x >= 0 && ks.x <= GAME_SIZE && ks.z >= 0 && ks.z <= GAME_SIZE).map((ks, ki) => {
-          const kx = mapX + ks.x / GAME_SIZE * mapW;
-          const kz = mapY + mapH - ks.z / GAME_SIZE * mapH;
-          const fade = Math.pow(Math.max(0, 1 - ks.age / KILL_SPLASH_FADE), 0.6);
-          const sz = 7;
-          return /*#__PURE__*/React.createElement("g", {
-            key: `ks-${ki}`,
-            opacity: fade
-          }, /*#__PURE__*/React.createElement("circle", {
-            cx: kx,
-            cy: kz,
-            r: 2 + ks.age * 4,
-            fill: "none",
-            stroke: "#ffdd00",
-            strokeWidth: 0.5,
-            opacity: 0.4
-          }), /*#__PURE__*/React.createElement("text", {
-            x: kx,
-            y: kz + sz * 0.4,
-            textAnchor: "middle",
-            fontSize: sz * 1.4,
-            style: {
-              userSelect: "none"
-            }
-          }, "\uD83D\uDC80"));
-        }), Object.entries(MAP_NODES).map(([name, pos]) => {
-          const nx = mapX + pos.x / GAME_SIZE * mapW;
-          const nz = mapY + mapH - pos.z / GAME_SIZE * mapH;
-          const owner = nodeOwnership[name];
-          const isInfected = owner === 1; // pathogen team
-          const isImmune = owner === 2;
-          const isBase = name.includes("Base");
-          const isLarge = name.includes("Large");
-          const r = isBase ? 8 : isLarge ? 6 : 4;
-          const strokeColor = isInfected ? "#ff4444" : isImmune ? "#4499ff" : "#666666";
-          return /*#__PURE__*/React.createElement("g", {
-            key: `node-${name}`
-          }, isInfected && Array.from({
-            length: 6
-          }, (_, i) => {
-            const angle = i / 6 * Math.PI * 2 + time * 0.3;
-            const dist = r + 3 + Math.sin(time * 0.7 + i * 1.3) * 4;
-            const sx = nx + Math.cos(angle) * dist;
-            const sy = nz + Math.sin(angle) * dist;
-            const op = 0.3 + Math.sin(time * 1.1 + i * 2.1) * 0.2;
-            return /*#__PURE__*/React.createElement("circle", {
-              key: `spill-${i}`,
-              cx: sx,
-              cy: sy,
-              r: 1.2,
-              fill: "#ff4444",
-              opacity: op
-            });
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: nx,
-            cy: nz,
-            r: r,
-            fill: "none",
-            stroke: strokeColor,
-            strokeWidth: isBase ? 1.5 : 1,
-            opacity: 0.8
-          }), owner && /*#__PURE__*/React.createElement("circle", {
-            cx: nx,
-            cy: nz,
-            r: r * 0.35,
-            fill: isInfected ? "#ff4444" : "#4499ff",
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
+          const headAngle = Math.atan2(wobbleX * 10 + 0.5, -(wobbleY * 10 - 0.5));
+          const lineLen = 6;
+          return /*#__PURE__*/React.createElement("line", {
+            x1: px,
+            y1: py,
+            x2: px + Math.sin(headAngle) * lineLen,
+            y2: py - Math.cos(headAngle) * lineLen,
+            stroke: "#44ffaa",
+            strokeWidth: 0.8,
             opacity: 0.5
-          }));
-        }), playerPos && (() => {
-          const px = mapX + playerPos.x / GAME_SIZE * mapW;
-          const pz = mapY + mapH - playerPos.z / GAME_SIZE * mapH;
-          const isPath = ["VirusType", "PneumoniaType", "MycobacteriumType", "TuberculosisType"].includes(playerPos.type);
-          const ringColor = isPath ? "#ff4444" : "#4499ff";
-          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
-            cx: px,
-            cy: pz,
-            r: 4,
-            fill: "none",
-            stroke: ringColor,
-            strokeWidth: 1,
-            opacity: 0.6
-          }, /*#__PURE__*/React.createElement("animate", {
-            attributeName: "r",
-            values: "3;5;3",
-            dur: "1.5s",
-            repeatCount: "indefinite"
-          }), /*#__PURE__*/React.createElement("animate", {
-            attributeName: "opacity",
-            values: "0.6;0.2;0.6",
-            dur: "1.5s",
-            repeatCount: "indefinite"
-          })), /*#__PURE__*/React.createElement("circle", {
-            cx: px,
-            cy: pz,
-            r: 2,
-            fill: "#ffffff",
-            opacity: 0.9
-          }));
-        })());
+          });
+        })(), /*#__PURE__*/React.createElement("polygon", {
+          points: `${px},${py - 4} ${px + 3},${py} ${px},${py + 3} ${px - 3},${py}`,
+          fill: "#44ffaa",
+          stroke: "#88ffdd",
+          strokeWidth: 0.8,
+          opacity: 0.9
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: px,
+          cy: py,
+          r: 5,
+          fill: "none",
+          stroke: "#44ffaa",
+          strokeWidth: 0.5,
+          opacity: 0.3
+        }, /*#__PURE__*/React.createElement("animate", {
+          attributeName: "r",
+          values: "4;8;4",
+          dur: "2s",
+          repeatCount: "indefinite"
+        }), /*#__PURE__*/React.createElement("animate", {
+          attributeName: "opacity",
+          values: "0.3;0.05;0.3",
+          dur: "2s",
+          repeatCount: "indefinite"
+        }))));
       }
 
       // — Default box rendering (fallback) —

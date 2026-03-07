@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v287";
+  var v = "v288";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v287 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v288 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -5105,6 +5105,11 @@ const TREE_EVENTS = [{
   label: "World Death",
   col: 0,
   row: 14
+}, {
+  id: "ev_environment",
+  label: "Environment",
+  col: 0,
+  row: 15
 }];
 
 // ═══ BIOLOGY SKILLS — what the student actually learns ═══
@@ -7109,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v287"), /*#__PURE__*/React.createElement("span", {
+  }, "v288"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8031,7 +8036,7 @@ function TemporalReplay() {
     }, unit, " ", e.data.switchMethod === "DeathRespawn" ? "💀" : "");
   })))), tab === "career" && (() => {
     const W = 1340,
-      H = 910;
+      H = 730;
     // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
     // Derived features and channels are positioned independently (left of colX[2])
     const colX = [4, 108, 316, 533, 750, 967, 1185];
@@ -8107,10 +8112,10 @@ function TemporalReplay() {
       sk_myco: "bioMyco",
       sk_win: "bioWin"
     };
-    const FIREHOSE_KEYS = ["mouseX", "mouseY", "velocity", "LMB", "RMB", "scroll", "W", "A", "S", "D", "R", "E", "SPC", "F", "unitHP", "unitPos", "enemyDist", "nodeDist", "teamPop", "cellCount", "nodeOwner", "lookYaw", "lookPitch", "zoomLvl", "viewMode", "scanRate", "heading", "mechSpeed", "turnRate", "torsoYaw", "divergeAngle", "weather"];
+    const FIREHOSE_KEYS = ["mouseX", "mouseY", "velocity", "LMB", "RMB", "scroll", "W", "A", "S", "D", "R", "E", "SPC", "F", "unitHP", "unitPos", "enemyDist", "nodeDist", "teamPop", "cellCount", "nodeOwner", "lookYaw", "lookPitch", "zoomLvl", "viewMode", "scanRate", "heading", "mechSpeed", "turnRate", "torsoYaw", "divergeAngle", "weather", "terrain", "radiation"];
     // Small primes → fast cycling (7-31ms range ≈ 30-140Hz, matching 16ms sample rate)
     // Each channel has its own rhythm so they never fully sync
-    const PRIMES = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151];
+    const PRIMES = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163];
     const FIREHOSE_RECENCY = 4.0; // seconds — channel must have real data within this window to flicker
     // NOTE: firehoseSet computed AFTER inputNodeFire is populated (see below)
     let firehoseSet = new Set();
@@ -8195,7 +8200,12 @@ function TemporalReplay() {
       ev_worldDeath: {
         depth: 3,
         phase: 7.0
-      } // battlefield attrition
+      },
+      // battlefield attrition
+      ev_environment: {
+        depth: 2,
+        phase: 3.0
+      } // environmental awareness
     };
 
     // Per-event pulse: each event has its own frequency and phase
@@ -8361,123 +8371,28 @@ function TemporalReplay() {
       color: "#ff8833",
       row: 14.1
     },
-    // ── WEATHER group (atmospheric) ──
+    // ── WEATHER / TERRAIN / RADIATION — fed by radar tower ──
     {
-      id: "df_temp",
-      label: "Temp",
+      id: "df_weather",
+      label: "Weather",
       sources: ["weather"],
-      feeds: ["ev_nearSwitch", "ev_wasd"],
-      color: "#ff8844",
+      feeds: ["ev_environment"],
+      color: "#ffaa44",
       row: 15.5
     }, {
-      id: "df_alt",
-      label: "Altitude",
-      sources: ["weather"],
-      feeds: ["ev_zoomOut", "ev_farSwitch"],
-      color: "#ffaa44",
-      row: 16.0
-    }, {
-      id: "df_humid",
-      label: "Humidity",
-      sources: ["weather"],
-      feeds: ["ev_nearSwitch"],
-      color: "#44aaff",
+      id: "df_terrain",
+      label: "Terrain",
+      sources: ["terrain"],
+      feeds: ["ev_environment"],
+      color: "#88ff44",
       row: 16.5
     }, {
-      id: "df_wind",
-      label: "Wind",
-      sources: ["weather"],
-      feeds: ["ev_wasd", "ev_mouseFollow"],
-      color: "#88ccff",
-      row: 17.0
-    }, {
-      id: "df_o2",
-      label: "O\u2082",
-      sources: ["weather"],
-      feeds: ["ev_death", "ev_nearSwitch"],
-      color: "#44ff88",
-      row: 17.5
-    }, {
-      id: "df_co2",
-      label: "CO\u2082",
-      sources: ["weather"],
-      feeds: ["ev_death"],
-      color: "#ff6644",
-      row: 18.0
-    }, {
-      id: "df_pressure",
-      label: "Pressure",
-      sources: ["weather"],
-      feeds: ["ev_wasd"],
-      color: "#cc88ff",
-      row: 18.5
-    }, {
-      id: "df_partic",
-      label: "Particulate",
-      sources: ["weather"],
-      feeds: ["ev_zoomIn", "ev_nearSwitch"],
-      color: "#aa8866",
-      row: 19.0
-    },
-    // ── TERRAIN group (surface) ──
-    {
-      id: "df_traction",
-      label: "Traction",
-      sources: ["weather"],
-      feeds: ["ev_wasd", "ev_nearSwitch"],
-      color: "#88ff44",
-      row: 20.0
-    }, {
-      id: "df_grade",
-      label: "Grade",
-      sources: ["weather"],
-      feeds: ["ev_wasd", "ev_zoomOut"],
-      color: "#ffcc44",
-      row: 20.5
-    }, {
-      id: "df_depth",
-      label: "Depth",
-      sources: ["weather"],
-      feeds: ["ev_nearSwitch", "ev_dock"],
-      color: "#4488cc",
-      row: 21.0
-    }, {
-      id: "df_vis",
-      label: "Visibility",
-      sources: ["weather"],
-      feeds: ["ev_zoomIn", "ev_zoomOut"],
-      color: "#aaccff",
-      row: 21.5
-    }, {
-      id: "df_light",
-      label: "Light",
-      sources: ["weather"],
-      feeds: ["ev_zoomIn"],
-      color: "#ffee66",
-      row: 22.0
-    },
-    // ── RADIATION group (hazard) ──
-    {
-      id: "df_emi",
-      label: "EMI",
-      sources: ["weather"],
-      feeds: ["ev_farSwitch", "ev_midSwitch"],
-      color: "#ff44aa",
-      row: 23.0
-    }, {
-      id: "df_rad",
+      id: "df_radiation",
       label: "Radiation",
-      sources: ["weather"],
-      feeds: ["ev_death", "ev_nearSwitch"],
+      sources: ["radiation"],
+      feeds: ["ev_environment"],
       color: "#ff4444",
-      row: 23.5
-    }, {
-      id: "df_seismic",
-      label: "Seismic",
-      sources: ["weather"],
-      feeds: ["ev_nearSwitch", "ev_wasd"],
-      color: "#ff8800",
-      row: 24.0
+      row: 17.5
     }];
     const getDfPos = row => ({
       x: dfColX,
@@ -9286,12 +9201,22 @@ function TemporalReplay() {
       fireKey: "nodeOwner",
       color: "#aaddff"
     },
-    // ENV — single Weather data channel
+    // ENV — Weather, Terrain, Radiation data channels
     {
       boxIdx: 7,
       label: "Weather",
       fireKey: "weather",
       color: "#ffaa00"
+    }, {
+      boxIdx: 7,
+      label: "Terrain",
+      fireKey: "terrain",
+      color: "#88ff44"
+    }, {
+      boxIdx: 7,
+      label: "Radiatn",
+      fireKey: "radiation",
+      color: "#ff4444"
     }];
     const inputNodeH = 14; // half game event height (28/2)
     const inputNodeGap = 1;
@@ -10460,17 +10385,9 @@ function TemporalReplay() {
       // Group labels for Weather/Terrain/Radiation
       const extRamp = COL_RAMP.extraction || 0;
       const groupLabels = [{
-        label: "WEATHER",
+        label: "ENVIRONMENT",
         row: 15.0,
         color: "#ffaa44"
-      }, {
-        label: "TERRAIN",
-        row: 19.5,
-        color: "#88ff44"
-      }, {
-        label: "RADIATION",
-        row: 22.5,
-        color: "#ff4444"
       }].map(gl => {
         const gy = topPad + gl.row * rowH;
         return /*#__PURE__*/React.createElement("g", {
@@ -13005,8 +12922,8 @@ function TemporalReplay() {
           dur: "2s",
           repeatCount: "indefinite"
         }))), (() => {
-          const towerGx = 80,
-            towerGy = 15;
+          const towerGx = 60,
+            towerGy = 50;
           const towerBaseZ = terrainH(towerGx, towerGy);
           const towerH = 16;
           const bx2 = wIsoX(towerGx, towerGy, towerBaseZ);
@@ -13015,12 +12932,8 @@ function TemporalReplay() {
           const ty = wIsoY(towerGx, towerGy, towerBaseZ + towerH);
           const dishX = tx,
             dishY = ty - 3;
-          // RF target: extraction column weather group start
-          const weatherGroupY = topPad + 15.5 * rowH;
-          const terrainGroupY = topPad + 20.0 * rowH;
-          const radGroupY = topPad + 23.0 * rowH;
-          const dfX = dfColX + dfNodeW / 2;
           const bright = time > 0.1 ? Math.min(1, COL_RAMP.extraction || 0.05) : 0;
+          const dfX = dfColX + dfNodeW / 2;
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
             x1: bx2,
             y1: by2,
@@ -13072,26 +12985,25 @@ function TemporalReplay() {
           }, "RADAR"), time > 0.1 && [0, 1, 2].map(wi => {
             const phase = (nowMs * 0.002 + wi * 0.33) % 1;
             const arcR = 4 + phase * 12;
-            return /*#__PURE__*/React.createElement("circle", {
+            const op = (1 - phase) * 0.4 * bright;
+            return /*#__PURE__*/React.createElement("path", {
               key: `rf-${wi}`,
-              cx: dishX,
-              cy: dishY,
-              r: arcR,
+              d: `M${dishX},${dishY - arcR} A${arcR},${arcR} 0 0 1 ${dishX},${dishY + arcR}`,
               fill: "none",
               stroke: "#44ffaa",
               strokeWidth: 0.6,
-              opacity: (1 - phase) * 0.4 * bright
+              opacity: op
             });
           }), time > 0.1 && [{
-            targetY: weatherGroupY,
+            targetY: topPad + 15.5 * rowH + dfNodeH / 2,
             color: "#ffaa44",
             label: "WX"
           }, {
-            targetY: terrainGroupY,
+            targetY: topPad + 16.5 * rowH + dfNodeH / 2,
             color: "#88ff44",
             label: "TRN"
           }, {
-            targetY: radGroupY,
+            targetY: topPad + 17.5 * rowH + dfNodeH / 2,
             color: "#ff4444",
             label: "RAD"
           }].map((beam, bi) => {

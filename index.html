@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v277";
+  var v = "v278";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v277 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v278 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v277"), /*#__PURE__*/React.createElement("span", {
+  }, "v278"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8449,27 +8449,35 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    const hudH = 48;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: HUD (full width), Row 4: MOVEMENT (full width), Row 5: WORLD
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, then HUD + MOVEMENT + WORLD overlap
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
     const rightX = boxX + halfW + pairGap;
     const row1H = Math.max(viewH, keyH);
     const row2H = Math.max(audioH, textH);
-    const moveH = halfW; // square
     const boxGap = 4;
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
     const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
-    const rowY4 = rowY3 + hudH + boxGap;
-    const rowY5 = rowY4 + moveH + boxGap;
     // WinState bottom
     const winStateBottom = 683;
-    const worldH = winStateBottom - rowY5;
+    // WORLD starts at rowY3, fills to winStateBottom
     const worldW = boxW * 3.5;
+    const worldH = winStateBottom - rowY3;
     const worldLeftX = boxX + boxW - worldW;
+    // Compute where WORLD label (north vertex) will be
+    const _aW = worldW - 4,
+      _aH = worldH - 18;
+    const _wScale = Math.min(_aW / 1.732, _aH) * 0.92;
+    const _northY = 683 - _wScale;
+    // MOVEMENT bottom aligns with WORLD label (north vertex)
+    const moveH = 80;
+    const moveBottom = _northY;
+    const moveTop = moveBottom - moveH;
+    // HUD fills from rowY3 to MOVEMENT top
+    const hudH = Math.max(30, moveTop - rowY3 - boxGap);
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8504,7 +8512,7 @@ function TemporalReplay() {
       w: boxW,
       h: hudH
     },
-    // 4: HUD (full width)
+    // 4: HUD (full width, fills to MOVEMENT)
     {
       x: leftX,
       y: rowY1,
@@ -8514,17 +8522,17 @@ function TemporalReplay() {
     // 5: VIEW (left of KB)
     {
       x: leftX,
-      y: rowY4,
+      y: moveTop,
       w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (full width, square height)
+    // 6: MOVEMENT (full width, bottom at WORLD label)
     {
       x: worldLeftX,
-      y: rowY5,
+      y: rowY3,
       w: worldW,
       h: worldH
-    } // 7: WORLD
+    } // 7: WORLD (starts at rowY3, behind HUD/MOVE)
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v272";
+  var v = "v273";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v272 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v273 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v272"), /*#__PURE__*/React.createElement("span", {
+  }, "v273"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8031,7 +8031,7 @@ function TemporalReplay() {
     }, unit, " ", e.data.switchMethod === "DeathRespawn" ? "💀" : "");
   })))), tab === "career" && (() => {
     const W = 1340,
-      H = 1000;
+      H = 720;
     // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
     // Derived features and channels are positioned independently (left of colX[2])
     const colX = [4, 108, 316, 533, 750, 967, 1185];
@@ -8449,10 +8449,9 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    const hudH = 80;
-    const moveH = 80;
-    const cellsH = 330;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVEMENT|HUD, Row 4: WORLD
+    const hudH = 60;
+    const moveH = 60;
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVE|HUD, Row 4: WORLD (aligned with WinState bottom)
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
@@ -8460,14 +8459,16 @@ function TemporalReplay() {
     const row1H = Math.max(viewH, keyH);
     const row2H = Math.max(audioH, textH);
     const row3H = Math.max(moveH, hudH);
-    const totalUsed = mouseH + row1H + row2H + row3H + cellsH;
-    const totalAvail = H - topPad - 16;
-    const boxGap = Math.max(3, Math.floor((totalAvail - totalUsed) / 4));
+    const boxGap = 4;
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
     const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
     const rowY4 = rowY3 + row3H + boxGap;
+    // WinState bottom: row 15.2 * 36 + 30 + 28 + 4 + 4*15 + 14 = ~683
+    const worldBottom = 683;
+    const worldH = worldBottom - rowY4;
+    const worldW = boxW * 3;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8518,11 +8519,11 @@ function TemporalReplay() {
     },
     // 6: MOVEMENT (left of HUD)
     {
-      x: boxX + boxW - boxW * 2,
+      x: boxX + boxW - worldW,
       y: rowY4,
-      w: boxW * 2,
-      h: Math.min(cellsH, totalAvail - (rowY4 - topPad))
-    } // 7: WORLD
+      w: worldW,
+      h: worldH
+    } // 7: WORLD (right-aligned, extends far left)
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -10820,7 +10821,7 @@ function TemporalReplay() {
     }, /*#__PURE__*/React.createElement("svg", {
       width: W,
       height: H,
-      viewBox: `-300 0 ${W + 300} ${H}`,
+      viewBox: `-500 0 ${W + 500} ${H}`,
       style: {
         display: "block",
         margin: "0 auto",
@@ -12550,7 +12551,7 @@ function TemporalReplay() {
         // Isometric projection for world map
         const wcx = areaX + areaW * 0.5,
           wcy = areaY + areaH * 0.48;
-        const wScale = Math.min(areaW, areaH) * 0.82;
+        const wScale = Math.min(areaW, areaH) * 0.9;
         const wIsoX = (gx, gy, gz) => wcx + (gx - gy) * 0.866 * wScale / 100;
         const wIsoY = (gx, gy, gz) => wcy + (gx + gy) * 0.5 * wScale / 100 - gz * wScale / 100;
         // Ground plane corners (100x100 grid, z=0)
@@ -12629,7 +12630,7 @@ function TemporalReplay() {
         const sacYaw = sacP < 0.4 ? Math.sin(Math.floor(time / 3.7) * 7.3) * 55 : 0;
         const viewYaw = (driftYaw + microJ + sacYaw) * Math.PI / 180;
         const fovHalf = 35 * Math.PI / 180;
-        const coneLen = 18;
+        const coneLen = 22;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("polygon", {
@@ -12638,13 +12639,13 @@ function TemporalReplay() {
           stroke: "#00ddff",
           strokeWidth: 1.2
         }), /*#__PURE__*/React.createElement("text", {
-          x: wIsoX(0, 0, 0) + 4,
-          y: wIsoY(0, 0, 0) - 4,
+          x: wIsoX(0, 0, 0) + 6,
+          y: wIsoY(0, 0, 0) - 6,
           fill: "#00ddff",
-          fontSize: 7,
+          fontSize: 9,
           fontFamily: mono,
           fontWeight: 700,
-          letterSpacing: 1.5
+          letterSpacing: 2
         }, "WORLD"), [10, 20, 30, 40, 50, 60, 70, 80, 90].map(g => {
           const step = 4;
           const isMajor = g % 20 === 0;
@@ -12719,7 +12720,7 @@ function TemporalReplay() {
             y: wIsoY(85, 15, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(255,80,80,0.6)",
-            fontSize: 6,
+            fontSize: 8,
             fontFamily: mono,
             fontWeight: 700
           }, "HOSTILE"));
@@ -12738,7 +12739,7 @@ function TemporalReplay() {
             y: wIsoY(10, 87, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(60,200,100,0.5)",
-            fontSize: 6,
+            fontSize: 8,
             fontFamily: mono,
             fontWeight: 700
           }, "BASE"));
@@ -12777,7 +12778,7 @@ function TemporalReplay() {
             y: tcy,
             textAnchor: "middle",
             fill: `${b.color}dd`,
-            fontSize: 5,
+            fontSize: 7,
             fontFamily: mono,
             fontWeight: 700
           }, b.label));
@@ -12794,7 +12795,7 @@ function TemporalReplay() {
             key: `trail-${i}`,
             cx: wIsoX(tgx, tgy, tgz),
             cy: wIsoY(tgx, tgy, tgz),
-            r: 1.8,
+            r: 2.5,
             fill: "#44ffaa",
             opacity: Math.max(0, 0.4 - i * 0.035)
           });
@@ -12809,26 +12810,26 @@ function TemporalReplay() {
           return /*#__PURE__*/React.createElement("polygon", {
             points: `${ppx},${ppy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
             fill: "rgba(0,255,238,0.15)",
-            stroke: "rgba(0,255,238,0.35)",
-            strokeWidth: 0.8
+            stroke: "rgba(0,255,238,0.4)",
+            strokeWidth: 1.0
           });
         })(), /*#__PURE__*/React.createElement("polygon", {
-          points: `${ppx},${ppy - 6} ${ppx + 4.5},${ppy} ${ppx},${ppy + 4} ${ppx - 4.5},${ppy}`,
+          points: `${ppx},${ppy - 8} ${ppx + 5.5},${ppy} ${ppx},${ppy + 5} ${ppx - 5.5},${ppy}`,
           fill: "#44ffaa",
           stroke: "#88ffdd",
-          strokeWidth: 1,
+          strokeWidth: 1.2,
           opacity: 0.9
         }), /*#__PURE__*/React.createElement("circle", {
           cx: ppx,
           cy: ppy,
-          r: 7,
+          r: 9,
           fill: "none",
           stroke: "#44ffaa",
-          strokeWidth: 0.6,
+          strokeWidth: 0.7,
           opacity: 0.3
         }, /*#__PURE__*/React.createElement("animate", {
           attributeName: "r",
-          values: "6;12;6",
+          values: "8;15;8",
           dur: "2s",
           repeatCount: "indefinite"
         }), /*#__PURE__*/React.createElement("animate", {

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v271";
+  var v = "v272";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v271 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v272 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v271"), /*#__PURE__*/React.createElement("span", {
+  }, "v272"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12555,26 +12555,24 @@ function TemporalReplay() {
         const wIsoY = (gx, gy, gz) => wcy + (gx + gy) * 0.5 * wScale / 100 - gz * wScale / 100;
         // Ground plane corners (100x100 grid, z=0)
         const gp = [[0, 0], [100, 0], [100, 100], [0, 100]].map(p => `${wIsoX(p[0], p[1], 0)},${wIsoY(p[0], p[1], 0)}`).join(" ");
-        // Terrain height map — flat center (buildings), hills in north corner
+        // Terrain height map — flat except river valley along south
         const terrainH = (gx, gy) => {
-          // North corner hills (low gx, low gy = top vertex of iso diamond)
-          const n1 = Math.max(0, 14 - Math.sqrt((gx - 15) * (gx - 15) + (gy - 10) * (gy - 10)) * 0.35);
-          const n2 = Math.max(0, 10 - Math.sqrt((gx - 8) * (gx - 8) + (gy - 25) * (gy - 25)) * 0.4);
-          const n3 = Math.max(0, 11 - Math.sqrt((gx - 25) * (gx - 25) + (gy - 5) * (gy - 5)) * 0.38);
-          const n4 = Math.max(0, 8 - Math.sqrt((gx - 5) * (gx - 5) + (gy - 12) * (gy - 12)) * 0.45);
-          const n5 = Math.max(0, 7 - Math.sqrt((gx - 18) * (gx - 18) + (gy - 22) * (gy - 22)) * 0.5);
-          const n6 = Math.max(0, 9 - Math.sqrt((gx - 30) * (gx - 30) + (gy - 12) * (gy - 12)) * 0.42);
-          // Ridge connecting north hills
-          const ridgeDist = Math.abs(gy - (gx * 0.6 + 3));
-          const ridge = gx < 35 && gy < 30 ? Math.max(0, 5 - ridgeDist * 0.6) : 0;
-          // Valley along south edge (high gy)
+          // Valley along bottom (high gy): negative height = depression
           const valleyCenter = 90 + Math.sin(gx * 0.08) * 4;
           const valleyDist = Math.abs(gy - valleyCenter);
           const valley = valleyDist < 8 ? -(4 - valleyDist * 0.5) : 0;
-          return Math.max(-3, n1 + n2 + n3 + n4 + n5 + n6 + ridge + valley);
+          return Math.max(-3, valley);
         };
-        // Buildings in flat center area
+        // Buildings in center area
         const buildings = [{
+          gx: 25,
+          gy: 65,
+          w: 8,
+          d: 5,
+          h: 7,
+          label: "DEPOT",
+          color: "#4488aa"
+        }, {
           gx: 40,
           gy: 45,
           w: 10,
@@ -12584,51 +12582,43 @@ function TemporalReplay() {
           color: "#5599aa"
         }, {
           gx: 55,
-          gy: 42,
+          gy: 55,
           w: 5,
           d: 5,
           h: 14,
           label: "TOWER",
           color: "#448888"
         }, {
-          gx: 42,
-          gy: 55,
+          gx: 35,
+          gy: 30,
           w: 12,
           d: 5,
           h: 8,
           label: "ARMORY",
           color: "#556688"
         }, {
-          gx: 58,
-          gy: 53,
+          gx: 65,
+          gy: 25,
           w: 6,
           d: 6,
           h: 9,
           label: "COMM",
           color: "#557799"
         }, {
-          gx: 50,
-          gy: 65,
-          w: 8,
-          d: 5,
-          h: 7,
-          label: "DEPOT",
-          color: "#4488aa"
-        }, {
-          gx: 65,
-          gy: 48,
+          gx: 15,
+          gy: 42,
           w: 5,
           d: 8,
           h: 6,
           label: "FUEL",
           color: "#448866"
         }];
-        // Player position: starts south-east base, through flat center, toward north hills
+        // Player position: starts lower-left, approaches upper-right
         const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
         const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
         const wobY = Math.sin(time * 0.5) * 3 + Math.cos(time * 0.9) * 1.5;
-        const pgx = 75 - progress * 55 + wobX + Math.sin(progress * Math.PI * 2) * 6;
-        const pgy = 85 - progress * 70 + wobY - Math.sin(progress * Math.PI * 1.5) * 5;
+        const pgx = 10 + progress * 75 + wobX + Math.sin(progress * Math.PI * 2) * 6;
+        const pgy = 85 - progress * 65 + wobY - Math.sin(progress * Math.PI * 1.5) * 5;
         const pgz = terrainH(pgx, pgy);
         const ppx = wIsoX(pgx, pgy, pgz);
         const ppy = wIsoY(pgx, pgy, pgz);
@@ -12679,56 +12669,6 @@ function TemporalReplay() {
             stroke: isMajor ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.16)",
             strokeWidth: isMajor ? 0.6 : 0.4
           }));
-        }), [{
-          cx: 15,
-          cy: 10,
-          r: 20,
-          h: 14,
-          color: "rgba(90,70,40,0.4)"
-        }, {
-          cx: 8,
-          cy: 25,
-          r: 15,
-          h: 10,
-          color: "rgba(80,65,40,0.35)"
-        }, {
-          cx: 25,
-          cy: 5,
-          r: 16,
-          h: 11,
-          color: "rgba(85,60,35,0.4)"
-        }, {
-          cx: 5,
-          cy: 12,
-          r: 12,
-          h: 8,
-          color: "rgba(75,65,45,0.35)"
-        }, {
-          cx: 18,
-          cy: 22,
-          r: 10,
-          h: 7,
-          color: "rgba(70,60,40,0.3)"
-        }, {
-          cx: 30,
-          cy: 12,
-          r: 13,
-          h: 9,
-          color: "rgba(80,70,45,0.35)"
-        }].map((hill, hi) => {
-          const pts = [];
-          for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
-            const hx = hill.cx + Math.cos(a) * hill.r;
-            const hy = hill.cy + Math.sin(a) * hill.r;
-            pts.push(`${wIsoX(hx, hy, hill.h * 0.5)},${wIsoY(hx, hy, hill.h * 0.5)}`);
-          }
-          return /*#__PURE__*/React.createElement("polygon", {
-            key: `hill-${hi}`,
-            points: pts.join(" "),
-            fill: hill.color,
-            stroke: "rgba(255,255,255,0.06)",
-            strokeWidth: 0.4
-          });
         }), (() => {
           const riverPts = [];
           const riverPtsBot = [];
@@ -12761,9 +12701,9 @@ function TemporalReplay() {
             strokeWidth: 1
           });
         })(), (() => {
-          const hzCorners = [[0, 0], [35, 0], [35, 30], [0, 30]];
+          const hzCorners = [[70, 0], [100, 0], [100, 30], [70, 30]];
           const hz = hzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(18, 15);
+          const labelZ = terrainH(85, 15);
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: hz,
             fill: "rgba(255,30,30,0.1)",
@@ -12775,8 +12715,8 @@ function TemporalReplay() {
             fill: "rgba(255,30,30,0.05)",
             opacity: 0.4 + Math.sin(time * 1.5) * 0.3
           }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(18, 15, labelZ + 1),
-            y: wIsoY(18, 15, labelZ + 1),
+            x: wIsoX(85, 15, labelZ + 1),
+            y: wIsoY(85, 15, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(255,80,80,0.6)",
             fontSize: 6,
@@ -12784,9 +12724,9 @@ function TemporalReplay() {
             fontWeight: 700
           }, "HOSTILE"));
         })(), (() => {
-          const bzCorners = [[65, 75], [90, 75], [90, 100], [65, 100]];
+          const bzCorners = [[0, 75], [20, 75], [20, 100], [0, 100]];
           const bz = bzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(77, 87);
+          const labelZ = terrainH(10, 87);
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: bz,
             fill: "rgba(40,200,100,0.08)",
@@ -12794,8 +12734,8 @@ function TemporalReplay() {
             strokeWidth: 0.5,
             strokeDasharray: "3,2"
           }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(77, 87, labelZ + 1),
-            y: wIsoY(77, 87, labelZ + 1),
+            x: wIsoX(10, 87, labelZ + 1),
+            y: wIsoY(10, 87, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(60,200,100,0.5)",
             fontSize: 6,
@@ -12847,8 +12787,8 @@ function TemporalReplay() {
           const tt = Math.max(0, progress - i * 0.035);
           const tw = Math.sin(tt * 30 * 0.7) * 4 + Math.sin(tt * 30 * 1.3) * 2;
           const th = Math.sin(tt * 30 * 0.5) * 3 + Math.cos(tt * 30 * 0.9) * 1.5;
-          const tgx = 75 - tt * 55 + tw + Math.sin(tt * Math.PI * 2) * 6;
-          const tgy = 85 - tt * 70 + th - Math.sin(tt * Math.PI * 1.5) * 5;
+          const tgx = 10 + tt * 75 + tw + Math.sin(tt * Math.PI * 2) * 6;
+          const tgy = 85 - tt * 65 + th - Math.sin(tt * Math.PI * 1.5) * 5;
           const tgz = terrainH(tgx, tgy);
           return /*#__PURE__*/React.createElement("circle", {
             key: `trail-${i}`,

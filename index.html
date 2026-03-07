@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v267";
+  var v = "v268";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v267 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v268 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v267"), /*#__PURE__*/React.createElement("span", {
+  }, "v268"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12654,23 +12654,30 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1.5
-        }, "WORLD"), [20, 40, 60, 80].map(g => /*#__PURE__*/React.createElement("g", {
-          key: `wg-${g}`
-        }, /*#__PURE__*/React.createElement("line", {
-          x1: wIsoX(g, 0, 0),
-          y1: wIsoY(g, 0, 0),
-          x2: wIsoX(g, 100, 0),
-          y2: wIsoY(g, 100, 0),
-          stroke: "rgba(255,255,255,0.08)",
-          strokeWidth: 0.4
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: wIsoX(0, g, 0),
-          y1: wIsoY(0, g, 0),
-          x2: wIsoX(100, g, 0),
-          y2: wIsoY(100, g, 0),
-          stroke: "rgba(255,255,255,0.08)",
-          strokeWidth: 0.4
-        }))), [{
+        }, "WORLD"), [20, 40, 60, 80].map(g => {
+          const step = 5;
+          const ptsA = []; // constant gx=g, varying gy
+          const ptsB = []; // constant gy=g, varying gx
+          for (let t = 0; t <= 100; t += step) {
+            const zA = terrainH(g, t);
+            ptsA.push(`${wIsoX(g, t, zA)},${wIsoY(g, t, zA)}`);
+            const zB = terrainH(t, g);
+            ptsB.push(`${wIsoX(t, g, zB)},${wIsoY(t, g, zB)}`);
+          }
+          return /*#__PURE__*/React.createElement("g", {
+            key: `wg-${g}`
+          }, /*#__PURE__*/React.createElement("polyline", {
+            points: ptsA.join(" "),
+            fill: "none",
+            stroke: "rgba(255,255,255,0.13)",
+            strokeWidth: 0.5
+          }), /*#__PURE__*/React.createElement("polyline", {
+            points: ptsB.join(" "),
+            fill: "none",
+            stroke: "rgba(255,255,255,0.13)",
+            strokeWidth: 0.5
+          }));
+        }), [{
           cx: 70,
           cy: 25,
           r: 18,

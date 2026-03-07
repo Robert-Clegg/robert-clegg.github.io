@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v274";
+  var v = "v275";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v274 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v275 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v274"), /*#__PURE__*/React.createElement("span", {
+  }, "v275"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8449,26 +8449,28 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    const hudH = 80;
-    const moveH = 80;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVE|HUD, Row 4: WORLD
+    const hudH = 160;
+    const moveH = 160;
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: WORLD (no MOVE/HUD row — they float NW of world)
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
     const rightX = boxX + halfW + pairGap;
     const row1H = Math.max(viewH, keyH);
     const row2H = Math.max(audioH, textH);
-    const row3H = Math.max(moveH, hudH);
     const boxGap = 4;
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
     const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
-    const rowY4 = rowY3 + row3H + boxGap;
-    // WinState bottom: row 15.2 * 36 + topPad + nodeH + ssDropGap + 4*(ssH+ssGap) + ssH = ~683
+    // WinState bottom
     const winStateBottom = 683;
-    const worldH = winStateBottom - rowY4;
+    const worldH = winStateBottom - rowY3;
     const worldW = boxW * 3.5;
+    const worldLeftX = boxX + boxW - worldW;
+    // MOVE and HUD: 2x size, stacked on NW side of world container
+    const nwX = worldLeftX - boxW - 6; // left of world container
+    const nwY = rowY3;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8498,12 +8500,12 @@ function TemporalReplay() {
     },
     // 3: TXT (right)
     {
-      x: rightX,
-      y: rowY3,
-      w: halfW,
+      x: nwX,
+      y: nwY + moveH + boxGap,
+      w: boxW,
       h: hudH
     },
-    // 4: HUD (right)
+    // 4: HUD (NW, below MOVEMENT)
     {
       x: leftX,
       y: rowY1,
@@ -8512,15 +8514,15 @@ function TemporalReplay() {
     },
     // 5: VIEW (left of KB)
     {
-      x: leftX,
-      y: rowY3,
-      w: halfW,
+      x: nwX,
+      y: nwY,
+      w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (left of HUD)
+    // 6: MOVEMENT (NW, top)
     {
-      x: boxX + boxW - worldW,
-      y: rowY4,
+      x: worldLeftX,
+      y: rowY3,
       w: worldW,
       h: worldH
     } // 7: WORLD
@@ -10821,7 +10823,7 @@ function TemporalReplay() {
     }, /*#__PURE__*/React.createElement("svg", {
       width: W,
       height: H,
-      viewBox: `-600 0 ${W + 600} ${H}`,
+      viewBox: `-800 0 ${W + 800} ${H}`,
       style: {
         display: "block",
         margin: "0 auto",
@@ -12393,10 +12395,10 @@ function TemporalReplay() {
           y: my + 9,
           textAnchor: "middle",
           fill: "#44ffaa",
-          fontSize: 6,
+          fontSize: 10,
           fontFamily: mono,
           fontWeight: 700,
-          letterSpacing: 1
+          letterSpacing: 2
         }, "MOVEMENT"), (() => {
           const s2 = cs * 0.6;
           const verts = [[-s2, -s2, -s2], [s2, -s2, -s2], [s2, s2, -s2], [-s2, s2, -s2], [-s2, -s2, s2], [s2, -s2, s2], [s2, s2, s2], [-s2, s2, s2]];
@@ -12439,21 +12441,21 @@ function TemporalReplay() {
           x: isoX(cs + 3, 0, 0),
           y: isoY(cs + 3, 0, 0) + 2,
           fill: "rgba(255,68,68,0.85)",
-          fontSize: 6,
+          fontSize: 9,
           fontFamily: mono,
           fontWeight: 700
         }, "X"), /*#__PURE__*/React.createElement("text", {
           x: isoX(0, cs + 3, 0),
           y: isoY(0, cs + 3, 0) + 2,
           fill: "rgba(68,255,68,0.85)",
-          fontSize: 6,
+          fontSize: 9,
           fontFamily: mono,
           fontWeight: 700
         }, "Y"), /*#__PURE__*/React.createElement("text", {
           x: isoX(0, 0, cs + 3),
           y: isoY(0, 0, cs + 3) + 2,
           fill: "rgba(68,136,255,0.85)",
-          fontSize: 6,
+          fontSize: 9,
           fontFamily: mono,
           fontWeight: 700
         }, "Z"), time > 0.1 && /*#__PURE__*/React.createElement("g", null, isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(axLen, 0, 0), isoY(axLen, 0, 0), "#ff4444", 2.2), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, ayLen, 0), isoY(0, ayLen, 0), "#44ff44", 2.2), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, 0, azLen), isoY(0, 0, azLen), "#4488ff", 2.2)), time > 0.1 && /*#__PURE__*/React.createElement("g", null, [{
@@ -12492,14 +12494,14 @@ function TemporalReplay() {
           unit: "°",
           color: "#ff88aa"
         }].map((row, ri) => {
-          const ry = my + 20 + ri * 13;
+          const ry = my + 28 + ri * 18;
           return /*#__PURE__*/React.createElement("g", {
             key: `nr-${ri}`
           }, /*#__PURE__*/React.createElement("text", {
             x: numX,
             y: ry,
             fill: "rgba(255,255,255,0.5)",
-            fontSize: 7,
+            fontSize: 10,
             fontFamily: mono,
             fontWeight: 700
           }, row.label), /*#__PURE__*/React.createElement("text", {
@@ -12512,19 +12514,19 @@ function TemporalReplay() {
             fontWeight: 700
           }, row.val, /*#__PURE__*/React.createElement("tspan", {
             fill: "rgba(255,255,255,0.35)",
-            fontSize: 5.5
+            fontSize: 8
           }, " ", row.unit)));
         })), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
           x: mx + 2,
-          y: my + mh - 8,
+          y: my + mh - 14,
           width: (mw - 4) * Math.min(1, spd / 30),
-          height: 2.5,
-          rx: 1,
+          height: 4,
+          rx: 2,
           fill: "#44ffaa",
           opacity: 0.6
         }), /*#__PURE__*/React.createElement("text", {
-          x: mx + mw - 3,
-          y: my + mh - 3,
+          x: mx + mw - 5,
+          y: my + mh - 5,
           textAnchor: "end",
           fill: "rgba(255,255,255,0.25)",
           fontSize: 4,

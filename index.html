@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v282";
+  var v = "v283";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v282 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v283 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v282"), /*#__PURE__*/React.createElement("span", {
+  }, "v283"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12312,20 +12312,20 @@ function TemporalReplay() {
         const isoY = (x3, y3, z3) => ccy - y3 + (x3 + z3) * 0.5;
         // Smooth forces — hold steady, change direction every 5-8s
         // smoothstep transition over ~1s when direction changes
-        const dirPeriod = 6.0;
+        const dirPeriod = 4.0;
         const dirPhase = time > 0.1 ? time % dirPeriod / dirPeriod : 0;
         const dirIdx = time > 0.1 ? Math.floor(time / dirPeriod) : 0;
         // Transition: smooth ramp over first 15% of each period
         const trans = dirPhase < 0.15 ? dirPhase / 0.15 : 1;
         const smooth = trans * trans * (3 - 2 * trans); // smoothstep
-        // Target forces per direction change (deterministic from dirIdx)
-        const targX = Math.sin(dirIdx * 7.3) * 10 + Math.sin(dirIdx * 2.1) * 5;
-        const targY = -9.81 * 3 + Math.sin(dirIdx * 3.7) * 3;
-        const targZ = Math.sin(dirIdx * 5.1) * 12 + 10;
+        // Target forces — wide swings on all three axes
+        const targX = Math.sin(dirIdx * 7.3) * 25 + Math.cos(dirIdx * 3.1) * 10;
+        const targY = Math.sin(dirIdx * 3.7) * 20 + Math.cos(dirIdx * 5.9) * 12 - 10;
+        const targZ = Math.sin(dirIdx * 5.1) * 28 + Math.cos(dirIdx * 2.3) * 10;
         // Previous targets
-        const prevX = Math.sin((dirIdx - 1) * 7.3) * 10 + Math.sin((dirIdx - 1) * 2.1) * 5;
-        const prevY = -9.81 * 3 + Math.sin((dirIdx - 1) * 3.7) * 3;
-        const prevZ = Math.sin((dirIdx - 1) * 5.1) * 12 + 10;
+        const prevX = Math.sin((dirIdx - 1) * 7.3) * 25 + Math.cos((dirIdx - 1) * 3.1) * 10;
+        const prevY = Math.sin((dirIdx - 1) * 3.7) * 20 + Math.cos((dirIdx - 1) * 5.9) * 12 - 10;
+        const prevZ = Math.sin((dirIdx - 1) * 5.1) * 28 + Math.cos((dirIdx - 1) * 2.3) * 10;
         const fx = time > 0.1 ? prevX + (targX - prevX) * smooth : 0;
         const fy = time > 0.1 ? prevY + (targY - prevY) * smooth : 0;
         const fz = time > 0.1 ? prevZ + (targZ - prevZ) * smooth : 0;
@@ -12336,7 +12336,7 @@ function TemporalReplay() {
           azLen = fz * vScale;
         const spd = time > 0.1 ? Math.abs(fz * 0.8) : 0;
         const accel = time > 0.1 ? fz * 0.12 : 0;
-        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(dirIdx * 4.3) * 20 + 5) : 0;
+        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(dirIdx * 4.3) * 30 + Math.cos(dirIdx * 2.7) * 15) : 0;
         const numX = mx + mw * 0.62;
         const numW = mw * 0.35;
         const isoArr = (ox, oy, tx, ty, color, sw) => {

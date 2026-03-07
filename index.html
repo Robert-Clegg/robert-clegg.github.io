@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v273";
+  var v = "v274";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v273 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v274 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v273"), /*#__PURE__*/React.createElement("span", {
+  }, "v274"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8031,7 +8031,7 @@ function TemporalReplay() {
     }, unit, " ", e.data.switchMethod === "DeathRespawn" ? "💀" : "");
   })))), tab === "career" && (() => {
     const W = 1340,
-      H = 720;
+      H = 700;
     // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
     // Derived features and channels are positioned independently (left of colX[2])
     const colX = [4, 108, 316, 533, 750, 967, 1185];
@@ -8449,9 +8449,9 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    const hudH = 60;
-    const moveH = 60;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVE|HUD, Row 4: WORLD (aligned with WinState bottom)
+    const hudH = 80;
+    const moveH = 80;
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVE|HUD, Row 4: WORLD
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
@@ -8465,10 +8465,10 @@ function TemporalReplay() {
     const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
     const rowY4 = rowY3 + row3H + boxGap;
-    // WinState bottom: row 15.2 * 36 + 30 + 28 + 4 + 4*15 + 14 = ~683
-    const worldBottom = 683;
-    const worldH = worldBottom - rowY4;
-    const worldW = boxW * 3;
+    // WinState bottom: row 15.2 * 36 + topPad + nodeH + ssDropGap + 4*(ssH+ssGap) + ssH = ~683
+    const winStateBottom = 683;
+    const worldH = winStateBottom - rowY4;
+    const worldW = boxW * 3.5;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8523,7 +8523,7 @@ function TemporalReplay() {
       y: rowY4,
       w: worldW,
       h: worldH
-    } // 7: WORLD (right-aligned, extends far left)
+    } // 7: WORLD
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -10821,7 +10821,7 @@ function TemporalReplay() {
     }, /*#__PURE__*/React.createElement("svg", {
       width: W,
       height: H,
-      viewBox: `-500 0 ${W + 500} ${H}`,
+      viewBox: `-600 0 ${W + 600} ${H}`,
       style: {
         display: "block",
         margin: "0 auto",
@@ -12548,10 +12548,10 @@ function TemporalReplay() {
         const areaW = worldW - 4,
           areaH = boxH - labelH - 4;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        // Isometric projection for world map
-        const wcx = areaX + areaW * 0.5,
-          wcy = areaY + areaH * 0.48;
-        const wScale = Math.min(areaW, areaH) * 0.9;
+        // Size iso to fit width, pin south vertex of diamond to WinState bottom (683)
+        const wScale = Math.min(areaW / 1.732, areaH) * 0.92;
+        const wcx = areaX + areaW * 0.5;
+        const wcy = 683 - wScale;
         const wIsoX = (gx, gy, gz) => wcx + (gx - gy) * 0.866 * wScale / 100;
         const wIsoY = (gx, gy, gz) => wcy + (gx + gy) * 0.5 * wScale / 100 - gz * wScale / 100;
         // Ground plane corners (100x100 grid, z=0)

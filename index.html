@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v256";
+  var v = "v257";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v256 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v257 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v256"), /*#__PURE__*/React.createElement("span", {
+  }, "v257"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12300,50 +12300,57 @@ function TemporalReplay() {
         })());
       }
 
-      // ═══ MOVEMENT container — 3-vector heading + numeric readout ═══
+      // MOVEMENT container -- isometric cube + XYZ force vectors
       if (box.id === "movement") {
         const mx = bx,
           my = y,
           mw = bw,
           mh = boxH;
-        // Compass rose shifted left to make room for numeric panel
-        const compassR = Math.min(mw * 0.45, (mh - 16) / 2) - 4;
-        const mcx = mx + compassR + 6,
-          mcy = my + 14 + (mh - 14) / 2;
-        const mr = compassR;
-        // Numeric panel on right
-        const numX = mx + compassR * 2 + 14;
-        const numW = mw - (compassR * 2 + 16);
-        // Jittery simulation — high-frequency noise on top of slow drift
-        const jit = seed => Math.sin(nowMs * 0.017 + seed * 3.1) * 2.5 + Math.sin(nowMs * 0.0091 + seed * 7.7) * 1.5 + Math.cos(nowMs * 0.023 + seed * 5.3) * 1.0;
-        const legsBase = time > 0.1 ? (Math.sin(time * 0.4) * 60 + time * 15) % 360 : 0;
-        const legsYaw = legsBase + jit(1);
-        const torsoBase = time > 0.1 ? legsBase + Math.sin(time * 0.9) * 45 : 0;
-        const torsoYaw = torsoBase + jit(2) * 1.8;
-        const lookBase = time > 0.1 ? legsBase + Math.sin(time * 1.3) * 70 + Math.sin(time * 0.5) * 30 : 0;
-        const lookYaw = lookBase + jit(3) * 2.5;
-        // Speed with jitter
-        const spdBase = time > 0.1 ? Math.abs(Math.sin(time * 0.6)) * 25 : 0;
-        const spd = Math.max(0, spdBase + jit(4) * 1.5);
-        const maxSpd = 30;
-        // Forces — changing with terrain and speed
-        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(time * 0.35) * 28 + jit(5) * 2) : 0;
-        const mechMass = 30000; // kg
-        const g = 9.81;
-        const mgForce = mechMass * g;
-        const thetaRad = slopeAngle * Math.PI / 180;
-        const normalF = mgForce * Math.cos(thetaRad);
-        const slopeF = mgForce * Math.sin(thetaRad);
-        const thrustF = time > 0.1 ? Math.sin(time * 0.8) * 80000 + jit(6) * 15000 : 0;
-        const accel = time > 0.1 ? (thrustF - slopeF) / mechMass + jit(7) * 0.3 : 0;
-        const turnRate = time > 0.1 ? Math.sin(time * 1.1) * 12 + jit(8) * 3 : 0;
-        const legsRad = legsYaw * Math.PI / 180;
-        const torsoRad = torsoYaw * Math.PI / 180;
-        const lookRad = lookYaw * Math.PI / 180;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        // Divergence angles
-        const torsoDiv = Math.abs((torsoYaw - legsYaw + 540) % 360 - 180);
-        const lookDiv = Math.abs((lookYaw - legsYaw + 540) % 360 - 180);
+        const jit = seed => Math.sin(nowMs * 0.017 + seed * 3.1) * 2.5 + Math.sin(nowMs * 0.0091 + seed * 7.7) * 1.5 + Math.cos(nowMs * 0.023 + seed * 5.3) * 1.0;
+        const cubeArea = Math.min(mw * 0.55, mh - 18);
+        const ccx = mx + cubeArea * 0.5 + 4;
+        const ccy = my + 14 + (mh - 16) / 2;
+        const cs = cubeArea * 0.28;
+        const isoX = (x3, y3, z3) => ccx + (x3 - z3) * 0.866;
+        const isoY = (x3, y3, z3) => ccy - y3 + (x3 + z3) * 0.5;
+        const fx = time > 0.1 ? Math.sin(time * 0.8) * 12 + jit(1) * 2.5 : 0;
+        const fy = time > 0.1 ? -9.81 * 3 + Math.sin(time * 0.3) * 4 + jit(2) * 1.5 : 0;
+        const fz = time > 0.1 ? Math.sin(time * 0.5) * 18 + Math.cos(time * 0.35) * 8 + jit(3) * 3 : 0;
+        const maxF = 35;
+        const vScale = cs * 0.7 / maxF;
+        const axLen = fx * vScale,
+          ayLen = fy * vScale,
+          azLen = fz * vScale;
+        const spd = time > 0.1 ? Math.abs(fz * 0.8 + jit(4) * 1.5) : 0;
+        const accel = time > 0.1 ? fz * 0.12 + jit(5) * 0.4 : 0;
+        const slopeAngle = time > 0.1 ? Math.abs(Math.sin(time * 0.35) * 25 + jit(6) * 2) : 0;
+        const numX = mx + cubeArea + 8;
+        const numW = mw - cubeArea - 12;
+        const isoArr = (ox, oy, tx, ty, color, sw) => {
+          const ddx = tx - ox,
+            ddy = ty - oy;
+          const len = Math.sqrt(ddx * ddx + ddy * ddy);
+          if (len < 2) return null;
+          const nx2 = ddx / len,
+            ny2 = ddy / len;
+          const hs = 4,
+            ppx = -ny2,
+            ppy = nx2;
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+            x1: ox,
+            y1: oy,
+            x2: tx,
+            y2: ty,
+            stroke: color,
+            strokeWidth: sw,
+            opacity: 0.85
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${tx},${ty} ${tx - nx2 * hs + ppx * hs * 0.4},${ty - ny2 * hs + ppy * hs * 0.4} ${tx - nx2 * hs - ppx * hs * 0.4},${ty - ny2 * hs - ppy * hs * 0.4}`,
+            fill: color,
+            opacity: 0.9
+          }));
+        };
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
@@ -12374,120 +12381,102 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1
-        }, "MOVEMENT"), /*#__PURE__*/React.createElement("circle", {
-          cx: mcx,
-          cy: mcy,
-          r: mr,
-          fill: "none",
-          stroke: `rgba(68,255,170,${0.15 + containerBr * 0.3})`,
-          strokeWidth: 0.8
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: mcx,
-          cy: mcy,
-          r: mr * 0.3,
-          fill: "none",
-          stroke: "rgba(255,255,255,0.08)",
-          strokeWidth: 0.5
-        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
-          const tipX = mcx + Math.sin(legsRad) * mr * 0.8;
-          const tipY = mcy - Math.cos(legsRad) * mr * 0.8;
-          const hs = 5;
-          const a1 = legsRad + Math.PI + 0.4;
-          const a2 = legsRad + Math.PI - 0.4;
-          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
-            x1: mcx,
-            y1: mcy,
-            x2: tipX,
-            y2: tipY,
-            stroke: "#44ff44",
-            strokeWidth: 2.2,
-            opacity: 0.8
-          }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${tipX},${tipY} ${tipX + Math.sin(a1) * hs},${tipY - Math.cos(a1) * hs} ${tipX + Math.sin(a2) * hs},${tipY - Math.cos(a2) * hs}`,
-            fill: "#44ff44",
-            opacity: 0.9
+        }, "MOVEMENT"), (() => {
+          const s2 = cs * 0.6;
+          const verts = [[-s2, -s2, -s2], [s2, -s2, -s2], [s2, s2, -s2], [-s2, s2, -s2], [-s2, -s2, s2], [s2, -s2, s2], [s2, s2, s2], [-s2, s2, s2]];
+          const proj = verts.map(v => [isoX(v[0], v[1], v[2]), isoY(v[0], v[1], v[2])]);
+          const edges = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+          return edges.map(([a, b], i) => /*#__PURE__*/React.createElement("line", {
+            key: `ce-${i}`,
+            x1: proj[a][0],
+            y1: proj[a][1],
+            x2: proj[b][0],
+            y2: proj[b][1],
+            stroke: "rgba(255,255,255,0.15)",
+            strokeWidth: 0.6
           }));
-        })(), (() => {
-          const tipX = mcx + Math.sin(torsoRad) * mr * 0.65;
-          const tipY = mcy - Math.cos(torsoRad) * mr * 0.65;
-          const hs = 4;
-          const a1 = torsoRad + Math.PI + 0.45;
-          const a2 = torsoRad + Math.PI - 0.45;
-          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
-            x1: mcx,
-            y1: mcy,
-            x2: tipX,
-            y2: tipY,
-            stroke: "#ffdd00",
-            strokeWidth: 1.5,
-            opacity: 0.7
-          }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${tipX},${tipY} ${tipX + Math.sin(a1) * hs},${tipY - Math.cos(a1) * hs} ${tipX + Math.sin(a2) * hs},${tipY - Math.cos(a2) * hs}`,
-            fill: "#ffdd00",
-            opacity: 0.8
-          }));
-        })(), (() => {
-          const tipX = mcx + Math.sin(lookRad) * mr * 0.5;
-          const tipY = mcy - Math.cos(lookRad) * mr * 0.5;
-          const hs = 3.5;
-          const a1 = lookRad + Math.PI + 0.5;
-          const a2 = lookRad + Math.PI - 0.5;
-          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
-            x1: mcx,
-            y1: mcy,
-            x2: tipX,
-            y2: tipY,
-            stroke: "#00ffee",
-            strokeWidth: 1,
-            opacity: 0.6,
-            strokeDasharray: "3,2"
-          }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${tipX},${tipY} ${tipX + Math.sin(a1) * hs},${tipY - Math.cos(a1) * hs} ${tipX + Math.sin(a2) * hs},${tipY - Math.cos(a2) * hs}`,
-            fill: "#00ffee",
-            opacity: 0.7
-          }));
-        })()), time > 0.1 && /*#__PURE__*/React.createElement("g", null, [{
+        })(), /*#__PURE__*/React.createElement("line", {
+          x1: isoX(0, 0, 0),
+          y1: isoY(0, 0, 0),
+          x2: isoX(cs, 0, 0),
+          y2: isoY(cs, 0, 0),
+          stroke: "rgba(255,68,68,0.2)",
+          strokeWidth: 0.5,
+          strokeDasharray: "2,2"
+        }), /*#__PURE__*/React.createElement("line", {
+          x1: isoX(0, 0, 0),
+          y1: isoY(0, 0, 0),
+          x2: isoX(0, cs, 0),
+          y2: isoY(0, cs, 0),
+          stroke: "rgba(68,255,68,0.2)",
+          strokeWidth: 0.5,
+          strokeDasharray: "2,2"
+        }), /*#__PURE__*/React.createElement("line", {
+          x1: isoX(0, 0, 0),
+          y1: isoY(0, 0, 0),
+          x2: isoX(0, 0, cs),
+          y2: isoY(0, 0, cs),
+          stroke: "rgba(68,136,255,0.2)",
+          strokeWidth: 0.5,
+          strokeDasharray: "2,2"
+        }), /*#__PURE__*/React.createElement("text", {
+          x: isoX(cs + 3, 0, 0),
+          y: isoY(cs + 3, 0, 0) + 2,
+          fill: "rgba(255,68,68,0.5)",
+          fontSize: 5,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "X"), /*#__PURE__*/React.createElement("text", {
+          x: isoX(0, cs + 3, 0),
+          y: isoY(0, cs + 3, 0) + 2,
+          fill: "rgba(68,255,68,0.5)",
+          fontSize: 5,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "Y"), /*#__PURE__*/React.createElement("text", {
+          x: isoX(0, 0, cs + 3),
+          y: isoY(0, 0, cs + 3) + 2,
+          fill: "rgba(68,136,255,0.5)",
+          fontSize: 5,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "Z"), time > 0.1 && /*#__PURE__*/React.createElement("g", null, isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(axLen, 0, 0), isoY(axLen, 0, 0), "#ff4444", 1.8), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, ayLen, 0), isoY(0, ayLen, 0), "#44ff44", 1.8), isoArr(isoX(0, 0, 0), isoY(0, 0, 0), isoX(0, 0, azLen), isoY(0, 0, azLen), "#4488ff", 1.8)), time > 0.1 && /*#__PURE__*/React.createElement("g", null, [{
+          label: "Fx",
+          val: fx.toFixed(1),
+          unit: "kN",
+          color: "#ff4444"
+        }, {
+          label: "Fy",
+          val: fy.toFixed(1),
+          unit: "kN",
+          color: "#44ff44"
+        }, {
+          label: "Fz",
+          val: fz.toFixed(1),
+          unit: "kN",
+          color: "#4488ff"
+        }, {
+          label: "|F|",
+          val: Math.sqrt(fx * fx + fy * fy + fz * fz).toFixed(1),
+          unit: "kN",
+          color: "#44ffaa"
+        }, {
           label: "SPD",
           val: spd.toFixed(1),
           unit: "m/s",
-          color: "#44ffaa"
+          color: "#88ffdd"
         }, {
           label: "ACC",
           val: accel.toFixed(1),
-          unit: "m/s\u00B2",
+          unit: "m/s²",
           color: accel > 0 ? "#44ff44" : "#ff6644"
         }, {
-          label: "HDG",
-          val: (legsYaw % 360).toFixed(0),
-          unit: "\u00B0",
-          color: "#44ff44"
-        }, {
-          label: "TRS",
-          val: torsoDiv.toFixed(0),
-          unit: "\u00B0\u0394",
-          color: "#ffdd00"
-        }, {
-          label: "EYE",
-          val: lookDiv.toFixed(0),
-          unit: "\u00B0\u0394",
-          color: "#00ffee"
-        }, {
-          label: "\u0398",
+          label: "Θ",
           val: slopeAngle.toFixed(1),
-          unit: "\u00B0",
+          unit: "°",
           color: "#ff88aa"
-        }, {
-          label: "N",
-          val: (normalF / 1000).toFixed(0),
-          unit: "kN",
-          color: "#88ffdd"
-        }, {
-          label: "F\u2225",
-          val: (slopeF / 1000).toFixed(0),
-          unit: "kN",
-          color: "#ffaa44"
         }].map((row, ri) => {
-          const ry = my + 16 + ri * 7.5;
+          const ry = my + 17 + ri * 8;
           return /*#__PURE__*/React.createElement("g", {
             key: `nr-${ri}`
           }, /*#__PURE__*/React.createElement("text", {
@@ -12512,7 +12501,7 @@ function TemporalReplay() {
         })), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
           x: mx + 2,
           y: my + mh - 8,
-          width: (mw - 4) * (spd / maxSpd),
+          width: (mw - 4) * Math.min(1, spd / 30),
           height: 2.5,
           rx: 1,
           fill: "#44ffaa",
@@ -12525,12 +12514,12 @@ function TemporalReplay() {
           fontSize: 4,
           fontFamily: mono
         }, /*#__PURE__*/React.createElement("tspan", {
+          fill: "#ff4444"
+        }, "▲"), "X ", /*#__PURE__*/React.createElement("tspan", {
           fill: "#44ff44"
-        }, "\u25B2"), "LEG ", /*#__PURE__*/React.createElement("tspan", {
-          fill: "#ffdd00"
-        }, "\u25B2"), "TRS ", /*#__PURE__*/React.createElement("tspan", {
-          fill: "#00ffee"
-        }, "\u25B2"), "EYE"));
+        }, "▲"), "Y ", /*#__PURE__*/React.createElement("tspan", {
+          fill: "#4488ff"
+        }, "▲"), "Z"));
       }
 
       // — CELLS box: minimap + yellow kill splashes + population bars —

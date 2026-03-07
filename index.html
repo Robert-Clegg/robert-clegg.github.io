@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v290";
+  var v = "v291";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v290 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v291 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v290"), /*#__PURE__*/React.createElement("span", {
+  }, "v291"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8471,6 +8471,12 @@ function TemporalReplay() {
       color: "#44ffaa",
       rawTypes: ["movement"]
     }, {
+      id: "automation",
+      label: "AUTOMATION",
+      sub: "code → mech",
+      color: "#88ddff",
+      rawTypes: ["automation"]
+    }, {
       id: "cam",
       label: "WORLD",
       sub: "game state",
@@ -8505,6 +8511,9 @@ function TemporalReplay() {
     // MOVEMENT below HUD
     const moveH = 120;
     const moveTop = rowY3 + hudH + boxGap;
+    // AUTOMATION below MOVEMENT
+    const autoH = 48;
+    const autoTop = moveTop + moveH + boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8555,11 +8564,18 @@ function TemporalReplay() {
     },
     // 6: MOVEMENT (below HUD)
     {
+      x: leftX,
+      y: autoTop,
+      w: boxW,
+      h: autoH
+    },
+    // 7: AUTOMATION (below MOVEMENT)
+    {
       x: worldLeftX,
       y: rowY3,
       w: worldW,
       h: worldH
-    } // 7: WORLD
+    } // 8: WORLD
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -9164,56 +9180,73 @@ function TemporalReplay() {
       fireKey: "divergeAngle",
       color: "#aaffee"
     },
-    // WORLD container (boxIdx 7) — 7 channels
+    // AUTOMATION container (boxIdx 7) — 3 channels
     {
       boxIdx: 7,
+      label: "cmdQueue",
+      fireKey: "cmdQueue",
+      color: "#88ddff"
+    }, {
+      boxIdx: 7,
+      label: "execState",
+      fireKey: "execState",
+      color: "#66bbee"
+    }, {
+      boxIdx: 7,
+      label: "scriptLoad",
+      fireKey: "scriptLoad",
+      color: "#aaeeff"
+    },
+    // WORLD container (boxIdx 8) — 7 channels
+    {
+      boxIdx: 8,
       label: "unitHP",
       fireKey: "unitHP",
       color: "#44ffaa"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "unitPos",
       fireKey: "unitPos",
       color: "#00ddff"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "enemyDist",
       fireKey: "enemyDist",
       color: "#ff4466"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "nodeDist",
       fireKey: "nodeDist",
       color: "#66ddff"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "teamPop",
       fireKey: "teamPop",
       color: "#44dd88"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "cellCount",
       fireKey: "cellCount",
       color: "#88eeff"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "nodeOwner",
       fireKey: "nodeOwner",
       color: "#aaddff"
     },
     // ENV — Weather, Terrain, Radiation data channels
     {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "Weather",
       fireKey: "weather",
       color: "#ffaa00"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "Terrain",
       fireKey: "terrain",
       color: "#88ff44"
     }, {
-      boxIdx: 7,
+      boxIdx: 8,
       label: "Radiatn",
       fireKey: "radiation",
       color: "#ff4444"
@@ -11093,6 +11126,23 @@ function TemporalReplay() {
       offset: "100%",
       stopColor: "#003322",
       stopOpacity: "0.35"
+    })), /*#__PURE__*/React.createElement("radialGradient", {
+      id: "grd_automation",
+      cx: "50%",
+      cy: "30%",
+      r: "80%"
+    }, /*#__PURE__*/React.createElement("stop", {
+      offset: "0%",
+      stopColor: "#88ddff",
+      stopOpacity: "0.25"
+    }), /*#__PURE__*/React.createElement("stop", {
+      offset: "50%",
+      stopColor: "#88ddff",
+      stopOpacity: "0.08"
+    }), /*#__PURE__*/React.createElement("stop", {
+      offset: "100%",
+      stopColor: "#0a2233",
+      stopOpacity: "0.40"
     })), /*#__PURE__*/React.createElement("linearGradient", {
       id: "grd_scanline",
       x1: "0",
@@ -12955,6 +13005,202 @@ function TemporalReplay() {
         }, "▲"), "Z"));
       }
 
+      // AUTOMATION container — code commands sent to mech
+      if (box.id === "automation") {
+        const ax = bx,
+          ay = y,
+          aw = bw,
+          ah = boxH;
+        const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
+        // Simulated command queue — scrolling code lines
+        const commands = [{
+          cmd: ">> nav.moveTo(sector_7)",
+          status: "EXEC",
+          color: "#44ffaa"
+        }, {
+          cmd: ">> wpn.setGroup(1,3)",
+          status: "DONE",
+          color: "#88ddff"
+        }, {
+          cmd: ">> shield.balance(0.6)",
+          status: "EXEC",
+          color: "#ffcc44"
+        }, {
+          cmd: ">> scan.sweep(270°)",
+          status: "QUEUE",
+          color: "#aaeeff"
+        }, {
+          cmd: ">> bot.patrol(route_A)",
+          status: "SENT",
+          color: "#66bbee"
+        }, {
+          cmd: ">> tgt.lockNearest()",
+          status: "EXEC",
+          color: "#ff6688"
+        }, {
+          cmd: ">> mech.overclock(1.2)",
+          status: "QUEUE",
+          color: "#ffaa44"
+        }, {
+          cmd: ">> wpn.fireMode(burst)",
+          status: "DONE",
+          color: "#44ffaa"
+        }];
+        const scrollPhase = time > 0.1 ? nowMs * 0.0008 % commands.length : 0;
+        const lineH = 9;
+        const visibleLines = Math.floor((ah - 16) / lineH);
+        const startIdx = Math.floor(scrollPhase);
+        // Execution pulse — one command flashes periodically
+        const execPulse = time > 0.1 ? Math.sin(time * 3) * 0.5 + 0.5 : 0;
+        const execIdx = time > 0.1 ? Math.floor(time * 0.8) % commands.length : 0;
+        // Packet animation — small >> arrows traveling right
+        const packetX = time > 0.1 ? nowMs * 0.06 % (aw + 20) - 10 : -20;
+        return /*#__PURE__*/React.createElement("g", {
+          key: `raw-${box.id}`
+        }, /*#__PURE__*/React.createElement("rect", {
+          x: ax - 5,
+          y: ay - 5,
+          width: aw + 10,
+          height: ah + 10,
+          rx: 10,
+          fill: "none",
+          stroke: "#88ddff",
+          strokeWidth: 2,
+          opacity: 0.12 + containerBr * 0.2,
+          filter: "url(#glowHot)"
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: ax,
+          y: ay,
+          width: aw,
+          height: ah,
+          rx: 6,
+          fill: "url(#grd_automation)",
+          stroke: `rgba(136,221,255,${0.5 + containerBr * 0.4})`,
+          strokeWidth: 1.2
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: ax + 1,
+          y: ay + 1,
+          width: aw - 2,
+          height: ah - 2,
+          rx: 5,
+          fill: "none",
+          stroke: "rgba(136,221,255,0.10)",
+          strokeWidth: 0.5
+        }), /*#__PURE__*/React.createElement("rect", {
+          x: ax + 2,
+          y: ay + 2,
+          width: aw - 4,
+          height: 10,
+          rx: 3,
+          fill: "rgba(136,221,255,0.08)"
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: ax + 7,
+          cy: ay + 7,
+          r: 1.5,
+          fill: "#ff4444",
+          opacity: 0.7
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: ax + 12,
+          cy: ay + 7,
+          r: 1.5,
+          fill: "#ffcc00",
+          opacity: 0.7
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: ax + 17,
+          cy: ay + 7,
+          r: 1.5,
+          fill: "#44ff44",
+          opacity: 0.7
+        }), /*#__PURE__*/React.createElement("text", {
+          x: ax + aw / 2,
+          y: ay + 9,
+          textAnchor: "middle",
+          fill: "#88ddff",
+          opacity: 0.95,
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700,
+          letterSpacing: 1.5
+        }, "AUTOMATION"), [[ax + 3, ay + ah - 3, 1, -1], [ax + aw - 3, ay + ah - 3, -1, -1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("path", {
+          key: `ac-${ci}`,
+          d: `M ${cx} ${cy + dy * 6} L ${cx} ${cy} L ${cx + dx * 6} ${cy}`,
+          fill: "none",
+          stroke: "#88ddff",
+          strokeWidth: 1.5,
+          opacity: 0.5
+        })), /*#__PURE__*/React.createElement("clipPath", {
+          id: "auto-clip"
+        }, /*#__PURE__*/React.createElement("rect", {
+          x: ax + 3,
+          y: ay + 14,
+          width: aw - 6,
+          height: ah - 18
+        })), /*#__PURE__*/React.createElement("g", {
+          clipPath: "url(#auto-clip)"
+        }, Array.from({
+          length: visibleLines
+        }, (_, i) => {
+          const cmdIdx = (startIdx + i) % commands.length;
+          const cmd = commands[cmdIdx];
+          const lineY = ay + 14 + i * lineH + lineH * 0.7;
+          const isExec = cmdIdx === execIdx && time > 0.1;
+          const statusColors = {
+            EXEC: "#44ffaa",
+            DONE: "#88ddff55",
+            QUEUE: "#ffcc4488",
+            SENT: "#66bbee"
+          };
+          return /*#__PURE__*/React.createElement("g", {
+            key: `cmd-${i}`
+          }, isExec && /*#__PURE__*/React.createElement("rect", {
+            x: ax + 3,
+            y: lineY - lineH + 2,
+            width: aw - 6,
+            height: lineH,
+            fill: cmd.color,
+            opacity: execPulse * 0.12,
+            rx: 2
+          }), /*#__PURE__*/React.createElement("text", {
+            x: ax + 6,
+            y: lineY,
+            fill: statusColors[cmd.status] || "#88ddff",
+            fontSize: 4.5,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: 0.8
+          }, cmd.status), /*#__PURE__*/React.createElement("text", {
+            x: ax + 28,
+            y: lineY,
+            fill: isExec ? cmd.color : "rgba(136,221,255,0.55)",
+            fontSize: 5.5,
+            fontFamily: mono,
+            fontWeight: isExec ? 700 : 400
+          }, cmd.cmd));
+        })), time > 0.1 && /*#__PURE__*/React.createElement("g", {
+          opacity: 0.5
+        }, /*#__PURE__*/React.createElement("text", {
+          x: ax + packetX,
+          y: ay + ah - 3,
+          fill: "#88ddff",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "»»")), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
+          x: ax + aw - 12,
+          y: ay + ah - 7,
+          width: 6,
+          height: 1.5,
+          rx: 0.5,
+          fill: "#88ddff",
+          opacity: 0.7
+        }, /*#__PURE__*/React.createElement("animate", {
+          attributeName: "opacity",
+          values: "0.7;0.1;0.7",
+          dur: "0.8s",
+          repeatCount: "indefinite"
+        })));
+      }
+
       // WORLD container -- isometric terrain with buildings and player
       if (box.id === "cam") {
         const worldX = bx,
@@ -13032,7 +13278,6 @@ function TemporalReplay() {
           color: "#448866"
         }];
         // Player position: starts lower-left, approaches upper-right
-        const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
         // ═══ TERRAIN SCROLL — world drifts past the mech ═══
         const scrollSpeed = 3.5; // grid units per second
         const scrollOffset = time > 0.1 ? time * scrollSpeed % 100 : 0;
@@ -13044,16 +13289,6 @@ function TemporalReplay() {
         const mechGz = terrainH(mechGx, mechGy) + 0.5;
         const mpx = wIsoX(mechGx, mechGy, mechGz);
         const mpy = wIsoY(mechGx, mechGy, mechGz);
-        const mechScale = wScale / 100 * 1.8;
-
-        // Walking cycle — leg pistons alternate
-        const walkCycle = time > 0.1 ? time * 2.5 % (Math.PI * 2) : 0;
-        const leftLegLift = Math.max(0, Math.sin(walkCycle)) * 3.5;
-        const rightLegLift = Math.max(0, Math.sin(walkCycle + Math.PI)) * 3.5;
-        const bodyBob = Math.sin(walkCycle * 2) * 0.8;
-
-        // Torso rotation — independent of legs
-        const torsoYaw = time > 0.1 ? Math.sin(time * 0.4) * 0.15 : 0;
 
         // ═══ PROJECTILE ARCS ═══
         const projectiles = time > 0.1 ? [{
@@ -13342,212 +13577,53 @@ function TemporalReplay() {
             ry: dr.size * 1.2,
             fill: "rgba(0,0,0,0.25)"
           });
-        }), time > 0.1 && (() => {
-          const ms = mechScale;
-          const mx2 = mpx,
-            my2 = mpy + bodyBob * ms;
-          // Iso helper for mech parts (relative to mech center)
-          const mIso = (dx, dz) => [mx2 + dx * ms * 0.866, my2 - dz * ms + dx * ms * 0.5];
-          // ── LEG LEFT (front-left in iso) ──
-          const llBase = mIso(-3, 0 + leftLegLift);
-          const llTop = mIso(-3, 5 + leftLegLift * 0.3);
-          const llFoot = mIso(-3.5, -1 + leftLegLift * 0.8);
-          // ── LEG RIGHT (back-right in iso) ──
-          const rlBase = mIso(3, 0 + rightLegLift);
-          const rlTop = mIso(3, 5 + rightLegLift * 0.3);
-          const rlFoot = mIso(3.5, -1 + rightLegLift * 0.8);
-          // ── TORSO ──
-          const torsoBase = 6 + bodyBob;
-          const torsoShift = torsoYaw * 3;
-          const tw = 6,
-            th = 5;
-          // Torso as an isometric box (top face + front face + side face)
-          const tl = mIso(-tw / 2 + torsoShift, torsoBase + th);
-          const tr = mIso(tw / 2 + torsoShift, torsoBase + th);
-          const br = mIso(tw / 2 + torsoShift, torsoBase);
-          const bl2 = mIso(-tw / 2 + torsoShift, torsoBase);
-          // Top face offset (depth illusion)
-          const tlUp = [tl[0], tl[1] - 2 * ms];
-          const trUp = [tr[0], tr[1] - 2 * ms];
-          // ── WEAPON ARMS ──
-          const laBase = mIso(-tw / 2 - 1 + torsoShift, torsoBase + th - 1);
-          const laTip = mIso(-tw / 2 - 5 + torsoShift, torsoBase + th + 1);
-          const raBase = mIso(tw / 2 + 1 + torsoShift, torsoBase + th - 1);
-          const raTip = mIso(tw / 2 + 5 + torsoShift, torsoBase + th + 1);
-          // Muzzle flash
-          const firing = Math.sin(time * 7) > 0.85;
-          // ── COCKPIT ──
-          const cockpit = mIso(torsoShift, torsoBase + th + 2.5);
-          // ── THRUSTER GLOW ──
-          const thrusterL = mIso(-2 + torsoShift, torsoBase - 0.5);
-          const thrusterR = mIso(2 + torsoShift, torsoBase - 0.5);
-          const thrusterIntensity = 0.4 + Math.sin(time * 12) * 0.2;
-          return /*#__PURE__*/React.createElement("g", null, (() => {
-            const cR = coneLen;
-            const lx = mechGx + Math.sin(viewYaw - fovHalf) * cR;
-            const ly = mechGy - Math.cos(viewYaw - fovHalf) * cR;
-            const rx = mechGx + Math.sin(viewYaw + fovHalf) * cR;
-            const ry = mechGy - Math.cos(viewYaw + fovHalf) * cR;
-            const lz = terrainH(lx, ly),
-              rz = terrainH(rx, ry);
-            return /*#__PURE__*/React.createElement("polygon", {
-              points: `${mpx},${mpy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
-              fill: "rgba(0,255,238,0.12)",
-              stroke: "rgba(0,255,238,0.35)",
-              strokeWidth: 0.8
-            });
-          })(), /*#__PURE__*/React.createElement("ellipse", {
-            cx: thrusterL[0],
-            cy: thrusterL[1],
-            rx: 2 * ms,
-            ry: 1.2 * ms,
-            fill: "#ff6633",
-            opacity: thrusterIntensity * 0.6,
-            filter: "url(#glow)"
-          }), /*#__PURE__*/React.createElement("ellipse", {
-            cx: thrusterR[0],
-            cy: thrusterR[1],
-            rx: 2 * ms,
-            ry: 1.2 * ms,
-            fill: "#ff6633",
-            opacity: thrusterIntensity * 0.6,
-            filter: "url(#glow)"
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: llFoot[0],
-            y1: llFoot[1],
-            x2: llBase[0],
-            y2: llBase[1],
-            stroke: "#668899",
-            strokeWidth: 3 * ms,
-            strokeLinecap: "round"
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: llBase[0],
-            y1: llBase[1],
-            x2: llTop[0],
-            y2: llTop[1],
-            stroke: "#7799aa",
-            strokeWidth: 2.5 * ms,
-            strokeLinecap: "round"
-          }), /*#__PURE__*/React.createElement("ellipse", {
-            cx: llFoot[0],
-            cy: llFoot[1],
-            rx: 2.5 * ms,
-            ry: 1 * ms,
-            fill: "#556677",
-            stroke: "#7799aa",
-            strokeWidth: 0.5
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: rlFoot[0],
-            y1: rlFoot[1],
-            x2: rlBase[0],
-            y2: rlBase[1],
-            stroke: "#556677",
-            strokeWidth: 3 * ms,
-            strokeLinecap: "round"
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: rlBase[0],
-            y1: rlBase[1],
-            x2: rlTop[0],
-            y2: rlTop[1],
-            stroke: "#668899",
-            strokeWidth: 2.5 * ms,
-            strokeLinecap: "round"
-          }), /*#__PURE__*/React.createElement("ellipse", {
-            cx: rlFoot[0],
-            cy: rlFoot[1],
-            rx: 2.5 * ms,
-            ry: 1 * ms,
-            fill: "#445566",
-            stroke: "#668899",
-            strokeWidth: 0.5
-          }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${bl2[0]},${bl2[1]} ${br[0]},${br[1]} ${tr[0]},${tr[1]} ${tl[0]},${tl[1]}`,
-            fill: "#3a5a6a",
-            stroke: "#5a8a9a",
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
+          const cR = coneLen;
+          const lx = mechGx + Math.sin(viewYaw - fovHalf) * cR;
+          const ly = mechGy - Math.cos(viewYaw - fovHalf) * cR;
+          const rx = mechGx + Math.sin(viewYaw + fovHalf) * cR;
+          const ry = mechGy - Math.cos(viewYaw + fovHalf) * cR;
+          const lz = terrainH(lx, ly),
+            rz = terrainH(rx, ry);
+          return /*#__PURE__*/React.createElement("polygon", {
+            points: `${mpx},${mpy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
+            fill: "rgba(0,255,238,0.12)",
+            stroke: "rgba(0,255,238,0.35)",
             strokeWidth: 0.8
-          }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${tl[0]},${tl[1]} ${tr[0]},${tr[1]} ${trUp[0]},${trUp[1]} ${tlUp[0]},${tlUp[1]}`,
-            fill: "#4a7a8a",
-            stroke: "#6aaa",
-            strokeWidth: 0.6
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: (bl2[0] + tl[0]) / 2,
-            y1: (bl2[1] + tl[1]) / 2,
-            x2: (br[0] + tr[0]) / 2,
-            y2: (br[1] + tr[1]) / 2,
-            stroke: "#44ffaa",
-            strokeWidth: 1,
-            opacity: 0.6
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: laBase[0],
-            y1: laBase[1],
-            x2: laTip[0],
-            y2: laTip[1],
-            stroke: "#7799aa",
-            strokeWidth: 2 * ms,
-            strokeLinecap: "round"
-          }), firing && /*#__PURE__*/React.createElement("circle", {
-            cx: laTip[0],
-            cy: laTip[1],
-            r: 3 * ms,
-            fill: "#ff4444",
-            opacity: 0.8,
-            filter: "url(#glow)"
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: raBase[0],
-            y1: raBase[1],
-            x2: raTip[0],
-            y2: raTip[1],
-            stroke: "#7799aa",
-            strokeWidth: 2 * ms,
-            strokeLinecap: "round"
-          }), firing && /*#__PURE__*/React.createElement("circle", {
-            cx: raTip[0],
-            cy: raTip[1],
-            r: 3 * ms,
-            fill: "#ff4444",
-            opacity: 0.8,
-            filter: "url(#glow)"
-          }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${cockpit[0]},${cockpit[1] - 2.5 * ms} ${cockpit[0] + 2.5 * ms},${cockpit[1] + 0.5 * ms} ${cockpit[0] - 2.5 * ms},${cockpit[1] + 0.5 * ms}`,
-            fill: "#225566",
-            stroke: "#44ddff",
-            strokeWidth: 0.8,
-            opacity: 0.9
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: cockpit[0],
-            cy: cockpit[1] - 0.5 * ms,
-            r: 1 * ms,
-            fill: "#44ddff",
-            opacity: 0.7
-          }), /*#__PURE__*/React.createElement("ellipse", {
-            cx: mx2,
-            cy: my2 + 2 * ms,
-            rx: 5 * ms,
-            ry: 2 * ms,
-            fill: "#44ffaa",
-            opacity: 0.1,
-            filter: "url(#glow)"
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: mx2,
-            cy: my2,
-            r: 12 * ms,
-            fill: "none",
-            stroke: "#44ffaa",
-            strokeWidth: 0.7,
-            opacity: 0.3
-          }, /*#__PURE__*/React.createElement("animate", {
-            attributeName: "r",
-            values: `${10 * ms};${18 * ms};${10 * ms}`,
-            dur: "2s",
-            repeatCount: "indefinite"
-          }), /*#__PURE__*/React.createElement("animate", {
-            attributeName: "opacity",
-            values: "0.3;0.05;0.3",
-            dur: "2s",
-            repeatCount: "indefinite"
-          })));
-        })(), drones.map((dr, di) => {
+          });
+        })(), /*#__PURE__*/React.createElement("polygon", {
+          points: `${mpx},${mpy - 8} ${mpx + 5.5},${mpy} ${mpx},${mpy + 5} ${mpx - 5.5},${mpy}`,
+          fill: "#44ffaa",
+          stroke: "#88ffdd",
+          strokeWidth: 1.2,
+          opacity: 0.9
+        }), /*#__PURE__*/React.createElement("line", {
+          x1: mpx,
+          y1: mpy - 8,
+          x2: mpx + Math.sin(viewYaw) * 6,
+          y2: mpy - 8 - Math.cos(viewYaw) * 6,
+          stroke: "#44ffaa",
+          strokeWidth: 1,
+          opacity: 0.7
+        }), /*#__PURE__*/React.createElement("circle", {
+          cx: mpx,
+          cy: mpy,
+          r: 9,
+          fill: "none",
+          stroke: "#44ffaa",
+          strokeWidth: 0.7,
+          opacity: 0.3
+        }, /*#__PURE__*/React.createElement("animate", {
+          attributeName: "r",
+          values: "8;15;8",
+          dur: "2s",
+          repeatCount: "indefinite"
+        }), /*#__PURE__*/React.createElement("animate", {
+          attributeName: "opacity",
+          values: "0.3;0.05;0.3",
+          dur: "2s",
+          repeatCount: "indefinite"
+        }))), drones.map((dr, di) => {
           const dx = wIsoX(dr.gx, dr.gy, dr.alt);
           const dy = wIsoY(dr.gx, dr.gy, dr.alt);
           const rotorSpin = (nowMs * 0.02 + di * 120) % 360;

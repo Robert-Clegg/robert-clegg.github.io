@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v263";
+  var v = "v264";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v263 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v264 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v263"), /*#__PURE__*/React.createElement("span", {
+  }, "v264"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8031,7 +8031,7 @@ function TemporalReplay() {
     }, unit, " ", e.data.switchMethod === "DeathRespawn" ? "💀" : "");
   })))), tab === "career" && (() => {
     const W = 1340,
-      H = 700;
+      H = 1000;
     // Columns: [unused0, unused1, GAME_EVENTS, SKILLS, COG_LAYERS, PROFILES, CAREERS]
     // Derived features and channels are positioned independently (left of colX[2])
     const colX = [4, 108, 316, 533, 750, 967, 1185];
@@ -8451,7 +8451,7 @@ function TemporalReplay() {
     const textH = 48;
     const hudH = 55;
     const moveH = 130;
-    const cellsH = 110;
+    const cellsH = 330;
     // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: HUD, Row 4: MOVEMENT (big), Row 5: WORLD
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
@@ -8520,9 +8520,9 @@ function TemporalReplay() {
     {
       x: boxX,
       y: rowY5,
-      w: boxW,
+      w: boxW * 2.5,
       h: Math.min(cellsH, totalAvail - (rowY5 - topPad))
-    } // 7: WORLD
+    } // 7: WORLD (wide for iso)
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);

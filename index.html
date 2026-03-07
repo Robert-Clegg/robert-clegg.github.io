@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v264";
+  var v = "v265";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v264 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v265 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v264"), /*#__PURE__*/React.createElement("span", {
+  }, "v265"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8518,11 +8518,11 @@ function TemporalReplay() {
     },
     // 6: MOVEMENT (full width, tall)
     {
-      x: boxX,
+      x: boxX + boxW - boxW * 2,
       y: rowY5,
-      w: boxW * 2.5,
+      w: boxW * 2,
       h: Math.min(cellsH, totalAvail - (rowY5 - topPad))
-    } // 7: WORLD (wide for iso)
+    } // 7: WORLD (right edge aligned with containers, extends left)
     ];
     const rawBoxHeights = rawBoxLayouts.map(l => l.h);
     const rawBoxWidths = rawBoxLayouts.map(l => l.w);
@@ -10820,7 +10820,7 @@ function TemporalReplay() {
     }, /*#__PURE__*/React.createElement("svg", {
       width: W,
       height: H,
-      viewBox: `-92 0 ${W + 92} ${H}`,
+      viewBox: `-300 0 ${W + 300} ${H}`,
       style: {
         display: "block",
         margin: "0 auto",
@@ -12549,8 +12549,8 @@ function TemporalReplay() {
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
         // Isometric projection for world map
         const wcx = areaX + areaW * 0.5,
-          wcy = areaY + areaH * 0.55;
-        const wScale = Math.min(areaW, areaH) * 0.42;
+          wcy = areaY + areaH * 0.48;
+        const wScale = Math.min(areaW, areaH) * 0.82;
         const wIsoX = (gx, gy, gz) => wcx + (gx - gy) * 0.866 * wScale / 100;
         const wIsoY = (gx, gy, gz) => wcy + (gx + gy) * 0.5 * wScale / 100 - gz * wScale / 100;
         // Ground plane corners (100x100 grid, z=0)
@@ -12628,7 +12628,7 @@ function TemporalReplay() {
         const sacYaw = sacP < 0.4 ? Math.sin(Math.floor(time / 3.7) * 7.3) * 55 : 0;
         const viewYaw = (driftYaw + microJ + sacYaw) * Math.PI / 180;
         const fovHalf = 35 * Math.PI / 180;
-        const coneLen = 12;
+        const coneLen = 18;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
@@ -12729,7 +12729,7 @@ function TemporalReplay() {
             y: wIsoY(85, 15, 1),
             textAnchor: "middle",
             fill: "rgba(255,80,80,0.6)",
-            fontSize: 4,
+            fontSize: 6,
             fontFamily: mono,
             fontWeight: 700
           }, "HOSTILE"));
@@ -12746,7 +12746,7 @@ function TemporalReplay() {
             y: wIsoY(10, 87, 1),
             textAnchor: "middle",
             fill: "rgba(60,200,100,0.5)",
-            fontSize: 4,
+            fontSize: 6,
             fontFamily: mono,
             fontWeight: 700
           }, "BASE"));
@@ -12783,7 +12783,7 @@ function TemporalReplay() {
             y: tcy,
             textAnchor: "middle",
             fill: `${b.color}dd`,
-            fontSize: 3.5,
+            fontSize: 5,
             fontFamily: mono,
             fontWeight: 700
           }, b.label));
@@ -12800,7 +12800,7 @@ function TemporalReplay() {
             key: `trail-${i}`,
             cx: wIsoX(tgx, tgy, tgz),
             cy: wIsoY(tgx, tgy, tgz),
-            r: 1,
+            r: 1.8,
             fill: "#44ffaa",
             opacity: Math.max(0, 0.4 - i * 0.035)
           });
@@ -12816,25 +12816,25 @@ function TemporalReplay() {
             points: `${ppx},${ppy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
             fill: "rgba(0,255,238,0.15)",
             stroke: "rgba(0,255,238,0.35)",
-            strokeWidth: 0.5
+            strokeWidth: 0.8
           });
         })(), /*#__PURE__*/React.createElement("polygon", {
-          points: `${ppx},${ppy - 4} ${ppx + 3},${ppy} ${ppx},${ppy + 2.5} ${ppx - 3},${ppy}`,
+          points: `${ppx},${ppy - 6} ${ppx + 4.5},${ppy} ${ppx},${ppy + 4} ${ppx - 4.5},${ppy}`,
           fill: "#44ffaa",
           stroke: "#88ffdd",
-          strokeWidth: 0.8,
+          strokeWidth: 1,
           opacity: 0.9
         }), /*#__PURE__*/React.createElement("circle", {
           cx: ppx,
           cy: ppy,
-          r: 5,
+          r: 7,
           fill: "none",
           stroke: "#44ffaa",
-          strokeWidth: 0.5,
+          strokeWidth: 0.6,
           opacity: 0.3
         }, /*#__PURE__*/React.createElement("animate", {
           attributeName: "r",
-          values: "4;8;4",
+          values: "6;12;6",
           dur: "2s",
           repeatCount: "indefinite"
         }), /*#__PURE__*/React.createElement("animate", {

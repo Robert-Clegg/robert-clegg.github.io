@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v257";
+  var v = "v258";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v257 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v258 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v257"), /*#__PURE__*/React.createElement("span", {
+  }, "v258"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8446,28 +8446,28 @@ function TemporalReplay() {
     }];
     const mouseH = 55;
     const keyH = 55;
+    const viewH = 55;
     const audioH = 48;
     const textH = 48;
     const hudH = 55;
-    const viewH = 75;
-    const moveH = 75;
-    const cellsH = 140;
-    // Layout: Row 0: MOUSE, Row 1: KB, Row 2: AUDIO|TXT, Row 3: HUD, Row 4: VIEW|MOVE, Row 5: WORLD
+    const moveH = 130;
+    const cellsH = 110;
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: HUD, Row 4: MOVEMENT (big), Row 5: WORLD
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
     const rightX = boxX + halfW + pairGap;
+    const row1H = Math.max(viewH, keyH);
     const row2H = Math.max(audioH, textH);
-    const row4H = Math.max(viewH, moveH);
-    const totalUsed = mouseH + keyH + row2H + hudH + row4H + cellsH;
+    const totalUsed = mouseH + row1H + row2H + hudH + moveH + cellsH;
     const totalAvail = H - topPad - 16;
     const boxGap = Math.max(3, Math.floor((totalAvail - totalUsed) / 5));
     const rowY0 = topPad;
     const rowY1 = rowY0 + mouseH + boxGap;
-    const rowY2 = rowY1 + keyH + boxGap;
+    const rowY2 = rowY1 + row1H + boxGap;
     const rowY3 = rowY2 + row2H + boxGap;
     const rowY4 = rowY3 + hudH + boxGap;
-    const rowY5 = rowY4 + row4H + boxGap;
+    const rowY5 = rowY4 + moveH + boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8481,7 +8481,7 @@ function TemporalReplay() {
       w: smallBoxW,
       h: keyH
     },
-    // 1: KEYBOARD
+    // 1: KEYBOARD (right)
     {
       x: leftX,
       y: rowY2,
@@ -8502,21 +8502,21 @@ function TemporalReplay() {
       w: boxW,
       h: hudH
     },
-    // 4: HUD (full width, UNIT inset right)
+    // 4: HUD (full width)
     {
       x: leftX,
-      y: rowY4,
+      y: rowY1,
       w: halfW,
       h: viewH
     },
-    // 5: VIEW (left)
+    // 5: VIEW (left of KB)
     {
-      x: rightX,
+      x: leftX,
       y: rowY4,
-      w: halfW,
+      w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (right)
+    // 6: MOVEMENT (full width, tall)
     {
       x: boxX,
       y: rowY5,

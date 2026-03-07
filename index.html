@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v283";
+  var v = "v284";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v283 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v284 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7109,7 +7109,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v283"), /*#__PURE__*/React.createElement("span", {
+  }, "v284"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12833,7 +12833,76 @@ function TemporalReplay() {
           values: "0.3;0.05;0.3",
           dur: "2s",
           repeatCount: "indefinite"
-        }))));
+        }))), (() => {
+          // NE edge: [0,0] (north) to [100,0] (east)
+          const neConns = [{
+            t: 0.05,
+            dataIdx: 0,
+            color: "#44aaff"
+          }, {
+            t: 0.15,
+            dataIdx: 6,
+            color: "#ffcc00"
+          }, {
+            t: 0.25,
+            dataIdx: 14,
+            color: "#cc66ff"
+          }, {
+            t: 0.35,
+            dataIdx: 17,
+            color: "#88ffaa"
+          }, {
+            t: 0.45,
+            dataIdx: 20,
+            color: "#ff66aa"
+          }, {
+            t: 0.55,
+            dataIdx: 23,
+            color: "#dd66aa"
+          }, {
+            t: 0.65,
+            dataIdx: 25,
+            color: "#44ffaa"
+          }, {
+            t: 0.75,
+            dataIdx: 28,
+            color: "#aaffee"
+          }, {
+            t: 0.85,
+            dataIdx: 29,
+            color: "#00ddff"
+          }, {
+            t: 0.95,
+            dataIdx: 31,
+            color: "#aaddff"
+          }];
+          return neConns.map((nc, ci) => {
+            const gx = nc.t * 100,
+              gy = 0;
+            const epx = wIsoX(gx, gy, 0);
+            const epy = wIsoY(gx, gy, 0);
+            const dataY = getInputNodeY(nc.dataIdx) + inputNodeH / 2;
+            const dataX = inputNodeX;
+            const bright = time > 0.1 ? Math.min(1, COL_RAMP.data || 0.05) : 0;
+            const pulse = time > 0.1 ? 0.15 + Math.sin(nowMs * 0.003 + ci * 1.7) * 0.1 : 0;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `ne-${ci}`
+            }, /*#__PURE__*/React.createElement("circle", {
+              cx: epx,
+              cy: epy,
+              r: 2.5,
+              fill: nc.color,
+              opacity: 0.3 + bright * 0.5
+            }), /*#__PURE__*/React.createElement("path", {
+              d: `M${epx},${epy} C${epx + 40},${epy} ${dataX - 30},${dataY} ${dataX},${dataY}`,
+              fill: "none",
+              stroke: nc.color,
+              strokeWidth: 0.4 + bright * 0.6,
+              opacity: pulse + bright * 0.15,
+              strokeDasharray: time > 0.1 ? "none" : "2,3"
+            }));
+          });
+        })());
       }
 
       // — Default box rendering (fallback) —

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v324";
+  var v = "v325";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v324 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v325 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v324"), /*#__PURE__*/React.createElement("span", {
+  }, "v325"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13891,23 +13891,6 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: labelVis
           }, b.label));
-        }), time > 0.1 && Array.from({
-          length: 10
-        }, (_, i) => {
-          const tt = Math.max(0, progress - i * 0.035);
-          const tw = Math.sin(tt * 30 * 0.7) * 4 + Math.sin(tt * 30 * 1.3) * 2;
-          const th = Math.sin(tt * 30 * 0.5) * 3 + Math.cos(tt * 30 * 0.9) * 1.5;
-          const tgx = 10 + tt * 75 + tw + Math.sin(tt * Math.PI * 2) * 6;
-          const tgy = 85 - tt * 65 + th - Math.sin(tt * Math.PI * 1.5) * 5;
-          const tgz = terrainH(tgx, tgy);
-          return /*#__PURE__*/React.createElement("circle", {
-            key: `trail-${i}`,
-            cx: wIsoX(tgx, tgy, tgz),
-            cy: wIsoY(tgx, tgy, tgz),
-            r: 2.5,
-            fill: "#44ffaa",
-            opacity: Math.max(0, 0.4 - i * 0.035)
-          });
         }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
           const cR = coneLen;
           const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;
@@ -14093,7 +14076,16 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700,
             opacity: 0.6
-          }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : "ORBIT"));
+          }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : "ORBIT"), dt >= 13 && /*#__PURE__*/React.createElement("text", {
+            x: dx,
+            y: dy + 11,
+            textAnchor: "middle",
+            fill: "#ff6644",
+            fontSize: 4.5,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: 0.5 + Math.sin(nowMs * 0.006) * 0.5
+          }, "INSPECTION"));
         })(), time > 0.1 && buildings.map((b, bi) => {
           const [bcx, bcy] = bldCenter(b);
           const btz = terrainH(bcx, bcy) + b.h / 2;

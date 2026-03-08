@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v304";
+  var v = "v305";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v304 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v305 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v304"), /*#__PURE__*/React.createElement("span", {
+  }, "v305"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13354,28 +13354,37 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: 0.6
           }, "RADAR"), time > 0.1 && (() => {
-            const lineLen = 36;
             const dashOffset = nowMs * 0.008 % 12;
-            const beams = [{
-              angle: -0.6,
-              color: "#44ffaa"
+            const targets = [{
+              row: 15.5,
+              color: "#ffaa44",
+              label: "WX"
             }, {
-              angle: -0.45,
-              color: "#66ddff"
+              row: 16.5,
+              color: "#88ff44",
+              label: "TRN"
             }, {
-              angle: -0.3,
-              color: "#88bbee"
+              row: 17.5,
+              color: "#ff4444",
+              label: "RAD"
             }];
-            return beams.map((b, bi) => {
-              const ex = dishX + Math.cos(b.angle) * lineLen;
-              const ey = dishY + Math.sin(b.angle) * lineLen;
+            return targets.map((tgt, bi) => {
+              const tgtX = dfColX + dfNodeW / 2;
+              const tgtY = topPad + tgt.row * rowH + dfNodeH / 2;
+              const dx2 = tgtX - dishX,
+                dy2 = tgtY - dishY;
+              const len = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+              // Extend 36px in direction of target
+              const lineLen = 36;
+              const ex = dishX + dx2 / len * lineLen;
+              const ey = dishY + dy2 / len * lineLen;
               return /*#__PURE__*/React.createElement("line", {
                 key: `rf-${bi}`,
                 x1: dishX,
                 y1: dishY,
                 x2: ex,
                 y2: ey,
-                stroke: b.color,
+                stroke: tgt.color,
                 strokeWidth: 0.8,
                 opacity: 0.5,
                 strokeDasharray: "2,4",

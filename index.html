@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v300";
+  var v = "v301";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v300 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v301 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v300"), /*#__PURE__*/React.createElement("span", {
+  }, "v301"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8511,7 +8511,7 @@ function TemporalReplay() {
     // MOVEMENT below HUD
     const moveH = 120;
     const moveTop = rowY3 + hudH + boxGap;
-    // AUTOMATION left of MOVEMENT, aligned to top-left corner
+    // AUTOMATION left of HUD, aligned to top
     const autoH = 48;
     const autoW = boxW;
     const autoX = leftX - autoW - boxGap;
@@ -8566,11 +8566,11 @@ function TemporalReplay() {
     // 6: MOVEMENT (below HUD)
     {
       x: autoX,
-      y: moveTop,
+      y: rowY3,
       w: autoW,
       h: autoH
     },
-    // 7: AUTOMATION (left of MOVEMENT)
+    // 7: AUTOMATION (left of HUD)
     {
       x: worldLeftX,
       y: rowY3,
@@ -12837,7 +12837,82 @@ function TemporalReplay() {
           values: "0.7;0.1;0.7",
           dur: "0.8s",
           repeatCount: "indefinite"
-        })));
+        })), (() => {
+          const sensors = [{
+            name: "Accelerometer",
+            sub: "accel · speed · force · pos"
+          }, {
+            name: "Gyroscope",
+            sub: "angular velocity · position"
+          }, {
+            name: "Magnetometer",
+            sub: "magnetic field · compass"
+          }, {
+            name: "Barometer",
+            sub: "air pressure · altitude"
+          }, {
+            name: "Temperature",
+            sub: "K · °C · °F"
+          }, {
+            name: "Ultrasonic",
+            sub: "sonar rangefinder · 2cm–6m"
+          }, {
+            name: "Radar",
+            sub: "dist · alt · dir · speed · 1–100km"
+          }, {
+            name: "Mag Encoder",
+            sub: "angular distance"
+          }, {
+            name: "Microphone",
+            sub: "acoustics · propagation · freq"
+          }, {
+            name: "Remote Cam",
+            sub: "pixel data · visual proc"
+          }, {
+            name: "Tactile",
+            sub: "pressure array · contact"
+          }];
+          const slY = ay + ah + 6;
+          const slH = 12;
+          return sensors.map((s, si) => {
+            // Each sensor triggers on a staggered cycle
+            const cycle = time > 0.1 ? (time * 0.6 + si * 1.7) % (sensors.length * 1.7) : 99;
+            const isOn = cycle < 1.2;
+            const brightness = isOn ? Math.min(1, (1.2 - cycle) / 0.4) : 0;
+            const lineY = slY + si * slH;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `sen-${si}`
+            }, brightness > 0.05 && /*#__PURE__*/React.createElement("rect", {
+              x: ax,
+              y: lineY - 1,
+              width: aw,
+              height: slH - 1,
+              rx: 2,
+              fill: "#88ddff",
+              opacity: brightness * 0.08
+            }), /*#__PURE__*/React.createElement("circle", {
+              cx: ax + 5,
+              cy: lineY + slH / 2 - 1,
+              r: 2,
+              fill: isOn ? "#44ffaa" : "#334455",
+              opacity: isOn ? 0.9 : 0.4
+            }), /*#__PURE__*/React.createElement("text", {
+              x: ax + 11,
+              y: lineY + slH / 2 + 2,
+              fill: isOn ? "#88ddff" : "rgba(136,221,255,0.3)",
+              fontSize: 5.5,
+              fontFamily: mono,
+              fontWeight: isOn ? 700 : 400
+            }, s.name), /*#__PURE__*/React.createElement("text", {
+              x: ax + aw - 3,
+              y: lineY + slH / 2 + 2,
+              textAnchor: "end",
+              fill: isOn ? "rgba(136,221,255,0.6)" : "rgba(136,221,255,0.15)",
+              fontSize: 4,
+              fontFamily: mono
+            }, s.sub));
+          });
+        })());
       }
 
       // WORLD container -- isometric terrain with buildings and player

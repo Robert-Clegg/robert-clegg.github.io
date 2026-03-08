@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v323";
+  var v = "v324";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v323 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v324 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v323"), /*#__PURE__*/React.createElement("span", {
+  }, "v324"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12941,13 +12941,13 @@ function TemporalReplay() {
           const fdH = 58;
           const fdY = droneBoxY + droneBoxH + 4;
           const dt = time - launchT;
-          const phase = dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : dt < 14 ? "DESCEND" : "LANDED";
-          const alt = dt < 2 ? dt / 2 * 18 : dt < 5 ? 18 : dt < 7 ? 18 - Math.sin((dt - 5) * 2) * 1.5 : dt < 13 ? 18 + Math.sin((dt - 7) / 6 * Math.PI) * 4 : dt < 14 ? 18 * (1 - (dt - 13)) : 3;
-          const spd = dt < 2 ? 0 : dt < 5 ? 12 + Math.sin(dt * 2) * 3 : dt < 7 ? 1 + Math.sin(dt) * 0.5 : dt < 13 ? 14 + Math.sin(dt * 1.5) * 4 : 0;
-          const gyroP = dt < 2 ? dt / 2 * -8 : dt < 7 ? Math.sin(dt * 1.3) * 4 : dt < 13 ? Math.sin(dt * 0.9) * 6 : dt < 14 ? (14 - dt) * 15 : 0;
+          const phase = dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : "ORBIT";
+          const alt = dt < 2 ? dt / 2 * 18 : dt < 5 ? 18 : dt < 7 ? 18 - Math.sin((dt - 5) * 2) * 1.5 : dt < 13 ? 18 + Math.sin((dt - 7) / 6 * Math.PI) * 4 : 16 + Math.sin((dt - 13) * 0.8) * 1.5;
+          const spd = dt < 2 ? 0 : dt < 5 ? 12 + Math.sin(dt * 2) * 3 : dt < 7 ? 1 + Math.sin(dt) * 0.5 : dt < 13 ? 14 + Math.sin(dt * 1.5) * 4 : 3 + Math.sin(dt * 0.6) * 1.5;
+          const gyroP = dt < 2 ? dt / 2 * -8 : dt < 7 ? Math.sin(dt * 1.3) * 4 : dt < 13 ? Math.sin(dt * 0.9) * 6 : Math.sin(dt * 0.6) * 3;
           const gyroR = Math.sin(dt * 0.7 + 1) * 3 + Math.sin(dt * 1.9) * 2;
           const gyroYaw = dt < 2 ? 0 : Math.sin(dt * 0.4) * 12 + Math.cos(dt * 0.25) * 8;
-          const heading = dt < 2 ? 0 : dt < 5 ? 315 : dt < 7 ? 315 + Math.sin(dt) * 5 : dt < 13 ? 30 : 30;
+          const heading = dt < 2 ? 0 : dt < 5 ? 315 : dt < 7 ? 315 + Math.sin(dt) * 5 : dt < 13 ? 30 : (30 + (dt - 13) * 20) % 360;
           return /*#__PURE__*/React.createElement("g", {
             opacity: slideEase
           }, /*#__PURE__*/React.createElement("rect", {
@@ -12995,7 +12995,7 @@ function TemporalReplay() {
           }, "ALT ", alt.toFixed(1), "m \xB7 SPD ", spd.toFixed(1), "m/s"), /*#__PURE__*/React.createElement("rect", {
             x: droneBoxX + 5,
             y: droneBoxY + droneBoxH - 6,
-            width: Math.max(0, (visW - 10) * Math.min(1, dt / 14)),
+            width: Math.max(0, (visW - 10) * (dt < 13 ? Math.min(1, dt / 13) : 0.85 + Math.sin(dt * 0.8) * 0.15)),
             height: 2,
             rx: 1,
             fill: "#ffcc44",
@@ -13428,29 +13428,22 @@ function TemporalReplay() {
             stroke: "rgba(60,140,200,0.4)",
             strokeWidth: 1
           });
-        })(), (() => {
-          const hzCorners = [[70, 0], [100, 0], [100, 30], [70, 30]];
-          const hz = hzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(85, 15);
+        })(), time > 0.1 && (() => {
+          const zx = Math.max(0, Math.min(80, pgx - 10));
+          const zy = Math.max(0, Math.min(80, pgy - 10));
+          const dzCorners = [[zx, zy], [zx + 20, zy], [zx + 20, zy + 20], [zx, zy + 20]];
+          const dz = dzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
-            points: hz,
-            fill: "rgba(255,30,30,0.1)",
+            points: dz,
+            fill: "rgba(255,30,30,0.08)",
             stroke: "rgba(255,60,60,0.35)",
             strokeWidth: 0.6,
             strokeDasharray: "3,2"
-          }), time > 0.1 && /*#__PURE__*/React.createElement("polygon", {
-            points: hz,
-            fill: "rgba(255,30,30,0.05)",
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: dz,
+            fill: "rgba(255,30,30,0.04)",
             opacity: 0.4 + Math.sin(time * 1.5) * 0.3
-          }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(85, 15, labelZ + 1),
-            y: wIsoY(85, 15, labelZ + 1),
-            textAnchor: "middle",
-            fill: "rgba(255,80,80,0.6)",
-            fontSize: 8,
-            fontFamily: mono,
-            fontWeight: 700
-          }, "HOSTILE"));
+          }));
         })(), (() => {
           const bzCorners = [[0, 75], [20, 75], [20, 100], [0, 100]];
           const bz = bzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
@@ -14001,18 +13994,14 @@ function TemporalReplay() {
             dGx = labGx + (rigGx - labGx) * p;
             dGy = labGy + (rigGy - labGy) * p;
             dAlt = cruiseAlt + Math.sin(p * Math.PI) * 4; // slight altitude bump mid-transit
-          } else if (dt < 14) {
-            // Phase 5: descend to OIL RIG platform
-            const p = ss((dt - 13) / 1);
-            dGx = rigGx;
-            dGy = rigGy;
-            dAlt = cruiseAlt * (1 - p) + rigPlatZ * p - terrainH(rigGx, rigGy) * p;
           } else {
-            // Landed on OIL RIG platform
-            dGx = rigGx;
-            dGy = rigGy;
-            dAlt = 2.1; // sitting on platform
-            landed = true;
+            // Phase 5: orbit/hover near OIL RIG
+            const orbitT = dt - 13;
+            const orbitR = 5;
+            dGx = rigGx + Math.sin(orbitT * 0.6) * orbitR;
+            dGy = rigGy + Math.cos(orbitT * 0.6) * orbitR;
+            dAlt = cruiseAlt - 2 + Math.sin(orbitT * 0.8) * 1.5;
+            landed = false;
           }
           const baseZ = terrainH(dGx, dGy);
           const dZ = baseZ + dAlt;
@@ -14104,7 +14093,7 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700,
             opacity: 0.6
-          }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : "DESCEND"));
+          }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : "ORBIT"));
         })(), time > 0.1 && buildings.map((b, bi) => {
           const [bcx, bcy] = bldCenter(b);
           const btz = terrainH(bcx, bcy) + b.h / 2;

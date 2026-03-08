@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v312";
+  var v = "v313";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v312 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v313 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v312"), /*#__PURE__*/React.createElement("span", {
+  }, "v313"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12933,9 +12933,9 @@ function TemporalReplay() {
           const slideEase = slideIn * slideIn * (3 - 2 * slideIn);
           const droneBoxW = aw;
           const droneBoxH = 36;
-          const droneBoxX = ax;
-          const sensorBottom = ay + ah + 8 + 11 * 16;
-          const droneBoxY = sensorBottom + 6;
+          // Emerge from right side of AUTOMATION, top-aligned
+          const droneBoxX = ax + aw + 4;
+          const droneBoxY = ay;
           // Slide: starts collapsed width, expands to full
           const visW = droneBoxW * slideEase;
           const fdH = 52;

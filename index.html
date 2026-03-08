@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v327";
+  var v = "v328";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v327 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v328 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -30,7 +30,6 @@
 </head><body>
 <div id="root"></div>
 <script>
-function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 const {
   useState,
   useEffect,
@@ -7114,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v327"), /*#__PURE__*/React.createElement("span", {
+  }, "v328"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8488,7 +8487,7 @@ function TemporalReplay() {
     const viewH = 55;
     const audioH = 48;
     const textH = 48;
-    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, then HUD + MOVEMENT + WORLD overlap
+    // Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVEMENT, Row 4: HUD + WORLD overlap
     const pairGap = 4;
     const halfW = Math.floor((boxW - pairGap) / 2);
     const leftX = boxX;
@@ -8502,15 +8501,16 @@ function TemporalReplay() {
     const rowY3 = rowY2 + row2H + boxGap;
     // WinState bottom
     const winStateBottom = 683;
-    // WORLD starts at rowY3, fills to winStateBottom
-    const worldW = boxW * 3.5;
-    const worldH = winStateBottom - rowY3;
-    const worldLeftX = boxX + boxW - worldW;
-    // HUD same height as AUDIO
-    const hudH = audioH;
-    // MOVEMENT below HUD
+    // MOVEMENT at rowY3
     const moveH = 120;
-    const moveTop = rowY3 + hudH + boxGap;
+    const moveTop = rowY3;
+    // HUD below MOVEMENT
+    const hudH = audioH;
+    const hudTop = moveTop + moveH + boxGap;
+    // WORLD starts at hudTop, fills to winStateBottom
+    const worldW = boxW * 3.5;
+    const worldH = winStateBottom - hudTop;
+    const worldLeftX = boxX + boxW - worldW;
     // AUTOMATION on west side of WORLD, left edge aligned with WORLD's west corner
     const autoH = 48;
     const autoW = boxW;
@@ -8554,11 +8554,11 @@ function TemporalReplay() {
     // 3: TXT (right)
     {
       x: leftX,
-      y: rowY3,
+      y: hudTop,
       w: boxW,
       h: hudH
     },
-    // 4: HUD (full width)
+    // 4: HUD (full width, below MOVEMENT)
     {
       x: leftX,
       y: rowY1,
@@ -8572,7 +8572,7 @@ function TemporalReplay() {
       w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (below HUD)
+    // 6: MOVEMENT (below AUDIO/TXT)
     {
       x: autoX,
       y: autoY,
@@ -8582,7 +8582,7 @@ function TemporalReplay() {
     // 7: AUTOMATION (west of WORLD)
     {
       x: worldLeftX,
-      y: rowY3,
+      y: hudTop,
       w: worldW,
       h: worldH
     } // 8: WORLD
@@ -11839,294 +11839,56 @@ function TemporalReplay() {
 
       // — HUD box: Heatmap | Dock | UNIT inset — abstract visual data + active cell —
       if (box.id === "hud") {
-        const hmAge = time - inputNodeFire.heatmap;
-        const scAge = time - inputNodeFire.schematic;
-        const rdAge = time - inputNodeFire.readout;
-        const hmAct = hmAge < 2.0 && time > 0.1 ? Math.exp(-hmAge * 0.7) : 0;
-        const scAct = scAge < 1.5 && time > 0.1 ? Math.exp(-scAge * 0.9) : 0;
-        const rdAct = rdAge < 1.5 && time > 0.1 ? Math.exp(-rdAge * 1.0) : 0;
-        const anyAct = hmAct + scAct + rdAct > 0.1;
+        const gameStarted = time > 0.1;
         const innerPad = 3;
         const labelH = 12;
         const contentY = y + labelH;
         const contentH = boxH - labelH - 2;
+        const seismicW = bw - innerPad * 2;
+        const seismicX = bx + innerPad;
+        const containerBrH = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
 
-        // ── UNIT state (embedded at right edge) ──
-        const switchEvents = treeEvents.filter(e => e.type === "SwitchEvent" && e.t <= time);
-        const lastSwitch = switchEvents.length > 0 ? switchEvents[switchEvents.length - 1] : null;
-        const currentUnit = time > 0.1 && lastSwitch ? lastSwitch?.data?.toUnitType || "" : "";
-        const switchAge = lastSwitch ? time - lastSwitch.t : 999;
-        const switchFresh = time > 0.1 && switchAge < 1.0;
-        const switchPulse = switchFresh ? Math.exp(-switchAge * 2.5) : 0;
-        const pathogenSet = new Set(["VirusType", "PneumoniaType", "MycobacteriumType", "TuberculosisType"]);
-        const immuneSet2 = new Set(["NeutrophilType", "TCellType", "NKCellType", "MacrophageType"]);
-        const isPathogen = pathogenSet.has(currentUnit);
-        const isImmune = immuneSet2.has(currentUnit);
-        const teamColor = isPathogen ? "#ff3344" : isImmune ? "#44ddff" : "#666666";
-        const unitNames = {
-          NeutrophilType: "NEUT",
-          NKCellType: "NK",
-          TCellType: "TCELL",
-          MacrophageType: "MACRO",
-          VirusType: "VIRUS",
-          PneumoniaType: "PNEUM",
-          MycobacteriumType: "MYCO",
-          TuberculosisType: "TB"
-        };
-        const unitName = unitNames[currentUnit] || "—";
-
-        // ── Independent timers — gated behind time > 0.1 so HUD starts dim like AUDIO/TXT ──
-        const gameStarted = time > 0.1;
-        const sqCycle = playing && gameStarted ? time % 12 : 12;
-        const sqOn = sqCycle < 10;
-        const sqFade = sqCycle >= 10 && sqCycle < 11;
-        const sqOpacity = gameStarted ? sqOn ? Math.min(1, sqCycle * 1.5) : sqFade ? 1 - (sqCycle - 10) : 0 : 0;
-        const dkCycle = playing && gameStarted ? time % 9 : 9;
-        const dkOn = dkCycle < 6;
-        const dkFade = dkCycle >= 6 && dkCycle < 7.5;
-        const dkOpacity = gameStarted ? dkOn ? Math.min(1, dkCycle * 1) : dkFade ? 1 - (dkCycle - 6) * 0.67 : 0 : 0;
-
-        // ── Layout: heatmap left, dock middle, UNIT inset right ──
-        const unitInsetW = Math.round((contentH + 4) / 3); // 1/3 size
-        const unitInsetH = Math.round(contentH / 3);
-        const dockW = 10;
-        const availW = bw - innerPad * 2;
-        const sqSize = contentH;
-        const sqX = bx + innerPad;
-        const sqY = contentY;
-        const sqCols = 5,
-          sqRows = 5;
-        const sqCellW = sqSize / sqCols,
-          sqCellH = sqSize / sqRows;
-        const sqSeed = Math.floor(time / 5) * 7;
-        const unitInsetX = bx + bw - innerPad - unitInsetW;
-        const dockX = unitInsetX - dockW - 2;
-        const dockY = contentY;
-        const dockH = contentH;
-        const dockRows = 7;
-        const dockRowH = dockH / dockRows;
-        const clickIdx = dkOn ? Math.floor(time * 0.53 % dockRows) : -1;
-        const dualSeed = Math.floor(time * 0.53);
-        const hasDual = dkOn && (dualSeed * 7 + 3) % 10 < 3;
-        const clickIdx2 = hasDual ? (clickIdx + 1 + dualSeed * 13 % (dockRows - 1)) % dockRows : -1;
-
-        // -- Radar sweep -- gap between heatmap and dock --
-        const radarGapX = sqX + sqSize + 2;
-        const radarGapW = dockX - radarGapX - 2;
-        const radarR = Math.min(radarGapW, contentH) / 2 - 1;
-        const radarCx = radarGapX + radarGapW / 2;
-        const radarCy = contentY + contentH / 2;
-        const radarAngle = gameStarted ? -Math.PI / 2 + time * 1.2 % (Math.PI * 2) : -Math.PI / 2;
-        const radarOpacity = gameStarted ? Math.min(1, (time - 0.5) * 2) : 0;
-        // Blips reseed only when sweep crosses 12 o'clock (top = new revolution)
-        const sweepCount = Math.floor(time * 1.2 / (Math.PI * 2));
-        const radarBlips = Array.from({
-          length: 8
-        }, (_, bi) => {
-          const seed1 = Math.sin((bi + 1) * 127.1 + sweepCount * 311.7) * 43758.5453;
-          const blipAngle = (seed1 % 1 + 1) % 1 * Math.PI * 2;
-          const seed2 = Math.sin((bi + 1) * 269.3 + sweepCount * 183.1) * 21037.2;
-          const blipDist = 0.25 + (seed2 % 1 + 1) % 1 * 0.7;
-          const bx2 = radarCx + Math.cos(blipAngle) * blipDist * radarR;
-          const by2 = radarCy + Math.sin(blipAngle) * blipDist * radarR;
-          let angleDiff = radarAngle - blipAngle;
-          while (angleDiff < 0) angleDiff += Math.PI * 2;
-          while (angleDiff > Math.PI * 2) angleDiff -= Math.PI * 2;
-          const blipAge = angleDiff / (Math.PI * 2);
-          const blipBright = blipAge < 0.15 ? 1.0 - blipAge / 0.15 * 0.3 : Math.max(0, 0.7 - (blipAge - 0.15) * 1.2);
-          return {
-            x: bx2,
-            y: by2,
-            bright: blipBright
-          };
-        });
-
-        // ── UNIT SVG rendering (scaled to fit small inset) ──
-        const ucx = unitInsetX + unitInsetW / 2;
-        const ucy = contentY + unitInsetH / 2;
-        const us = Math.min(unitInsetH, unitInsetW) * 0.455; // scale factor (+30%)
-        const renderUnitSVG = () => {
-          const strokeW = switchFresh ? 1.5 + switchPulse : 1.0;
-          const strokeOp = switchFresh ? 0.9 + switchPulse * 0.1 : 0.7;
-          const fillOp = switchFresh ? 0.15 + switchPulse * 0.15 : 0.08;
-          const st = {
-            fill: `${teamColor}${Math.round(fillOp * 255).toString(16).padStart(2, '0')}`,
-            stroke: teamColor,
-            strokeWidth: strokeW,
-            opacity: strokeOp,
-            strokeLinejoin: "round",
-            strokeLinecap: "round"
-          };
-          switch (currentUnit) {
-            case "NeutrophilType":
-              {
-                const r1 = us * 0.85,
-                  r2 = us * 0.4;
-                const arms = [0, 120, 240].map(a => {
-                  const rad = a * Math.PI / 180;
-                  return `M ${ucx + Math.cos(rad) * r2} ${ucy + Math.sin(rad) * r2} Q ${ucx + Math.cos(rad) * r1 * 0.9} ${ucy + Math.sin(rad) * r1 * 0.9} ${ucx + Math.cos(rad + 0.5) * r1} ${ucy + Math.sin(rad + 0.5) * r1} A ${r2 * 1.2} ${r2 * 1.2} 0 0 1 ${ucx + Math.cos(rad - 0.5) * r1} ${ucy + Math.sin(rad - 0.5) * r1} Q ${ucx + Math.cos(rad) * r1 * 0.9} ${ucy + Math.sin(rad) * r1 * 0.9} ${ucx + Math.cos(rad) * r2} ${ucy + Math.sin(rad) * r2}`;
-                });
-                return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", _extends({
-                  cx: ucx,
-                  cy: ucy,
-                  r: r2 * 0.5
-                }, st)), arms.map((d, i) => /*#__PURE__*/React.createElement("path", _extends({
-                  key: i,
-                  d: d
-                }, st))));
-              }
-            case "NKCellType":
-              {
-                const pts = [0, 45, 90, 135, 180, 225, 270, 315].map((a, i) => {
-                  const rad = a * Math.PI / 180;
-                  const r = us * (0.6 + (i % 2 === 0 ? 0.35 : 0.15) + (i === 1 || i === 5 ? 0.2 : 0));
-                  return [ucx + Math.cos(rad) * r, ucy + Math.sin(rad) * r];
-                });
-                const d = pts.map((p, i) => i === 0 ? `M ${p[0]} ${p[1]}` : `Q ${(pts[i - 1][0] + p[0]) / 2 + (i % 2 ? 3 : -3)} ${(pts[i - 1][1] + p[1]) / 2 + (i % 3 ? 2 : -2)} ${p[0]} ${p[1]}`).join(" ") + " Z";
-                return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", _extends({
-                  d: d
-                }, st)), /*#__PURE__*/React.createElement("circle", _extends({
-                  cx: ucx - 1,
-                  cy: ucy,
-                  r: us * 0.28
-                }, st)));
-              }
-            case "TCellType":
-            case "MacrophageType":
-              {
-                const r = us * 0.65;
-                const bumps = 6;
-                const pts2 = Array.from({
-                  length: bumps * 2
-                }, (_, i) => {
-                  const a = i * Math.PI / bumps;
-                  const br = i % 2 === 0 ? r + us * 0.2 : r - us * 0.05;
-                  return [ucx + Math.cos(a) * br, ucy + Math.sin(a) * br];
-                });
-                const d2 = pts2.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p[0]} ${p[1]}`).join(" ") + " Z";
-                return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", _extends({
-                  d: d2
-                }, st)), /*#__PURE__*/React.createElement("circle", _extends({
-                  cx: ucx,
-                  cy: ucy,
-                  r: r * 0.35
-                }, st, {
-                  strokeDasharray: "2 2"
-                })));
-              }
-            case "VirusType":
-              {
-                return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", _extends({
-                  points: `${ucx},${ucy - us * 0.75} ${ucx - us * 0.65},${ucy + us * 0.5} ${ucx + us * 0.65},${ucy + us * 0.5}`
-                }, st)));
-              }
-            case "PneumoniaType":
-              {
-                const spheres = [[ucx - us * 0.35, ucy - us * 0.3, us * 0.28], [ucx + us * 0.1, ucy, us * 0.32], [ucx - us * 0.25, ucy + us * 0.35, us * 0.24], [ucx + us * 0.35, ucy + us * 0.4, us * 0.2]];
-                return /*#__PURE__*/React.createElement("g", null, [[0, 1], [1, 2], [2, 3]].map(([a, b], i) => /*#__PURE__*/React.createElement("line", {
-                  key: i,
-                  x1: spheres[a][0],
-                  y1: spheres[a][1],
-                  x2: spheres[b][0],
-                  y2: spheres[b][1],
-                  stroke: teamColor,
-                  strokeWidth: strokeW * 0.6,
-                  opacity: strokeOp * 0.5
-                })), spheres.map((sp, i) => /*#__PURE__*/React.createElement("circle", _extends({
-                  key: `s${i}`,
-                  cx: sp[0],
-                  cy: sp[1],
-                  r: sp[2]
-                }, st))));
-              }
-            case "MycobacteriumType":
-              {
-                const rodW = us * 0.2,
-                  rodH2 = us * 0.55;
-                const rods = [[ucx - us * 0.15, ucy - us * 0.1, -20], [ucx + us * 0.15, ucy + us * 0.05, 25], [ucx - us * 0.05, ucy + us * 0.25, -40]];
-                return /*#__PURE__*/React.createElement("g", null, rods.map(([rx, ry, angle], i) => /*#__PURE__*/React.createElement("rect", _extends({
-                  key: i,
-                  x: rx - rodW / 2,
-                  y: ry - rodH2 / 2,
-                  width: rodW,
-                  height: rodH2,
-                  rx: rodW / 2,
-                  transform: `rotate(${angle} ${rx} ${ry})`
-                }, st))), /*#__PURE__*/React.createElement("ellipse", {
-                  cx: ucx,
-                  cy: ucy + us * 0.05,
-                  rx: us * 0.35,
-                  ry: us * 0.45,
-                  fill: "none",
-                  stroke: teamColor,
-                  strokeWidth: strokeW * 0.4,
-                  opacity: strokeOp * 0.3,
-                  strokeDasharray: "3 2"
-                }));
-              }
-            case "TuberculosisType":
-              {
-                const r = us * 0.6;
-                return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", _extends({
-                  x: ucx - us * 0.12,
-                  y: ucy - r,
-                  width: us * 0.24,
-                  height: r * 2,
-                  rx: us * 0.12,
-                  transform: `rotate(30 ${ucx} ${ucy})`
-                }, st)), /*#__PURE__*/React.createElement("rect", _extends({
-                  x: ucx - us * 0.12,
-                  y: ucy - r,
-                  width: us * 0.24,
-                  height: r * 2,
-                  rx: us * 0.12,
-                  transform: `rotate(-30 ${ucx} ${ucy})`
-                }, st)), [0, 60, 120, 180, 240, 300].map((a, i) => {
-                  const rad = a * Math.PI / 180;
-                  return /*#__PURE__*/React.createElement("line", {
-                    key: i,
-                    x1: ucx + Math.cos(rad) * r * 0.7,
-                    y1: ucy + Math.sin(rad) * r * 0.7,
-                    x2: ucx + Math.cos(rad) * r * 1.1,
-                    y2: ucy + Math.sin(rad) * r * 1.1,
-                    stroke: teamColor,
-                    strokeWidth: strokeW * 0.5,
-                    opacity: strokeOp * 0.5
-                  });
-                }));
-              }
-            default:
-              return /*#__PURE__*/React.createElement("text", {
-                x: ucx,
-                y: ucy + 3,
-                textAnchor: "middle",
-                fill: "#666",
-                fontSize: 8,
-                fontFamily: mono
-              }, "?");
-          }
-        };
+        // Rock layers — horizontal strata beneath the marker
+        const layers = [{
+          y: 0,
+          h: 0.18,
+          color: "#554433",
+          label: "PERMAFROST"
+        }, {
+          y: 0.18,
+          h: 0.22,
+          color: "#665544",
+          label: "SANDSTONE"
+        }, {
+          y: 0.40,
+          h: 0.20,
+          color: "#443322",
+          label: "SHALE"
+        }, {
+          y: 0.60,
+          h: 0.18,
+          color: "#776655",
+          label: "LIMESTONE"
+        }, {
+          y: 0.78,
+          h: 0.22,
+          color: "#553322",
+          label: "BEDROCK"
+        }];
+        const waveTime = gameStarted ? time : 0;
+        const waveSpeed = 0.08;
+        const nWavePoints = 60;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
-        }, anyAct && /*#__PURE__*/React.createElement("rect", {
-          x: bx - 2,
-          y: y - 2,
-          width: bw + 4,
-          height: boxH + 4,
-          rx: 8,
-          fill: "none",
-          stroke: `${box.color}40`,
-          strokeWidth: 3,
-          filter: "url(#glow)"
-        }), /*#__PURE__*/React.createElement("rect", {
+        }, /*#__PURE__*/React.createElement("rect", {
           x: bx,
           y: y,
           width: bw,
           height: boxH,
           rx: 5,
-          fill: `${box.color}10`,
-          stroke: `${box.color}aa`,
-          strokeWidth: anyAct ? 1.0 : 0.5
+          fill: `rgba(255,170,68,${containerBrH * 0.12})`,
+          stroke: `rgba(255,170,68,${0.15 + containerBrH * 0.25})`,
+          strokeWidth: 0.5
         }), /*#__PURE__*/React.createElement("text", {
           x: bx + bw / 2,
           y: y + 9,
@@ -12136,191 +11898,128 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1.5
-        }, "HUD"), /*#__PURE__*/React.createElement("rect", {
-          x: sqX,
-          y: sqY,
-          width: sqSize,
-          height: sqSize,
-          rx: 2,
-          fill: sqOpacity > 0.05 ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.02)",
-          stroke: sqOpacity > 0.05 ? "#ffaa4455" : "#ffaa4422",
-          strokeWidth: 0.5
-        }), sqOpacity > 0.02 && Array.from({
-          length: sqCols * sqRows
-        }, (_, ci) => {
-          const col = ci % sqCols,
-            row2 = Math.floor(ci / sqCols);
-          const h = (sqSeed + ci * 37 + ci * ci * 13) % 100 / 100;
-          const r2 = Math.round(h < 0.5 ? h * 2 * 180 : 180 + (h - 0.5) * 2 * 75);
-          const g2 = Math.round(h < 0.4 ? 40 + h * 100 : h < 0.7 ? 80 + (h - 0.4) * 200 : 140 + (h - 0.7) * 380);
-          const b2 = Math.round(h < 0.3 ? 80 + h * 200 : h < 0.6 ? 140 - (h - 0.3) * 300 : Math.max(0, 50 - (h - 0.6) * 125));
-          return /*#__PURE__*/React.createElement("rect", {
-            key: `sq-${ci}`,
-            x: sqX + col * sqCellW + 0.3,
-            y: sqY + row2 * sqCellH + 0.3,
-            width: sqCellW - 0.6,
-            height: sqCellH - 0.6,
-            rx: 0.5,
-            fill: `rgb(${r2},${g2},${b2})`,
-            opacity: sqOpacity * (0.35 + h * 0.4)
-          });
-        }), sqOpacity > 0.1 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("line", {
-          x1: sqX + sqSize / 2,
-          y1: sqY + 1,
-          x2: sqX + sqSize / 2,
-          y2: sqY + sqSize - 1,
-          stroke: "#ffaa4433",
-          strokeWidth: 0.3
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: sqX + 1,
-          y1: sqY + sqSize / 2,
-          x2: sqX + sqSize - 1,
-          y2: sqY + sqSize / 2,
-          stroke: "#ffaa4433",
-          strokeWidth: 0.3
-        })), radarR > 3 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
-          cx: radarCx,
-          cy: radarCy,
-          r: radarR,
-          fill: "rgba(0,0,0,0.35)",
-          stroke: radarOpacity > 0.05 ? "#ffaa4444" : "#ffaa4418",
-          strokeWidth: 0.5
-        }), radarOpacity > 0.02 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
-          cx: radarCx,
-          cy: radarCy,
-          r: radarR * 0.5,
-          fill: "none",
-          stroke: "#ffaa4418",
-          strokeWidth: 0.3
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: radarCx,
-          cy: radarCy,
-          r: radarR * 0.25,
-          fill: "none",
-          stroke: "#ffaa4412",
-          strokeWidth: 0.3
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: radarCx - radarR,
-          y1: radarCy,
-          x2: radarCx + radarR,
-          y2: radarCy,
-          stroke: "#ffaa4415",
-          strokeWidth: 0.3
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: radarCx,
-          y1: radarCy - radarR,
-          x2: radarCx,
-          y2: radarCy + radarR,
-          stroke: "#ffaa4415",
-          strokeWidth: 0.3
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: radarCx,
-          y1: radarCy,
-          x2: radarCx + Math.cos(radarAngle) * radarR,
-          y2: radarCy + Math.sin(radarAngle) * radarR,
-          stroke: "#ffaa44",
-          strokeWidth: 1,
-          opacity: radarOpacity * 0.8
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: radarCx,
-          y1: radarCy,
-          x2: radarCx + Math.cos(radarAngle - 0.2) * radarR,
-          y2: radarCy + Math.sin(radarAngle - 0.2) * radarR,
-          stroke: "#ffaa44",
-          strokeWidth: 0.5,
-          opacity: radarOpacity * 0.06
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: radarCx,
-          y1: radarCy,
-          x2: radarCx + Math.cos(radarAngle - 0.45) * radarR,
-          y2: radarCy + Math.sin(radarAngle - 0.45) * radarR,
-          stroke: "#ffaa44",
-          strokeWidth: 0.5,
-          opacity: radarOpacity * 0.045
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: radarCx,
-          y1: radarCy,
-          x2: radarCx + Math.cos(radarAngle - 0.7) * radarR,
-          y2: radarCy + Math.sin(radarAngle - 0.7) * radarR,
-          stroke: "#ffaa44",
-          strokeWidth: 0.5,
-          opacity: radarOpacity * 0.03
-        }), radarBlips.map((blip, bi) => blip.bright > 0.05 && /*#__PURE__*/React.createElement("circle", {
-          key: `rb-${bi}`,
-          cx: blip.x,
-          cy: blip.y,
-          r: 1 + blip.bright * 1.2,
-          fill: "#ffaa44",
-          opacity: radarOpacity * blip.bright * 0.9
-        })), /*#__PURE__*/React.createElement("circle", {
-          cx: radarCx,
-          cy: radarCy,
-          r: 1,
-          fill: "#ffaa44",
-          opacity: radarOpacity * 0.6
-        }))), /*#__PURE__*/React.createElement("rect", {
-          x: dockX,
-          y: dockY,
-          width: dockW,
-          height: dockH,
-          rx: 2,
-          fill: dkOpacity > 0.05 ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.02)",
-          stroke: dkOpacity > 0.05 ? "#ffaa4444" : "#ffaa4422",
-          strokeWidth: 0.5
-        }), Array.from({
-          length: dockRows
-        }, (_, ri) => {
-          const ry = dockY + ri * dockRowH;
-          const isClicked = ri === clickIdx || ri === clickIdx2;
+        }, "SEISMIC"), layers.map((layer, li) => {
+          const ly = contentY + layer.y * contentH;
+          const lh = layer.h * contentH;
           return /*#__PURE__*/React.createElement("g", {
-            key: `dk-${ri}`
+            key: `strata-${li}`
           }, /*#__PURE__*/React.createElement("rect", {
-            x: dockX + 0.8,
-            y: ry + 0.4,
-            width: dockW - 1.6,
-            height: dockRowH - 0.8,
-            rx: 1,
-            fill: isClicked ? "#ffaa4433" : "rgba(255,255,255,0.01)",
-            stroke: isClicked ? "#ffaa44aa" : "#ffaa4412",
-            strokeWidth: isClicked ? 0.5 : 0.2
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: dockX + dockW / 2,
-            cy: ry + dockRowH / 2,
-            r: isClicked ? 2 : 1.2,
-            fill: isClicked ? "#ffaa44" : "#ffaa4430",
-            opacity: isClicked ? 0.85 : 0.35
-          }));
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: unitInsetX,
-          y: contentY,
-          width: unitInsetW,
-          height: unitInsetH,
-          rx: 2,
-          fill: switchFresh ? `${teamColor}0a` : currentUnit ? "rgba(0,0,0,0.15)" : "rgba(0,0,0,0.08)",
-          stroke: switchFresh ? `${teamColor}66` : currentUnit ? `${teamColor}33` : "#ffffff18",
-          strokeWidth: 0.6
-        }), switchFresh && /*#__PURE__*/React.createElement("rect", {
-          x: unitInsetX - 1,
-          y: contentY - 1,
-          width: unitInsetW + 2,
-          height: unitInsetH + 2,
-          rx: 3,
-          fill: "none",
-          stroke: teamColor,
-          strokeWidth: 1 + switchPulse,
-          filter: "url(#glow)",
-          opacity: switchPulse * 0.4
-        }), currentUnit ? renderUnitSVG() : /*#__PURE__*/React.createElement("text", {
-          x: ucx,
-          y: ucy + 2,
+            x: seismicX,
+            y: ly,
+            width: seismicW,
+            height: lh,
+            fill: `${layer.color}55`,
+            stroke: `${layer.color}88`,
+            strokeWidth: 0.4
+          }), Array.from({
+            length: 3
+          }, (_, ti) => {
+            const ty = ly + (ti + 1) * lh / 4;
+            const wobble = Math.sin(ti * 2.3 + li * 1.7) * 2;
+            return /*#__PURE__*/React.createElement("line", {
+              key: `tex-${ti}`,
+              x1: seismicX + 2,
+              y1: ty + wobble,
+              x2: seismicX + seismicW - 2,
+              y2: ty - wobble,
+              stroke: `${layer.color}44`,
+              strokeWidth: 0.3
+            });
+          }), /*#__PURE__*/React.createElement("text", {
+            x: seismicX + seismicW - 3,
+            y: ly + lh / 2 + 2,
+            textAnchor: "end",
+            fill: `${layer.color}cc`,
+            fontSize: 4,
+            fontFamily: mono,
+            fontWeight: 600
+          }, layer.label));
+        }), gameStarted && (() => {
+          const pts = [];
+          for (let i = 0; i < nWavePoints; i++) {
+            const frac = i / (nWavePoints - 1);
+            const depth = frac * contentH;
+            const wy = contentY + depth;
+            const arrivalT = depth * waveSpeed;
+            const elapsed = waveTime - arrivalT;
+            const active = elapsed > 0;
+            const amp = active ? Math.max(0, 12 - frac * 6) * Math.sin(elapsed * 8 - frac * 15) * Math.exp(-elapsed * 0.4) : 0;
+            const wx = seismicX + seismicW * 0.35 + amp;
+            pts.push(`${wx},${wy}`);
+          }
+          return /*#__PURE__*/React.createElement("polyline", {
+            points: pts.join(" "),
+            fill: "none",
+            stroke: "#44ff88",
+            strokeWidth: 1.0,
+            opacity: 0.7
+          });
+        })(), gameStarted && (() => {
+          const pts = [];
+          for (let i = 0; i < nWavePoints; i++) {
+            const frac = i / (nWavePoints - 1);
+            const depth = frac * contentH;
+            const wy = contentY + depth;
+            const arrivalT = depth * waveSpeed * 1.7;
+            const elapsed = waveTime - arrivalT;
+            const active = elapsed > 0;
+            const amp = active ? Math.max(0, 18 - frac * 8) * Math.sin(elapsed * 5.5 - frac * 12) * Math.exp(-elapsed * 0.35) : 0;
+            const wx = seismicX + seismicW * 0.65 + amp;
+            pts.push(`${wx},${wy}`);
+          }
+          return /*#__PURE__*/React.createElement("polyline", {
+            points: pts.join(" "),
+            fill: "none",
+            stroke: "#ff6644",
+            strokeWidth: 1.0,
+            opacity: 0.6
+          });
+        })(), [0, 25, 50, 75, 100].map(pct => {
+          const dy = contentY + pct / 100 * contentH;
+          const depthM = Math.round(pct * 2.5);
+          return /*#__PURE__*/React.createElement("g", {
+            key: `depth-${pct}`
+          }, /*#__PURE__*/React.createElement("line", {
+            x1: seismicX,
+            y1: dy,
+            x2: seismicX + 4,
+            y2: dy,
+            stroke: "#ffaa4444",
+            strokeWidth: 0.4
+          }), /*#__PURE__*/React.createElement("text", {
+            x: seismicX - 1,
+            y: dy + 2,
+            textAnchor: "end",
+            fill: "rgba(255,170,68,0.4)",
+            fontSize: 3.5,
+            fontFamily: mono
+          }, depthM, "m"));
+        }), /*#__PURE__*/React.createElement("text", {
+          x: seismicX + seismicW * 0.35,
+          y: contentY + 6,
           textAnchor: "middle",
-          fill: "#ffffff18",
-          fontSize: 6,
-          fontFamily: mono
-        }, "?"));
+          fill: "#44ff88",
+          fontSize: 4,
+          fontFamily: mono,
+          fontWeight: 700,
+          opacity: 0.6
+        }, "P-WAVE"), /*#__PURE__*/React.createElement("text", {
+          x: seismicX + seismicW * 0.65,
+          y: contentY + 6,
+          textAnchor: "middle",
+          fill: "#ff6644",
+          fontSize: 4,
+          fontFamily: mono,
+          fontWeight: 700,
+          opacity: 0.6
+        }, "S-WAVE"), /*#__PURE__*/React.createElement("polygon", {
+          points: `${bx + bw / 2},${contentY - 2} ${bx + bw / 2 - 3},${contentY + 3} ${bx + bw / 2 + 3},${contentY + 3}`,
+          fill: "#44ffaa",
+          stroke: "#88ffdd",
+          strokeWidth: 0.6,
+          opacity: 0.8
+        }));
       }
-
-      // — CELLS box: minimap + yellow kill splashes + population bars —
 
       // ═══ VIEW container — compass rose + FOV sweep ═══
       if (box.id === "view") {

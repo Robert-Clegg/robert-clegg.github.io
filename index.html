@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v317";
+  var v = "v318";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v317 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v318 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v317"), /*#__PURE__*/React.createElement("span", {
+  }, "v318"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13203,34 +13203,34 @@ function TemporalReplay() {
           const valley = valleyDist < 8 ? -(4 - valleyDist * 0.5) : 0;
           return Math.max(-3, valley);
         };
-        // Arctic seismic research facility — centered at (50,50), rotated 90° CW
+        // Arctic seismic research facility — shifted toward south corner
         const buildings = [{
-          gx: 50,
-          gy: 50,
+          gx: 68,
+          gy: 68,
           r: 4.8,
           h: 7.2,
           label: "MAIN DOME",
           color: "#4499bb",
           type: "dome"
         }, {
-          gx: 49,
-          gy: 67,
+          gx: 67,
+          gy: 85,
           r: 3,
           h: 4.8,
           label: "SEISMIC LAB",
           color: "#44aacc",
           type: "dome"
         }, {
-          gx: 66,
-          gy: 48,
+          gx: 84,
+          gy: 66,
           r: 2.4,
           h: 3.6,
           label: "SUPPLY",
           color: "#448866",
           type: "dome"
         }, {
-          gx: 34,
-          gy: 68,
+          gx: 52,
+          gy: 86,
           w: 6,
           d: 3.6,
           h: 4.2,
@@ -13238,17 +13238,26 @@ function TemporalReplay() {
           color: "#5599aa",
           type: "box"
         }, {
-          gx: 63,
-          gy: 37,
+          gx: 81,
+          gy: 55,
           w: 3,
           d: 2.4,
           h: 3,
           label: "GENERATOR",
           color: "#667788",
           type: "box"
+        }, {
+          gx: 80,
+          gy: 18,
+          w: 0,
+          d: 0,
+          h: 22,
+          label: "OIL RIG",
+          color: "#cc8844",
+          type: "rig"
         }];
         // Helper: building center
-        const bldCenter = b => b.type === "dome" ? [b.gx, b.gy] : [b.gx + b.w / 2, b.gy + b.d / 2];
+        const bldCenter = b => b.type === "dome" || b.type === "rig" ? [b.gx, b.gy] : [b.gx + b.w / 2, b.gy + b.d / 2];
         // Player position: starts lower-left, approaches upper-right
         const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
         const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
@@ -13636,6 +13645,143 @@ function TemporalReplay() {
               opacity: labelVis
             }, b.label));
           }
+          if (b.type === "rig") {
+            // ── Oil rig / drilling derrick ──
+            const cx = b.gx,
+              cy = b.gy;
+            const baseZ = ctrZ;
+            const h = b.h;
+            // Platform base — square footprint
+            const platR = 4;
+            const platH = 3;
+            const platCorners = [[cx - platR, cy - platR], [cx + platR, cy - platR], [cx + platR, cy + platR], [cx - platR, cy + platR]];
+            const pGz = platCorners.map(c => terrainH(c[0], c[1]));
+            const platTop = platCorners.map((c, i) => `${wIsoX(c[0], c[1], pGz[i] + platH)},${wIsoY(c[0], c[1], pGz[i] + platH)}`).join(" ");
+            const platRf = `${wIsoX(platCorners[1][0], platCorners[1][1], pGz[1])},${wIsoY(platCorners[1][0], platCorners[1][1], pGz[1])} ${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2])},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2])} ${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2] + platH)},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2] + platH)} ${wIsoX(platCorners[1][0], platCorners[1][1], pGz[1] + platH)},${wIsoY(platCorners[1][0], platCorners[1][1], pGz[1] + platH)}`;
+            const platFf = `${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2])},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2])} ${wIsoX(platCorners[3][0], platCorners[3][1], pGz[3])},${wIsoY(platCorners[3][0], platCorners[3][1], pGz[3])} ${wIsoX(platCorners[3][0], platCorners[3][1], pGz[3] + platH)},${wIsoY(platCorners[3][0], platCorners[3][1], pGz[3] + platH)} ${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2] + platH)},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2] + platH)}`;
+            // Derrick tower — 4 legs tapering to apex
+            const legOff = 2.8;
+            const topOff = 0.6;
+            const legBases = [[cx - legOff, cy - legOff], [cx + legOff, cy - legOff], [cx + legOff, cy + legOff], [cx - legOff, cy + legOff]];
+            const legTops = [[cx - topOff, cy - topOff], [cx + topOff, cy - topOff], [cx + topOff, cy + topOff], [cx - topOff, cy + topOff]];
+            const bZ = baseZ + platH;
+            const tZ = baseZ + h;
+            const apexSx = wIsoX(cx, cy, tZ);
+            const apexSy = wIsoY(cx, cy, tZ);
+            // Cross braces at intervals
+            const braceHeights = [0.25, 0.5, 0.75];
+            return /*#__PURE__*/React.createElement("g", {
+              key: `bld-${bi}`
+            }, /*#__PURE__*/React.createElement("polygon", {
+              points: platRf,
+              fill: `${b.color}35`,
+              stroke: `${b.color}77`,
+              strokeWidth: 0.5
+            }), /*#__PURE__*/React.createElement("polygon", {
+              points: platFf,
+              fill: `${b.color}25`,
+              stroke: `${b.color}77`,
+              strokeWidth: 0.5
+            }), /*#__PURE__*/React.createElement("polygon", {
+              points: platTop,
+              fill: `${b.color}45`,
+              stroke: `${b.color}99`,
+              strokeWidth: 0.6
+            }), platCorners.map((c, ci) => /*#__PURE__*/React.createElement("line", {
+              key: `pil-${ci}`,
+              x1: wIsoX(c[0], c[1], pGz[ci]),
+              y1: wIsoY(c[0], c[1], pGz[ci]),
+              x2: wIsoX(c[0], c[1], pGz[ci] + platH),
+              y2: wIsoY(c[0], c[1], pGz[ci] + platH),
+              stroke: `${b.color}88`,
+              strokeWidth: 1
+            })), legBases.map((lb, li) => {
+              const lt = legTops[li];
+              return /*#__PURE__*/React.createElement("line", {
+                key: `dleg-${li}`,
+                x1: wIsoX(lb[0], lb[1], bZ),
+                y1: wIsoY(lb[0], lb[1], bZ),
+                x2: wIsoX(lt[0], lt[1], tZ),
+                y2: wIsoY(lt[0], lt[1], tZ),
+                stroke: `${b.color}aa`,
+                strokeWidth: 0.8
+              });
+            }), braceHeights.map((frac, bri) => {
+              const bh = bZ + (tZ - bZ) * frac;
+              const off = legOff + (topOff - legOff) * frac;
+              const brPts = [[cx - off, cy - off], [cx + off, cy - off], [cx + off, cy + off], [cx - off, cy + off]];
+              return /*#__PURE__*/React.createElement("g", {
+                key: `brace-${bri}`
+              }, brPts.map((p, pi) => {
+                const np = brPts[(pi + 1) % 4];
+                return /*#__PURE__*/React.createElement("line", {
+                  key: `br-${pi}`,
+                  x1: wIsoX(p[0], p[1], bh),
+                  y1: wIsoY(p[0], p[1], bh),
+                  x2: wIsoX(np[0], np[1], bh),
+                  y2: wIsoY(np[0], np[1], bh),
+                  stroke: `${b.color}66`,
+                  strokeWidth: 0.4
+                });
+              }), /*#__PURE__*/React.createElement("line", {
+                x1: wIsoX(brPts[1][0], brPts[1][1], bh),
+                y1: wIsoY(brPts[1][0], brPts[1][1], bh),
+                x2: wIsoX(brPts[2][0], brPts[2][1], bh),
+                y2: wIsoY(brPts[2][0], brPts[2][1], bh),
+                stroke: `${b.color}44`,
+                strokeWidth: 0.3
+              }));
+            }), /*#__PURE__*/React.createElement("rect", {
+              x: apexSx - 2.5,
+              y: apexSy - 3,
+              width: 5,
+              height: 3,
+              fill: `${b.color}55`,
+              stroke: `${b.color}aa`,
+              strokeWidth: 0.6,
+              rx: 0.5
+            }), /*#__PURE__*/React.createElement("line", {
+              x1: apexSx,
+              y1: apexSy,
+              x2: wIsoX(cx, cy, bZ + 1),
+              y2: wIsoY(cx, cy, bZ + 1),
+              stroke: "#ffaa44",
+              strokeWidth: 0.6,
+              opacity: 0.6
+            }), /*#__PURE__*/React.createElement("circle", {
+              cx: apexSx,
+              cy: apexSy - 4,
+              r: 1,
+              fill: "#ff4444",
+              opacity: 0.8
+            }, /*#__PURE__*/React.createElement("animate", {
+              attributeName: "opacity",
+              values: "0.9;0.2;0.9",
+              dur: "1.2s",
+              repeatCount: "indefinite"
+            })), [[cx - 10, cy], [cx + 10, cy], [cx, cy - 10], [cx, cy + 10]].map((anc, gi) => {
+              const az = terrainH(anc[0], anc[1]);
+              return /*#__PURE__*/React.createElement("line", {
+                key: `guy-${gi}`,
+                x1: apexSx,
+                y1: apexSy - 1,
+                x2: wIsoX(anc[0], anc[1], az),
+                y2: wIsoY(anc[0], anc[1], az),
+                stroke: `${b.color}33`,
+                strokeWidth: 0.3,
+                strokeDasharray: "2,3"
+              });
+            }), labelVis > 0.02 && /*#__PURE__*/React.createElement("text", {
+              x: tcx,
+              y: tcy,
+              textAnchor: "middle",
+              fill: `${b.color}dd`,
+              fontSize: 6,
+              fontFamily: mono,
+              fontWeight: 700,
+              opacity: labelVis
+            }, b.label));
+          }
           // ── Box rendering (HANGAR, GENERATOR) ──
           const corners = [[b.gx, b.gy], [b.gx + b.w, b.gy], [b.gx + b.w, b.gy + b.d], [b.gx, b.gy + b.d]];
           const gz = corners.map(c => terrainH(c[0], c[1]));
@@ -13739,10 +13885,10 @@ function TemporalReplay() {
           const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
           const startGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
           const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
-          const hangarGx = 34 + 3,
-            hangarGy = 68 + 1.8; // HANGAR center
-          const domeGx = 50,
-            domeGy = 50; // MAIN DOME center
+          const hangarGx = 52 + 3,
+            hangarGy = 86 + 1.8; // HANGAR center
+          const domeGx = 68,
+            domeGy = 68; // MAIN DOME center
           const domeRoofZ = terrainH(domeGx, domeGy) + 7.2; // MAIN DOME height
           const cruiseAlt = 16;
           let dGx,

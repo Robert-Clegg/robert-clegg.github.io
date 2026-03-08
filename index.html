@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v303";
+  var v = "v304";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v303 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v304 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v303"), /*#__PURE__*/React.createElement("span", {
+  }, "v304"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8514,7 +8514,7 @@ function TemporalReplay() {
     // AUTOMATION on west side of WORLD, left edge aligned with WORLD's west corner
     const autoH = 48;
     const autoW = boxW;
-    const sensorListH = 11 * 12 + 6; // 11 sensors × 12px + gap
+    const sensorListH = 11 * 16 + 8; // 11 sensors × 16px + gap
     // Approximate WORLD west corner X: iso diamond west point = wcx - 0.866 * wScale
     const approxAreaW = worldW - 4;
     const approxAreaH = worldH - 14 - 4;
@@ -12881,46 +12881,50 @@ function TemporalReplay() {
             name: "Tactile",
             sub: "pressure array · contact"
           }];
-          const slY = ay + ah + 6;
-          const slH = 12;
+          const slY = ay + ah + 8;
+          const slH = 16;
+          // Per-sensor flicker rates (primes for variety) — lower = faster flicker
+          const flickerRates = [1.3, 2.1, 0.7, 1.8, 0.9, 1.5, 2.4, 0.6, 1.1, 1.9, 0.8];
+          // Per-sensor phase offsets (pseudo-random spread)
+          const phaseOffsets = [0, 3.7, 1.2, 5.1, 2.8, 6.3, 0.9, 4.5, 7.2, 1.6, 5.8];
           return sensors.map((s, si) => {
-            // Staggered cycles — wider on-window so 3-5 overlap
-            const period = 8.0; // full cycle time
-            const onDuration = 3.2; // how long each stays on
-            const offset = si * (period / sensors.length);
-            const cycle = time > 0.1 ? (time * 0.8 + offset) % period : 99;
-            const isOn = cycle < onDuration;
-            const brightness = isOn ? cycle < 0.4 ? cycle / 0.4 : cycle > onDuration - 0.6 ? (onDuration - cycle) / 0.6 : 1 : 0;
+            // Multi-wave pseudo-random: sum of sines at different frequencies per sensor
+            const t = time > 0.1 ? time : 0;
+            const p = phaseOffsets[si];
+            const r = flickerRates[si];
+            const wave = Math.sin(t * r + p) * 0.35 + Math.sin(t * r * 1.7 + p * 2.3) * 0.25 + Math.sin(t * r * 3.1 + p * 0.7) * 0.2 + Math.sin(t * r * 0.3 + p * 5.1) * 0.2;
+            const isOn = t > 0.1 && wave > -0.05;
+            const brightness = isOn ? Math.min(1, (wave + 0.05) * 2.5) : 0;
             const lineY = slY + si * slH;
             return /*#__PURE__*/React.createElement("g", {
               key: `sen-${si}`
             }, brightness > 0.05 && /*#__PURE__*/React.createElement("rect", {
               x: ax,
-              y: lineY - 1,
+              y: lineY,
               width: aw,
-              height: slH - 1,
-              rx: 2,
+              height: slH - 2,
+              rx: 3,
               fill: "#88ddff",
-              opacity: brightness * 0.08
+              opacity: brightness * 0.10
             }), /*#__PURE__*/React.createElement("circle", {
-              cx: ax + 5,
+              cx: ax + 6,
               cy: lineY + slH / 2 - 1,
-              r: 2,
+              r: 2.5,
               fill: isOn ? "#44ffaa" : "#334455",
-              opacity: isOn ? 0.9 : 0.4
+              opacity: isOn ? 0.5 + brightness * 0.4 : 0.3
             }), /*#__PURE__*/React.createElement("text", {
-              x: ax + 11,
-              y: lineY + slH / 2 + 2,
-              fill: isOn ? "#88ddff" : "rgba(136,221,255,0.3)",
-              fontSize: 5.5,
+              x: ax + 14,
+              y: lineY + slH / 2 + 2.5,
+              fill: isOn ? "#88ddff" : "rgba(136,221,255,0.25)",
+              fontSize: 7,
               fontFamily: mono,
               fontWeight: isOn ? 700 : 400
             }, s.name), /*#__PURE__*/React.createElement("text", {
               x: ax + aw - 3,
               y: lineY + slH / 2 + 2,
               textAnchor: "end",
-              fill: isOn ? "rgba(136,221,255,0.6)" : "rgba(136,221,255,0.15)",
-              fontSize: 4,
+              fill: isOn ? "rgba(136,221,255,0.55)" : "rgba(136,221,255,0.12)",
+              fontSize: 5,
               fontFamily: mono
             }, s.sub));
           });

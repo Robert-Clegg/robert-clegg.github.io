@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v316";
+  var v = "v317";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v316 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v317 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v316"), /*#__PURE__*/React.createElement("span", {
+  }, "v317"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13203,45 +13203,45 @@ function TemporalReplay() {
           const valley = valleyDist < 8 ? -(4 - valleyDist * 0.5) : 0;
           return Math.max(-3, valley);
         };
-        // Arctic seismic research facility — 45° CW rotation, 60% scale
+        // Arctic seismic research facility — centered at (50,50), rotated 90° CW
         const buildings = [{
-          gx: 43,
-          gy: 60,
+          gx: 50,
+          gy: 50,
           r: 4.8,
           h: 7.2,
           label: "MAIN DOME",
           color: "#4499bb",
           type: "dome"
         }, {
-          gx: 26,
-          gy: 59,
+          gx: 49,
+          gy: 67,
           r: 3,
           h: 4.8,
           label: "SEISMIC LAB",
           color: "#44aacc",
           type: "dome"
         }, {
-          gx: 45,
-          gy: 76,
+          gx: 66,
+          gy: 48,
           r: 2.4,
           h: 3.6,
           label: "SUPPLY",
           color: "#448866",
           type: "dome"
         }, {
-          gx: 25,
-          gy: 44,
-          w: 3.6,
-          d: 6,
+          gx: 34,
+          gy: 68,
+          w: 6,
+          d: 3.6,
           h: 4.2,
           label: "HANGAR",
           color: "#5599aa",
           type: "box"
         }, {
-          gx: 56,
-          gy: 73,
-          w: 2.4,
-          d: 3,
+          gx: 63,
+          gy: 37,
+          w: 3,
+          d: 2.4,
           h: 3,
           label: "GENERATOR",
           color: "#667788",
@@ -13739,10 +13739,10 @@ function TemporalReplay() {
           const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
           const startGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
           const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
-          const hangarGx = 25 + 1.8,
-            hangarGy = 44 + 3; // HANGAR center
-          const domeGx = 43,
-            domeGy = 60; // MAIN DOME center
+          const hangarGx = 34 + 3,
+            hangarGy = 68 + 1.8; // HANGAR center
+          const domeGx = 50,
+            domeGy = 50; // MAIN DOME center
           const domeRoofZ = terrainH(domeGx, domeGy) + 7.2; // MAIN DOME height
           const cruiseAlt = 16;
           let dGx,

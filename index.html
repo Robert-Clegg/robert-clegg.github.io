@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v301";
+  var v = "v302";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v301 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v302 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v301"), /*#__PURE__*/React.createElement("span", {
+  }, "v302"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8511,10 +8511,12 @@ function TemporalReplay() {
     // MOVEMENT below HUD
     const moveH = 120;
     const moveTop = rowY3 + hudH + boxGap;
-    // AUTOMATION left of HUD, aligned to top
+    // AUTOMATION on west side of WORLD, above sensor list
     const autoH = 48;
     const autoW = boxW;
-    const autoX = leftX - autoW - boxGap;
+    const sensorListH = 11 * 12 + 6; // 11 sensors × 12px + gap
+    const autoX = worldLeftX - autoW - boxGap;
+    const autoY = rowY3; // top-aligned with WORLD/HUD row
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8566,11 +8568,11 @@ function TemporalReplay() {
     // 6: MOVEMENT (below HUD)
     {
       x: autoX,
-      y: rowY3,
+      y: autoY,
       w: autoW,
       h: autoH
     },
-    // 7: AUTOMATION (left of HUD)
+    // 7: AUTOMATION (west of WORLD)
     {
       x: worldLeftX,
       y: rowY3,
@@ -10945,7 +10947,7 @@ function TemporalReplay() {
     }, /*#__PURE__*/React.createElement("svg", {
       width: W,
       height: H,
-      viewBox: `-600 0 ${W + 600} ${H}`,
+      viewBox: `-800 0 ${W + 800} ${H}`,
       style: {
         display: "block",
         margin: "0 auto",

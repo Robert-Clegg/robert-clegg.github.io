@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v320";
+  var v = "v321";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v320 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v321 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v320"), /*#__PURE__*/React.createElement("span", {
+  }, "v321"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13290,7 +13290,39 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 2
-        }, "WORLD"), [10, 20, 30, 40, 50, 60, 70, 80, 90].map(g => {
+        }, "WORLD"), /*#__PURE__*/React.createElement("text", {
+          x: wIsoX(0, 0, 0),
+          y: wIsoY(0, 0, 0) - 14,
+          textAnchor: "middle",
+          fill: "rgba(0,221,255,0.5)",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "W"), /*#__PURE__*/React.createElement("text", {
+          x: wIsoX(100, 0, 0) + 8,
+          y: wIsoY(100, 0, 0),
+          textAnchor: "start",
+          fill: "rgba(0,221,255,0.5)",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "N"), /*#__PURE__*/React.createElement("text", {
+          x: wIsoX(100, 100, 0),
+          y: wIsoY(100, 100, 0) + 10,
+          textAnchor: "middle",
+          fill: "rgba(0,221,255,0.5)",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "E"), /*#__PURE__*/React.createElement("text", {
+          x: wIsoX(0, 100, 0) - 8,
+          y: wIsoY(0, 100, 0),
+          textAnchor: "end",
+          fill: "rgba(0,221,255,0.5)",
+          fontSize: 6,
+          fontFamily: mono,
+          fontWeight: 700
+        }, "S"), [10, 20, 30, 40, 50, 60, 70, 80, 90].map(g => {
           const step = 4;
           const isMajor = g % 20 === 0;
           const ptsA = [],
@@ -13314,7 +13346,58 @@ function TemporalReplay() {
             stroke: isMajor ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.16)",
             strokeWidth: isMajor ? 0.6 : 0.4
           }));
+        }), [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(v => {
+          // Labels along west edge (gx=0): show gy values
+          const wz = terrainH(0, v);
+          const wx = wIsoX(0, v, wz);
+          const wy = wIsoY(0, v, wz);
+          // Labels along north edge (gy=0): show gx values
+          const nz = terrainH(v, 0);
+          const nx = wIsoX(v, 0, nz);
+          const ny = wIsoY(v, 0, nz);
+          const isMajor = v % 20 === 0;
+          return /*#__PURE__*/React.createElement("g", {
+            key: `coord-${v}`
+          }, /*#__PURE__*/React.createElement("text", {
+            x: wx - 6,
+            y: wy + 1,
+            textAnchor: "end",
+            fill: isMajor ? "rgba(0,221,255,0.6)" : "rgba(0,221,255,0.35)",
+            fontSize: isMajor ? 5 : 4,
+            fontFamily: mono,
+            fontWeight: isMajor ? 700 : 400
+          }, v), /*#__PURE__*/React.createElement("text", {
+            x: nx + 6,
+            y: ny - 2,
+            textAnchor: "start",
+            fill: isMajor ? "rgba(0,221,255,0.6)" : "rgba(0,221,255,0.35)",
+            fontSize: isMajor ? 5 : 4,
+            fontFamily: mono,
+            fontWeight: isMajor ? 700 : 400
+          }, v));
         }), (() => {
+          const wMidZ = terrainH(0, 50);
+          const nMidZ = terrainH(50, 0);
+          return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("text", {
+            x: wIsoX(0, 50, wMidZ) - 14,
+            y: wIsoY(0, 50, wMidZ),
+            textAnchor: "middle",
+            fill: "rgba(0,221,255,0.45)",
+            fontSize: 5,
+            fontFamily: mono,
+            fontWeight: 700,
+            transform: `rotate(-30 ${wIsoX(0, 50, wMidZ) - 14} ${wIsoY(0, 50, wMidZ)})`
+          }, "GY"), /*#__PURE__*/React.createElement("text", {
+            x: wIsoX(50, 0, nMidZ) + 14,
+            y: wIsoY(50, 0, nMidZ) - 4,
+            textAnchor: "middle",
+            fill: "rgba(0,221,255,0.45)",
+            fontSize: 5,
+            fontFamily: mono,
+            fontWeight: 700,
+            transform: `rotate(30 ${wIsoX(50, 0, nMidZ) + 14} ${wIsoY(50, 0, nMidZ) - 4})`
+          }, "GX"));
+        })(), (() => {
           const riverPts = [];
           const riverPtsBot = [];
           for (let gx = 0; gx <= 100; gx += 4) {

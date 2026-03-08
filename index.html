@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v302";
+  var v = "v303";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v302 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v303 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v302"), /*#__PURE__*/React.createElement("span", {
+  }, "v303"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8511,12 +8511,19 @@ function TemporalReplay() {
     // MOVEMENT below HUD
     const moveH = 120;
     const moveTop = rowY3 + hudH + boxGap;
-    // AUTOMATION on west side of WORLD, above sensor list
+    // AUTOMATION on west side of WORLD, left edge aligned with WORLD's west corner
     const autoH = 48;
     const autoW = boxW;
     const sensorListH = 11 * 12 + 6; // 11 sensors × 12px + gap
-    const autoX = worldLeftX - autoW - boxGap;
-    const autoY = rowY3; // top-aligned with WORLD/HUD row
+    // Approximate WORLD west corner X: iso diamond west point = wcx - 0.866 * wScale
+    const approxAreaW = worldW - 4;
+    const approxAreaH = worldH - 14 - 4;
+    const approxWScale = Math.min(approxAreaW / 1.732, approxAreaH) * 0.92;
+    const approxWcx = worldLeftX + 2 + approxAreaW * 0.5;
+    const worldWestX = approxWcx - 0.866 * approxWScale;
+    const autoX = worldWestX;
+    // Move up so sensor list (below automation) doesn't overlap WORLD terrain
+    const autoY = rowY3 - sensorListH - autoH + 10;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -12877,10 +12884,13 @@ function TemporalReplay() {
           const slY = ay + ah + 6;
           const slH = 12;
           return sensors.map((s, si) => {
-            // Each sensor triggers on a staggered cycle
-            const cycle = time > 0.1 ? (time * 0.6 + si * 1.7) % (sensors.length * 1.7) : 99;
-            const isOn = cycle < 1.2;
-            const brightness = isOn ? Math.min(1, (1.2 - cycle) / 0.4) : 0;
+            // Staggered cycles — wider on-window so 3-5 overlap
+            const period = 8.0; // full cycle time
+            const onDuration = 3.2; // how long each stays on
+            const offset = si * (period / sensors.length);
+            const cycle = time > 0.1 ? (time * 0.8 + offset) % period : 99;
+            const isOn = cycle < onDuration;
+            const brightness = isOn ? cycle < 0.4 ? cycle / 0.4 : cycle > onDuration - 0.6 ? (onDuration - cycle) / 0.6 : 1 : 0;
             const lineY = slY + si * slH;
             return /*#__PURE__*/React.createElement("g", {
               key: `sen-${si}`
@@ -13340,18 +13350,33 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: 0.6
           }, "RADAR"), time > 0.1 && (() => {
-            const lineLen = 18;
+            const lineLen = 36;
             const dashOffset = nowMs * 0.008 % 12;
-            return /*#__PURE__*/React.createElement("line", {
-              x1: dishX,
-              y1: dishY,
-              x2: dishX + lineLen,
-              y2: dishY - lineLen * 0.3,
-              stroke: "#44ffaa",
-              strokeWidth: 1,
-              opacity: 0.6,
-              strokeDasharray: "2,4",
-              strokeDashoffset: -dashOffset
+            const beams = [{
+              angle: -0.6,
+              color: "#44ffaa"
+            }, {
+              angle: -0.45,
+              color: "#66ddff"
+            }, {
+              angle: -0.3,
+              color: "#88bbee"
+            }];
+            return beams.map((b, bi) => {
+              const ex = dishX + Math.cos(b.angle) * lineLen;
+              const ey = dishY + Math.sin(b.angle) * lineLen;
+              return /*#__PURE__*/React.createElement("line", {
+                key: `rf-${bi}`,
+                x1: dishX,
+                y1: dishY,
+                x2: ex,
+                y2: ey,
+                stroke: b.color,
+                strokeWidth: 0.8,
+                opacity: 0.5,
+                strokeDasharray: "2,4",
+                strokeDashoffset: -dashOffset - bi * 2
+              });
             });
           })());
         })());

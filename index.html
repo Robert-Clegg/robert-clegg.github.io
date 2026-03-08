@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v333";
+  var v = "v334";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v333 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v334 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v333"), /*#__PURE__*/React.createElement("span", {
+  }, "v334"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8504,8 +8504,8 @@ function TemporalReplay() {
     // MOVEMENT at rowY3
     const moveH = 120;
     const moveTop = rowY3;
-    // HUD below MOVEMENT
-    const hudH = audioH;
+    // HUD hidden (seismic moved to oscilloscope)
+    const hudH = 0;
     const hudTop = moveTop + moveH + boxGap;
     // WORLD starts at hudTop, fills to winStateBottom
     const worldW = boxW * 3.5;
@@ -11839,6 +11839,7 @@ function TemporalReplay() {
 
       // — HUD box: Heatmap | Dock | UNIT inset — abstract visual data + active cell —
       if (box.id === "hud") {
+        if (boxH < 1) return null; // hidden — seismic moved to oscilloscope
         const gameStarted = time > 0.1;
         const innerPad = 3;
         const labelH = 12;
@@ -12608,15 +12609,19 @@ function TemporalReplay() {
             }, s.sub));
           });
         })(), (() => {
-          const sgY = ay + ah + 8 + 5 * 16 + 8;
-          const sgW = aw * 2 + 4;
-          const sgH = 280;
-          const sgX = ax;
+          const sgX = ax + aw + 4; // right of automation
+          const sgY = ay; // same top as automation
+          const sgW = aw * 2.2;
+          const sgH = ah + 5 * 16 + 16; // span automation + sensors height
           const t = time > 0.1 ? time : 0;
           const containerBrS = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-          // Layout: top 60% = oscilloscope traces, bottom 40% = depth section
-          const traceH = sgH * 0.58;
-          const depthH = sgH * 0.38;
+          // Player position for animation (same formula as WORLD)
+          const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
+          const playerFrac = progress; // 0→1 as player moves across terrain
+          const playerPhase = Math.sin(progress * Math.PI * 2) * 0.15;
+          // Layout
+          const traceH = sgH * 0.56;
+          const depthH = sgH * 0.36;
           const traceTop = sgY + 18;
           const depthTop = traceTop + traceH + 8;
           const padL = 22;
@@ -12624,38 +12629,37 @@ function TemporalReplay() {
           const plotW = sgW - padL - padR;
           const plotX = sgX + padL;
 
-          // ── TOP PANEL: Neon seismic traces with V-shaped hyperbolic pattern ──
-          const nRows = 28; // number of horizontal trace rows
-          const rowH = traceH / nRows;
-          // Each row = one time sample, traces sweep left-right across offset
+          // ── TOP: Neon CMP gather — V-shaped hyperbolic moveout ──
+          const nRows = 28;
+          const rowH2 = traceH / nRows;
           const nPtsPerRow = 80;
           const traceElements = [];
           for (let row = 0; row < nRows; row++) {
-            const timeVal = 10 - row / (nRows - 1) * 8; // 10s at top → 2s at bottom
-            const rowCy = traceTop + row * rowH;
+            const timeVal = 10 - row / (nRows - 1) * 8;
+            const rowCy = traceTop + row * rowH2;
             const pts = [];
             for (let pi = 0; pi < nPtsPerRow; pi++) {
               const f = pi / (nPtsPerRow - 1);
               const px = plotX + f * plotW;
-              const offset = (f - 0.5) * 140; // -70km to +70km
-              // Hyperbolic moveout: t = sqrt(t0^2 + (x/v)^2)
-              // Multiple reflectors at different t0 and velocities
+              const offset = (f - 0.5) * 140;
               let amp = 0;
+              // Reflectors shift with player position
+              const pShift = playerFrac * 1.5;
               const reflectors = [{
-                t0: 3.0,
-                v: 28,
+                t0: 3.0 - pShift * 0.3,
+                v: 28 - playerFrac * 4,
                 a: 1.0
               }, {
-                t0: 4.5,
-                v: 22,
+                t0: 4.5 - pShift * 0.2,
+                v: 22 - playerFrac * 3,
                 a: 0.8
               }, {
-                t0: 6.0,
-                v: 18,
+                t0: 6.0 + pShift * 0.1,
+                v: 18 + playerFrac * 2,
                 a: 0.65
               }, {
-                t0: 7.5,
-                v: 16,
+                t0: 7.5 + pShift * 0.3,
+                v: 16 + playerFrac * 1,
                 a: 0.45
               }, {
                 t0: 8.5,
@@ -12665,23 +12669,18 @@ function TemporalReplay() {
               for (const ref of reflectors) {
                 const tHyp = Math.sqrt(ref.t0 * ref.t0 + offset * offset / (ref.v * ref.v));
                 const dt2 = timeVal - tHyp;
-                // Ricker wavelet: (1 - 2*(pi*f*t)^2) * exp(-(pi*f*t)^2)
-                const freq = 1.8;
+                const freq = 1.8 + playerFrac * 0.4;
                 const u = Math.PI * freq * dt2;
                 const wavelet = (1 - 2 * u * u) * Math.exp(-u * u);
                 amp += wavelet * ref.a;
               }
-              // Add background noise
               const noise = Math.sin(offset * 0.8 + timeVal * 5 + t * 0.3) * 0.08 + Math.sin(offset * 2.1 + timeVal * 12) * 0.05;
               amp += noise;
-              // Animate: subtle time-dependent phase shift
               const animPhase = t > 0 ? Math.sin(t * 0.15 + row * 0.2) * 0.12 : 0;
               amp += animPhase * Math.sin(offset * 0.3);
-              const yOff = amp * rowH * 1.8;
+              const yOff = amp * rowH2 * 1.8;
               pts.push(`${px},${rowCy + yOff}`);
             }
-            // Color: edges=cyan, center=warm (magenta/orange/white)
-            // Brightness based on row position (middle rows brighter near hyperbola apex)
             const centerDist = Math.abs(timeVal - 5.5);
             const warmth = Math.max(0, 1 - centerDist / 4);
             const r2 = Math.round(100 + warmth * 155);
@@ -12698,23 +12697,20 @@ function TemporalReplay() {
             }));
           }
 
-          // ── V-shape glow overlay — bright convergence at center ──
+          // V-shape glow
           const vGlowPts = [];
-          const vSteps = 20;
-          for (let i = 0; i <= vSteps; i++) {
-            const f = i / vSteps;
+          for (let i = 0; i <= 10; i++) {
+            const f = i / 10;
             const yy = traceTop + f * traceH;
-            const timeV = 10 - f * 8;
-            const spread = Math.max(3, (10 - timeV) * plotW / 28);
-            const cx = plotX + plotW / 2;
+            const spread = Math.max(3, f * plotW / 5);
             vGlowPts.push({
-              x: cx,
+              x: plotX + plotW / 2,
               y: yy,
               spread
             });
           }
 
-          // ── BOTTOM PANEL: Depth cross-section with colored geological layers ──
+          // ── BOTTOM: Depth cross-section — layers animate with player ──
           const depthLayers = [{
             y0: 0,
             y1: 0.22,
@@ -12746,11 +12742,12 @@ function TemporalReplay() {
             stroke: "rgba(220,80,60,0.4)",
             label: "BEDROCK"
           }];
-          // Layer boundaries curve like a basin
+          // Basin curvature shifts as player moves
+          const basinCenter = 0.5 + playerPhase;
           const basinCurve = (f, depth) => {
-            const center = 0.5;
-            const dist = Math.abs(f - center);
-            return depth + dist * dist * 0.15 - 0.03;
+            const dist = Math.abs(f - basinCenter);
+            const faultBump = Math.abs(f - 0.65) < 0.06 ? playerFrac > 0.3 ? 0.04 : 0 : 0;
+            return depth + dist * dist * (0.15 + playerFrac * 0.08) - 0.03 + faultBump;
           };
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
             x: sgX,
@@ -12833,14 +12830,14 @@ function TemporalReplay() {
             fontSize: 3.5,
             fontFamily: mono,
             transform: `rotate(-90 ${sgX + 5} ${traceTop + traceH / 2})`
-          }, "Time-D/8 (t)"), traceElements, vGlowPts.filter((_, i) => i % 2 === 0).map((p, gi) => /*#__PURE__*/React.createElement("ellipse", {
+          }, "Time (t)"), traceElements, vGlowPts.map((p, gi) => /*#__PURE__*/React.createElement("ellipse", {
             key: `vgl-${gi}`,
             cx: p.x,
             cy: p.y,
             rx: p.spread,
-            ry: rowH * 0.6,
+            ry: rowH2 * 0.6,
             fill: "none",
-            stroke: "rgba(255,180,255,0.08)",
+            stroke: "rgba(255,180,255,0.06)",
             strokeWidth: 1.5
           })), /*#__PURE__*/React.createElement("line", {
             x1: plotX + plotW / 2,
@@ -12858,7 +12855,7 @@ function TemporalReplay() {
             stroke: "rgba(255,255,0,0.5)",
             strokeWidth: 0.8
           }), /*#__PURE__*/React.createElement("text", {
-            x: plotX + plotW / 2,
+            x: plotX + plotW * basinCenter,
             y: depthTop - 1,
             textAnchor: "middle",
             fill: "#ffff44",
@@ -12899,34 +12896,7 @@ function TemporalReplay() {
             fontSize: 3.5,
             fontFamily: mono,
             transform: `rotate(-90 ${sgX + 5} ${depthTop + depthH / 2})`
-          }, "Depth (km)"), [-60, -40, -20, 0, 20, 40, 60].map(km => {
-            const fx = (km + 70) / 140;
-            const px = plotX + fx * plotW;
-            return /*#__PURE__*/React.createElement("g", {
-              key: `boax-${km}`
-            }, /*#__PURE__*/React.createElement("line", {
-              x1: px,
-              y1: depthTop + depthH,
-              x2: px,
-              y2: depthTop + depthH + 3,
-              stroke: "rgba(0,200,255,0.25)",
-              strokeWidth: 0.3
-            }), /*#__PURE__*/React.createElement("text", {
-              x: px,
-              y: depthTop + depthH + 8,
-              textAnchor: "middle",
-              fill: "rgba(0,200,255,0.35)",
-              fontSize: 3,
-              fontFamily: mono
-            }, km));
-          }), /*#__PURE__*/React.createElement("text", {
-            x: plotX + plotW / 2,
-            y: depthTop + depthH + 14,
-            textAnchor: "middle",
-            fill: "rgba(0,200,255,0.3)",
-            fontSize: 3.5,
-            fontFamily: mono
-          }, "Offset (km)"), depthLayers.map((layer, li) => {
+          }, "Depth (km)"), depthLayers.map((layer, li) => {
             const nPts = 30;
             const topPts = [];
             const botPts = [];
@@ -12935,10 +12905,8 @@ function TemporalReplay() {
               const px = plotX + f * plotW;
               const topD = basinCurve(f, layer.y0);
               const botD = basinCurve(f, layer.y1);
-              const topPy = depthTop + Math.max(0, topD) * depthH;
-              const botPy = depthTop + Math.min(1, botD) * depthH;
-              topPts.push(`${px},${topPy}`);
-              botPts.unshift(`${px},${botPy}`);
+              topPts.push(`${px},${depthTop + Math.max(0, topD) * depthH}`);
+              botPts.unshift(`${px},${depthTop + Math.min(1, botD) * depthH}`);
             }
             return /*#__PURE__*/React.createElement("g", {
               key: `dl-${li}`

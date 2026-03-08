@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v297";
+  var v = "v298";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v297 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v298 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v297"), /*#__PURE__*/React.createElement("span", {
+  }, "v298"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13264,18 +13264,28 @@ function TemporalReplay() {
             opacity: 0.6
           }, "RADAR"), time > 0.1 && [0, 1, 2].map(wi => {
             const phase = (nowMs * 0.003 + wi * 0.33) % 1;
-            const ringR = 2 + phase * 6;
-            const op = (1 - phase) * 0.55;
-            return /*#__PURE__*/React.createElement("circle", {
-              key: `rf-${wi}`,
+            const ringR = 3 + phase * 10;
+            const op = (1 - phase) * 0.8;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `rf-${wi}`
+            }, /*#__PURE__*/React.createElement("circle", {
               cx: dishX,
               cy: dishY,
               r: ringR,
               fill: "none",
               stroke: "#44ffaa",
-              strokeWidth: 0.7,
+              strokeWidth: 1.5,
               opacity: op
-            });
+            }), /*#__PURE__*/React.createElement("circle", {
+              cx: dishX,
+              cy: dishY,
+              r: ringR,
+              fill: "none",
+              stroke: "#44ffaa",
+              strokeWidth: 4,
+              opacity: op * 0.2,
+              filter: "url(#glow)"
+            }));
           }));
         })());
       }

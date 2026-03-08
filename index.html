@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v296";
+  var v = "v297";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v296 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v297 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v296"), /*#__PURE__*/React.createElement("span", {
+  }, "v297"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13204,8 +13204,8 @@ function TemporalReplay() {
             opacity: beamFade
           }, distLabel)));
         }), (() => {
-          const towerGx = 60,
-            towerGy = 50;
+          const towerGx = 80,
+            towerGy = 85;
           const towerBaseZ = terrainH(towerGx, towerGy);
           const towerH = 16;
           const bx2 = wIsoX(towerGx, towerGy, towerBaseZ);
@@ -13214,8 +13214,6 @@ function TemporalReplay() {
           const ty = wIsoY(towerGx, towerGy, towerBaseZ + towerH);
           const dishX = tx,
             dishY = ty - 3;
-          const bright = time > 0.1 ? Math.min(1, COL_RAMP.extraction || 0.05) : 0;
-          const dfX = dfColX + dfNodeW / 2;
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
             x1: bx2,
             y1: by2,
@@ -13265,15 +13263,17 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: 0.6
           }, "RADAR"), time > 0.1 && [0, 1, 2].map(wi => {
-            const phase = (nowMs * 0.002 + wi * 0.33) % 1;
-            const arcR = 4 + phase * 12;
-            const op = (1 - phase) * 0.4 * bright;
-            return /*#__PURE__*/React.createElement("path", {
+            const phase = (nowMs * 0.003 + wi * 0.33) % 1;
+            const ringR = 2 + phase * 6;
+            const op = (1 - phase) * 0.55;
+            return /*#__PURE__*/React.createElement("circle", {
               key: `rf-${wi}`,
-              d: `M${dishX},${dishY - arcR} A${arcR},${arcR} 0 0 1 ${dishX},${dishY + arcR}`,
+              cx: dishX,
+              cy: dishY,
+              r: ringR,
               fill: "none",
               stroke: "#44ffaa",
-              strokeWidth: 0.6,
+              strokeWidth: 0.7,
               opacity: op
             });
           }));

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v332";
+  var v = "v333";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v332 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v333 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v332"), /*#__PURE__*/React.createElement("span", {
+  }, "v333"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12608,229 +12608,394 @@ function TemporalReplay() {
             }, s.sub));
           });
         })(), (() => {
-          const sgY = ay + ah + 8 + 5 * 16 + 8; // below 5 sensors
-          const sgW = aw * 2 + 4; // spans AUTOMATION + DRONE width
-          const sgH = 200;
+          const sgY = ay + ah + 8 + 5 * 16 + 8;
+          const sgW = aw * 2 + 4;
+          const sgH = 280;
           const sgX = ax;
-          const nTraces = 12; // number of offset channels
-          const traceGap = (sgW - 20) / (nTraces - 1);
           const t = time > 0.1 ? time : 0;
           const containerBrS = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-          // Rock layer boundaries (fraction of height)
-          const strata = [{
-            f: 0,
-            h: 0.20,
-            color: "#554433",
+          // Layout: top 60% = oscilloscope traces, bottom 40% = depth section
+          const traceH = sgH * 0.58;
+          const depthH = sgH * 0.38;
+          const traceTop = sgY + 18;
+          const depthTop = traceTop + traceH + 8;
+          const padL = 22;
+          const padR = 4;
+          const plotW = sgW - padL - padR;
+          const plotX = sgX + padL;
+
+          // ── TOP PANEL: Neon seismic traces with V-shaped hyperbolic pattern ──
+          const nRows = 28; // number of horizontal trace rows
+          const rowH = traceH / nRows;
+          // Each row = one time sample, traces sweep left-right across offset
+          const nPtsPerRow = 80;
+          const traceElements = [];
+          for (let row = 0; row < nRows; row++) {
+            const timeVal = 10 - row / (nRows - 1) * 8; // 10s at top → 2s at bottom
+            const rowCy = traceTop + row * rowH;
+            const pts = [];
+            for (let pi = 0; pi < nPtsPerRow; pi++) {
+              const f = pi / (nPtsPerRow - 1);
+              const px = plotX + f * plotW;
+              const offset = (f - 0.5) * 140; // -70km to +70km
+              // Hyperbolic moveout: t = sqrt(t0^2 + (x/v)^2)
+              // Multiple reflectors at different t0 and velocities
+              let amp = 0;
+              const reflectors = [{
+                t0: 3.0,
+                v: 28,
+                a: 1.0
+              }, {
+                t0: 4.5,
+                v: 22,
+                a: 0.8
+              }, {
+                t0: 6.0,
+                v: 18,
+                a: 0.65
+              }, {
+                t0: 7.5,
+                v: 16,
+                a: 0.45
+              }, {
+                t0: 8.5,
+                v: 14,
+                a: 0.35
+              }];
+              for (const ref of reflectors) {
+                const tHyp = Math.sqrt(ref.t0 * ref.t0 + offset * offset / (ref.v * ref.v));
+                const dt2 = timeVal - tHyp;
+                // Ricker wavelet: (1 - 2*(pi*f*t)^2) * exp(-(pi*f*t)^2)
+                const freq = 1.8;
+                const u = Math.PI * freq * dt2;
+                const wavelet = (1 - 2 * u * u) * Math.exp(-u * u);
+                amp += wavelet * ref.a;
+              }
+              // Add background noise
+              const noise = Math.sin(offset * 0.8 + timeVal * 5 + t * 0.3) * 0.08 + Math.sin(offset * 2.1 + timeVal * 12) * 0.05;
+              amp += noise;
+              // Animate: subtle time-dependent phase shift
+              const animPhase = t > 0 ? Math.sin(t * 0.15 + row * 0.2) * 0.12 : 0;
+              amp += animPhase * Math.sin(offset * 0.3);
+              const yOff = amp * rowH * 1.8;
+              pts.push(`${px},${rowCy + yOff}`);
+            }
+            // Color: edges=cyan, center=warm (magenta/orange/white)
+            // Brightness based on row position (middle rows brighter near hyperbola apex)
+            const centerDist = Math.abs(timeVal - 5.5);
+            const warmth = Math.max(0, 1 - centerDist / 4);
+            const r2 = Math.round(100 + warmth * 155);
+            const g2 = Math.round(220 - warmth * 80);
+            const b2 = Math.round(255 - warmth * 20);
+            const op = 0.35 + warmth * 0.45 + containerBrS * 0.15;
+            traceElements.push(/*#__PURE__*/React.createElement("polyline", {
+              key: `st-${row}`,
+              points: pts.join(" "),
+              fill: "none",
+              stroke: `rgb(${r2},${g2},${b2})`,
+              strokeWidth: 0.6,
+              opacity: op
+            }));
+          }
+
+          // ── V-shape glow overlay — bright convergence at center ──
+          const vGlowPts = [];
+          const vSteps = 20;
+          for (let i = 0; i <= vSteps; i++) {
+            const f = i / vSteps;
+            const yy = traceTop + f * traceH;
+            const timeV = 10 - f * 8;
+            const spread = Math.max(3, (10 - timeV) * plotW / 28);
+            const cx = plotX + plotW / 2;
+            vGlowPts.push({
+              x: cx,
+              y: yy,
+              spread
+            });
+          }
+
+          // ── BOTTOM PANEL: Depth cross-section with colored geological layers ──
+          const depthLayers = [{
+            y0: 0,
+            y1: 0.22,
+            color: "rgba(40,140,200,0.35)",
+            stroke: "rgba(60,180,255,0.5)",
             label: "PERMAFROST"
           }, {
-            f: 0.20,
-            h: 0.22,
-            color: "#665544",
+            y0: 0.22,
+            y1: 0.42,
+            color: "rgba(80,180,60,0.3)",
+            stroke: "rgba(120,220,80,0.5)",
             label: "SANDSTONE"
           }, {
-            f: 0.42,
-            h: 0.18,
-            color: "#443322",
+            y0: 0.42,
+            y1: 0.62,
+            color: "rgba(200,180,40,0.25)",
+            stroke: "rgba(240,220,60,0.45)",
             label: "SHALE"
           }, {
-            f: 0.60,
-            h: 0.18,
-            color: "#776655",
+            y0: 0.62,
+            y1: 0.80,
+            color: "rgba(150,50,180,0.3)",
+            stroke: "rgba(180,80,220,0.45)",
             label: "LIMESTONE"
           }, {
-            f: 0.78,
-            h: 0.22,
-            color: "#553322",
+            y0: 0.80,
+            y1: 1.0,
+            color: "rgba(180,50,40,0.3)",
+            stroke: "rgba(220,80,60,0.4)",
             label: "BEDROCK"
           }];
+          // Layer boundaries curve like a basin
+          const basinCurve = (f, depth) => {
+            const center = 0.5;
+            const dist = Math.abs(f - center);
+            return depth + dist * dist * 0.15 - 0.03;
+          };
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
             x: sgX,
             y: sgY,
             width: sgW,
             height: sgH,
             rx: 5,
-            fill: `rgba(60,40,20,${0.15 + containerBrS * 0.1})`,
-            stroke: `rgba(255,170,68,${0.2 + containerBrS * 0.3})`,
-            strokeWidth: 0.6
+            fill: "rgba(8,12,20,0.85)",
+            stroke: `rgba(0,200,255,${0.25 + containerBrS * 0.3})`,
+            strokeWidth: 0.7
           }), /*#__PURE__*/React.createElement("text", {
             x: sgX + sgW / 2,
-            y: sgY + 10,
+            y: sgY + 11,
             textAnchor: "middle",
-            fill: "#ffaa44",
-            fontSize: 6,
+            fill: "#00ddff",
+            fontSize: 5,
             fontFamily: mono,
             fontWeight: 700,
-            letterSpacing: 1.5
-          }, "SEISMOGRAM"), /*#__PURE__*/React.createElement("text", {
-            x: sgX + sgW / 2,
-            y: sgY + 18,
-            textAnchor: "middle",
-            fill: "rgba(255,170,68,0.4)",
-            fontSize: 4,
-            fontFamily: mono
-          }, "Offset (m)"), /*#__PURE__*/React.createElement("text", {
-            x: sgX + 4,
-            y: sgY + sgH / 2,
-            textAnchor: "middle",
-            fill: "rgba(255,170,68,0.4)",
-            fontSize: 4,
-            fontFamily: mono,
-            transform: `rotate(-90 ${sgX + 4} ${sgY + sgH / 2})`
-          }, "Time (s)"), strata.map((s, si) => {
-            const bandY = sgY + 22 + s.f * (sgH - 26);
-            const bandH = s.h * (sgH - 26);
+            letterSpacing: 2
+          }, "SEISMIC OSCILLOSCOPE"), /*#__PURE__*/React.createElement("rect", {
+            x: plotX - 1,
+            y: traceTop - 1,
+            width: plotW + 2,
+            height: traceH + 2,
+            fill: "none",
+            stroke: "rgba(0,200,255,0.2)",
+            strokeWidth: 0.4
+          }), [-60, -40, -20, 0, 20, 40, 60].map(km => {
+            const fx = (km + 70) / 140;
+            const px = plotX + fx * plotW;
             return /*#__PURE__*/React.createElement("g", {
-              key: `sg-strata-${si}`
-            }, /*#__PURE__*/React.createElement("rect", {
-              x: sgX + 10,
-              y: bandY,
-              width: sgW - 14,
-              height: bandH,
-              fill: `${s.color}22`,
-              stroke: `${s.color}33`,
+              key: `oax-${km}`
+            }, /*#__PURE__*/React.createElement("line", {
+              x1: px,
+              y1: traceTop - 1,
+              x2: px,
+              y2: traceTop + 3,
+              stroke: "rgba(0,200,255,0.3)",
               strokeWidth: 0.3
             }), /*#__PURE__*/React.createElement("text", {
-              x: sgX + sgW - 4,
-              y: bandY + bandH / 2 + 2,
-              textAnchor: "end",
-              fill: `${s.color}88`,
-              fontSize: 3.5,
-              fontFamily: mono
-            }, s.label));
-          }), [0, 5, 10, 15, 20, 25].map(sec => {
-            const tickY = sgY + 22 + sec / 25 * (sgH - 26);
-            return /*#__PURE__*/React.createElement("g", {
-              key: `sg-tick-${sec}`
-            }, /*#__PURE__*/React.createElement("line", {
-              x1: sgX + 10,
-              y1: tickY,
-              x2: sgX + 14,
-              y2: tickY,
-              stroke: "rgba(255,170,68,0.3)",
-              strokeWidth: 0.4
-            }), /*#__PURE__*/React.createElement("text", {
-              x: sgX + 9,
-              y: tickY + 2,
-              textAnchor: "end",
-              fill: "rgba(255,170,68,0.35)",
-              fontSize: 3.5,
-              fontFamily: mono
-            }, sec, "s"));
-          }), Array.from({
-            length: nTraces
-          }, (_, ti) => {
-            const traceX = sgX + 14 + ti * traceGap;
-            const offset = ti * 15; // meters offset
-            const nPts = 50;
-            const pts = [];
-            for (let pi = 0; pi < nPts; pi++) {
-              const frac = pi / (nPts - 1);
-              const py = sgY + 22 + frac * (sgH - 26);
-              const timeAtDepth = frac * 25; // 0-25s
-              // P-wave: fast arrival, diagonal line across traces
-              const pArrival = ti * 0.8 + 0.5;
-              const pElapsed = t > 0.1 ? t * 2 + timeAtDepth - pArrival : -99;
-              const pAmp = pElapsed > 0 ? 3 * Math.sin(pElapsed * 6 - frac * 20) * Math.exp(-pElapsed * 0.25) * Math.max(0, 1 - frac * 0.4) : 0;
-              // S-wave: slower, higher amplitude
-              const sArrival = ti * 1.4 + 2;
-              const sElapsed = t > 0.1 ? t * 1.5 + timeAtDepth - sArrival : -99;
-              const sAmp = sElapsed > 0 ? 5 * Math.sin(sElapsed * 4 - frac * 14) * Math.exp(-sElapsed * 0.2) * Math.max(0, 1 - frac * 0.3) : 0;
-              // Surface wave: slowest, largest
-              const surfArrival = ti * 2.2 + 4;
-              const surfElapsed = t > 0.1 ? t * 1.2 + timeAtDepth - surfArrival : -99;
-              const surfAmp = surfElapsed > 0 && frac < 0.35 ? 6 * Math.sin(surfElapsed * 2.5 - frac * 8) * Math.exp(-surfElapsed * 0.15) : 0;
-              // Background noise
-              const noise = t > 0.1 ? Math.sin(timeAtDepth * 12 + ti * 7.3) * 0.4 + Math.sin(timeAtDepth * 19 + ti * 3.1) * 0.3 : 0;
-              const totalAmp = pAmp + sAmp + surfAmp + noise;
-              pts.push(`${traceX + totalAmp},${py}`);
-            }
-            return /*#__PURE__*/React.createElement("g", {
-              key: `sg-trace-${ti}`
-            }, /*#__PURE__*/React.createElement("line", {
-              x1: traceX,
-              y1: sgY + 22,
-              x2: traceX,
-              y2: sgY + sgH - 4,
-              stroke: "rgba(255,255,255,0.06)",
-              strokeWidth: 0.3
-            }), ti % 3 === 0 && /*#__PURE__*/React.createElement("text", {
-              x: traceX,
-              y: sgY + 20,
+              x: px,
+              y: traceTop - 3,
               textAnchor: "middle",
-              fill: "rgba(255,170,68,0.35)",
+              fill: "rgba(0,200,255,0.45)",
               fontSize: 3,
               fontFamily: mono
-            }, offset, "m"), /*#__PURE__*/React.createElement("polyline", {
-              points: pts.join(" "),
+            }, km));
+          }), /*#__PURE__*/React.createElement("text", {
+            x: plotX + plotW / 2,
+            y: traceTop - 8,
+            textAnchor: "middle",
+            fill: "rgba(0,200,255,0.35)",
+            fontSize: 3.5,
+            fontFamily: mono
+          }, "Offset (km)"), [2, 4, 6, 8, 10].map(tv => {
+            const fy = (10 - tv) / 8;
+            const py = traceTop + fy * traceH;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `tax-${tv}`
+            }, /*#__PURE__*/React.createElement("line", {
+              x1: plotX - 1,
+              y1: py,
+              x2: plotX - 4,
+              y2: py,
+              stroke: "rgba(0,200,255,0.3)",
+              strokeWidth: 0.3
+            }), /*#__PURE__*/React.createElement("text", {
+              x: plotX - 5,
+              y: py + 1.5,
+              textAnchor: "end",
+              fill: "rgba(0,200,255,0.45)",
+              fontSize: 3,
+              fontFamily: mono
+            }, tv));
+          }), /*#__PURE__*/React.createElement("text", {
+            x: sgX + 5,
+            y: traceTop + traceH / 2,
+            textAnchor: "middle",
+            fill: "rgba(0,200,255,0.35)",
+            fontSize: 3.5,
+            fontFamily: mono,
+            transform: `rotate(-90 ${sgX + 5} ${traceTop + traceH / 2})`
+          }, "Time-D/8 (t)"), traceElements, vGlowPts.filter((_, i) => i % 2 === 0).map((p, gi) => /*#__PURE__*/React.createElement("ellipse", {
+            key: `vgl-${gi}`,
+            cx: p.x,
+            cy: p.y,
+            rx: p.spread,
+            ry: rowH * 0.6,
+            fill: "none",
+            stroke: "rgba(255,180,255,0.08)",
+            strokeWidth: 1.5
+          })), /*#__PURE__*/React.createElement("line", {
+            x1: plotX + plotW / 2,
+            y1: traceTop,
+            x2: plotX + plotW / 2,
+            y2: traceTop + traceH,
+            stroke: "rgba(255,100,0,0.15)",
+            strokeWidth: 0.4,
+            strokeDasharray: "2,4"
+          }), /*#__PURE__*/React.createElement("line", {
+            x1: sgX + 4,
+            y1: depthTop - 4,
+            x2: sgX + sgW - 4,
+            y2: depthTop - 4,
+            stroke: "rgba(255,255,0,0.5)",
+            strokeWidth: 0.8
+          }), /*#__PURE__*/React.createElement("text", {
+            x: plotX + plotW / 2,
+            y: depthTop - 1,
+            textAnchor: "middle",
+            fill: "#ffff44",
+            fontSize: 6
+          }, "\u2606"), /*#__PURE__*/React.createElement("rect", {
+            x: plotX - 1,
+            y: depthTop,
+            width: plotW + 2,
+            height: depthH,
+            fill: "rgba(10,15,30,0.6)",
+            stroke: "rgba(0,200,255,0.15)",
+            strokeWidth: 0.4
+          }), [0, 5, 10, 15, 20, 25].map(dkm => {
+            const fy = dkm / 25;
+            const py = depthTop + fy * depthH;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `dax-${dkm}`
+            }, /*#__PURE__*/React.createElement("line", {
+              x1: plotX - 1,
+              y1: py,
+              x2: plotX - 4,
+              y2: py,
+              stroke: "rgba(0,200,255,0.25)",
+              strokeWidth: 0.3
+            }), /*#__PURE__*/React.createElement("text", {
+              x: plotX - 5,
+              y: py + 1.5,
+              textAnchor: "end",
+              fill: "rgba(0,200,255,0.4)",
+              fontSize: 3,
+              fontFamily: mono
+            }, dkm));
+          }), /*#__PURE__*/React.createElement("text", {
+            x: sgX + 5,
+            y: depthTop + depthH / 2,
+            textAnchor: "middle",
+            fill: "rgba(0,200,255,0.3)",
+            fontSize: 3.5,
+            fontFamily: mono,
+            transform: `rotate(-90 ${sgX + 5} ${depthTop + depthH / 2})`
+          }, "Depth (km)"), [-60, -40, -20, 0, 20, 40, 60].map(km => {
+            const fx = (km + 70) / 140;
+            const px = plotX + fx * plotW;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `boax-${km}`
+            }, /*#__PURE__*/React.createElement("line", {
+              x1: px,
+              y1: depthTop + depthH,
+              x2: px,
+              y2: depthTop + depthH + 3,
+              stroke: "rgba(0,200,255,0.25)",
+              strokeWidth: 0.3
+            }), /*#__PURE__*/React.createElement("text", {
+              x: px,
+              y: depthTop + depthH + 8,
+              textAnchor: "middle",
+              fill: "rgba(0,200,255,0.35)",
+              fontSize: 3,
+              fontFamily: mono
+            }, km));
+          }), /*#__PURE__*/React.createElement("text", {
+            x: plotX + plotW / 2,
+            y: depthTop + depthH + 14,
+            textAnchor: "middle",
+            fill: "rgba(0,200,255,0.3)",
+            fontSize: 3.5,
+            fontFamily: mono
+          }, "Offset (km)"), depthLayers.map((layer, li) => {
+            const nPts = 30;
+            const topPts = [];
+            const botPts = [];
+            for (let i = 0; i <= nPts; i++) {
+              const f = i / nPts;
+              const px = plotX + f * plotW;
+              const topD = basinCurve(f, layer.y0);
+              const botD = basinCurve(f, layer.y1);
+              const topPy = depthTop + Math.max(0, topD) * depthH;
+              const botPy = depthTop + Math.min(1, botD) * depthH;
+              topPts.push(`${px},${topPy}`);
+              botPts.unshift(`${px},${botPy}`);
+            }
+            return /*#__PURE__*/React.createElement("g", {
+              key: `dl-${li}`
+            }, /*#__PURE__*/React.createElement("polygon", {
+              points: [...topPts, ...botPts].join(" "),
+              fill: layer.color,
+              stroke: "none"
+            }), /*#__PURE__*/React.createElement("polyline", {
+              points: topPts.join(" "),
               fill: "none",
-              stroke: `rgba(100,180,255,${0.3 + containerBrS * 0.4})`,
-              strokeWidth: 0.6
-            }), (() => {
-              const fillPts = [];
-              const basePts = [];
-              for (let pi = 0; pi < nPts; pi++) {
-                const frac2 = pi / (nPts - 1);
-                const py2 = sgY + 22 + frac2 * (sgH - 26);
-                const timeAtD = frac2 * 25;
-                const pA2 = ti * 0.8 + 0.5;
-                const pE2 = t > 0.1 ? t * 2 + timeAtD - pA2 : -99;
-                const pAmp2 = pE2 > 0 ? 3 * Math.sin(pE2 * 6 - frac2 * 20) * Math.exp(-pE2 * 0.25) * Math.max(0, 1 - frac2 * 0.4) : 0;
-                const sA2 = ti * 1.4 + 2;
-                const sE2 = t > 0.1 ? t * 1.5 + timeAtD - sA2 : -99;
-                const sAmp2 = sE2 > 0 ? 5 * Math.sin(sE2 * 4 - frac2 * 14) * Math.exp(-sE2 * 0.2) * Math.max(0, 1 - frac2 * 0.3) : 0;
-                const surfA2 = ti * 2.2 + 4;
-                const surfE2 = t > 0.1 ? t * 1.2 + timeAtD - surfA2 : -99;
-                const surfAmp2 = surfE2 > 0 && frac2 < 0.35 ? 6 * Math.sin(surfE2 * 2.5 - frac2 * 8) * Math.exp(-surfE2 * 0.15) : 0;
-                const n2 = t > 0.1 ? Math.sin(timeAtD * 12 + ti * 7.3) * 0.4 + Math.sin(timeAtD * 19 + ti * 3.1) * 0.3 : 0;
-                const total = pAmp2 + sAmp2 + surfAmp2 + n2;
-                if (total > 0.3) {
-                  fillPts.push(`${traceX + total},${py2}`);
-                  basePts.unshift(`${traceX},${py2}`);
-                }
-              }
-              if (fillPts.length > 2) {
-                return /*#__PURE__*/React.createElement("polygon", {
-                  points: [...fillPts, ...basePts].join(" "),
-                  fill: "rgba(100,180,255,0.08)",
-                  stroke: "none"
-                });
-              }
-              return null;
-            })());
-          }), t > 2 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("text", {
-            x: sgX + 20,
-            y: sgY + 35,
-            fill: "#44ff88",
+              stroke: layer.stroke,
+              strokeWidth: 0.7
+            }), /*#__PURE__*/React.createElement("text", {
+              x: plotX + plotW - 3,
+              y: depthTop + (layer.y0 + layer.y1) / 2 * depthH + 2,
+              textAnchor: "end",
+              fill: layer.stroke,
+              fontSize: 3.5,
+              fontFamily: mono,
+              fontWeight: 600,
+              opacity: 0.7
+            }, layer.label));
+          }), /*#__PURE__*/React.createElement("rect", {
+            x: sgX + 3,
+            y: traceTop + traceH - 8,
+            width: 6,
+            height: 7,
+            rx: 1,
+            fill: "rgba(0,200,255,0.15)",
+            stroke: "rgba(0,200,255,0.4)",
+            strokeWidth: 0.4
+          }), /*#__PURE__*/React.createElement("text", {
+            x: sgX + 6,
+            y: traceTop + traceH - 3,
+            textAnchor: "middle",
+            fill: "#00ddff",
             fontSize: 4,
             fontFamily: mono,
-            fontWeight: 700,
-            opacity: 0.6,
-            transform: `rotate(-55 ${sgX + 20} ${sgY + 35})`
-          }, "P wave"), /*#__PURE__*/React.createElement("text", {
-            x: sgX + 28,
-            y: sgY + 55,
-            fill: "#ff6644",
+            fontWeight: 700
+          }, "a"), /*#__PURE__*/React.createElement("rect", {
+            x: sgX + 3,
+            y: depthTop + depthH - 8,
+            width: 6,
+            height: 7,
+            rx: 1,
+            fill: "rgba(200,60,200,0.15)",
+            stroke: "rgba(200,80,220,0.4)",
+            strokeWidth: 0.4
+          }), /*#__PURE__*/React.createElement("text", {
+            x: sgX + 6,
+            y: depthTop + depthH - 3,
+            textAnchor: "middle",
+            fill: "rgba(200,100,220,0.8)",
             fontSize: 4,
             fontFamily: mono,
-            fontWeight: 700,
-            opacity: 0.5,
-            transform: `rotate(-42 ${sgX + 28} ${sgY + 55})`
-          }, "S wave"), /*#__PURE__*/React.createElement("text", {
-            x: sgX + 32,
-            y: sgY + 78,
-            fill: "#44aaff",
-            fontSize: 4,
-            fontFamily: mono,
-            fontWeight: 700,
-            opacity: 0.4,
-            transform: `rotate(-30 ${sgX + 32} ${sgY + 78})`
-          }, "surface")), /*#__PURE__*/React.createElement("polygon", {
-            points: `${sgX + sgW * 0.4},${sgY + 21} ${sgX + sgW * 0.4 - 3},${sgY + 17} ${sgX + sgW * 0.4 + 3},${sgY + 17}`,
-            fill: "#44ffaa",
-            stroke: "#88ffdd",
-            strokeWidth: 0.5,
-            opacity: 0.7
-          }));
+            fontWeight: 700
+          }, "b"));
         })(), (() => {
           const launchT = 9;
           const slideIn = time > launchT ? Math.min(1, (time - launchT) / 1.5) : 0;

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v295";
+  var v = "v296";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v295 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v296 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v295"), /*#__PURE__*/React.createElement("span", {
+  }, "v296"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8511,9 +8511,10 @@ function TemporalReplay() {
     // MOVEMENT below HUD
     const moveH = 120;
     const moveTop = rowY3 + hudH + boxGap;
-    // AUTOMATION below MOVEMENT
+    // AUTOMATION left of MOVEMENT, aligned to top-left corner
     const autoH = 48;
-    const autoTop = moveTop + moveH + boxGap;
+    const autoW = boxW;
+    const autoX = leftX - autoW - boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8564,12 +8565,12 @@ function TemporalReplay() {
     },
     // 6: MOVEMENT (below HUD)
     {
-      x: leftX,
-      y: autoTop,
-      w: boxW,
+      x: autoX,
+      y: moveTop,
+      w: autoW,
       h: autoH
     },
-    // 7: AUTOMATION (below MOVEMENT)
+    // 7: AUTOMATION (left of MOVEMENT)
     {
       x: worldLeftX,
       y: rowY3,
@@ -13275,30 +13276,6 @@ function TemporalReplay() {
               strokeWidth: 0.6,
               opacity: op
             });
-          }), time > 0.1 && [{
-            targetY: topPad + 15.5 * rowH + dfNodeH / 2,
-            color: "#ffaa44",
-            label: "WX"
-          }, {
-            targetY: topPad + 16.5 * rowH + dfNodeH / 2,
-            color: "#88ff44",
-            label: "TRN"
-          }, {
-            targetY: topPad + 17.5 * rowH + dfNodeH / 2,
-            color: "#ff4444",
-            label: "RAD"
-          }].map((beam, bi) => {
-            const rfPulse = 0.15 + Math.sin(nowMs * 0.003 + bi * 2.1) * 0.1;
-            return /*#__PURE__*/React.createElement("g", {
-              key: `rf-beam-${bi}`
-            }, /*#__PURE__*/React.createElement("path", {
-              d: `M${dishX},${dishY} C${dishX + 60},${dishY} ${dfX - 40},${beam.targetY} ${dfX},${beam.targetY}`,
-              fill: "none",
-              stroke: beam.color,
-              strokeWidth: 0.5 + bright * 0.8,
-              opacity: rfPulse * bright,
-              strokeDasharray: "4,3"
-            }));
           }));
         })());
       }

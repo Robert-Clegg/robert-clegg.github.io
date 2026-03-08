@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v309";
+  var v = "v310";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v309 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v310 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v309"), /*#__PURE__*/React.createElement("span", {
+  }, "v310"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13239,6 +13239,25 @@ function TemporalReplay() {
           const ctrZ = terrainH(b.gx + b.w / 2, b.gy + b.d / 2);
           const tcx = wIsoX(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
           const tcy = wIsoY(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
+          // Check if FOV cone touches building
+          const bcx2 = b.gx + b.w / 2,
+            bcy2 = b.gy + b.d / 2;
+          const cR = coneLen;
+          const coneLx = pgx + Math.sin(viewYaw - fovHalf) * cR;
+          const coneLy = pgy - Math.cos(viewYaw - fovHalf) * cR;
+          const coneRx = pgx + Math.sin(viewYaw + fovHalf) * cR;
+          const coneRy = pgy - Math.cos(viewYaw + fovHalf) * cR;
+          const signB = (px, py, ax, ay, bx2, by2) => (px - bx2) * (ay - by2) - (ax - bx2) * (py - by2);
+          const d1 = signB(bcx2, bcy2, pgx, pgy, coneLx, coneLy);
+          const d2 = signB(bcx2, bcy2, coneLx, coneLy, coneRx, coneRy);
+          const d3 = signB(bcx2, bcy2, coneRx, coneRy, pgx, pgy);
+          const inCone = !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+          // Fade: angle from cone center
+          const angTo = Math.atan2(bcx2 - pgx, -(bcy2 - pgy));
+          let angDiff = Math.abs(angTo - viewYaw);
+          if (angDiff > Math.PI) angDiff = Math.PI * 2 - angDiff;
+          const nearCone = angDiff < fovHalf * 2.5;
+          const labelVis = time > 0.1 ? inCone ? 1.0 : nearCone ? Math.max(0, 1 - (angDiff - fovHalf) / (fovHalf * 1.5)) * 0.5 : 0 : 0;
           return /*#__PURE__*/React.createElement("g", {
             key: `bld-${bi}`
           }, /*#__PURE__*/React.createElement("polygon", {
@@ -13256,14 +13275,15 @@ function TemporalReplay() {
             fill: `${b.color}55`,
             stroke: `${b.color}aa`,
             strokeWidth: 0.7
-          }), /*#__PURE__*/React.createElement("text", {
+          }), labelVis > 0.02 && /*#__PURE__*/React.createElement("text", {
             x: tcx,
             y: tcy,
             textAnchor: "middle",
             fill: `${b.color}dd`,
             fontSize: 7,
             fontFamily: mono,
-            fontWeight: 700
+            fontWeight: 700,
+            opacity: labelVis
           }, b.label));
         }), time > 0.1 && Array.from({
           length: 10

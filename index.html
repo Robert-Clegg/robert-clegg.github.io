@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v315";
+  var v = "v316";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v315 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v316 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v315"), /*#__PURE__*/React.createElement("span", {
+  }, "v316"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12938,7 +12938,7 @@ function TemporalReplay() {
           const droneBoxY = ay;
           // Slide: starts collapsed width, expands to full
           const visW = droneBoxW * slideEase;
-          const fdH = 52;
+          const fdH = 58;
           const fdY = droneBoxY + droneBoxH + 4;
           const dt = time - launchT;
           const phase = dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 11 ? "TRANSIT" : dt < 12 ? "DESCEND" : "LANDED";
@@ -13027,43 +13027,149 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700,
             letterSpacing: 1
-          }, "FLIGHT DATA"), [{
+          }, "FLIGHT DATA"), (() => {
+            const gCx = droneBoxX + visW / 2;
+            const gCy = fdY + 32;
+            const gR = 14;
+            // Convert degrees to radians
+            const pitchRad = gyroP * Math.PI / 180;
+            const rollRad = gyroR * Math.PI / 180;
+            const yawRad = gyroYaw * Math.PI / 180;
+            return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+              cx: gCx,
+              cy: gCy,
+              r: gR + 1.5,
+              fill: "none",
+              stroke: "rgba(255,204,68,0.2)",
+              strokeWidth: 0.5
+            }), /*#__PURE__*/React.createElement("ellipse", {
+              cx: gCx,
+              cy: gCy,
+              rx: gR,
+              ry: gR * Math.abs(Math.cos(pitchRad * 3)),
+              fill: "none",
+              stroke: "#ff6666",
+              strokeWidth: 0.8,
+              opacity: 0.7,
+              transform: `rotate(${rollRad * 15} ${gCx} ${gCy})`
+            }), /*#__PURE__*/React.createElement("ellipse", {
+              cx: gCx,
+              cy: gCy,
+              rx: gR * 0.75,
+              ry: gR * 0.75 * Math.abs(Math.cos(rollRad * 3)),
+              fill: "none",
+              stroke: "#66ff66",
+              strokeWidth: 0.8,
+              opacity: 0.7,
+              transform: `rotate(${90 + pitchRad * 15} ${gCx} ${gCy})`
+            }), /*#__PURE__*/React.createElement("ellipse", {
+              cx: gCx,
+              cy: gCy,
+              rx: gR * 0.5,
+              ry: gR * 0.5 * 0.45,
+              fill: "none",
+              stroke: "#6688ff",
+              strokeWidth: 0.8,
+              opacity: 0.7,
+              transform: `rotate(${yawRad * 2} ${gCx} ${gCy})`
+            }), (() => {
+              const hOff = Math.sin(pitchRad * 3) * gR * 0.6;
+              const hLen = gR * 0.65 * Math.cos(pitchRad * 2);
+              return /*#__PURE__*/React.createElement("line", {
+                x1: gCx - hLen,
+                y1: gCy + hOff,
+                x2: gCx + hLen,
+                y2: gCy + hOff,
+                stroke: "#ffcc44",
+                strokeWidth: 0.6,
+                opacity: 0.5,
+                transform: `rotate(${rollRad * 15} ${gCx} ${gCy})`
+              });
+            })(), /*#__PURE__*/React.createElement("line", {
+              x1: gCx - 3,
+              y1: gCy,
+              x2: gCx + 3,
+              y2: gCy,
+              stroke: "#ffcc44",
+              strokeWidth: 0.6,
+              opacity: 0.8
+            }), /*#__PURE__*/React.createElement("line", {
+              x1: gCx,
+              y1: gCy - 3,
+              x2: gCx,
+              y2: gCy + 3,
+              stroke: "#ffcc44",
+              strokeWidth: 0.6,
+              opacity: 0.8
+            }), /*#__PURE__*/React.createElement("circle", {
+              cx: gCx,
+              cy: gCy,
+              r: 1.2,
+              fill: "#ffcc44",
+              opacity: 0.9
+            }), ["N", "E", "S", "W"].map((dir, di) => {
+              const a = (di * 90 + yawRad * 30) * Math.PI / 180;
+              const mx = gCx + Math.sin(a) * (gR + 0.5);
+              const my = gCy - Math.cos(a) * (gR + 0.5);
+              return /*#__PURE__*/React.createElement("circle", {
+                key: `cm-${di}`,
+                cx: mx,
+                cy: my,
+                r: 0.6,
+                fill: di === 0 ? "#ff6666" : "rgba(255,204,68,0.5)"
+              });
+            }));
+          })(), [{
             label: "PITCH",
             val: gyroP.toFixed(1) + "\u00B0",
-            color: "#ff6666"
+            color: "#ff6666",
+            side: "L"
           }, {
             label: "ROLL",
             val: gyroR.toFixed(1) + "\u00B0",
-            color: "#66ff66"
+            color: "#66ff66",
+            side: "L"
           }, {
             label: "YAW",
             val: gyroYaw.toFixed(1) + "\u00B0",
-            color: "#6688ff"
+            color: "#6688ff",
+            side: "L"
           }, {
             label: "HDG",
             val: heading.toFixed(0) + "\u00B0",
-            color: "#ffcc44"
+            color: "#ffcc44",
+            side: "R"
           }, {
             label: "ALT",
             val: alt.toFixed(1) + "m",
-            color: "#88ddff"
+            color: "#88ddff",
+            side: "R"
+          }, {
+            label: "SPD",
+            val: spd.toFixed(1) + "m/s",
+            color: "#aaffaa",
+            side: "R"
           }].map((row, ri) => {
-            const ry = fdY + 15 + ri * 7.5;
+            const sideIdx = row.side === "L" ? [0, 1, 2].indexOf(ri) : ri - 3;
+            const ry = fdY + 17 + sideIdx * 7.5;
+            const lx = row.side === "L" ? droneBoxX + 4 : droneBoxX + visW - 4;
+            const anchor = row.side === "L" ? "start" : "end";
             return /*#__PURE__*/React.createElement("g", {
               key: `fd-${ri}`
             }, /*#__PURE__*/React.createElement("text", {
-              x: droneBoxX + 5,
+              x: lx,
               y: ry,
-              fill: "rgba(255,255,255,0.45)",
-              fontSize: 5,
+              textAnchor: anchor,
+              fill: "rgba(255,255,255,0.4)",
+              fontSize: 4,
               fontFamily: mono,
               fontWeight: 600
             }, row.label), /*#__PURE__*/React.createElement("text", {
-              x: droneBoxX + visW - 5,
-              y: ry,
-              textAnchor: "end",
+              x: lx,
+              y: ry + 5.5,
+              textAnchor: anchor,
               fill: row.color,
-              fontSize: 6,
+              fontSize: 5,
               fontFamily: mono,
               fontWeight: 700
             }, row.val));
@@ -13097,46 +13203,46 @@ function TemporalReplay() {
           const valley = valleyDist < 8 ? -(4 - valleyDist * 0.5) : 0;
           return Math.max(-3, valley);
         };
-        // Arctic seismic research facility — rotated 90° CCW, south-center cluster
+        // Arctic seismic research facility — 45° CW rotation, 60% scale
         const buildings = [{
           gx: 43,
           gy: 60,
-          r: 8,
-          h: 12,
+          r: 4.8,
+          h: 7.2,
           label: "MAIN DOME",
           color: "#4499bb",
           type: "dome"
         }, {
-          gx: 32,
-          gy: 47,
-          r: 5,
-          h: 8,
+          gx: 26,
+          gy: 59,
+          r: 3,
+          h: 4.8,
           label: "SEISMIC LAB",
           color: "#44aacc",
           type: "dome"
         }, {
-          gx: 33,
-          gy: 73,
-          r: 4,
-          h: 6,
+          gx: 45,
+          gy: 76,
+          r: 2.4,
+          h: 3.6,
           label: "SUPPLY",
           color: "#448866",
           type: "dome"
         }, {
-          gx: 43,
-          gy: 37,
-          w: 6,
-          d: 10,
-          h: 7,
+          gx: 25,
+          gy: 44,
+          w: 3.6,
+          d: 6,
+          h: 4.2,
           label: "HANGAR",
           color: "#5599aa",
           type: "box"
         }, {
-          gx: 43,
-          gy: 78,
-          w: 4,
-          d: 5,
-          h: 5,
+          gx: 56,
+          gy: 73,
+          w: 2.4,
+          d: 3,
+          h: 3,
           label: "GENERATOR",
           color: "#667788",
           type: "box"
@@ -13633,11 +13739,11 @@ function TemporalReplay() {
           const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
           const startGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
           const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
-          const hangarGx = 43 + 3,
-            hangarGy = 37 + 5; // HANGAR center
+          const hangarGx = 25 + 1.8,
+            hangarGy = 44 + 3; // HANGAR center
           const domeGx = 43,
             domeGy = 60; // MAIN DOME center
-          const domeRoofZ = terrainH(domeGx, domeGy) + 12; // MAIN DOME height
+          const domeRoofZ = terrainH(domeGx, domeGy) + 7.2; // MAIN DOME height
           const cruiseAlt = 16;
           let dGx,
             dGy,
@@ -13676,7 +13782,7 @@ function TemporalReplay() {
             // Landed on MAIN DOME
             dGx = domeGx;
             dGy = domeGy;
-            dAlt = 12; // sitting on dome apex
+            dAlt = 7.2; // sitting on dome apex
             landed = true;
           }
           const baseZ = terrainH(dGx, dGy);

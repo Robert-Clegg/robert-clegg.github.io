@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v338";
+  var v = "v339";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v338 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v339 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v338"), /*#__PURE__*/React.createElement("span", {
+  }, "v339"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12683,13 +12683,13 @@ function TemporalReplay() {
             const g2 = Math.round(220 - warmth * 80);
             const b2 = Math.round(255 - warmth * 20);
             const edgeFade = Math.min(1, row / 2.5, (nRows - 1 - row) / 2.5);
-            const op = (0.3 + warmth * 0.5 + containerBrS * 0.15) * edgeFade;
+            const op = Math.min(1, (0.3 + warmth * 0.5 + containerBrS * 0.15) * edgeFade * 3);
             traceElements.push(/*#__PURE__*/React.createElement("polyline", {
               key: `st-${row}`,
               points: pts.join(' '),
               fill: "none",
               stroke: `rgb(${r2},${g2},${b2})`,
-              strokeWidth: 0.5,
+              strokeWidth: 0.7,
               opacity: op
             }));
           }
@@ -12783,8 +12783,8 @@ function TemporalReplay() {
             width: plotW + 2,
             height: traceH + 2,
             fill: "none",
-            stroke: "rgba(0,200,255,0.2)",
-            strokeWidth: 0.4
+            stroke: "rgba(0,200,255,0.5)",
+            strokeWidth: 0.5
           }), [-60, -30, 0, 30, 60].map(km => {
             const fx = (km + 70) / 140;
             const px = plotX + fx * plotW;
@@ -12795,13 +12795,13 @@ function TemporalReplay() {
               y1: traceTop - 1,
               x2: px,
               y2: traceTop + 2,
-              stroke: "rgba(0,200,255,0.25)",
+              stroke: "rgba(0,200,255,0.75)",
               strokeWidth: 0.3
             }), /*#__PURE__*/React.createElement("text", {
               x: px,
               y: traceTop - 2,
               textAnchor: "middle",
-              fill: "rgba(0,200,255,0.4)",
+              fill: "rgba(0,200,255,0.9)",
               fontSize: 2.5,
               fontFamily: mono
             }, km));
@@ -12815,13 +12815,13 @@ function TemporalReplay() {
               y1: py,
               x2: plotX - 3,
               y2: py,
-              stroke: "rgba(0,200,255,0.25)",
+              stroke: "rgba(0,200,255,0.75)",
               strokeWidth: 0.3
             }), /*#__PURE__*/React.createElement("text", {
               x: plotX - 4,
               y: py + 1,
               textAnchor: "end",
-              fill: "rgba(0,200,255,0.4)",
+              fill: "rgba(0,200,255,0.9)",
               fontSize: 2.5,
               fontFamily: mono
             }, tv));
@@ -12830,13 +12830,13 @@ function TemporalReplay() {
             y1: traceTop,
             x2: plotX + srcFrac * plotW,
             y2: traceTop + traceH,
-            stroke: "rgba(68,255,170,0.3)",
-            strokeWidth: 0.6,
+            stroke: "rgba(68,255,170,0.8)",
+            strokeWidth: 0.8,
             strokeDasharray: "2,3"
           }), /*#__PURE__*/React.createElement("polygon", {
             points: `${plotX + srcFrac * plotW},${traceTop - 1} ${plotX + srcFrac * plotW - 2},${traceTop - 4} ${plotX + srcFrac * plotW + 2},${traceTop - 4}`,
             fill: "#44ffaa",
-            opacity: 0.7
+            opacity: 1.0
           }), /*#__PURE__*/React.createElement("g", {
             clipPath: `url(#${clipId})`
           }, traceElements), /*#__PURE__*/React.createElement("line", {
@@ -12844,22 +12844,22 @@ function TemporalReplay() {
             y1: depthTop - 2,
             x2: sgX + sgW - 3,
             y2: depthTop - 2,
-            stroke: "rgba(255,255,0,0.4)",
-            strokeWidth: 0.5
+            stroke: "rgba(255,255,0,0.9)",
+            strokeWidth: 0.7
           }), /*#__PURE__*/React.createElement("text", {
             x: plotX + srcFrac * plotW,
             y: depthTop + 1,
             textAnchor: "middle",
             fill: "#ffff44",
-            fontSize: 4
+            fontSize: 5
           }, "\u2606"), /*#__PURE__*/React.createElement("rect", {
             x: plotX - 1,
             y: depthTop + 2,
             width: plotW + 2,
             height: depthH - 2,
             fill: "rgba(10,15,30,0.6)",
-            stroke: "rgba(0,200,255,0.12)",
-            strokeWidth: 0.4
+            stroke: "rgba(0,200,255,0.35)",
+            strokeWidth: 0.5
           }), /*#__PURE__*/React.createElement("g", {
             clipPath: `url(#${clipIdD})`
           }, depthLayers.map((layer, li) => {
@@ -12879,14 +12879,14 @@ function TemporalReplay() {
             }, /*#__PURE__*/React.createElement("polygon", {
               points: [...topPts, ...botPts].join(" "),
               fill: layer.color,
-              fillOpacity: 0.5,
+              fillOpacity: 0.8,
               stroke: "none"
             }), /*#__PURE__*/React.createElement("polyline", {
               points: topPts.join(" "),
               fill: "none",
               stroke: layer.stroke,
-              strokeWidth: 0.6,
-              opacity: 0.7
+              strokeWidth: 0.8,
+              opacity: 1.0
             }), /*#__PURE__*/React.createElement("text", {
               x: plotX + 3,
               y: depthTop + 2 + (layer.y0 + layer.y1) / 2 * (depthH - 2) + 2,
@@ -12894,7 +12894,7 @@ function TemporalReplay() {
               fontSize: 3,
               fontFamily: mono,
               fontWeight: 600,
-              opacity: 0.6
+              opacity: 1.0
             }, layer.label));
           }), /*#__PURE__*/React.createElement("line", {
             x1: plotX + faultFrac * plotW,
@@ -12902,8 +12902,8 @@ function TemporalReplay() {
             x2: plotX + (faultFrac + 0.02) * plotW,
             y2: depthTop + depthH,
             stroke: "#ff4444",
-            strokeWidth: 0.8,
-            opacity: 0.5
+            strokeWidth: 1.0,
+            opacity: 0.9
           }), /*#__PURE__*/React.createElement("text", {
             x: plotX + faultFrac * plotW + 3,
             y: depthTop + 8,
@@ -12911,14 +12911,14 @@ function TemporalReplay() {
             fontSize: 2.5,
             fontFamily: mono,
             fontWeight: 700,
-            opacity: 0.6
+            opacity: 1.0
           }, "FAULT")), /*#__PURE__*/React.createElement("line", {
             x1: plotX + srcFrac * plotW,
             y1: depthTop + 2,
             x2: plotX + srcFrac * plotW,
             y2: depthTop + depthH,
-            stroke: "rgba(68,255,170,0.2)",
-            strokeWidth: 0.4,
+            stroke: "rgba(68,255,170,0.6)",
+            strokeWidth: 0.5,
             strokeDasharray: "1,2"
           }));
         })(), (() => {

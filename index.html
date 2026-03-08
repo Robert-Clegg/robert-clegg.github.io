@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v313";
+  var v = "v314";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v313 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v314 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v313"), /*#__PURE__*/React.createElement("span", {
+  }, "v314"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13097,56 +13097,52 @@ function TemporalReplay() {
           const valley = valleyDist < 8 ? -(4 - valleyDist * 0.5) : 0;
           return Math.max(-3, valley);
         };
-        // Buildings in center area
+        // Arctic seismic research facility — south corner cluster
         const buildings = [{
-          gx: 25,
-          gy: 65,
-          w: 8,
-          d: 5,
-          h: 7,
-          label: "DEPOT",
-          color: "#4488aa"
+          gx: 45,
+          gy: 62,
+          r: 8,
+          h: 12,
+          label: "MAIN DOME",
+          color: "#4499bb",
+          type: "dome"
         }, {
-          gx: 40,
-          gy: 45,
+          gx: 32,
+          gy: 73,
+          r: 5,
+          h: 8,
+          label: "SEISMIC LAB",
+          color: "#44aacc",
+          type: "dome"
+        }, {
+          gx: 58,
+          gy: 72,
+          r: 4,
+          h: 6,
+          label: "SUPPLY",
+          color: "#448866",
+          type: "dome"
+        }, {
+          gx: 22,
+          gy: 56,
           w: 10,
           d: 6,
-          h: 10,
+          h: 7,
           label: "HANGAR",
-          color: "#5599aa"
+          color: "#5599aa",
+          type: "box"
         }, {
-          gx: 55,
-          gy: 55,
+          gx: 63,
+          gy: 58,
           w: 5,
-          d: 5,
-          h: 14,
-          label: "TOWER",
-          color: "#448888"
-        }, {
-          gx: 35,
-          gy: 30,
-          w: 12,
-          d: 5,
-          h: 8,
-          label: "ARMORY",
-          color: "#556688"
-        }, {
-          gx: 65,
-          gy: 25,
-          w: 6,
-          d: 6,
-          h: 9,
-          label: "COMM",
-          color: "#557799"
-        }, {
-          gx: 15,
-          gy: 42,
-          w: 5,
-          d: 8,
-          h: 6,
-          label: "FUEL",
-          color: "#448866"
+          d: 4,
+          h: 5,
+          label: "GENERATOR",
+          color: "#667788",
+          type: "box"
         }];
+        // Helper: building center
+        const bldCenter = b => b.type === "dome" ? [b.gx, b.gy] : [b.gx + b.w / 2, b.gy + b.d / 2];
         // Player position: starts lower-left, approaches upper-right
         const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
         const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
@@ -13369,21 +13365,9 @@ function TemporalReplay() {
             }, c.temp, "\xB0"));
           }));
         })(), buildings.map((b, bi) => {
-          // Four base corners, each at own terrain height
-          const corners = [[b.gx, b.gy], [b.gx + b.w, b.gy], [b.gx + b.w, b.gy + b.d], [b.gx, b.gy + b.d]];
-          const gz = corners.map(c => terrainH(c[0], c[1]));
-          // Top = terrain at each corner + building height
-          const topPts = corners.map((c, i) => `${wIsoX(c[0], c[1], gz[i] + b.h)},${wIsoY(c[0], c[1], gz[i] + b.h)}`).join(" ");
-          // Right face: corners 1→2 base to top
-          const rf = `${wIsoX(corners[1][0], corners[1][1], gz[1])},${wIsoY(corners[1][0], corners[1][1], gz[1])} ${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)} ${wIsoX(corners[1][0], corners[1][1], gz[1] + b.h)},${wIsoY(corners[1][0], corners[1][1], gz[1] + b.h)}`;
-          // Front face: corners 2→3 base to top
-          const ff = `${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[3][0], corners[3][1], gz[3])},${wIsoY(corners[3][0], corners[3][1], gz[3])} ${wIsoX(corners[3][0], corners[3][1], gz[3] + b.h)},${wIsoY(corners[3][0], corners[3][1], gz[3] + b.h)} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)}`;
-          const ctrZ = terrainH(b.gx + b.w / 2, b.gy + b.d / 2);
-          const tcx = wIsoX(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
-          const tcy = wIsoY(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
-          // Check if FOV cone touches building
-          const bcx2 = b.gx + b.w / 2,
-            bcy2 = b.gy + b.d / 2;
+          const [bcx2, bcy2] = bldCenter(b);
+          const ctrZ = terrainH(bcx2, bcy2);
+          // FOV cone visibility check
           const cR = coneLen;
           const coneLx = pgx + Math.sin(viewYaw - fovHalf) * cR;
           const coneLy = pgy - Math.cos(viewYaw - fovHalf) * cR;
@@ -13394,12 +13378,144 @@ function TemporalReplay() {
           const d2 = signB(bcx2, bcy2, coneLx, coneLy, coneRx, coneRy);
           const d3 = signB(bcx2, bcy2, coneRx, coneRy, pgx, pgy);
           const inCone = !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
-          // Fade: angle from cone center
           const angTo = Math.atan2(bcx2 - pgx, -(bcy2 - pgy));
           let angDiff = Math.abs(angTo - viewYaw);
           if (angDiff > Math.PI) angDiff = Math.PI * 2 - angDiff;
           const nearCone = angDiff < fovHalf * 2.5;
           const labelVis = time > 0.1 ? inCone ? 1.0 : nearCone ? Math.max(0, 1 - (angDiff - fovHalf) / (fovHalf * 1.5)) * 0.5 : 0 : 0;
+          const tcx = wIsoX(bcx2, bcy2, ctrZ + b.h + 1.5);
+          const tcy = wIsoY(bcx2, bcy2, ctrZ + b.h + 1.5);
+          if (b.type === "dome") {
+            // ── Geodesic dome rendering ──
+            const r = b.r,
+              h = b.h,
+              cx = b.gx,
+              cy = b.gy;
+            const baseZ = ctrZ;
+            const nPts = 16;
+            // Base ellipse points (iso-projected circle)
+            const basePts = [];
+            for (let i = 0; i < nPts; i++) {
+              const ang = i / nPts * Math.PI * 2;
+              const px = cx + Math.cos(ang) * r;
+              const py = cy + Math.sin(ang) * r;
+              const pz = terrainH(px, py);
+              basePts.push({
+                gx: px,
+                gy: py,
+                gz: pz,
+                sx: wIsoX(px, py, pz),
+                sy: wIsoY(px, py, pz)
+              });
+            }
+            const basePolyStr = basePts.map(p => `${p.sx},${p.sy}`).join(" ");
+            // Apex
+            const apexSx = wIsoX(cx, cy, baseZ + h);
+            const apexSy = wIsoY(cx, cy, baseZ + h);
+            // Dome silhouette — back half (darker) then front half (lighter)
+            // Back half: points 0..nPts/2 + apex
+            const backPts = basePts.slice(0, nPts / 2 + 1).map(p => `${p.sx},${p.sy}`);
+            backPts.push(`${apexSx},${apexSy}`);
+            const frontPts = basePts.slice(nPts / 2).map(p => `${p.sx},${p.sy}`);
+            frontPts.push(`${apexSx},${apexSy}`);
+            // Meridian ribs (geodesic lattice lines from base to apex)
+            const ribLines = [];
+            for (let i = 0; i < nPts; i += 2) {
+              const bp = basePts[i];
+              ribLines.push({
+                x1: bp.sx,
+                y1: bp.sy,
+                x2: apexSx,
+                y2: apexSy
+              });
+            }
+            // Latitude rings at 1/3 and 2/3 height
+            const latRings = [0.33, 0.66].map(frac => {
+              const ringPts = [];
+              const ringR = r * (1 - frac * 0.85); // taper toward apex
+              const ringZ = baseZ + h * frac;
+              for (let i = 0; i < nPts; i++) {
+                const ang = i / nPts * Math.PI * 2;
+                const px = cx + Math.cos(ang) * ringR;
+                const py = cy + Math.sin(ang) * ringR;
+                ringPts.push(`${wIsoX(px, py, ringZ)},${wIsoY(px, py, ringZ)}`);
+              }
+              return ringPts.join(" ");
+            });
+            // Glow band around base (like the reference image's cyan trim)
+            const glowRingZ = baseZ + h * 0.15;
+            const glowRingR = r * 0.97;
+            const glowPts = [];
+            for (let i = 0; i < nPts; i++) {
+              const ang = i / nPts * Math.PI * 2;
+              const px = cx + Math.cos(ang) * glowRingR;
+              const py = cy + Math.sin(ang) * glowRingR;
+              glowPts.push(`${wIsoX(px, py, glowRingZ)},${wIsoY(px, py, glowRingZ)}`);
+            }
+            return /*#__PURE__*/React.createElement("g", {
+              key: `bld-${bi}`
+            }, /*#__PURE__*/React.createElement("polygon", {
+              points: basePolyStr,
+              fill: `${b.color}20`,
+              stroke: `${b.color}55`,
+              strokeWidth: 0.5
+            }), /*#__PURE__*/React.createElement("polygon", {
+              points: backPts.join(" "),
+              fill: `${b.color}18`,
+              stroke: "none"
+            }), /*#__PURE__*/React.createElement("polygon", {
+              points: frontPts.join(" "),
+              fill: `${b.color}30`,
+              stroke: "none"
+            }), /*#__PURE__*/React.createElement("polygon", {
+              points: [...basePts.map(p => `${p.sx},${p.sy}`)].join(" "),
+              fill: "none",
+              stroke: `${b.color}66`,
+              strokeWidth: 0.6
+            }), ribLines.map((rl, ri) => /*#__PURE__*/React.createElement("line", {
+              key: `rib-${ri}`,
+              x1: rl.x1,
+              y1: rl.y1,
+              x2: rl.x2,
+              y2: rl.y2,
+              stroke: `${b.color}44`,
+              strokeWidth: 0.4
+            })), latRings.map((lr, li) => /*#__PURE__*/React.createElement("polygon", {
+              key: `lat-${li}`,
+              points: lr,
+              fill: "none",
+              stroke: `${b.color}44`,
+              strokeWidth: 0.4
+            })), /*#__PURE__*/React.createElement("polygon", {
+              points: glowPts.join(" "),
+              fill: "none",
+              stroke: "#00ddff",
+              strokeWidth: 0.8,
+              opacity: 0.35
+            }), /*#__PURE__*/React.createElement("circle", {
+              cx: apexSx,
+              cy: apexSy,
+              r: 1.2,
+              fill: `${b.color}88`,
+              stroke: `${b.color}cc`,
+              strokeWidth: 0.6
+            }), labelVis > 0.02 && /*#__PURE__*/React.createElement("text", {
+              x: tcx,
+              y: tcy,
+              textAnchor: "middle",
+              fill: `${b.color}dd`,
+              fontSize: 6,
+              fontFamily: mono,
+              fontWeight: 700,
+              opacity: labelVis
+            }, b.label));
+          }
+          // ── Box rendering (HANGAR, GENERATOR) ──
+          const corners = [[b.gx, b.gy], [b.gx + b.w, b.gy], [b.gx + b.w, b.gy + b.d], [b.gx, b.gy + b.d]];
+          const gz = corners.map(c => terrainH(c[0], c[1]));
+          const topPts = corners.map((c, i) => `${wIsoX(c[0], c[1], gz[i] + b.h)},${wIsoY(c[0], c[1], gz[i] + b.h)}`).join(" ");
+          const rf = `${wIsoX(corners[1][0], corners[1][1], gz[1])},${wIsoY(corners[1][0], corners[1][1], gz[1])} ${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)} ${wIsoX(corners[1][0], corners[1][1], gz[1] + b.h)},${wIsoY(corners[1][0], corners[1][1], gz[1] + b.h)}`;
+          const ff = `${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[3][0], corners[3][1], gz[3])},${wIsoY(corners[3][0], corners[3][1], gz[3])} ${wIsoX(corners[3][0], corners[3][1], gz[3] + b.h)},${wIsoY(corners[3][0], corners[3][1], gz[3] + b.h)} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)}`;
           return /*#__PURE__*/React.createElement("g", {
             key: `bld-${bi}`
           }, /*#__PURE__*/React.createElement("polygon", {
@@ -13487,21 +13603,21 @@ function TemporalReplay() {
           const dt = time - launchT;
           // Waypoint timeline:
           // 0-2s: hover above launch point (rise to altitude)
-          // 2-5s: fly to FUEL depot (15, 42)
-          // 5-7s: hesitate/hover over FUEL
-          // 7-11s: fly to ARMORY (35, 30)
-          // 11-12s: descend and land on ARMORY roof
-          // 12+: sitting on ARMORY
+          // 2-5s: fly to HANGAR (22, 56)
+          // 5-7s: hesitate/hover over HANGAR
+          // 7-11s: fly to MAIN DOME (45, 62)
+          // 11-12s: descend and land on MAIN DOME apex
+          // 12+: sitting on MAIN DOME
           const lProg = Math.min(1, launchT / 30);
           const lWx = Math.sin(launchT * 0.7) * 4 + Math.sin(launchT * 1.3) * 2;
           const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
           const startGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
           const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
-          const fuelGx = 15 + 2.5,
-            fuelGy = 42 + 4; // FUEL center
-          const armGx = 35 + 6,
-            armGy = 30 + 2.5; // ARMORY center
-          const armRoofZ = terrainH(armGx, armGy) + 8; // ARMORY height
+          const hangarGx = 22 + 5,
+            hangarGy = 56 + 3; // HANGAR center
+          const domeGx = 45,
+            domeGy = 62; // MAIN DOME center
+          const domeRoofZ = terrainH(domeGx, domeGy) + 12; // MAIN DOME height
           const cruiseAlt = 16;
           let dGx,
             dGy,
@@ -13514,33 +13630,33 @@ function TemporalReplay() {
             dGy = startGy;
             dAlt = cruiseAlt * ss(dt / 2);
           } else if (dt < 5) {
-            // Phase 2: fly to FUEL
+            // Phase 2: fly to HANGAR
             const p = ss((dt - 2) / 3);
-            dGx = startGx + (fuelGx - startGx) * p;
-            dGy = startGy + (fuelGy - startGy) * p;
+            dGx = startGx + (hangarGx - startGx) * p;
+            dGy = startGy + (hangarGy - startGy) * p;
             dAlt = cruiseAlt;
           } else if (dt < 7) {
-            // Phase 3: hesitate over FUEL — gentle drift
-            dGx = fuelGx + Math.sin((dt - 5) * 1.5) * 1.5;
-            dGy = fuelGy + Math.cos((dt - 5) * 1.2) * 1;
+            // Phase 3: hesitate over HANGAR — gentle drift
+            dGx = hangarGx + Math.sin((dt - 5) * 1.5) * 1.5;
+            dGy = hangarGy + Math.cos((dt - 5) * 1.2) * 1;
             dAlt = cruiseAlt - Math.sin((dt - 5) * 2) * 1.5;
           } else if (dt < 11) {
-            // Phase 4: fly to ARMORY
+            // Phase 4: fly to MAIN DOME
             const p = ss((dt - 7) / 4);
-            dGx = fuelGx + (armGx - fuelGx) * p;
-            dGy = fuelGy + (armGy - fuelGy) * p;
+            dGx = hangarGx + (domeGx - hangarGx) * p;
+            dGy = hangarGy + (domeGy - hangarGy) * p;
             dAlt = cruiseAlt;
           } else if (dt < 12) {
-            // Phase 5: descend to ARMORY roof
+            // Phase 5: descend to MAIN DOME apex
             const p = ss((dt - 11) / 1);
-            dGx = armGx;
-            dGy = armGy;
-            dAlt = cruiseAlt * (1 - p) + armRoofZ * p - terrainH(armGx, armGy) * p;
+            dGx = domeGx;
+            dGy = domeGy;
+            dAlt = cruiseAlt * (1 - p) + domeRoofZ * p - terrainH(domeGx, domeGy) * p;
           } else {
-            // Landed on ARMORY
-            dGx = armGx;
-            dGy = armGy;
-            dAlt = 8; // sitting on roof
+            // Landed on MAIN DOME
+            dGx = domeGx;
+            dGy = domeGy;
+            dAlt = 12; // sitting on dome apex
             landed = true;
           }
           const baseZ = terrainH(dGx, dGy);
@@ -13635,8 +13751,7 @@ function TemporalReplay() {
             opacity: 0.6
           }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : "TRANSIT"));
         })(), time > 0.1 && buildings.map((b, bi) => {
-          const bcx = b.gx + b.w / 2,
-            bcy = b.gy + b.d / 2;
+          const [bcx, bcy] = bldCenter(b);
           const btz = terrainH(bcx, bcy) + b.h / 2;
           const tbx = wIsoX(bcx, bcy, btz),
             tby = wIsoY(bcx, bcy, btz);

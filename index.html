@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v339";
+  var v = "v340";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v339 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v340 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v339"), /*#__PURE__*/React.createElement("span", {
+  }, "v340"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12743,7 +12743,7 @@ function TemporalReplay() {
             height: sgH,
             rx: 5,
             fill: "rgba(8,12,20,0.85)",
-            stroke: `rgba(0,220,255,${0.4 + containerBrS * 0.35})`,
+            stroke: `rgba(255,255,0,${0.5 + containerBrS * 0.35})`,
             strokeWidth: 1.2
           }), /*#__PURE__*/React.createElement("rect", {
             x: sgX + 1.5,
@@ -12752,13 +12752,13 @@ function TemporalReplay() {
             height: sgH - 3,
             rx: 4,
             fill: "none",
-            stroke: `rgba(0,200,255,${0.1 + containerBrS * 0.1})`,
+            stroke: `rgba(255,255,0,${0.15 + containerBrS * 0.1})`,
             strokeWidth: 0.4
           }), /*#__PURE__*/React.createElement("text", {
             x: sgX + sgW / 2,
             y: sgY + 10,
             textAnchor: "middle",
-            fill: "#00ddff",
+            fill: "#ffff44",
             fontSize: 5,
             fontFamily: mono,
             fontWeight: 700,
@@ -12783,7 +12783,7 @@ function TemporalReplay() {
             width: plotW + 2,
             height: traceH + 2,
             fill: "none",
-            stroke: "rgba(0,200,255,0.5)",
+            stroke: "rgba(255,255,0,0.5)",
             strokeWidth: 0.5
           }), [-60, -30, 0, 30, 60].map(km => {
             const fx = (km + 70) / 140;
@@ -12795,13 +12795,13 @@ function TemporalReplay() {
               y1: traceTop - 1,
               x2: px,
               y2: traceTop + 2,
-              stroke: "rgba(0,200,255,0.75)",
+              stroke: "rgba(255,255,0,0.9)",
               strokeWidth: 0.3
             }), /*#__PURE__*/React.createElement("text", {
               x: px,
               y: traceTop - 2,
               textAnchor: "middle",
-              fill: "rgba(0,200,255,0.9)",
+              fill: "#ffff44",
               fontSize: 2.5,
               fontFamily: mono
             }, km));
@@ -12815,13 +12815,13 @@ function TemporalReplay() {
               y1: py,
               x2: plotX - 3,
               y2: py,
-              stroke: "rgba(0,200,255,0.75)",
+              stroke: "rgba(255,255,0,0.9)",
               strokeWidth: 0.3
             }), /*#__PURE__*/React.createElement("text", {
               x: plotX - 4,
               y: py + 1,
               textAnchor: "end",
-              fill: "rgba(0,200,255,0.9)",
+              fill: "#ffff44",
               fontSize: 2.5,
               fontFamily: mono
             }, tv));
@@ -12858,7 +12858,7 @@ function TemporalReplay() {
             width: plotW + 2,
             height: depthH - 2,
             fill: "rgba(10,15,30,0.6)",
-            stroke: "rgba(0,200,255,0.35)",
+            stroke: "rgba(255,255,0,0.35)",
             strokeWidth: 0.5
           }), /*#__PURE__*/React.createElement("g", {
             clipPath: `url(#${clipIdD})`

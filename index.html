@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v331";
+  var v = "v332";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v331 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v332 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v331"), /*#__PURE__*/React.createElement("span", {
+  }, "v332"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13260,196 +13260,218 @@ function TemporalReplay() {
             label: "BEDROCK",
             stroke: "#7c6a5a"
           }];
-          const nSegments = 24;
+          const nSeg = 24;
           const elements = [];
-          // Fault location: at ~60% along SE edge (gx=60)
-          const faultGx = 60;
-          const faultShift = 6; // strata on right side shifted UP by 6 grid units (thrust fault)
-          const faultWidth = 4; // transition zone width in gx units
-
-          // Function: fault offset at a given gx position
-          const faultOffset = gx => {
-            if (gx < faultGx - faultWidth) return 0;
-            if (gx > faultGx + faultWidth) return faultShift;
-            const t = (gx - (faultGx - faultWidth)) / (faultWidth * 2);
-            return faultShift * t * t * (3 - 2 * t); // smoothstep
+          const faultPos = 60; // fault at 60% along each edge
+          const faultShift = 6;
+          const faultW = 4;
+          const faultOff = v => {
+            if (v < faultPos - faultW) return 0;
+            if (v > faultPos + faultW) return faultShift;
+            const t = (v - (faultPos - faultW)) / (faultW * 2);
+            return faultShift * t * t * (3 - 2 * t);
           };
 
-          // SE wall: from S(0,100) to E(100,100) — right-facing edge
-          let zTop = 0;
-          strata.forEach((layer, li) => {
-            const zBot = zTop - totalDepth * layer.frac;
-            const topPts = [];
-            const botPts = [];
-            for (let i = 0; i <= nSegments; i++) {
-              const f = i / nSegments;
-              const gx = f * 100;
-              const surfZ = terrainH(gx, 100);
-              const fo = faultOffset(gx);
-              topPts.push(`${wIsoX(gx, 100, surfZ + zTop + fo)},${wIsoY(gx, 100, surfZ + zTop + fo)}`);
-              botPts.unshift(`${wIsoX(gx, 100, surfZ + zBot + fo)},${wIsoY(gx, 100, surfZ + zBot + fo)}`);
-            }
-            const opacity = 0.50 - li * 0.05;
-            elements.push(/*#__PURE__*/React.createElement("g", {
-              key: `se-layer-${li}`
-            }, /*#__PURE__*/React.createElement("polygon", {
-              points: [...topPts, ...botPts].join(" "),
-              fill: layer.color,
-              fillOpacity: opacity,
-              stroke: layer.stroke,
-              strokeWidth: 0.3,
-              strokeOpacity: 0.35
-            }), [0.25, 0.5, 0.75].map((tf, tfi) => {
-              const lineZ = zTop + (zBot - zTop) * tf;
-              const linePts = [];
-              for (let i = 0; i <= nSegments; i++) {
-                const f = i / nSegments;
-                const gx = f * 100;
-                const surfZ2 = terrainH(gx, 100);
-                const fo = faultOffset(gx);
-                const wobble = Math.sin(gx * 0.12 + li * 1.9 + tfi * 0.7) * 0.4;
-                linePts.push(`${wIsoX(gx, 100, surfZ2 + lineZ + fo + wobble)},${wIsoY(gx, 100, surfZ2 + lineZ + fo + wobble)}`);
+          // Helper: render one wall face
+          const renderWall = (wallId, getGx, getGy, paramVar, labelSide, shadowDarken) => {
+            let zTop = 0;
+            strata.forEach((layer, li) => {
+              const zBot = zTop - totalDepth * layer.frac;
+              const topPts = [];
+              const botPts = [];
+              for (let i = 0; i <= nSeg; i++) {
+                const f = i / nSeg;
+                const v = f * 100;
+                const gx = getGx(v),
+                  gy = getGy(v);
+                const surfZ = terrainH(gx, gy);
+                const fo = faultOff(v);
+                topPts.push(`${wIsoX(gx, gy, surfZ + zTop + fo)},${wIsoY(gx, gy, surfZ + zTop + fo)}`);
+                botPts.unshift(`${wIsoX(gx, gy, surfZ + zBot + fo)},${wIsoY(gx, gy, surfZ + zBot + fo)}`);
               }
-              return /*#__PURE__*/React.createElement("polyline", {
-                key: `se-tex-${li}-${tfi}`,
-                points: linePts.join(" "),
-                fill: "none",
+              const opacity = 0.50 - li * 0.05 - shadowDarken;
+              elements.push(/*#__PURE__*/React.createElement("g", {
+                key: `${wallId}-layer-${li}`
+              }, /*#__PURE__*/React.createElement("polygon", {
+                points: [...topPts, ...botPts].join(" "),
+                fill: layer.color,
+                fillOpacity: opacity,
                 stroke: layer.stroke,
                 strokeWidth: 0.3,
-                strokeOpacity: 0.2
-              });
-            }), (() => {
-              const midGx = 25;
-              const midSz = terrainH(midGx, 100);
-              const midZ = (zTop + zBot) / 2;
-              const lx = wIsoX(midGx, 100, midSz + midZ) + 2;
-              const ly = wIsoY(midGx, 100, midSz + midZ);
-              return /*#__PURE__*/React.createElement("text", {
-                x: lx,
-                y: ly + 1.5,
-                textAnchor: "start",
-                fill: `${layer.stroke}bb`,
-                fontSize: 3.5,
-                fontFamily: mono,
-                fontWeight: 600,
-                opacity: 0.6
-              }, layer.label);
-            })()));
-            zTop = zBot;
-          });
+                strokeOpacity: 0.35
+              }), [0.25, 0.5, 0.75].map((tf, tfi) => {
+                const lineZ = zTop + (zBot - zTop) * tf;
+                const linePts = [];
+                for (let i = 0; i <= nSeg; i++) {
+                  const f = i / nSeg;
+                  const v = f * 100;
+                  const gx = getGx(v),
+                    gy = getGy(v);
+                  const surfZ2 = terrainH(gx, gy);
+                  const fo = faultOff(v);
+                  const wobble = Math.sin(v * 0.12 + li * 1.9 + tfi * 0.7) * 0.4;
+                  linePts.push(`${wIsoX(gx, gy, surfZ2 + lineZ + fo + wobble)},${wIsoY(gx, gy, surfZ2 + lineZ + fo + wobble)}`);
+                }
+                return /*#__PURE__*/React.createElement("polyline", {
+                  key: `${wallId}-tex-${li}-${tfi}`,
+                  points: linePts.join(" "),
+                  fill: "none",
+                  stroke: layer.stroke,
+                  strokeWidth: 0.3,
+                  strokeOpacity: 0.2
+                });
+              }), (() => {
+                const midV = 25;
+                const gx = getGx(midV),
+                  gy = getGy(midV);
+                const midSz = terrainH(gx, gy);
+                const midZ = (zTop + zBot) / 2;
+                const lx = wIsoX(gx, gy, midSz + midZ) + (labelSide === "R" ? 2 : -2);
+                const ly = wIsoY(gx, gy, midSz + midZ);
+                return /*#__PURE__*/React.createElement("text", {
+                  x: lx,
+                  y: ly + 1.5,
+                  textAnchor: labelSide === "R" ? "start" : "end",
+                  fill: `${layer.stroke}bb`,
+                  fontSize: 3.5,
+                  fontFamily: mono,
+                  fontWeight: 600,
+                  opacity: 0.6
+                }, layer.label);
+              })()));
+              zTop = zBot;
+            });
 
-          // Fault line — dramatic slash through all layers
-          const faultLinePts = [];
-          const surfZFault = terrainH(faultGx, 100);
-          const faultTopX = wIsoX(faultGx, 100, surfZFault + 2);
-          const faultTopY = wIsoY(faultGx, 100, surfZFault + 2);
-          const faultBotX = wIsoX(faultGx + 3, 100, surfZFault - totalDepth - 1);
-          const faultBotY = wIsoY(faultGx + 3, 100, surfZFault - totalDepth - 1);
-          elements.push(/*#__PURE__*/React.createElement("g", {
-            key: "fault-line"
-          }, /*#__PURE__*/React.createElement("line", {
-            x1: faultTopX,
-            y1: faultTopY,
-            x2: faultBotX,
-            y2: faultBotY,
-            stroke: "#ff4444",
-            strokeWidth: 1.2,
-            opacity: 0.7
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: faultTopX,
-            y1: faultTopY,
-            x2: faultBotX,
-            y2: faultBotY,
-            stroke: "#ff4444",
-            strokeWidth: 3,
-            opacity: 0.15
-          }), [0.25, 0.5, 0.75].map((af, ai) => {
-            const aZ = surfZFault - totalDepth * af;
-            const ax1 = wIsoX(faultGx - 2, 100, aZ);
-            const ay1 = wIsoY(faultGx - 2, 100, aZ);
-            const ax2 = wIsoX(faultGx + 2, 100, aZ + faultShift * 0.4);
-            const ay2 = wIsoY(faultGx + 2, 100, aZ + faultShift * 0.4);
-            return /*#__PURE__*/React.createElement("g", {
-              key: `farrow-${ai}`
+            // Fault line for this wall
+            const fGx = getGx(faultPos),
+              fGy = getGy(faultPos);
+            const sfz = terrainH(fGx, fGy);
+            const ftx = wIsoX(fGx, fGy, sfz + 2);
+            const fty = wIsoY(fGx, fGy, sfz + 2);
+            const fGx2 = getGx(faultPos + 3),
+              fGy2 = getGy(faultPos + 3);
+            const fbx = wIsoX(fGx2, fGy2, sfz - totalDepth - 1);
+            const fby = wIsoY(fGx2, fGy2, sfz - totalDepth - 1);
+            elements.push(/*#__PURE__*/React.createElement("g", {
+              key: `${wallId}-fault`
             }, /*#__PURE__*/React.createElement("line", {
-              x1: ax1,
-              y1: ay1,
-              x2: ax1,
-              y2: ay1 + 4,
-              stroke: "#ff6666",
-              strokeWidth: 0.6,
-              opacity: 0.5
+              x1: ftx,
+              y1: fty,
+              x2: fbx,
+              y2: fby,
+              stroke: "#ff4444",
+              strokeWidth: 1.2,
+              opacity: 0.7
             }), /*#__PURE__*/React.createElement("line", {
-              x1: ax2,
-              y1: ay2,
-              x2: ax2,
-              y2: ay2 - 4,
-              stroke: "#ff6666",
-              strokeWidth: 0.6,
-              opacity: 0.5
-            }), /*#__PURE__*/React.createElement("polygon", {
-              points: `${ax1},${ay1 + 4} ${ax1 - 1},${ay1 + 2} ${ax1 + 1},${ay1 + 2}`,
-              fill: "#ff6666",
-              opacity: 0.5
-            }), /*#__PURE__*/React.createElement("polygon", {
-              points: `${ax2},${ay2 - 4} ${ax2 - 1},${ay2 - 2} ${ax2 + 1},${ay2 - 2}`,
-              fill: "#ff6666",
-              opacity: 0.5
+              x1: ftx,
+              y1: fty,
+              x2: fbx,
+              y2: fby,
+              stroke: "#ff4444",
+              strokeWidth: 3,
+              opacity: 0.12
+            }), [0.25, 0.5, 0.75].map((af, ai) => {
+              const aZ = sfz - totalDepth * af;
+              const a1x = wIsoX(getGx(faultPos - 2), getGy(faultPos - 2), aZ);
+              const a1y = wIsoY(getGx(faultPos - 2), getGy(faultPos - 2), aZ);
+              const a2x = wIsoX(getGx(faultPos + 2), getGy(faultPos + 2), aZ + faultShift * 0.4);
+              const a2y = wIsoY(getGx(faultPos + 2), getGy(faultPos + 2), aZ + faultShift * 0.4);
+              return /*#__PURE__*/React.createElement("g", {
+                key: `${wallId}-fa-${ai}`
+              }, /*#__PURE__*/React.createElement("line", {
+                x1: a1x,
+                y1: a1y,
+                x2: a1x,
+                y2: a1y + 4,
+                stroke: "#ff6666",
+                strokeWidth: 0.6,
+                opacity: 0.5
+              }), /*#__PURE__*/React.createElement("line", {
+                x1: a2x,
+                y1: a2y,
+                x2: a2x,
+                y2: a2y - 4,
+                stroke: "#ff6666",
+                strokeWidth: 0.6,
+                opacity: 0.5
+              }), /*#__PURE__*/React.createElement("polygon", {
+                points: `${a1x},${a1y + 4} ${a1x - 1},${a1y + 2} ${a1x + 1},${a1y + 2}`,
+                fill: "#ff6666",
+                opacity: 0.5
+              }), /*#__PURE__*/React.createElement("polygon", {
+                points: `${a2x},${a2y - 4} ${a2x - 1},${a2y - 2} ${a2x + 1},${a2y - 2}`,
+                fill: "#ff6666",
+                opacity: 0.5
+              }));
+            }), Array.from({
+              length: 5
+            }, (_, di) => {
+              const dz = sfz - totalDepth * (di * 0.18 + 0.1);
+              const dv = faultPos + Math.sin(di * 3.7) * 2;
+              const side = di % 2 === 0 ? -1 : 1;
+              return /*#__PURE__*/React.createElement("line", {
+                key: `${wallId}-fr-${di}`,
+                x1: wIsoX(getGx(dv + side * 1), getGy(dv + side * 1), dz),
+                y1: wIsoY(getGx(dv + side * 1), getGy(dv + side * 1), dz),
+                x2: wIsoX(getGx(dv + side * 3), getGy(dv + side * 3), dz + side * 1.5),
+                y2: wIsoY(getGx(dv + side * 3), getGy(dv + side * 3), dz + side * 1.5),
+                stroke: "#ff4444",
+                strokeWidth: 0.4,
+                opacity: 0.3
+              });
+            })));
+
+            // Bottom edge
+            const botPts = [];
+            for (let i = 0; i <= nSeg; i++) {
+              const f = i / nSeg;
+              const v = f * 100;
+              const gx = getGx(v),
+                gy = getGy(v);
+              const sz = terrainH(gx, gy);
+              botPts.push(`${wIsoX(gx, gy, sz - totalDepth + faultOff(v))},${wIsoY(gx, gy, sz - totalDepth + faultOff(v))}`);
+            }
+            elements.push(/*#__PURE__*/React.createElement("polyline", {
+              key: `${wallId}-bot`,
+              points: botPts.join(" "),
+              fill: "none",
+              stroke: "rgba(100,80,60,0.3)",
+              strokeWidth: 0.5
             }));
-          }), /*#__PURE__*/React.createElement("text", {
-            x: faultTopX + 4,
-            y: faultTopY - 2,
+          };
+
+          // SW wall: S(100,100) to W(0,100) — along gy=100, gx varies
+          renderWall("sw", v => v, () => 100, "v", "R", 0);
+
+          // SE wall: S(100,100) to E(100,0) — along gx=100, gy varies 100→0
+          renderWall("se", () => 100, v => 100 - v, "v", "L", 0.06);
+
+          // THRUST FAULT label at SW wall top
+          const fGxSw = faultPos,
+            fGySw = 100;
+          const sfzSw = terrainH(fGxSw, fGySw);
+          elements.push(/*#__PURE__*/React.createElement("text", {
+            key: "fault-label",
+            x: wIsoX(fGxSw, fGySw, sfzSw + 3),
+            y: wIsoY(fGxSw, fGySw, sfzSw + 3) - 2,
             fill: "#ff6666",
             fontSize: 4,
             fontFamily: mono,
             fontWeight: 700,
             opacity: 0.7
-          }, "THRUST FAULT"), Array.from({
-            length: 6
-          }, (_, di) => {
-            const dz = surfZFault - totalDepth * (di * 0.15 + 0.1);
-            const dx = faultGx + Math.sin(di * 3.7) * 2;
-            const side = di % 2 === 0 ? -1 : 1;
-            return /*#__PURE__*/React.createElement("line", {
-              key: `frac-${di}`,
-              x1: wIsoX(dx + side * 1, 100, dz),
-              y1: wIsoY(dx + side * 1, 100, dz),
-              x2: wIsoX(dx + side * 3, 100, dz + side * 1.5),
-              y2: wIsoY(dx + side * 3, 100, dz + side * 1.5),
-              stroke: "#ff4444",
-              strokeWidth: 0.4,
-              opacity: 0.3
-            });
-          })));
-
-          // Bottom edge line
-          const seBottomPts = [];
-          for (let i = 0; i <= nSegments; i++) {
-            const f = i / nSegments;
-            const gx = f * 100;
-            const seSz = terrainH(gx, 100);
-            const fo = faultOffset(gx);
-            seBottomPts.push(`${wIsoX(gx, 100, seSz - totalDepth + fo)},${wIsoY(gx, 100, seSz - totalDepth + fo)}`);
-          }
-          elements.push(/*#__PURE__*/React.createElement("polyline", {
-            key: "se-bottom",
-            points: seBottomPts.join(" "),
-            fill: "none",
-            stroke: "rgba(100,80,60,0.3)",
-            strokeWidth: 0.5
-          }));
+          }, "THRUST FAULT"));
 
           // Depth scale at S corner
           [0, -4.5, -9, -13.5, -18].forEach((dz, di) => {
             const depthM = Math.round(Math.abs(dz) * 14);
-            const sz = terrainH(0, 100);
-            const tx = wIsoX(0, 100, sz + dz) + 4;
-            const ty = wIsoY(0, 100, sz + dz);
+            const sz = terrainH(100, 100);
+            const tx = wIsoX(100, 100, sz + dz);
+            const ty = wIsoY(100, 100, sz + dz);
             elements.push(/*#__PURE__*/React.createElement("text", {
-              key: `depth-label-${di}`,
+              key: `depth-${di}`,
               x: tx,
-              y: ty + 1,
-              textAnchor: "start",
+              y: ty + 5,
+              textAnchor: "middle",
               fill: "rgba(180,150,120,0.4)",
               fontSize: 3,
               fontFamily: mono
@@ -13472,7 +13494,7 @@ function TemporalReplay() {
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
-        }, "W"), /*#__PURE__*/React.createElement("text", {
+        }, "N"), /*#__PURE__*/React.createElement("text", {
           x: wIsoX(100, 0, 0) + 8,
           y: wIsoY(100, 0, 0),
           textAnchor: "start",
@@ -13480,7 +13502,7 @@ function TemporalReplay() {
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
-        }, "N"), /*#__PURE__*/React.createElement("text", {
+        }, "E"), /*#__PURE__*/React.createElement("text", {
           x: wIsoX(100, 100, 0),
           y: wIsoY(100, 100, 0) + 10,
           textAnchor: "middle",
@@ -13488,7 +13510,7 @@ function TemporalReplay() {
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
-        }, "E"), /*#__PURE__*/React.createElement("text", {
+        }, "S"), /*#__PURE__*/React.createElement("text", {
           x: wIsoX(0, 100, 0) - 8,
           y: wIsoY(0, 100, 0),
           textAnchor: "end",
@@ -13496,7 +13518,7 @@ function TemporalReplay() {
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
-        }, "S"), [20, 40, 60, 80].map(g => {
+        }, "W"), [20, 40, 60, 80].map(g => {
           const step = 4;
           const ptsA = [],
             ptsB = [];
@@ -14314,105 +14336,7 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: beamFade
           }, distLabel)));
-        }), (() => {
-          const towerGx = 80,
-            towerGy = 85;
-          const towerBaseZ = terrainH(towerGx, towerGy);
-          const towerH = 16;
-          const bx2 = wIsoX(towerGx, towerGy, towerBaseZ);
-          const by2 = wIsoY(towerGx, towerGy, towerBaseZ);
-          const tx = wIsoX(towerGx, towerGy, towerBaseZ + towerH);
-          const ty = wIsoY(towerGx, towerGy, towerBaseZ + towerH);
-          const dishX = tx,
-            dishY = ty - 3;
-          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
-            x1: bx2,
-            y1: by2,
-            x2: tx,
-            y2: ty,
-            stroke: "#88aacc",
-            strokeWidth: 1.5,
-            opacity: 0.7
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: bx2 - 3,
-            y1: by2,
-            x2: bx2 + 3,
-            y2: by2,
-            stroke: "#88aacc",
-            strokeWidth: 1,
-            opacity: 0.5
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: tx - 2,
-            y1: ty + 3,
-            x2: tx + 2,
-            y2: ty + 3,
-            stroke: "#88aacc",
-            strokeWidth: 0.8,
-            opacity: 0.5
-          }), /*#__PURE__*/React.createElement("ellipse", {
-            cx: dishX,
-            cy: dishY,
-            rx: 4,
-            ry: 2,
-            fill: "none",
-            stroke: "#aaccee",
-            strokeWidth: 1,
-            opacity: 0.8
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: dishX,
-            cy: dishY,
-            r: 1.2,
-            fill: "#44ffaa",
-            opacity: 0.9
-          }), /*#__PURE__*/React.createElement("text", {
-            x: bx2,
-            y: by2 + 8,
-            textAnchor: "middle",
-            fill: "#88aacc",
-            fontSize: 4,
-            fontFamily: mono,
-            fontWeight: 700,
-            opacity: 0.6
-          }, "RADAR"), time > 0.1 && (() => {
-            const dashOffset = nowMs * 0.008 % 12;
-            const targets = [{
-              row: 15.5,
-              color: "#ffaa44",
-              label: "WX"
-            }, {
-              row: 16.5,
-              color: "#88ff44",
-              label: "TRN"
-            }, {
-              row: 17.5,
-              color: "#ff4444",
-              label: "RAD"
-            }];
-            return targets.map((tgt, bi) => {
-              const tgtX = dfColX + dfNodeW / 2;
-              const tgtY = topPad + tgt.row * rowH + dfNodeH / 2;
-              const dx2 = tgtX - dishX,
-                dy2 = tgtY - dishY;
-              const len = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-              // Extend 36px in direction of target
-              const lineLen = 36;
-              const ex = dishX + dx2 / len * lineLen;
-              const ey = dishY + dy2 / len * lineLen;
-              return /*#__PURE__*/React.createElement("line", {
-                key: `rf-${bi}`,
-                x1: dishX,
-                y1: dishY,
-                x2: ex,
-                y2: ey,
-                stroke: tgt.color,
-                strokeWidth: 0.8,
-                opacity: 0.5,
-                strokeDasharray: "2,4",
-                strokeDashoffset: -dashOffset - bi * 2
-              });
-            });
-          })());
-        })());
+        }));
       }
 
       // — Default box rendering (fallback) —

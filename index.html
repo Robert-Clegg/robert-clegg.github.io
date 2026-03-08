@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v340";
+  var v = "v341";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v340 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v341 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v340"), /*#__PURE__*/React.createElement("span", {
+  }, "v341"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12631,7 +12631,82 @@ function TemporalReplay() {
           const nPtsPerRow = 80;
           const traceElements = [];
           const scrollOffset = t * 0.6;
-          const srcFrac = 0.5 + (progress - 0.5) * 0.43;
+
+          // Mech position (same formula as WORLD)
+          const mechWobX = Math.sin(t * 0.7) * 4 + Math.sin(t * 1.3) * 2;
+          const mechWobY = Math.sin(t * 0.5) * 3 + Math.cos(t * 0.9) * 1.5;
+          const mechGx = 10 + progress * 75 + mechWobX + Math.sin(progress * Math.PI * 2) * 6;
+          const mechGy = 85 - progress * 65 + mechWobY - Math.sin(progress * Math.PI * 1.5) * 5;
+
+          // Seismic sources — same as WORLD terrain
+          const oscSources = [{
+            gx: 20,
+            gy: 45,
+            id: "A",
+            color: "#ffff44"
+          }, {
+            gx: 75,
+            gy: 25,
+            id: "B",
+            color: "#ffcc00"
+          }, {
+            gx: 40,
+            gy: 80,
+            id: "C",
+            color: "#ffdd33"
+          }, {
+            gx: 90,
+            gy: 75,
+            id: "D",
+            color: "#ffee22"
+          }];
+
+          // Compute source-receiver offsets (distance from each source to mech)
+          const srcDistances = oscSources.map(s => {
+            const dx = (s.gx - mechGx) * 2.5; // scale to meters
+            const dy = (s.gy - mechGy) * 2.5;
+            return Math.sqrt(dx * dx + dy * dy);
+          });
+
+          // Source firing state — each fires in sequence
+          const fireCycle = 4.0;
+          const srcActive = oscSources.map((_, si) => {
+            const firePhase = (t - si * 0.8) % fireCycle;
+            return firePhase < 0.6 ? 1.0 : Math.max(0.15, 0.6 - (firePhase - 0.6) * 0.3);
+          });
+
+          // Receiver position on offset axis — mech maps to center
+          const srcFrac = 0.5;
+          // Source positions on offset axis based on their distances
+          const srcOffsetFracs = srcDistances.map(d => {
+            return Math.max(0, Math.min(1, 0.5 + d / 350)); // normalized to plot width
+          });
+
+          // Rock layer reflectors
+          const reflectors = [{
+            t0: 2.5,
+            v: 26,
+            a: 1.0
+          },
+          // PERMAFROST base
+          {
+            t0: 4.2,
+            v: 20,
+            a: 0.8
+          },
+          // SANDSTONE base
+          {
+            t0: 6.0,
+            v: 16,
+            a: 0.6
+          },
+          // SHALE base
+          {
+            t0: 8.0,
+            v: 13,
+            a: 0.4
+          } // BEDROCK
+          ];
           for (let row = 0; row < nRows; row++) {
             const rowCy = traceTop + row * rowH2;
             const timeVal = (row / nRows * 8 + scrollOffset) % 10 + 2;
@@ -12639,42 +12714,26 @@ function TemporalReplay() {
             for (let pi = 0; pi < nPtsPerRow; pi++) {
               const f = pi / (nPtsPerRow - 1);
               const px = plotX + f * plotW;
-              const offset = (f - 0.5) * 140;
+              const offset = (f - 0.5) * 200; // km offset axis
               let amp = 0;
-              const srcOffset = (progress - 0.5) * 60;
-              const relOffset = offset - srcOffset;
-              const reflectors = [{
-                t0: 2.5,
-                v: 26,
-                a: 1.0
-              }, {
-                t0: 4.0,
-                v: 20,
-                a: 0.85
-              }, {
-                t0: 5.5,
-                v: 16,
-                a: 0.6
-              }, {
-                t0: 7.0,
-                v: 13,
-                a: 0.4
-              }, {
-                t0: 8.2,
-                v: 11,
-                a: 0.3
-              }];
-              for (const ref of reflectors) {
-                const tHyp = Math.sqrt(ref.t0 * ref.t0 + relOffset * relOffset / (ref.v * ref.v));
-                const dt2 = timeVal - tHyp;
-                const freq = 2.0;
-                const u = Math.PI * freq * dt2;
-                const wavelet = (1 - 2 * u * u) * Math.exp(-u * u);
-                amp += wavelet * ref.a;
+              // Each source contributes a hyperbolic pattern
+              for (let si = 0; si < oscSources.length; si++) {
+                const srcKmOffset = srcDistances[si] * 0.001 * 70; // scale to km
+                const relOffset = offset - (si % 2 === 0 ? -srcKmOffset : srcKmOffset);
+                const activity = srcActive[si];
+                for (const ref of reflectors) {
+                  const tHyp = Math.sqrt(ref.t0 * ref.t0 + relOffset * relOffset / (ref.v * ref.v));
+                  const dt2 = timeVal - tHyp;
+                  const freq = 2.0;
+                  const u = Math.PI * freq * dt2;
+                  const wavelet = (1 - 2 * u * u) * Math.exp(-u * u);
+                  amp += wavelet * ref.a * activity * 0.35;
+                }
               }
-              const noise = Math.sin(offset * 0.9 + timeVal * 6 + t * 0.2) * 0.06 + Math.sin(offset * 2.3 + timeVal * 14) * 0.04;
+              // Background noise
+              const noise = Math.sin(offset * 0.9 + timeVal * 6 + t * 0.2) * 0.04 + Math.sin(offset * 2.3 + timeVal * 14) * 0.03;
               amp += noise;
-              const yOff = amp * rowH2 * 1.1;
+              const yOff = amp * rowH2 * 1.3;
               pts.push(`${px},${rowCy + yOff}`);
             }
             const centerDist = Math.abs(timeVal - 5.0);
@@ -12693,6 +12752,19 @@ function TemporalReplay() {
               opacity: op
             }));
           }
+
+          // Source offset markers on the trace panel
+          const srcMarkers = oscSources.map((src, si) => {
+            const srcKm = srcDistances[si] * 0.001 * 70;
+            const xFrac = 0.5 + (si % 2 === 0 ? -srcKm : srcKm) / 200;
+            const clampedFrac = Math.max(0.05, Math.min(0.95, xFrac));
+            return {
+              frac: clampedFrac,
+              id: src.id,
+              color: src.color,
+              active: srcActive[si]
+            };
+          });
 
           // Match WORLD container geological cross-section colors + fault
           const depthLayers = [{
@@ -12825,19 +12897,52 @@ function TemporalReplay() {
               fontSize: 2.5,
               fontFamily: mono
             }, tv));
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: plotX + srcFrac * plotW,
+          }), srcMarkers.map((sm, smi) => /*#__PURE__*/React.createElement("g", {
+            key: `sm-${smi}`
+          }, /*#__PURE__*/React.createElement("line", {
+            x1: plotX + sm.frac * plotW,
             y1: traceTop,
-            x2: plotX + srcFrac * plotW,
+            x2: plotX + sm.frac * plotW,
             y2: traceTop + traceH,
-            stroke: "rgba(68,255,170,0.8)",
-            strokeWidth: 0.8,
+            stroke: sm.color,
+            strokeWidth: sm.active > 0.5 ? 0.8 : 0.3,
+            opacity: sm.active * 0.5,
             strokeDasharray: "2,3"
           }), /*#__PURE__*/React.createElement("polygon", {
-            points: `${plotX + srcFrac * plotW},${traceTop - 1} ${plotX + srcFrac * plotW - 2},${traceTop - 4} ${plotX + srcFrac * plotW + 2},${traceTop - 4}`,
+            points: `${plotX + sm.frac * plotW},${traceTop - 1} ${plotX + sm.frac * plotW - 2},${traceTop - 5} ${plotX + sm.frac * plotW + 2},${traceTop - 5}`,
+            fill: sm.color,
+            opacity: sm.active * 0.8
+          }), /*#__PURE__*/React.createElement("text", {
+            x: plotX + sm.frac * plotW,
+            y: traceTop - 6,
+            textAnchor: "middle",
+            fill: sm.color,
+            fontSize: 3,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: sm.active * 0.9
+          }, sm.id))), /*#__PURE__*/React.createElement("line", {
+            x1: plotX + 0.5 * plotW,
+            y1: traceTop,
+            x2: plotX + 0.5 * plotW,
+            y2: traceTop + traceH,
+            stroke: "rgba(68,255,170,0.4)",
+            strokeWidth: 0.6,
+            strokeDasharray: "1,2"
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${plotX + 0.5 * plotW},${traceTop + traceH + 1} ${plotX + 0.5 * plotW - 2.5},${traceTop + traceH + 5} ${plotX + 0.5 * plotW + 2.5},${traceTop + traceH + 5}`,
             fill: "#44ffaa",
-            opacity: 1.0
-          }), /*#__PURE__*/React.createElement("g", {
+            opacity: 0.8
+          }), /*#__PURE__*/React.createElement("text", {
+            x: plotX + 0.5 * plotW,
+            y: traceTop + traceH + 9,
+            textAnchor: "middle",
+            fill: "#44ffaa",
+            fontSize: 3,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: 0.8
+          }, "RCV"), /*#__PURE__*/React.createElement("g", {
             clipPath: `url(#${clipId})`
           }, traceElements), /*#__PURE__*/React.createElement("line", {
             x1: sgX + 3,
@@ -12847,10 +12952,10 @@ function TemporalReplay() {
             stroke: "rgba(255,255,0,0.9)",
             strokeWidth: 0.7
           }), /*#__PURE__*/React.createElement("text", {
-            x: plotX + srcFrac * plotW,
+            x: plotX + 0.5 * plotW,
             y: depthTop + 1,
             textAnchor: "middle",
-            fill: "#ffff44",
+            fill: "#44ffaa",
             fontSize: 5
           }, "\u2606"), /*#__PURE__*/React.createElement("rect", {
             x: plotX - 1,
@@ -12913,11 +13018,11 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: 1.0
           }, "FAULT")), /*#__PURE__*/React.createElement("line", {
-            x1: plotX + srcFrac * plotW,
+            x1: plotX + 0.5 * plotW,
             y1: depthTop + 2,
-            x2: plotX + srcFrac * plotW,
+            x2: plotX + 0.5 * plotW,
             y2: depthTop + depthH,
-            stroke: "rgba(68,255,170,0.6)",
+            stroke: "rgba(68,255,170,0.4)",
             strokeWidth: 0.5,
             strokeDasharray: "1,2"
           }));
@@ -13303,6 +13408,29 @@ function TemporalReplay() {
         }];
         // Helper: building center
         const bldCenter = b => b.type === "dome" || b.type === "rig" ? [b.gx, b.gy] : [b.gx + b.w / 2, b.gy + b.d / 2];
+
+        // ══ SEISMIC SOURCE POINTS — thumper stations for subsurface survey ══
+        const seismicSources = [{
+          gx: 20,
+          gy: 45,
+          id: "A",
+          color: "#ffff44"
+        }, {
+          gx: 75,
+          gy: 25,
+          id: "B",
+          color: "#ffcc00"
+        }, {
+          gx: 40,
+          gy: 80,
+          id: "C",
+          color: "#ffdd33"
+        }, {
+          gx: 90,
+          gy: 75,
+          id: "D",
+          color: "#ffee22"
+        }];
         // Player position: starts lower-left, approaches upper-right
         const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
         const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
@@ -14171,6 +14299,91 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: labelVis
           }, b.label));
+        }), time > 0.1 && seismicSources.map((src, si) => {
+          const srcZ = terrainH(src.gx, src.gy);
+          const sx = wIsoX(src.gx, src.gy, srcZ);
+          const sy = wIsoY(src.gx, src.gy, srcZ);
+          // Distance to player
+          const dx = src.gx - pgx,
+            dy = src.gy - pgy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          // Pulse timing — each source fires in sequence
+          const fireCycle = 4.0; // seconds per cycle
+          const firePhase = (time - si * 0.8) % fireCycle;
+          const firing = firePhase < 0.6;
+          const pulseR = firing ? 3 + firePhase * 20 : 0;
+          const pulseOp = firing ? Math.max(0, 0.6 - firePhase) : 0;
+          // Ray path: source → subsurface reflection point → mech
+          // Midpoint between source and mech, at depth
+          const midGx = (src.gx + pgx) / 2;
+          const midGy = (src.gy + pgy) / 2;
+          const reflDepth = -8 - dist * 0.06; // deeper reflection for farther sources
+          const midZ = terrainH(midGx, midGy);
+          const reflX = wIsoX(midGx, midGy, midZ + reflDepth);
+          const reflY = wIsoY(midGx, midGy, midZ + reflDepth);
+          // Ray path opacity — brighter when firing
+          const rayOp = firing ? 0.3 + (0.6 - firePhase) * 0.5 : 0.08;
+          return /*#__PURE__*/React.createElement("g", {
+            key: `src-${si}`
+          }, /*#__PURE__*/React.createElement("polyline", {
+            points: `${sx},${sy} ${reflX},${reflY} ${ppx},${ppy}`,
+            fill: "none",
+            stroke: src.color,
+            strokeWidth: firing ? 0.8 : 0.4,
+            opacity: rayOp,
+            strokeDasharray: firing ? "none" : "2,3"
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: reflX,
+            cy: reflY,
+            r: 1.5,
+            fill: src.color,
+            opacity: rayOp * 0.8
+          }), firing && /*#__PURE__*/React.createElement("circle", {
+            cx: sx,
+            cy: sy,
+            r: pulseR,
+            fill: "none",
+            stroke: src.color,
+            strokeWidth: 1,
+            opacity: pulseOp
+          }), firing && /*#__PURE__*/React.createElement("circle", {
+            cx: sx,
+            cy: sy,
+            r: pulseR * 0.6,
+            fill: "none",
+            stroke: src.color,
+            strokeWidth: 0.6,
+            opacity: pulseOp * 0.7
+          }), /*#__PURE__*/React.createElement("polygon", {
+            points: `${sx},${sy - 5} ${sx + 3.5},${sy} ${sx},${sy + 3} ${sx - 3.5},${sy}`,
+            fill: firing ? src.color : `${src.color}88`,
+            stroke: src.color,
+            strokeWidth: 0.8,
+            opacity: firing ? 1.0 : 0.6
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: sx,
+            cy: sy - 1,
+            r: 1,
+            fill: firing ? "#ffffff" : src.color,
+            opacity: firing ? 0.9 : 0.5
+          }), /*#__PURE__*/React.createElement("text", {
+            x: sx,
+            y: sy + 8,
+            textAnchor: "middle",
+            fill: src.color,
+            fontSize: 5,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: 0.8
+          }, "SRC-", src.id), /*#__PURE__*/React.createElement("text", {
+            x: sx,
+            y: sy + 13,
+            textAnchor: "middle",
+            fill: src.color,
+            fontSize: 3.5,
+            fontFamily: mono,
+            opacity: 0.5
+          }, (dist * 2.5).toFixed(0), "m"));
         }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
           const cR = coneLen;
           const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v306";
+  var v = "v307";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v306 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v307 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v306"), /*#__PURE__*/React.createElement("span", {
+  }, "v307"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13140,23 +13140,21 @@ function TemporalReplay() {
           const cellSize = 10;
           const playerCellX = Math.floor(pgx / cellSize) * cellSize;
           const playerCellY = Math.floor(pgy / cellSize) * cellSize;
-          // Hot spots — permanent
-          const hotSpots = [{
-            cx: 70,
-            cy: 20,
-            temp: 147,
-            color: "#ff2222",
-            glowColor: "rgba(255,30,30,0.25)"
-          }, {
-            cx: 30,
-            cy: 50,
-            temp: 122,
-            color: "#ff8800",
-            glowColor: "rgba(255,136,0,0.18)"
-          }];
+          // Hot spots — override temps for specific cells (only visible when visited)
+          const hotSpotMap = {
+            "70-20": {
+              temp: 147,
+              color: "#ff2222",
+              glowColor: "rgba(255,30,30,0.25)"
+            },
+            "30-50": {
+              temp: 122,
+              color: "#ff8800",
+              glowColor: "rgba(255,136,0,0.18)"
+            }
+          };
           // Generate temps for visited cells based on time + position
           const cells = [];
-          // Current cell + recently passed cells (trail of ~8 cells)
           for (let i = 0; i < 12; i++) {
             const tt = Math.max(0, time - i * 0.8);
             const prog = Math.min(1, tt / 30);
@@ -13167,55 +13165,52 @@ function TemporalReplay() {
             if (gx < 0 || gx >= 100 || gy < 0 || gy >= 100) continue;
             const age = i * 0.8;
             const fade = Math.max(0, 1 - age / 8);
-            // Pseudo-random temp per cell
-            const seed = Math.sin(gx * 127.1 + gy * 311.7) * 43758.5453;
-            const temp = 47 + Math.round((seed % 1 + 1) % 1 * 9);
             const key = `${gx}-${gy}`;
+            const hotSpot = hotSpotMap[key];
+            const seed = Math.sin(gx * 127.1 + gy * 311.7) * 43758.5453;
+            const temp = hotSpot ? hotSpot.temp : 47 + Math.round((seed % 1 + 1) % 1 * 9);
             if (!cells.find(c => c.key === key)) {
               cells.push({
                 gx,
                 gy,
                 temp,
                 fade,
-                key
+                key,
+                hotSpot: hotSpot || null
               });
             }
           }
-          return /*#__PURE__*/React.createElement("g", null, hotSpots.map((hs, hi) => {
-            const hz = terrainH(hs.cx + cellSize / 2, hs.cy + cellSize / 2);
-            const corners = [[hs.cx, hs.cy], [hs.cx + cellSize, hs.cy], [hs.cx + cellSize, hs.cy + cellSize], [hs.cx, hs.cy + cellSize]];
-            const pts = corners.map(c => `${wIsoX(c[0], c[1], terrainH(c[0], c[1]))},${wIsoY(c[0], c[1], terrainH(c[0], c[1]))}`).join(" ");
-            const tcx2 = wIsoX(hs.cx + cellSize / 2, hs.cy + cellSize / 2, hz);
-            const tcy2 = wIsoY(hs.cx + cellSize / 2, hs.cy + cellSize / 2, hz);
-            return /*#__PURE__*/React.createElement("g", {
-              key: `hot-${hi}`
-            }, /*#__PURE__*/React.createElement("polygon", {
-              points: pts,
-              fill: hs.glowColor,
-              stroke: hs.color,
-              strokeWidth: 0.6,
-              opacity: 0.7 + Math.sin(time * 2 + hi) * 0.2
-            }), /*#__PURE__*/React.createElement("polygon", {
-              points: pts,
-              fill: hs.color,
-              opacity: 0.08,
-              filter: "url(#glow)"
-            }), /*#__PURE__*/React.createElement("text", {
-              x: tcx2,
-              y: tcy2 + 2,
-              textAnchor: "middle",
-              fill: hs.color,
-              fontSize: 6,
-              fontFamily: mono,
-              fontWeight: 700,
-              opacity: 0.9
-            }, hs.temp, "\xB0"));
-          }), cells.map(c => {
+          return /*#__PURE__*/React.createElement("g", null, cells.map(c => {
             const cz = terrainH(c.gx + cellSize / 2, c.gy + cellSize / 2);
             const tcx2 = wIsoX(c.gx + cellSize / 2, c.gy + cellSize / 2, cz);
             const tcy2 = wIsoY(c.gx + cellSize / 2, c.gy + cellSize / 2, cz);
             const corners = [[c.gx, c.gy], [c.gx + cellSize, c.gy], [c.gx + cellSize, c.gy + cellSize], [c.gx, c.gy + cellSize]];
             const pts = corners.map(cr => `${wIsoX(cr[0], cr[1], terrainH(cr[0], cr[1]))},${wIsoY(cr[0], cr[1], terrainH(cr[0], cr[1]))}`).join(" ");
+            if (c.hotSpot) {
+              return /*#__PURE__*/React.createElement("g", {
+                key: `tmp-${c.key}`
+              }, /*#__PURE__*/React.createElement("polygon", {
+                points: pts,
+                fill: c.hotSpot.glowColor,
+                stroke: c.hotSpot.color,
+                strokeWidth: 0.6,
+                opacity: c.fade * 0.8
+              }), /*#__PURE__*/React.createElement("polygon", {
+                points: pts,
+                fill: c.hotSpot.color,
+                opacity: c.fade * 0.08,
+                filter: "url(#glow)"
+              }), /*#__PURE__*/React.createElement("text", {
+                x: tcx2,
+                y: tcy2 + 2,
+                textAnchor: "middle",
+                fill: c.hotSpot.color,
+                fontSize: 6,
+                fontFamily: mono,
+                fontWeight: 700,
+                opacity: c.fade * 0.9
+              }, c.temp, "\xB0"));
+            }
             return /*#__PURE__*/React.createElement("g", {
               key: `tmp-${c.key}`
             }, /*#__PURE__*/React.createElement("polygon", {

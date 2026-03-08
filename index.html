@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v322";
+  var v = "v323";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v322 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v323 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v322"), /*#__PURE__*/React.createElement("span", {
+  }, "v323"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13251,7 +13251,7 @@ function TemporalReplay() {
           gy: 20,
           w: 0,
           d: 0,
-          h: 22,
+          h: 15.4,
           label: "OIL RIG",
           color: "#cc8844",
           type: "rig"
@@ -13735,16 +13735,16 @@ function TemporalReplay() {
             const baseZ = ctrZ;
             const h = b.h;
             // Platform base — square footprint
-            const platR = 4;
-            const platH = 3;
+            const platR = 2.8;
+            const platH = 2.1;
             const platCorners = [[cx - platR, cy - platR], [cx + platR, cy - platR], [cx + platR, cy + platR], [cx - platR, cy + platR]];
             const pGz = platCorners.map(c => terrainH(c[0], c[1]));
             const platTop = platCorners.map((c, i) => `${wIsoX(c[0], c[1], pGz[i] + platH)},${wIsoY(c[0], c[1], pGz[i] + platH)}`).join(" ");
             const platRf = `${wIsoX(platCorners[1][0], platCorners[1][1], pGz[1])},${wIsoY(platCorners[1][0], platCorners[1][1], pGz[1])} ${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2])},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2])} ${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2] + platH)},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2] + platH)} ${wIsoX(platCorners[1][0], platCorners[1][1], pGz[1] + platH)},${wIsoY(platCorners[1][0], platCorners[1][1], pGz[1] + platH)}`;
             const platFf = `${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2])},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2])} ${wIsoX(platCorners[3][0], platCorners[3][1], pGz[3])},${wIsoY(platCorners[3][0], platCorners[3][1], pGz[3])} ${wIsoX(platCorners[3][0], platCorners[3][1], pGz[3] + platH)},${wIsoY(platCorners[3][0], platCorners[3][1], pGz[3] + platH)} ${wIsoX(platCorners[2][0], platCorners[2][1], pGz[2] + platH)},${wIsoY(platCorners[2][0], platCorners[2][1], pGz[2] + platH)}`;
             // Derrick tower — 4 legs tapering to apex
-            const legOff = 2.8;
-            const topOff = 0.6;
+            const legOff = 2.0;
+            const topOff = 0.42;
             const legBases = [[cx - legOff, cy - legOff], [cx + legOff, cy - legOff], [cx + legOff, cy + legOff], [cx - legOff, cy + legOff]];
             const legTops = [[cx - topOff, cy - topOff], [cx + topOff, cy - topOff], [cx + topOff, cy + topOff], [cx - topOff, cy + topOff]];
             const bZ = baseZ + platH;
@@ -13815,10 +13815,10 @@ function TemporalReplay() {
                 strokeWidth: 0.3
               }));
             }), /*#__PURE__*/React.createElement("rect", {
-              x: apexSx - 2.5,
-              y: apexSy - 3,
-              width: 5,
-              height: 3,
+              x: apexSx - 1.75,
+              y: apexSy - 2.1,
+              width: 3.5,
+              height: 2.1,
               fill: `${b.color}55`,
               stroke: `${b.color}aa`,
               strokeWidth: 0.6,
@@ -13833,8 +13833,8 @@ function TemporalReplay() {
               opacity: 0.6
             }), /*#__PURE__*/React.createElement("circle", {
               cx: apexSx,
-              cy: apexSy - 4,
-              r: 1,
+              cy: apexSy - 2.8,
+              r: 0.8,
               fill: "#ff4444",
               opacity: 0.8
             }, /*#__PURE__*/React.createElement("animate", {
@@ -13842,7 +13842,7 @@ function TemporalReplay() {
               values: "0.9;0.2;0.9",
               dur: "1.2s",
               repeatCount: "indefinite"
-            })), [[cx - 10, cy], [cx + 10, cy], [cx, cy - 10], [cx, cy + 10]].map((anc, gi) => {
+            })), [[cx - 7, cy], [cx + 7, cy], [cx, cy - 7], [cx, cy + 7]].map((anc, gi) => {
               const az = terrainH(anc[0], anc[1]);
               return /*#__PURE__*/React.createElement("line", {
                 key: `guy-${gi}`,
@@ -13972,7 +13972,7 @@ function TemporalReplay() {
             labGy = 85; // SEISMIC LAB center
           const rigGx = 10,
             rigGy = 20; // OIL RIG center
-          const rigPlatZ = terrainH(rigGx, rigGy) + 3; // OIL RIG platform height
+          const rigPlatZ = terrainH(rigGx, rigGy) + 2.1; // OIL RIG platform height
           const cruiseAlt = 18;
           let dGx,
             dGy,
@@ -14011,7 +14011,7 @@ function TemporalReplay() {
             // Landed on OIL RIG platform
             dGx = rigGx;
             dGy = rigGy;
-            dAlt = 3; // sitting on platform
+            dAlt = 2.1; // sitting on platform
             landed = true;
           }
           const baseZ = terrainH(dGx, dGy);

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v319";
+  var v = "v320";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v319 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v320 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v319"), /*#__PURE__*/React.createElement("span", {
+  }, "v320"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13247,8 +13247,8 @@ function TemporalReplay() {
           color: "#667788",
           type: "box"
         }, {
-          gx: 92,
-          gy: 15,
+          gx: 90,
+          gy: 10,
           w: 0,
           d: 0,
           h: 22,
@@ -13887,8 +13887,8 @@ function TemporalReplay() {
           const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
           const labGx = 67,
             labGy = 85; // SEISMIC LAB center
-          const rigGx = 92,
-            rigGy = 15; // OIL RIG center
+          const rigGx = 90,
+            rigGy = 10; // OIL RIG center
           const rigPlatZ = terrainH(rigGx, rigGy) + 3; // OIL RIG platform height
           const cruiseAlt = 18;
           let dGx,

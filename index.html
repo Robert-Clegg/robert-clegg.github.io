@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v318";
+  var v = "v319";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v318 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v319 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v318"), /*#__PURE__*/React.createElement("span", {
+  }, "v319"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12941,13 +12941,13 @@ function TemporalReplay() {
           const fdH = 58;
           const fdY = droneBoxY + droneBoxH + 4;
           const dt = time - launchT;
-          const phase = dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 11 ? "TRANSIT" : dt < 12 ? "DESCEND" : "LANDED";
-          const alt = dt < 2 ? dt / 2 * 16 : dt < 5 ? 16 : dt < 7 ? 16 - Math.sin((dt - 5) * 2) * 1.5 : dt < 11 ? 16 : dt < 12 ? 16 * (1 - (dt - 11)) : 8;
-          const spd = dt < 2 ? 0 : dt < 5 ? 12 + Math.sin(dt * 2) * 3 : dt < 7 ? 1 + Math.sin(dt) * 0.5 : dt < 11 ? 10 + Math.sin(dt * 1.5) * 4 : 0;
-          const gyroP = dt < 2 ? dt / 2 * -8 : dt < 7 ? Math.sin(dt * 1.3) * 4 : dt < 11 ? Math.sin(dt * 0.9) * 6 : dt < 12 ? (12 - dt) * 15 : 0;
+          const phase = dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : dt < 14 ? "DESCEND" : "LANDED";
+          const alt = dt < 2 ? dt / 2 * 18 : dt < 5 ? 18 : dt < 7 ? 18 - Math.sin((dt - 5) * 2) * 1.5 : dt < 13 ? 18 + Math.sin((dt - 7) / 6 * Math.PI) * 4 : dt < 14 ? 18 * (1 - (dt - 13)) : 3;
+          const spd = dt < 2 ? 0 : dt < 5 ? 12 + Math.sin(dt * 2) * 3 : dt < 7 ? 1 + Math.sin(dt) * 0.5 : dt < 13 ? 14 + Math.sin(dt * 1.5) * 4 : 0;
+          const gyroP = dt < 2 ? dt / 2 * -8 : dt < 7 ? Math.sin(dt * 1.3) * 4 : dt < 13 ? Math.sin(dt * 0.9) * 6 : dt < 14 ? (14 - dt) * 15 : 0;
           const gyroR = Math.sin(dt * 0.7 + 1) * 3 + Math.sin(dt * 1.9) * 2;
           const gyroYaw = dt < 2 ? 0 : Math.sin(dt * 0.4) * 12 + Math.cos(dt * 0.25) * 8;
-          const heading = dt < 2 ? 0 : dt < 5 ? 315 : dt < 7 ? 315 + Math.sin(dt) * 5 : dt < 11 ? 45 : 45;
+          const heading = dt < 2 ? 0 : dt < 5 ? 315 : dt < 7 ? 315 + Math.sin(dt) * 5 : dt < 13 ? 30 : 30;
           return /*#__PURE__*/React.createElement("g", {
             opacity: slideEase
           }, /*#__PURE__*/React.createElement("rect", {
@@ -12995,7 +12995,7 @@ function TemporalReplay() {
           }, "ALT ", alt.toFixed(1), "m \xB7 SPD ", spd.toFixed(1), "m/s"), /*#__PURE__*/React.createElement("rect", {
             x: droneBoxX + 5,
             y: droneBoxY + droneBoxH - 6,
-            width: Math.max(0, (visW - 10) * Math.min(1, dt / 12)),
+            width: Math.max(0, (visW - 10) * Math.min(1, dt / 14)),
             height: 2,
             rx: 1,
             fill: "#ffcc44",
@@ -13247,8 +13247,8 @@ function TemporalReplay() {
           color: "#667788",
           type: "box"
         }, {
-          gx: 80,
-          gy: 18,
+          gx: 92,
+          gy: 15,
           w: 0,
           d: 0,
           h: 22,
@@ -13875,22 +13875,22 @@ function TemporalReplay() {
           const dt = time - launchT;
           // Waypoint timeline:
           // 0-2s: hover above launch point (rise to altitude)
-          // 2-5s: fly to HANGAR (22, 56)
-          // 5-7s: hesitate/hover over HANGAR
-          // 7-11s: fly to MAIN DOME (45, 62)
-          // 11-12s: descend and land on MAIN DOME apex
-          // 12+: sitting on MAIN DOME
+          // 2-5s: fly to SEISMIC LAB (67, 85)
+          // 5-7s: hesitate/hover over SEISMIC LAB
+          // 7-13s: fly to OIL RIG (92, 15) — longer transit
+          // 13-14s: descend and land on OIL RIG platform
+          // 14+: sitting on OIL RIG
           const lProg = Math.min(1, launchT / 30);
           const lWx = Math.sin(launchT * 0.7) * 4 + Math.sin(launchT * 1.3) * 2;
           const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
           const startGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
           const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
-          const hangarGx = 52 + 3,
-            hangarGy = 86 + 1.8; // HANGAR center
-          const domeGx = 68,
-            domeGy = 68; // MAIN DOME center
-          const domeRoofZ = terrainH(domeGx, domeGy) + 7.2; // MAIN DOME height
-          const cruiseAlt = 16;
+          const labGx = 67,
+            labGy = 85; // SEISMIC LAB center
+          const rigGx = 92,
+            rigGy = 15; // OIL RIG center
+          const rigPlatZ = terrainH(rigGx, rigGy) + 3; // OIL RIG platform height
+          const cruiseAlt = 18;
           let dGx,
             dGy,
             dAlt,
@@ -13902,33 +13902,33 @@ function TemporalReplay() {
             dGy = startGy;
             dAlt = cruiseAlt * ss(dt / 2);
           } else if (dt < 5) {
-            // Phase 2: fly to HANGAR
+            // Phase 2: fly to SEISMIC LAB
             const p = ss((dt - 2) / 3);
-            dGx = startGx + (hangarGx - startGx) * p;
-            dGy = startGy + (hangarGy - startGy) * p;
+            dGx = startGx + (labGx - startGx) * p;
+            dGy = startGy + (labGy - startGy) * p;
             dAlt = cruiseAlt;
           } else if (dt < 7) {
-            // Phase 3: hesitate over HANGAR — gentle drift
-            dGx = hangarGx + Math.sin((dt - 5) * 1.5) * 1.5;
-            dGy = hangarGy + Math.cos((dt - 5) * 1.2) * 1;
+            // Phase 3: hesitate over SEISMIC LAB — gentle drift
+            dGx = labGx + Math.sin((dt - 5) * 1.5) * 1.5;
+            dGy = labGy + Math.cos((dt - 5) * 1.2) * 1;
             dAlt = cruiseAlt - Math.sin((dt - 5) * 2) * 1.5;
-          } else if (dt < 11) {
-            // Phase 4: fly to MAIN DOME
-            const p = ss((dt - 7) / 4);
-            dGx = hangarGx + (domeGx - hangarGx) * p;
-            dGy = hangarGy + (domeGy - hangarGy) * p;
-            dAlt = cruiseAlt;
-          } else if (dt < 12) {
-            // Phase 5: descend to MAIN DOME apex
-            const p = ss((dt - 11) / 1);
-            dGx = domeGx;
-            dGy = domeGy;
-            dAlt = cruiseAlt * (1 - p) + domeRoofZ * p - terrainH(domeGx, domeGy) * p;
+          } else if (dt < 13) {
+            // Phase 4: long transit to OIL RIG
+            const p = ss((dt - 7) / 6);
+            dGx = labGx + (rigGx - labGx) * p;
+            dGy = labGy + (rigGy - labGy) * p;
+            dAlt = cruiseAlt + Math.sin(p * Math.PI) * 4; // slight altitude bump mid-transit
+          } else if (dt < 14) {
+            // Phase 5: descend to OIL RIG platform
+            const p = ss((dt - 13) / 1);
+            dGx = rigGx;
+            dGy = rigGy;
+            dAlt = cruiseAlt * (1 - p) + rigPlatZ * p - terrainH(rigGx, rigGy) * p;
           } else {
-            // Landed on MAIN DOME
-            dGx = domeGx;
-            dGy = domeGy;
-            dAlt = 7.2; // sitting on dome apex
+            // Landed on OIL RIG platform
+            dGx = rigGx;
+            dGy = rigGy;
+            dAlt = 3; // sitting on platform
             landed = true;
           }
           const baseZ = terrainH(dGx, dGy);
@@ -14021,7 +14021,7 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700,
             opacity: 0.6
-          }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : "TRANSIT"));
+          }, landed ? "LANDED" : dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 13 ? "TRANSIT" : "DESCEND"));
         })(), time > 0.1 && buildings.map((b, bi) => {
           const [bcx, bcy] = bldCenter(b);
           const btz = terrainH(bcx, bcy) + b.h / 2;

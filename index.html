@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v337";
+  var v = "v338";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v337 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v338 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v337"), /*#__PURE__*/React.createElement("span", {
+  }, "v338"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12616,15 +12616,17 @@ function TemporalReplay() {
           const t = time > 0.1 ? time : 0;
           const containerBrS = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
           const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
-          const traceH = sgH * 0.56;
-          const depthH = sgH * 0.36;
+          const traceH = (sgH - 20) * 0.55; // fits within container
+          const depthH = (sgH - 20) * 0.40;
           const traceTop = sgY + 14;
-          const depthTop = traceTop + traceH + 5;
+          const depthTop = traceTop + traceH + 4;
           const padL = 18;
           const padR = 3;
           const plotW = sgW - padL - padR;
           const plotX = sgX + padL;
-          const nRows = 22;
+          const clipId = "seismic-clip-" + Math.floor(sgX);
+          const clipIdD = "seismic-clipd-" + Math.floor(sgX);
+          const nRows = 18;
           const rowH2 = traceH / nRows;
           const nPtsPerRow = 80;
           const traceElements = [];
@@ -12672,7 +12674,7 @@ function TemporalReplay() {
               }
               const noise = Math.sin(offset * 0.9 + timeVal * 6 + t * 0.2) * 0.06 + Math.sin(offset * 2.3 + timeVal * 14) * 0.04;
               amp += noise;
-              const yOff = amp * rowH2 * 1.6;
+              const yOff = amp * rowH2 * 1.1;
               pts.push(`${px},${rowCy + yOff}`);
             }
             const centerDist = Math.abs(timeVal - 5.0);
@@ -12761,7 +12763,21 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700,
             letterSpacing: 2
-          }, "SEISMIC"), /*#__PURE__*/React.createElement("rect", {
+          }, "SEISMIC"), /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("clipPath", {
+            id: clipId
+          }, /*#__PURE__*/React.createElement("rect", {
+            x: plotX - 1,
+            y: traceTop - 1,
+            width: plotW + 2,
+            height: traceH + 2
+          })), /*#__PURE__*/React.createElement("clipPath", {
+            id: clipIdD
+          }, /*#__PURE__*/React.createElement("rect", {
+            x: plotX - 1,
+            y: depthTop,
+            width: plotW + 2,
+            height: depthH
+          }))), /*#__PURE__*/React.createElement("rect", {
             x: plotX - 1,
             y: traceTop - 1,
             width: plotW + 2,
@@ -12821,7 +12837,9 @@ function TemporalReplay() {
             points: `${plotX + srcFrac * plotW},${traceTop - 1} ${plotX + srcFrac * plotW - 2},${traceTop - 4} ${plotX + srcFrac * plotW + 2},${traceTop - 4}`,
             fill: "#44ffaa",
             opacity: 0.7
-          }), traceElements, /*#__PURE__*/React.createElement("line", {
+          }), /*#__PURE__*/React.createElement("g", {
+            clipPath: `url(#${clipId})`
+          }, traceElements), /*#__PURE__*/React.createElement("line", {
             x1: sgX + 3,
             y1: depthTop - 2,
             x2: sgX + sgW - 3,
@@ -12842,7 +12860,9 @@ function TemporalReplay() {
             fill: "rgba(10,15,30,0.6)",
             stroke: "rgba(0,200,255,0.12)",
             strokeWidth: 0.4
-          }), depthLayers.map((layer, li) => {
+          }), /*#__PURE__*/React.createElement("g", {
+            clipPath: `url(#${clipIdD})`
+          }, depthLayers.map((layer, li) => {
             const nPts = 25;
             const topPts = [];
             const botPts = [];
@@ -12892,7 +12912,7 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: 700,
             opacity: 0.6
-          }, "FAULT"), /*#__PURE__*/React.createElement("line", {
+          }, "FAULT")), /*#__PURE__*/React.createElement("line", {
             x1: plotX + srcFrac * plotW,
             y1: depthTop + 2,
             x2: plotX + srcFrac * plotW,

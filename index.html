@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v336";
+  var v = "v337";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v336 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v337 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v336"), /*#__PURE__*/React.createElement("span", {
+  }, "v337"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12609,10 +12609,10 @@ function TemporalReplay() {
             }, s.sub));
           });
         })(), (() => {
-          const sgX = leftX - boxW - 4; // left of MOVEMENT column
-          const sgY = moveTop;
-          const sgW = ax - sgX; // extend horizontally to AUTOMATION left edge
-          const sgH = moveH;
+          const sgX = ax; // aligned with AUTOMATION left edge
+          const sgY = moveTop; // same row as MOVEMENT
+          const sgW = aw * 2 + 4; // AUTOMATION + gap + DRONE width
+          const sgH = moveH; // same height as MOVEMENT
           const t = time > 0.1 ? time : 0;
           const containerBrS = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
           const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
@@ -12741,8 +12741,17 @@ function TemporalReplay() {
             height: sgH,
             rx: 5,
             fill: "rgba(8,12,20,0.85)",
-            stroke: `rgba(0,200,255,${0.25 + containerBrS * 0.3})`,
-            strokeWidth: 0.7
+            stroke: `rgba(0,220,255,${0.4 + containerBrS * 0.35})`,
+            strokeWidth: 1.2
+          }), /*#__PURE__*/React.createElement("rect", {
+            x: sgX + 1.5,
+            y: sgY + 1.5,
+            width: sgW - 3,
+            height: sgH - 3,
+            rx: 4,
+            fill: "none",
+            stroke: `rgba(0,200,255,${0.1 + containerBrS * 0.1})`,
+            strokeWidth: 0.4
           }), /*#__PURE__*/React.createElement("text", {
             x: sgX + sgW / 2,
             y: sgY + 10,

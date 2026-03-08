@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v311";
+  var v = "v312";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v311 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v312 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v311"), /*#__PURE__*/React.createElement("span", {
+  }, "v312"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12926,6 +12926,148 @@ function TemporalReplay() {
               fontFamily: mono
             }, s.sub));
           });
+        })(), (() => {
+          const launchT = 9;
+          const slideIn = time > launchT ? Math.min(1, (time - launchT) / 1.5) : 0;
+          if (slideIn < 0.01) return null;
+          const slideEase = slideIn * slideIn * (3 - 2 * slideIn);
+          const droneBoxW = aw;
+          const droneBoxH = 36;
+          const droneBoxX = ax;
+          const sensorBottom = ay + ah + 8 + 11 * 16;
+          const droneBoxY = sensorBottom + 6;
+          // Slide: starts collapsed width, expands to full
+          const visW = droneBoxW * slideEase;
+          const fdH = 52;
+          const fdY = droneBoxY + droneBoxH + 4;
+          const dt = time - launchT;
+          const phase = dt < 2 ? "LAUNCH" : dt < 5 ? "TRANSIT" : dt < 7 ? "HOVER" : dt < 11 ? "TRANSIT" : dt < 12 ? "DESCEND" : "LANDED";
+          const alt = dt < 2 ? dt / 2 * 16 : dt < 5 ? 16 : dt < 7 ? 16 - Math.sin((dt - 5) * 2) * 1.5 : dt < 11 ? 16 : dt < 12 ? 16 * (1 - (dt - 11)) : 8;
+          const spd = dt < 2 ? 0 : dt < 5 ? 12 + Math.sin(dt * 2) * 3 : dt < 7 ? 1 + Math.sin(dt) * 0.5 : dt < 11 ? 10 + Math.sin(dt * 1.5) * 4 : 0;
+          const gyroP = dt < 2 ? dt / 2 * -8 : dt < 7 ? Math.sin(dt * 1.3) * 4 : dt < 11 ? Math.sin(dt * 0.9) * 6 : dt < 12 ? (12 - dt) * 15 : 0;
+          const gyroR = Math.sin(dt * 0.7 + 1) * 3 + Math.sin(dt * 1.9) * 2;
+          const gyroYaw = dt < 2 ? 0 : Math.sin(dt * 0.4) * 12 + Math.cos(dt * 0.25) * 8;
+          const heading = dt < 2 ? 0 : dt < 5 ? 315 : dt < 7 ? 315 + Math.sin(dt) * 5 : dt < 11 ? 45 : 45;
+          return /*#__PURE__*/React.createElement("g", {
+            opacity: slideEase
+          }, /*#__PURE__*/React.createElement("rect", {
+            x: droneBoxX,
+            y: droneBoxY,
+            width: visW,
+            height: droneBoxH,
+            rx: 5,
+            fill: "rgba(255,204,68,0.08)",
+            stroke: "#ffcc44",
+            strokeWidth: 0.8,
+            opacity: 0.8
+          }), /*#__PURE__*/React.createElement("rect", {
+            x: droneBoxX + 1,
+            y: droneBoxY + 1,
+            width: Math.max(0, visW - 2),
+            height: droneBoxH - 2,
+            rx: 4,
+            fill: "none",
+            stroke: "rgba(255,204,68,0.12)",
+            strokeWidth: 0.4
+          }), slideEase > 0.3 && /*#__PURE__*/React.createElement("text", {
+            x: droneBoxX + visW / 2,
+            y: droneBoxY + 10,
+            textAnchor: "middle",
+            fill: "#ffcc44",
+            fontSize: 6,
+            fontFamily: mono,
+            fontWeight: 700,
+            letterSpacing: 1.5
+          }, "DRONE"), slideEase > 0.5 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("text", {
+            x: droneBoxX + 5,
+            y: droneBoxY + 22,
+            fill: "#ffcc44",
+            fontSize: 5.5,
+            fontFamily: mono,
+            fontWeight: 700
+          }, phase), /*#__PURE__*/React.createElement("text", {
+            x: droneBoxX + visW - 5,
+            y: droneBoxY + 22,
+            textAnchor: "end",
+            fill: "rgba(255,204,68,0.6)",
+            fontSize: 5,
+            fontFamily: mono
+          }, "ALT ", alt.toFixed(1), "m \xB7 SPD ", spd.toFixed(1), "m/s"), /*#__PURE__*/React.createElement("rect", {
+            x: droneBoxX + 5,
+            y: droneBoxY + droneBoxH - 6,
+            width: Math.max(0, (visW - 10) * Math.min(1, dt / 12)),
+            height: 2,
+            rx: 1,
+            fill: "#ffcc44",
+            opacity: 0.5
+          }), /*#__PURE__*/React.createElement("rect", {
+            x: droneBoxX + 5,
+            y: droneBoxY + droneBoxH - 6,
+            width: Math.max(0, visW - 10),
+            height: 2,
+            rx: 1,
+            fill: "none",
+            stroke: "rgba(255,204,68,0.2)",
+            strokeWidth: 0.4
+          })), slideEase > 0.4 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+            x: droneBoxX,
+            y: fdY,
+            width: visW,
+            height: fdH,
+            rx: 5,
+            fill: "rgba(255,204,68,0.05)",
+            stroke: "rgba(255,204,68,0.4)",
+            strokeWidth: 0.6
+          }), /*#__PURE__*/React.createElement("text", {
+            x: droneBoxX + visW / 2,
+            y: fdY + 9,
+            textAnchor: "middle",
+            fill: "rgba(255,204,68,0.7)",
+            fontSize: 5,
+            fontFamily: mono,
+            fontWeight: 700,
+            letterSpacing: 1
+          }, "FLIGHT DATA"), [{
+            label: "PITCH",
+            val: gyroP.toFixed(1) + "\u00B0",
+            color: "#ff6666"
+          }, {
+            label: "ROLL",
+            val: gyroR.toFixed(1) + "\u00B0",
+            color: "#66ff66"
+          }, {
+            label: "YAW",
+            val: gyroYaw.toFixed(1) + "\u00B0",
+            color: "#6688ff"
+          }, {
+            label: "HDG",
+            val: heading.toFixed(0) + "\u00B0",
+            color: "#ffcc44"
+          }, {
+            label: "ALT",
+            val: alt.toFixed(1) + "m",
+            color: "#88ddff"
+          }].map((row, ri) => {
+            const ry = fdY + 15 + ri * 7.5;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `fd-${ri}`
+            }, /*#__PURE__*/React.createElement("text", {
+              x: droneBoxX + 5,
+              y: ry,
+              fill: "rgba(255,255,255,0.45)",
+              fontSize: 5,
+              fontFamily: mono,
+              fontWeight: 600
+            }, row.label), /*#__PURE__*/React.createElement("text", {
+              x: droneBoxX + visW - 5,
+              y: ry,
+              textAnchor: "end",
+              fill: row.color,
+              fontSize: 6,
+              fontFamily: mono,
+              fontWeight: 700
+            }, row.val));
+          })));
         })());
       }
 
@@ -13302,129 +13444,7 @@ function TemporalReplay() {
             fill: "#44ffaa",
             opacity: Math.max(0, 0.4 - i * 0.035)
           });
-        }), time > 0.1 && (() => {
-          const droneSites = [{
-            gx: 45,
-            gy: 35,
-            intensity: 0.9
-          }, {
-            gx: 22,
-            gy: 72,
-            intensity: 0.7
-          }, {
-            gx: 65,
-            gy: 60,
-            intensity: 1.0
-          }, {
-            gx: 80,
-            gy: 40,
-            intensity: 0.6
-          }, {
-            gx: 35,
-            gy: 15,
-            intensity: 0.8
-          }, {
-            gx: 55,
-            gy: 80,
-            intensity: 0.5
-          }, {
-            gx: 15,
-            gy: 55,
-            intensity: 0.75
-          }];
-          const cR = coneLen;
-          const coneL = {
-            x: pgx + Math.sin(viewYaw - fovHalf) * cR,
-            y: pgy - Math.cos(viewYaw - fovHalf) * cR
-          };
-          const coneR2 = {
-            x: pgx + Math.sin(viewYaw + fovHalf) * cR,
-            y: pgy - Math.cos(viewYaw + fovHalf) * cR
-          };
-          const sign = (px, py, ax, ay, bx, by) => (px - bx) * (ay - by) - (ax - bx) * (py - by);
-          const inTri = (px, py) => {
-            const d1 = sign(px, py, pgx, pgy, coneL.x, coneL.y);
-            const d2 = sign(px, py, coneL.x, coneL.y, coneR2.x, coneR2.y);
-            const d3 = sign(px, py, coneR2.x, coneR2.y, pgx, pgy);
-            return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
-          };
-          const angleTo = (rx, ry) => Math.atan2(rx - pgx, -(ry - pgy));
-          const angleDiff = (a, b) => {
-            let d = a - b;
-            while (d > Math.PI) d -= Math.PI * 2;
-            while (d < -Math.PI) d += Math.PI * 2;
-            return Math.abs(d);
-          };
-          return droneSites.map((ds, di) => {
-            const dist = Math.sqrt((ds.gx - pgx) ** 2 + (ds.gy - pgy) ** 2);
-            if (dist > cR * 1.8) return null;
-            const inCone = inTri(ds.gx, ds.gy);
-            const angToSrc = angleTo(ds.gx, ds.gy);
-            const angFromCenter = angleDiff(angToSrc, viewYaw);
-            const nearMiss = angFromCenter < fovHalf * 2.5;
-            const vis = inCone ? 1.0 : nearMiss ? Math.max(0, 1 - (angFromCenter - fovHalf) / (fovHalf * 1.5)) * 0.5 : 0;
-            if (vis < 0.02) return null;
-            const rz = terrainH(ds.gx, ds.gy);
-            const rx = wIsoX(ds.gx, ds.gy, rz + 1);
-            const ry2 = wIsoY(ds.gx, ds.gy, rz + 1);
-            const pulse = 0.8 + Math.sin(time * 4 + di * 2.1) * 0.2;
-            return /*#__PURE__*/React.createElement("g", {
-              key: `dsite-${di}`,
-              opacity: vis * ds.intensity * pulse
-            }, /*#__PURE__*/React.createElement("circle", {
-              cx: rx,
-              cy: ry2,
-              r: 8,
-              fill: "#ffcc44",
-              opacity: 0.06 * vis,
-              filter: "url(#glow)"
-            }), [0, 90, 180, 270].map((deg, ai) => {
-              const a = deg * Math.PI / 180;
-              const lx = rx + Math.cos(a) * 4;
-              const ly = ry2 + Math.sin(a) * 4;
-              return /*#__PURE__*/React.createElement("circle", {
-                key: `dc-${ai}`,
-                cx: lx,
-                cy: ly,
-                r: 2,
-                fill: "none",
-                stroke: "#ffcc44",
-                strokeWidth: 1,
-                opacity: 0.85
-              });
-            }), /*#__PURE__*/React.createElement("circle", {
-              cx: rx,
-              cy: ry2,
-              r: 1.2,
-              fill: "#ffcc44",
-              opacity: 0.9
-            }), /*#__PURE__*/React.createElement("line", {
-              x1: rx - 4,
-              y1: ry2,
-              x2: rx + 4,
-              y2: ry2,
-              stroke: "#ffcc44",
-              strokeWidth: 0.6,
-              opacity: 0.6
-            }), /*#__PURE__*/React.createElement("line", {
-              x1: rx,
-              y1: ry2 - 4,
-              x2: rx,
-              y2: ry2 + 4,
-              stroke: "#ffcc44",
-              strokeWidth: 0.6,
-              opacity: 0.6
-            }), /*#__PURE__*/React.createElement("text", {
-              x: rx,
-              y: ry2 + 9,
-              textAnchor: "middle",
-              fill: "#ffcc44",
-              fontSize: 4.5,
-              fontFamily: mono,
-              fontWeight: 700
-            }, "DRONE"));
-          });
-        })(), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
+        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
           const cR = coneLen;
           const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;
           const ly = pgy - Math.cos(viewYaw - fovHalf) * cR;

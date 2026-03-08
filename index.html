@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v329";
+  var v = "v330";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v329 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v330 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7113,7 +7113,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v329"), /*#__PURE__*/React.createElement("span", {
+  }, "v330"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13237,7 +13237,202 @@ function TemporalReplay() {
           fill: "rgba(20,40,30,0.6)",
           stroke: "#00ddff",
           strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("text", {
+        }), (() => {
+          const totalDepth = 18; // total depth in grid units below z=0
+          const strata = [{
+            frac: 0.25,
+            color: "#5a4535",
+            label: "PERMAFROST",
+            stroke: "#7a6555"
+          }, {
+            frac: 0.25,
+            color: "#6b5a48",
+            label: "SANDSTONE",
+            stroke: "#8b7a68"
+          }, {
+            frac: 0.25,
+            color: "#4a3828",
+            label: "SHALE",
+            stroke: "#6a5848"
+          }, {
+            frac: 0.25,
+            color: "#5c4a3a",
+            label: "BEDROCK",
+            stroke: "#7c6a5a"
+          }];
+          const nSegments = 20; // segments along each edge for smooth terrain following
+          const elements = [];
+
+          // SW wall: from W(0,0) to S(0,100) — left-facing edge
+          let zTop = 0;
+          strata.forEach((layer, li) => {
+            const zBot = zTop - totalDepth * layer.frac;
+            const topPts = [];
+            const botPts = [];
+            for (let i = 0; i <= nSegments; i++) {
+              const f = i / nSegments;
+              const gy = f * 100;
+              const surfZ = terrainH(0, gy);
+              topPts.push(`${wIsoX(0, gy, surfZ + zTop)},${wIsoY(0, gy, surfZ + zTop)}`);
+              botPts.unshift(`${wIsoX(0, gy, surfZ + zBot)},${wIsoY(0, gy, surfZ + zBot)}`);
+            }
+            const opacity = 0.55 - li * 0.06;
+            elements.push(/*#__PURE__*/React.createElement("g", {
+              key: `sw-layer-${li}`
+            }, /*#__PURE__*/React.createElement("polygon", {
+              points: [...topPts, ...botPts].join(" "),
+              fill: `${layer.color}`,
+              fillOpacity: opacity,
+              stroke: layer.stroke,
+              strokeWidth: 0.3,
+              strokeOpacity: 0.4
+            }), [0.3, 0.6].map((tf, tfi) => {
+              const lineZ = zTop + (zBot - zTop) * tf;
+              const linePts = [];
+              for (let i = 0; i <= nSegments; i += 2) {
+                const f = i / nSegments;
+                const gy = f * 100;
+                const surfZ2 = terrainH(0, gy);
+                const wobble = Math.sin(gy * 0.15 + li * 2.3) * 0.5;
+                linePts.push(`${wIsoX(0, gy, surfZ2 + lineZ + wobble)},${wIsoY(0, gy, surfZ2 + lineZ + wobble)}`);
+              }
+              return /*#__PURE__*/React.createElement("polyline", {
+                key: `sw-tex-${li}-${tfi}`,
+                points: linePts.join(" "),
+                fill: "none",
+                stroke: layer.stroke,
+                strokeWidth: 0.3,
+                strokeOpacity: 0.25
+              });
+            }), (() => {
+              const midGy = 50;
+              const midSz = terrainH(0, midGy);
+              const midZ = (zTop + zBot) / 2;
+              const lx = wIsoX(0, midGy, midSz + midZ) - 2;
+              const ly = wIsoY(0, midGy, midSz + midZ);
+              return /*#__PURE__*/React.createElement("text", {
+                x: lx,
+                y: ly + 1.5,
+                textAnchor: "end",
+                fill: `${layer.stroke}bb`,
+                fontSize: 3.5,
+                fontFamily: mono,
+                fontWeight: 600,
+                opacity: 0.7
+              }, layer.label);
+            })()));
+            zTop = zBot;
+          });
+
+          // SE wall: from S(0,100) to E(100,100) — right-facing edge
+          zTop = 0;
+          strata.forEach((layer, li) => {
+            const zBot = zTop - totalDepth * layer.frac;
+            const topPts = [];
+            const botPts = [];
+            for (let i = 0; i <= nSegments; i++) {
+              const f = i / nSegments;
+              const gx = f * 100;
+              const surfZ = terrainH(gx, 100);
+              topPts.push(`${wIsoX(gx, 100, surfZ + zTop)},${wIsoY(gx, 100, surfZ + zTop)}`);
+              botPts.unshift(`${wIsoX(gx, 100, surfZ + zBot)},${wIsoY(gx, 100, surfZ + zBot)}`);
+            }
+            // Slightly darker for the SE face (shadow side)
+            const opacity = 0.45 - li * 0.05;
+            elements.push(/*#__PURE__*/React.createElement("g", {
+              key: `se-layer-${li}`
+            }, /*#__PURE__*/React.createElement("polygon", {
+              points: [...topPts, ...botPts].join(" "),
+              fill: `${layer.color}`,
+              fillOpacity: opacity,
+              stroke: layer.stroke,
+              strokeWidth: 0.3,
+              strokeOpacity: 0.35
+            }), [0.3, 0.6].map((tf, tfi) => {
+              const lineZ = zTop + (zBot - zTop) * tf;
+              const linePts = [];
+              for (let i = 0; i <= nSegments; i += 2) {
+                const f = i / nSegments;
+                const gx = f * 100;
+                const surfZ2 = terrainH(gx, 100);
+                const wobble = Math.sin(gx * 0.12 + li * 1.9) * 0.6;
+                linePts.push(`${wIsoX(gx, 100, surfZ2 + lineZ + wobble)},${wIsoY(gx, 100, surfZ2 + lineZ + wobble)}`);
+              }
+              return /*#__PURE__*/React.createElement("polyline", {
+                key: `se-tex-${li}-${tfi}`,
+                points: linePts.join(" "),
+                fill: "none",
+                stroke: layer.stroke,
+                strokeWidth: 0.3,
+                strokeOpacity: 0.2
+              });
+            }), (() => {
+              const midGx = 50;
+              const midSz = terrainH(midGx, 100);
+              const midZ = (zTop + zBot) / 2;
+              const lx = wIsoX(midGx, 100, midSz + midZ) + 2;
+              const ly = wIsoY(midGx, 100, midSz + midZ);
+              return /*#__PURE__*/React.createElement("text", {
+                x: lx,
+                y: ly + 1.5,
+                textAnchor: "start",
+                fill: `${layer.stroke}bb`,
+                fontSize: 3.5,
+                fontFamily: mono,
+                fontWeight: 600,
+                opacity: 0.6
+              }, layer.label);
+            })()));
+            zTop = zBot;
+          });
+
+          // Bottom face — connect bottom of deepest layer at the corner
+          const deepZ = -totalDepth;
+          const bottomCorner = [`${wIsoX(0, 100, terrainH(0, 100) + deepZ)},${wIsoY(0, 100, terrainH(0, 100) + deepZ)}`];
+          // Bottom edge lines along both walls
+          const swBottomPts = [];
+          const seBottomPts = [];
+          for (let i = 0; i <= nSegments; i++) {
+            const f = i / nSegments;
+            const swGy = f * 100;
+            const swSz = terrainH(0, swGy);
+            swBottomPts.push(`${wIsoX(0, swGy, swSz + deepZ)},${wIsoY(0, swGy, swSz + deepZ)}`);
+            const seGx = f * 100;
+            const seSz = terrainH(seGx, 100);
+            seBottomPts.push(`${wIsoX(seGx, 100, seSz + deepZ)},${wIsoY(seGx, 100, seSz + deepZ)}`);
+          }
+          elements.push(/*#__PURE__*/React.createElement("polyline", {
+            key: "sw-bottom",
+            points: swBottomPts.join(" "),
+            fill: "none",
+            stroke: "rgba(100,80,60,0.3)",
+            strokeWidth: 0.5
+          }), /*#__PURE__*/React.createElement("polyline", {
+            key: "se-bottom",
+            points: seBottomPts.join(" "),
+            fill: "none",
+            stroke: "rgba(100,80,60,0.25)",
+            strokeWidth: 0.5
+          }));
+
+          // Depth scale on SW wall
+          [0, -4.5, -9, -13.5, -18].forEach((dz, di) => {
+            const depthM = Math.round(Math.abs(dz) * 14); // ~14m per grid unit
+            const sz = terrainH(0, 100);
+            const tx = wIsoX(0, 100, sz + dz) - 4;
+            const ty = wIsoY(0, 100, sz + dz);
+            elements.push(/*#__PURE__*/React.createElement("text", {
+              key: `depth-label-${di}`,
+              x: tx,
+              y: ty + 1,
+              textAnchor: "end",
+              fill: "rgba(180,150,120,0.4)",
+              fontSize: 3,
+              fontFamily: mono
+            }, depthM, "m"));
+          });
+          return /*#__PURE__*/React.createElement("g", null, elements);
+        })(), /*#__PURE__*/React.createElement("text", {
           x: wIsoX(0, 0, 0) + 6,
           y: wIsoY(0, 0, 0) - 6,
           fill: "#00ddff",

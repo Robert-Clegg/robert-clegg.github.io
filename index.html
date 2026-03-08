@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v293";
+  var v = "v294";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v293 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v294 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v293"), /*#__PURE__*/React.createElement("span", {
+  }, "v294"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8506,12 +8506,14 @@ function TemporalReplay() {
     const worldW = boxW * 3.5;
     const worldH = winStateBottom - rowY3;
     const worldLeftX = boxX + boxW - worldW;
-    // HUD same height as AUDIO — paired with AUTOMATION
+    // HUD same height as AUDIO — full width
     const hudH = audioH;
-    const autoH = hudH; // match HUD height
-    // MOVEMENT below HUD/AUTOMATION row
+    // AUTOMATION below HUD, same height
+    const autoH = hudH;
+    const autoTop = rowY3 + hudH + boxGap;
+    // MOVEMENT below AUTOMATION
     const moveH = 120;
-    const moveTop = rowY3 + hudH + boxGap;
+    const moveTop = autoTop + autoH + boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8541,12 +8543,12 @@ function TemporalReplay() {
     },
     // 3: TXT (right)
     {
-      x: rightX,
+      x: leftX,
       y: rowY3,
-      w: halfW,
+      w: boxW,
       h: hudH
     },
-    // 4: HUD (right of AUTOMATION)
+    // 4: HUD (full width)
     {
       x: leftX,
       y: rowY1,
@@ -8560,14 +8562,14 @@ function TemporalReplay() {
       w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (below HUD/AUTO)
+    // 6: MOVEMENT (below AUTO)
     {
       x: leftX,
-      y: rowY3,
-      w: halfW,
+      y: autoTop,
+      w: boxW,
       h: autoH
     },
-    // 7: AUTOMATION (left of HUD)
+    // 7: AUTOMATION (below HUD)
     {
       x: worldLeftX,
       y: rowY3,

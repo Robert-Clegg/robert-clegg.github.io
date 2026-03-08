@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v325";
+  var v = "v326";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v325 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v326 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v325"), /*#__PURE__*/React.createElement("span", {
+  }, "v326"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13322,9 +13322,8 @@ function TemporalReplay() {
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700
-        }, "S"), [10, 20, 30, 40, 50, 60, 70, 80, 90].map(g => {
+        }, "S"), [20, 40, 60, 80].map(g => {
           const step = 4;
-          const isMajor = g % 20 === 0;
           const ptsA = [],
             ptsB = [];
           for (let t = 0; t <= 100; t += step) {
@@ -13338,66 +13337,61 @@ function TemporalReplay() {
           }, /*#__PURE__*/React.createElement("polyline", {
             points: ptsA.join(" "),
             fill: "none",
-            stroke: isMajor ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.16)",
-            strokeWidth: isMajor ? 0.6 : 0.4
+            stroke: "rgba(255,255,255,0.25)",
+            strokeWidth: 0.5
           }), /*#__PURE__*/React.createElement("polyline", {
             points: ptsB.join(" "),
             fill: "none",
-            stroke: isMajor ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.16)",
-            strokeWidth: isMajor ? 0.6 : 0.4
+            stroke: "rgba(255,255,255,0.25)",
+            strokeWidth: 0.5
           }));
-        }), [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(v => {
-          // Labels along west edge (gx=0): show gy values
-          const wz = terrainH(0, v);
-          const wx = wIsoX(0, v, wz);
-          const wy = wIsoY(0, v, wz);
-          // Labels along north edge (gy=0): show gx values
-          const nz = terrainH(v, 0);
-          const nx = wIsoX(v, 0, nz);
-          const ny = wIsoY(v, 0, nz);
-          const isMajor = v % 20 === 0;
-          return /*#__PURE__*/React.createElement("g", {
-            key: `coord-${v}`
-          }, /*#__PURE__*/React.createElement("text", {
-            x: wx - 6,
-            y: wy + 1,
+        }), [1, 2, 3, 4, 5].map(row => {
+          const gy = (row - 1) * 20 + 10; // center of each 20-unit cell
+          const wz = terrainH(0, gy);
+          const wx = wIsoX(0, gy, wz);
+          const wy = wIsoY(0, gy, wz);
+          return /*#__PURE__*/React.createElement("text", {
+            key: `row-${row}`,
+            x: wx - 8,
+            y: wy + 2,
             textAnchor: "end",
-            fill: isMajor ? "rgba(0,221,255,0.6)" : "rgba(0,221,255,0.35)",
-            fontSize: isMajor ? 5 : 4,
+            fill: "rgba(0,221,255,0.6)",
+            fontSize: 6,
             fontFamily: mono,
-            fontWeight: isMajor ? 700 : 400
-          }, v), /*#__PURE__*/React.createElement("text", {
-            x: nx + 6,
-            y: ny - 2,
+            fontWeight: 700
+          }, row);
+        }), ["A", "B", "C", "D", "E"].map((col, ci) => {
+          const gx = ci * 20 + 10;
+          const nz = terrainH(gx, 0);
+          const nx = wIsoX(gx, 0, nz);
+          const ny = wIsoY(gx, 0, nz);
+          return /*#__PURE__*/React.createElement("text", {
+            key: `col-${col}`,
+            x: nx + 4,
+            y: ny - 4,
             textAnchor: "start",
-            fill: isMajor ? "rgba(0,221,255,0.6)" : "rgba(0,221,255,0.35)",
-            fontSize: isMajor ? 5 : 4,
+            fill: "rgba(0,221,255,0.6)",
+            fontSize: 6,
             fontFamily: mono,
-            fontWeight: isMajor ? 700 : 400
-          }, v));
-        }), (() => {
-          const wMidZ = terrainH(0, 50);
-          const nMidZ = terrainH(50, 0);
-          return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(0, 50, wMidZ) - 14,
-            y: wIsoY(0, 50, wMidZ),
+            fontWeight: 700
+          }, col);
+        }), ["A", "B", "C", "D", "E"].map((col, ci) => [1, 2, 3, 4, 5].map(row => {
+          const gx = ci * 20 + 10;
+          const gy = (row - 1) * 20 + 10;
+          const cz = terrainH(gx, gy);
+          const cx2 = wIsoX(gx, gy, cz);
+          const cy2 = wIsoY(gx, gy, cz);
+          return /*#__PURE__*/React.createElement("text", {
+            key: `cell-${col}${row}`,
+            x: cx2,
+            y: cy2 + 2,
             textAnchor: "middle",
-            fill: "rgba(0,221,255,0.45)",
+            fill: "rgba(0,221,255,0.15)",
             fontSize: 5,
             fontFamily: mono,
-            fontWeight: 700,
-            transform: `rotate(-30 ${wIsoX(0, 50, wMidZ) - 14} ${wIsoY(0, 50, wMidZ)})`
-          }, "GY"), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(50, 0, nMidZ) + 14,
-            y: wIsoY(50, 0, nMidZ) - 4,
-            textAnchor: "middle",
-            fill: "rgba(0,221,255,0.45)",
-            fontSize: 5,
-            fontFamily: mono,
-            fontWeight: 700,
-            transform: `rotate(30 ${wIsoX(50, 0, nMidZ) + 14} ${wIsoY(50, 0, nMidZ) - 4})`
-          }, "GX"));
-        })(), (() => {
+            fontWeight: 600
+          }, col, row);
+        })), (() => {
           const riverPts = [];
           const riverPtsBot = [];
           for (let gx = 0; gx <= 100; gx += 4) {
@@ -13435,14 +13429,14 @@ function TemporalReplay() {
           const dz = dzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: dz,
-            fill: "rgba(255,30,30,0.08)",
-            stroke: "rgba(255,60,60,0.35)",
+            fill: "rgba(255,30,30,0.14)",
+            stroke: "rgba(255,60,60,0.5)",
             strokeWidth: 0.6,
             strokeDasharray: "3,2"
           }), /*#__PURE__*/React.createElement("polygon", {
             points: dz,
-            fill: "rgba(255,30,30,0.04)",
-            opacity: 0.4 + Math.sin(time * 1.5) * 0.3
+            fill: "rgba(255,30,30,0.07)",
+            opacity: 0.5 + Math.sin(time * 1.5) * 0.3
           }));
         })(), (() => {
           const bzCorners = [[0, 75], [20, 75], [20, 100], [0, 100]];
@@ -13939,11 +13933,8 @@ function TemporalReplay() {
           // 7-13s: fly to OIL RIG (92, 15) — longer transit
           // 13-14s: descend and land on OIL RIG platform
           // 14+: sitting on OIL RIG
-          const lProg = Math.min(1, launchT / 30);
-          const lWx = Math.sin(launchT * 0.7) * 4 + Math.sin(launchT * 1.3) * 2;
-          const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
-          const startGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
-          const startGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
+          const startGx = 10,
+            startGy = 87; // BASE CAMP center
           const labGx = 67,
             labGy = 85; // SEISMIC LAB center
           const rigGx = 10,

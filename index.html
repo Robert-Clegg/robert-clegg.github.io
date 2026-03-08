@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v294";
+  var v = "v295";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v294 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v295 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v294"), /*#__PURE__*/React.createElement("span", {
+  }, "v295"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8506,14 +8506,14 @@ function TemporalReplay() {
     const worldW = boxW * 3.5;
     const worldH = winStateBottom - rowY3;
     const worldLeftX = boxX + boxW - worldW;
-    // HUD same height as AUDIO — full width
+    // HUD same height as AUDIO
     const hudH = audioH;
-    // AUTOMATION below HUD, same height
-    const autoH = hudH;
-    const autoTop = rowY3 + hudH + boxGap;
-    // MOVEMENT below AUTOMATION
+    // MOVEMENT below HUD
     const moveH = 120;
-    const moveTop = autoTop + autoH + boxGap;
+    const moveTop = rowY3 + hudH + boxGap;
+    // AUTOMATION below MOVEMENT
+    const autoH = 48;
+    const autoTop = moveTop + moveH + boxGap;
     const rawBoxLayouts = [{
       x: smallBoxX,
       y: rowY0,
@@ -8562,14 +8562,14 @@ function TemporalReplay() {
       w: boxW,
       h: moveH
     },
-    // 6: MOVEMENT (below AUTO)
+    // 6: MOVEMENT (below HUD)
     {
       x: leftX,
       y: autoTop,
       w: boxW,
       h: autoH
     },
-    // 7: AUTOMATION (below HUD)
+    // 7: AUTOMATION (below MOVEMENT)
     {
       x: worldLeftX,
       y: rowY3,
@@ -10976,157 +10976,7 @@ function TemporalReplay() {
       in: "blur"
     }), /*#__PURE__*/React.createElement("feMergeNode", {
       in: "SourceGraphic"
-    }))), /*#__PURE__*/React.createElement("filter", {
-      id: "glowHot",
-      x: "-50%",
-      y: "-50%",
-      width: "200%",
-      height: "200%"
-    }, /*#__PURE__*/React.createElement("feGaussianBlur", {
-      stdDeviation: "8",
-      result: "blur"
-    }), /*#__PURE__*/React.createElement("feMerge", null, /*#__PURE__*/React.createElement("feMergeNode", {
-      in: "blur"
-    }), /*#__PURE__*/React.createElement("feMergeNode", {
-      in: "SourceGraphic"
-    }))), /*#__PURE__*/React.createElement("filter", {
-      id: "innerShadow",
-      x: "-10%",
-      y: "-10%",
-      width: "120%",
-      height: "120%"
-    }, /*#__PURE__*/React.createElement("feGaussianBlur", {
-      in: "SourceAlpha",
-      stdDeviation: "3",
-      result: "blur"
-    }), /*#__PURE__*/React.createElement("feOffset", {
-      dx: "0",
-      dy: "1",
-      result: "offset"
-    }), /*#__PURE__*/React.createElement("feComposite", {
-      in: "SourceGraphic",
-      in2: "offset",
-      operator: "over"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_mouse",
-      cx: "50%",
-      cy: "40%",
-      r: "70%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#44aaff",
-      stopOpacity: "0.25"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "60%",
-      stopColor: "#44aaff",
-      stopOpacity: "0.08"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#112244",
-      stopOpacity: "0.35"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_keyboard",
-      cx: "50%",
-      cy: "40%",
-      r: "70%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#ffcc00",
-      stopOpacity: "0.20"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "60%",
-      stopColor: "#ffcc00",
-      stopOpacity: "0.06"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#332200",
-      stopOpacity: "0.35"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_audio",
-      cx: "50%",
-      cy: "50%",
-      r: "75%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#cc66ff",
-      stopOpacity: "0.22"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "60%",
-      stopColor: "#cc66ff",
-      stopOpacity: "0.06"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#220033",
-      stopOpacity: "0.35"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_txt",
-      cx: "30%",
-      cy: "50%",
-      r: "80%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#66ff88",
-      stopOpacity: "0.20"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "60%",
-      stopColor: "#66ff88",
-      stopOpacity: "0.05"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#003311",
-      stopOpacity: "0.35"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_hud",
-      cx: "50%",
-      cy: "40%",
-      r: "70%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#ffaa44",
-      stopOpacity: "0.22"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "60%",
-      stopColor: "#ffaa44",
-      stopOpacity: "0.07"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#331800",
-      stopOpacity: "0.35"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_view",
-      cx: "50%",
-      cy: "50%",
-      r: "65%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#ff66aa",
-      stopOpacity: "0.25"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "50%",
-      stopColor: "#ff66aa",
-      stopOpacity: "0.08"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#330022",
-      stopOpacity: "0.40"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
-      id: "grd_movement",
-      cx: "40%",
-      cy: "40%",
-      r: "75%"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "#44ffaa",
-      stopOpacity: "0.22"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "60%",
-      stopColor: "#44ffaa",
-      stopOpacity: "0.06"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "#003322",
-      stopOpacity: "0.35"
-    })), /*#__PURE__*/React.createElement("radialGradient", {
+    }))), /*#__PURE__*/React.createElement("radialGradient", {
       id: "grd_automation",
       cx: "50%",
       cy: "30%",
@@ -11143,24 +10993,6 @@ function TemporalReplay() {
       offset: "100%",
       stopColor: "#0a2233",
       stopOpacity: "0.40"
-    })), /*#__PURE__*/React.createElement("linearGradient", {
-      id: "grd_scanline",
-      x1: "0",
-      y1: "0",
-      x2: "0",
-      y2: "1"
-    }, /*#__PURE__*/React.createElement("stop", {
-      offset: "0%",
-      stopColor: "rgba(255,255,255,0.04)"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "49%",
-      stopColor: "rgba(255,255,255,0.04)"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "50%",
-      stopColor: "rgba(255,255,255,0.0)"
-    }), /*#__PURE__*/React.createElement("stop", {
-      offset: "100%",
-      stopColor: "rgba(255,255,255,0.0)"
     }))), [{
       label: "INPUT",
       sub: "devices",
@@ -11323,47 +11155,29 @@ function TemporalReplay() {
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
-          x: bx - 5,
-          y: y - 5,
-          width: bw + 10,
-          height: boxH + 10,
-          rx: 12,
+          x: bx - 3,
+          y: y - 3,
+          width: bw + 6,
+          height: boxH + 6,
+          rx: 10,
           fill: "none",
-          stroke: "#44aaff",
-          strokeWidth: 2,
-          opacity: 0.15 + (isFresh ? 0.3 : 0),
-          filter: "url(#glowHot)"
+          stroke: `${box.color}30`,
+          strokeWidth: 4,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: bx,
           y: y,
           width: bw,
           height: boxH,
           rx: 8,
-          fill: "url(#grd_mouse)",
-          stroke: "#44aaffcc",
+          fill: `${box.color}12`,
+          stroke: `${box.color}cc`,
           strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: bx + 1,
-          y: y + 1,
-          width: bw - 2,
-          height: boxH - 2,
-          rx: 7,
-          fill: "none",
-          stroke: "rgba(68,170,255,0.15)",
-          strokeWidth: 0.5
-        }), [[bx + 3, y + 3, 1, 1], [bx + bw - 3, y + 3, -1, 1], [bx + 3, y + boxH - 3, 1, -1], [bx + bw - 3, y + boxH - 3, -1, -1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("path", {
-          key: `mc-${ci}`,
-          d: `M ${cx} ${cy + dy * 8} L ${cx} ${cy} L ${cx + dx * 8} ${cy}`,
-          fill: "none",
-          stroke: "#44aaff",
-          strokeWidth: 1.5,
-          opacity: 0.7
-        })), /*#__PURE__*/React.createElement("text", {
+        }), /*#__PURE__*/React.createElement("text", {
           x: bx + bw / 2,
           y: y + 10,
           textAnchor: "middle",
-          fill: "#44aaff",
-          opacity: 0.95,
+          fill: box.color,
           fontSize: 7,
           fontFamily: mono,
           fontWeight: 700,
@@ -11687,55 +11501,29 @@ function TemporalReplay() {
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
-          x: bx - 5,
-          y: y - 5,
-          width: bw + 10,
-          height: boxH + 10,
-          rx: 12,
+          x: bx - 3,
+          y: y - 3,
+          width: bw + 6,
+          height: boxH + 6,
+          rx: 10,
           fill: "none",
-          stroke: "#ffcc00",
-          strokeWidth: 2,
-          opacity: 0.12 + (isHot ? 0.35 : 0),
-          filter: "url(#glowHot)"
+          stroke: `${box.color}30`,
+          strokeWidth: 4,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: bx,
           y: y,
           width: bw,
           height: boxH,
           rx: 8,
-          fill: "url(#grd_keyboard)",
-          stroke: isHot ? "#ffcc00cc" : "#ffcc0088",
+          fill: isHot ? "#ffcc0018" : `${box.color}10`,
+          stroke: isHot ? "#ffcc00aa" : `${box.color}cc`,
           strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: bx + 1,
-          y: y + 1,
-          width: bw - 2,
-          height: boxH - 2,
-          rx: 7,
-          fill: "none",
-          stroke: "rgba(255,204,0,0.12)",
-          strokeWidth: 0.5
-        }), [[bx + 3, y + 3, 1, 1], [bx + bw - 3, y + boxH - 3, -1, -1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("path", {
-          key: `kc-${ci}`,
-          d: `M ${cx} ${cy + dy * 10} L ${cx} ${cy} L ${cx + dx * 10} ${cy}`,
-          fill: "none",
-          stroke: "#ffcc00",
-          strokeWidth: 1.8,
-          opacity: 0.65
-        })), [0.3, 0.6, 0.9].map((f, si) => /*#__PURE__*/React.createElement("line", {
-          key: `ks-${si}`,
-          x1: bx + 2,
-          y1: y + boxH * f,
-          x2: bx + bw - 2,
-          y2: y + boxH * f,
-          stroke: "rgba(255,204,0,0.06)",
-          strokeWidth: 0.5
-        })), /*#__PURE__*/React.createElement("text", {
+        }), /*#__PURE__*/React.createElement("text", {
           x: bx + bw / 2,
           y: y + 10,
           textAnchor: "middle",
-          fill: "#ffcc00",
-          opacity: 0.95,
+          fill: box.color,
           fontSize: 7,
           fontFamily: mono,
           fontWeight: 700,
@@ -11794,56 +11582,30 @@ function TemporalReplay() {
         });
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: bx - 5,
-          y: y - 5,
-          width: bw + 10,
-          height: boxH + 10,
+        }, (fxActive || spActive) && /*#__PURE__*/React.createElement("rect", {
+          x: bx - 3,
+          y: y - 3,
+          width: bw + 6,
+          height: boxH + 6,
           rx: 10,
           fill: "none",
-          stroke: "#cc66ff",
-          strokeWidth: 2,
-          opacity: 0.12 + (fxActive || spActive ? 0.25 : 0),
-          filter: "url(#glowHot)"
+          stroke: `${box.color}50`,
+          strokeWidth: 4,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: bx,
           y: y,
           width: bw,
           height: boxH,
           rx: 6,
-          fill: "url(#grd_audio)",
-          stroke: fxActive || spActive ? "#cc66ffaa" : "#cc66ff77",
-          strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: bx + 1,
-          y: y + 1,
-          width: bw - 2,
-          height: boxH - 2,
-          rx: 5,
-          fill: "none",
-          stroke: "rgba(204,102,255,0.10)",
-          strokeWidth: 0.5
-        }), [[bx + 3, y + 3, 1, 1], [bx + bw - 3, y + 3, -1, 1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("path", {
-          key: `ac-${ci}`,
-          d: `M ${cx} ${cy + dy * 7} L ${cx} ${cy} L ${cx + dx * 7} ${cy}`,
-          fill: "none",
-          stroke: "#cc66ff",
-          strokeWidth: 1.5,
-          opacity: 0.6
-        })), [0.2, 0.4, 0.6, 0.8].map((f, si) => /*#__PURE__*/React.createElement("line", {
-          key: `ab-${si}`,
-          x1: bx + bw * f,
-          y1: y + 2,
-          x2: bx + bw * f,
-          y2: y + boxH - 2,
-          stroke: "rgba(204,102,255,0.05)",
-          strokeWidth: 0.5
-        })), /*#__PURE__*/React.createElement("text", {
+          fill: `${box.color}12`,
+          stroke: `${box.color}cc`,
+          strokeWidth: fxActive || spActive ? 1.2 : 0.6
+        }), /*#__PURE__*/React.createElement("text", {
           x: bx + bw / 2,
           y: y + 10,
           textAnchor: "middle",
           fill: "#cc66ff",
-          opacity: 0.95,
           fontSize: 7,
           fontFamily: mono,
           fontWeight: 700,
@@ -11956,60 +11718,30 @@ function TemporalReplay() {
         const tickerScroll = playing && anyAct ? nowMs % 1800 / 1800 : 0;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: bx - 5,
-          y: y - 5,
-          width: bw + 10,
-          height: boxH + 10,
+        }, anyAct && /*#__PURE__*/React.createElement("rect", {
+          x: bx - 3,
+          y: y - 3,
+          width: bw + 6,
+          height: boxH + 6,
           rx: 10,
           fill: "none",
-          stroke: "#66ff88",
-          strokeWidth: 2,
-          opacity: 0.10 + (anyAct ? 0.25 : 0),
-          filter: "url(#glowHot)"
+          stroke: `${box.color}50`,
+          strokeWidth: 4,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: bx,
           y: y,
           width: bw,
           height: boxH,
           rx: 6,
-          fill: "url(#grd_txt)",
-          stroke: anyAct ? "#66ff88aa" : "#66ff8877",
-          strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: bx + 1,
-          y: y + 1,
-          width: bw - 2,
-          height: boxH - 2,
-          rx: 5,
-          fill: "none",
-          stroke: "rgba(102,255,136,0.10)",
-          strokeWidth: 0.5
-        }), /*#__PURE__*/React.createElement("path", {
-          d: `M ${bx + 3} ${y + boxH - 11} L ${bx + 3} ${y + boxH - 3} L ${bx + 11} ${y + boxH - 3}`,
-          fill: "none",
-          stroke: "#66ff88",
-          strokeWidth: 1.5,
-          opacity: 0.6
-        }), anyAct && /*#__PURE__*/React.createElement("line", {
-          x1: bx + 5,
-          y1: y + boxH - 5,
-          x2: bx + 8,
-          y2: y + boxH - 5,
-          stroke: "#66ff88",
-          strokeWidth: 1.5,
-          opacity: 0.7
-        }, /*#__PURE__*/React.createElement("animate", {
-          attributeName: "opacity",
-          values: "0.7;0.1;0.7",
-          dur: "1s",
-          repeatCount: "indefinite"
-        })), /*#__PURE__*/React.createElement("text", {
+          fill: `${box.color}12`,
+          stroke: `${box.color}cc`,
+          strokeWidth: anyAct ? 1.2 : 0.6
+        }), /*#__PURE__*/React.createElement("text", {
           x: bx + bw / 2,
           y: y + 10,
           textAnchor: "middle",
           fill: "#66ff88",
-          opacity: 0.95,
           fontSize: 7,
           fontFamily: mono,
           fontWeight: 700,
@@ -12366,48 +12098,30 @@ function TemporalReplay() {
         };
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: bx - 5,
-          y: y - 5,
-          width: bw + 10,
-          height: boxH + 10,
-          rx: 10,
+        }, anyAct && /*#__PURE__*/React.createElement("rect", {
+          x: bx - 2,
+          y: y - 2,
+          width: bw + 4,
+          height: boxH + 4,
+          rx: 8,
           fill: "none",
-          stroke: "#ffaa44",
-          strokeWidth: 2,
-          opacity: 0.12 + (anyAct ? 0.3 : 0),
-          filter: "url(#glowHot)"
+          stroke: `${box.color}40`,
+          strokeWidth: 3,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: bx,
           y: y,
           width: bw,
           height: boxH,
           rx: 5,
-          fill: "url(#grd_hud)",
-          stroke: anyAct ? "#ffaa44bb" : "#ffaa4488",
-          strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: bx + 1,
-          y: y + 1,
-          width: bw - 2,
-          height: boxH - 2,
-          rx: 4,
-          fill: "none",
-          stroke: "rgba(255,170,68,0.12)",
-          strokeWidth: 0.5
-        }), [[bx + 3, y + 3, 1, 1], [bx + bw - 3, y + 3, -1, 1], [bx + 3, y + boxH - 3, 1, -1], [bx + bw - 3, y + boxH - 3, -1, -1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("path", {
-          key: `hc-${ci}`,
-          d: `M ${cx} ${cy + dy * 6} L ${cx} ${cy} L ${cx + dx * 6} ${cy}`,
-          fill: "none",
-          stroke: "#ffaa44",
-          strokeWidth: 2,
-          opacity: 0.55
-        })), /*#__PURE__*/React.createElement("text", {
+          fill: `${box.color}10`,
+          stroke: `${box.color}aa`,
+          strokeWidth: anyAct ? 1.0 : 0.5
+        }), /*#__PURE__*/React.createElement("text", {
           x: bx + bw / 2,
           y: y + 9,
           textAnchor: "middle",
           fill: "#ffaa44",
-          opacity: 0.95,
           fontSize: 7,
           fontFamily: mono,
           fontWeight: 700,
@@ -12631,49 +12345,29 @@ function TemporalReplay() {
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
-          x: vx - 5,
-          y: vy - 5,
-          width: vw + 10,
-          height: vh + 10,
-          rx: 10,
+          x: vx - 2,
+          y: vy - 2,
+          width: vw + 4,
+          height: vh + 4,
+          rx: 8,
           fill: "none",
-          stroke: "#ff66aa",
-          strokeWidth: 2,
-          opacity: 0.15 + containerBr * 0.2,
-          filter: "url(#glowHot)"
+          stroke: "#ff66aa20",
+          strokeWidth: 3,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: vx,
           y: vy,
           width: vw,
           height: vh,
           rx: 6,
-          fill: "url(#grd_view)",
-          stroke: `rgba(255,102,170,${0.5 + containerBr * 0.4})`,
-          strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: vx + 1,
-          y: vy + 1,
-          width: vw - 2,
-          height: vh - 2,
-          rx: 5,
-          fill: "none",
-          stroke: "rgba(255,102,170,0.12)",
-          strokeWidth: 0.5
-        }), [[vx + vw / 2 - 6, vy, vx + vw / 2 + 6, vy], [vx + vw / 2 - 6, vy + vh, vx + vw / 2 + 6, vy + vh], [vx, vy + vh / 2 - 6, vx, vy + vh / 2 + 6], [vx + vw, vy + vh / 2 - 6, vx + vw, vy + vh / 2 + 6]].map(([x1, y1, x2, y2], ci) => /*#__PURE__*/React.createElement("line", {
-          key: `vc-${ci}`,
-          x1: x1,
-          y1: y1,
-          x2: x2,
-          y2: y2,
-          stroke: "#ff66aa",
-          strokeWidth: 2,
-          opacity: 0.5
-        })), /*#__PURE__*/React.createElement("text", {
+          fill: "#ff66aa08",
+          stroke: `rgba(255,102,170,${0.3 + containerBr * 0.5})`,
+          strokeWidth: 1
+        }), /*#__PURE__*/React.createElement("text", {
           x: vcx,
           y: vy + 9,
           textAnchor: "middle",
           fill: "#ff66aa",
-          opacity: 0.95,
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700,
@@ -12810,56 +12504,29 @@ function TemporalReplay() {
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
-          x: mx - 5,
-          y: my - 5,
-          width: mw + 10,
-          height: mh + 10,
-          rx: 10,
+          x: mx - 2,
+          y: my - 2,
+          width: mw + 4,
+          height: mh + 4,
+          rx: 8,
           fill: "none",
-          stroke: "#44ffaa",
-          strokeWidth: 2,
-          opacity: 0.12 + containerBr * 0.2,
-          filter: "url(#glowHot)"
+          stroke: "#44ffaa20",
+          strokeWidth: 3,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: mx,
           y: my,
           width: mw,
           height: mh,
           rx: 6,
-          fill: "url(#grd_movement)",
-          stroke: `rgba(68,255,170,${0.5 + containerBr * 0.4})`,
-          strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: mx + 1,
-          y: my + 1,
-          width: mw - 2,
-          height: mh - 2,
-          rx: 5,
-          fill: "none",
-          stroke: "rgba(68,255,170,0.12)",
-          strokeWidth: 0.5
-        }), [[mx + 3, my + 3, 1, 1], [mx + mw - 3, my + 3, -1, 1], [mx + 3, my + mh - 3, 1, -1], [mx + mw - 3, my + mh - 3, -1, -1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("g", {
-          key: `mvc-${ci}`
-        }, /*#__PURE__*/React.createElement("path", {
-          d: `M ${cx} ${cy + dy * 8} L ${cx} ${cy} L ${cx + dx * 8} ${cy}`,
-          fill: "none",
-          stroke: "#44ffaa",
-          strokeWidth: 1.5,
-          opacity: 0.6
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: cx + dx * 3,
-          y1: cy,
-          x2: cx + dx * 3,
-          y2: cy + dy * 2,
-          stroke: "#44ffaa",
-          strokeWidth: 0.8,
-          opacity: 0.4
-        }))), /*#__PURE__*/React.createElement("text", {
+          fill: "#44ffaa08",
+          stroke: `rgba(68,255,170,${0.3 + containerBr * 0.5})`,
+          strokeWidth: 1
+        }), /*#__PURE__*/React.createElement("text", {
           x: mx + mw / 2,
           y: my + 9,
           textAnchor: "middle",
           fill: "#44ffaa",
-          opacity: 0.95,
           fontSize: 6,
           fontFamily: mono,
           fontWeight: 700,
@@ -13012,7 +12679,6 @@ function TemporalReplay() {
           aw = bw,
           ah = boxH;
         const containerBr = time > 0.1 ? Math.min(1, COL_RAMP.input || 0.05) : 0;
-        // Simulated command queue — scrolling code lines
         const commands = [{
           cmd: ">> nav.moveTo(sector_7)",
           status: "EXEC",
@@ -13026,7 +12692,7 @@ function TemporalReplay() {
           status: "EXEC",
           color: "#ffcc44"
         }, {
-          cmd: ">> scan.sweep(270°)",
+          cmd: ">> scan.sweep(270)",
           status: "QUEUE",
           color: "#aaeeff"
         }, {
@@ -13050,24 +12716,28 @@ function TemporalReplay() {
         const lineH = 9;
         const visibleLines = Math.floor((ah - 16) / lineH);
         const startIdx = Math.floor(scrollPhase);
-        // Execution pulse — one command flashes periodically
         const execPulse = time > 0.1 ? Math.sin(time * 3) * 0.5 + 0.5 : 0;
         const execIdx = time > 0.1 ? Math.floor(time * 0.8) % commands.length : 0;
-        // Packet animation — small >> arrows traveling right
         const packetX = time > 0.1 ? nowMs * 0.06 % (aw + 20) - 10 : -20;
+        const statusColors = {
+          EXEC: "#44ffaa",
+          DONE: "#88ddff55",
+          QUEUE: "#ffcc4488",
+          SENT: "#66bbee"
+        };
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("rect", {
-          x: ax - 5,
-          y: ay - 5,
-          width: aw + 10,
-          height: ah + 10,
+          x: ax - 3,
+          y: ay - 3,
+          width: aw + 6,
+          height: ah + 6,
           rx: 10,
           fill: "none",
           stroke: "#88ddff",
           strokeWidth: 2,
-          opacity: 0.12 + containerBr * 0.2,
-          filter: "url(#glowHot)"
+          opacity: 0.15,
+          filter: "url(#glow)"
         }), /*#__PURE__*/React.createElement("rect", {
           x: ax,
           y: ay,
@@ -13077,15 +12747,6 @@ function TemporalReplay() {
           fill: "url(#grd_automation)",
           stroke: `rgba(136,221,255,${0.5 + containerBr * 0.4})`,
           strokeWidth: 1.2
-        }), /*#__PURE__*/React.createElement("rect", {
-          x: ax + 1,
-          y: ay + 1,
-          width: aw - 2,
-          height: ah - 2,
-          rx: 5,
-          fill: "none",
-          stroke: "rgba(136,221,255,0.10)",
-          strokeWidth: 0.5
         }), /*#__PURE__*/React.createElement("rect", {
           x: ax + 2,
           y: ay + 2,
@@ -13121,26 +12782,13 @@ function TemporalReplay() {
           fontFamily: mono,
           fontWeight: 700,
           letterSpacing: 1.5
-        }, "AUTOMATION"), [[ax + 3, ay + ah - 3, 1, -1], [ax + aw - 3, ay + ah - 3, -1, -1]].map(([cx, cy, dx, dy], ci) => /*#__PURE__*/React.createElement("path", {
-          key: `ac-${ci}`,
-          d: `M ${cx} ${cy + dy * 6} L ${cx} ${cy} L ${cx + dx * 6} ${cy}`,
-          fill: "none",
-          stroke: "#88ddff",
-          strokeWidth: 1.5,
-          opacity: 0.5
-        })), Array.from({
+        }, "AUTOMATION"), Array.from({
           length: visibleLines
         }, (_, i) => {
           const cmdIdx = (startIdx + i) % commands.length;
           const cmd = commands[cmdIdx];
           const lineY = ay + 14 + i * lineH + lineH * 0.7;
           const isExec = cmdIdx === execIdx && time > 0.1;
-          const statusColors = {
-            EXEC: "#44ffaa",
-            DONE: "#88ddff55",
-            QUEUE: "#ffcc4488",
-            SENT: "#66bbee"
-          };
           return /*#__PURE__*/React.createElement("g", {
             key: `cmd-${i}`
           }, isExec && /*#__PURE__*/React.createElement("rect", {
@@ -13167,16 +12815,15 @@ function TemporalReplay() {
             fontFamily: mono,
             fontWeight: isExec ? 700 : 400
           }, cmd.cmd));
-        }), time > 0.1 && /*#__PURE__*/React.createElement("g", {
-          opacity: 0.5
-        }, /*#__PURE__*/React.createElement("text", {
+        }), time > 0.1 && /*#__PURE__*/React.createElement("text", {
           x: ax + packetX,
           y: ay + ah - 3,
           fill: "#88ddff",
           fontSize: 6,
           fontFamily: mono,
-          fontWeight: 700
-        }, "»»")), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
+          fontWeight: 700,
+          opacity: 0.5
+        }, "»»"), time > 0.1 && /*#__PURE__*/React.createElement("rect", {
           x: ax + aw - 12,
           y: ay + ah - 7,
           width: 6,
@@ -13269,64 +12916,14 @@ function TemporalReplay() {
           color: "#448866"
         }];
         // Player position: starts lower-left, approaches upper-right
-        // ═══ OBJECT SCALE — 75% (terrain area unchanged) ═══
-        const objScale = 0.75;
-
-        // ═══ MECH POSITION — center of terrain ═══
-        const mechGx = 50,
-          mechGy = 50;
-        const mechGz = terrainH(mechGx, mechGy) + 0.5;
-        const mpx = wIsoX(mechGx, mechGy, mechGz);
-        const mpy = wIsoY(mechGx, mechGy, mechGz);
-
-        // ═══ PROJECTILE ARCS ═══
-        const projectiles = time > 0.1 ? [{
-          sx: 50,
-          sy: 48,
-          tx: 75 - scrollOffset * 0.3,
-          ty: 25,
-          phase: time * 1.1 % 3.0,
-          color: "#ff4444",
-          duration: 2.5
-        }, {
-          sx: 52,
-          sy: 52,
-          tx: 30 - scrollOffset * 0.2,
-          ty: 70,
-          phase: (time * 0.7 + 1.2) % 4.0,
-          color: "#ff8844",
-          duration: 3.5
-        }, {
-          sx: 48,
-          sy: 50,
-          tx: 80 - scrollOffset * 0.4,
-          ty: 60,
-          phase: (time * 0.9 + 2.5) % 3.2,
-          color: "#ffcc44",
-          duration: 2.8
-        }] : [];
-
-        // ═══ DRONES ═══
-        const drones = time > 0.1 ? [{
-          gx: 30 + Math.sin(time * 0.3) * 20,
-          gy: 40 + Math.cos(time * 0.25) * 15,
-          alt: 18 * objScale,
-          size: 2.5 * objScale,
-          color: "#44ddff"
-        }, {
-          gx: 70 + Math.sin(time * 0.22 + 1) * 15,
-          gy: 30 + Math.cos(time * 0.35 + 2) * 20,
-          alt: 22 * objScale,
-          size: 2 * objScale,
-          color: "#88ffaa"
-        }, {
-          gx: 55 + Math.sin(time * 0.18 + 3) * 25,
-          gy: 65 + Math.cos(time * 0.28 + 1) * 10,
-          alt: 15 * objScale,
-          size: 3 * objScale,
-          color: "#ff88dd"
-        }] : [];
-
+        const progress = time > 0.1 ? Math.min(1, time / 30) : 0;
+        const wobX = Math.sin(time * 0.7) * 4 + Math.sin(time * 1.3) * 2;
+        const wobY = Math.sin(time * 0.5) * 3 + Math.cos(time * 0.9) * 1.5;
+        const pgx = 10 + progress * 75 + wobX + Math.sin(progress * Math.PI * 2) * 6;
+        const pgy = 85 - progress * 65 + wobY - Math.sin(progress * Math.PI * 1.5) * 5;
+        const pgz = terrainH(pgx, pgy);
+        const ppx = wIsoX(pgx, pgy, pgz);
+        const ppy = wIsoY(pgx, pgy, pgz);
         // View cone from VIEW container sim
         const driftYaw = time > 0.1 ? Math.sin(time * 0.23) * 80 + Math.sin(time * 0.11) * 40 : 0;
         const microJ = time > 0.1 ? Math.sin(nowMs * 0.013) * 3.5 + Math.sin(nowMs * 0.0071) * 2 : 0;
@@ -13334,31 +12931,18 @@ function TemporalReplay() {
         const sacYaw = sacP < 0.4 ? Math.sin(Math.floor(time / 3.7) * 7.3) * 55 : 0;
         const viewYaw = (driftYaw + microJ + sacYaw) * Math.PI / 180;
         const fovHalf = 35 * Math.PI / 180;
-        const coneLen = 22 * objScale;
+        const coneLen = 22;
         return /*#__PURE__*/React.createElement("g", {
           key: `raw-${box.id}`
         }, /*#__PURE__*/React.createElement("polygon", {
           points: gp,
-          fill: "none",
+          fill: "rgba(20,40,30,0.6)",
           stroke: "#00ddff",
-          strokeWidth: 4,
-          opacity: 0.15,
-          filter: "url(#glowHot)"
-        }), /*#__PURE__*/React.createElement("polygon", {
-          points: gp,
-          fill: "rgba(10,30,25,0.7)",
-          stroke: "#00ddff",
-          strokeWidth: 1.8
-        }), /*#__PURE__*/React.createElement("polygon", {
-          points: gp,
-          fill: "none",
-          stroke: "rgba(0,221,255,0.12)",
-          strokeWidth: 0.6
+          strokeWidth: 1.2
         }), /*#__PURE__*/React.createElement("text", {
           x: wIsoX(0, 0, 0) + 6,
           y: wIsoY(0, 0, 0) - 6,
           fill: "#00ddff",
-          opacity: 0.95,
           fontSize: 9,
           fontFamily: mono,
           fontWeight: 700,
@@ -13419,13 +13003,9 @@ function TemporalReplay() {
             strokeWidth: 1
           });
         })(), (() => {
-          const hcx = 85,
-            hcy = 15,
-            hw = 30 * objScale / 2,
-            hh = 30 * objScale / 2;
-          const hzCorners = [[hcx - hw, hcy - hh], [hcx + hw, hcy - hh], [hcx + hw, hcy + hh], [hcx - hw, hcy + hh]];
+          const hzCorners = [[70, 0], [100, 0], [100, 30], [70, 30]];
           const hz = hzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(hcx, hcy);
+          const labelZ = terrainH(85, 15);
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: hz,
             fill: "rgba(255,30,30,0.1)",
@@ -13437,22 +13017,18 @@ function TemporalReplay() {
             fill: "rgba(255,30,30,0.05)",
             opacity: 0.4 + Math.sin(time * 1.5) * 0.3
           }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(hcx, hcy, labelZ + 1),
-            y: wIsoY(hcx, hcy, labelZ + 1),
+            x: wIsoX(85, 15, labelZ + 1),
+            y: wIsoY(85, 15, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(255,80,80,0.6)",
-            fontSize: 8 * objScale,
+            fontSize: 8,
             fontFamily: mono,
             fontWeight: 700
           }, "HOSTILE"));
         })(), (() => {
-          const bcx = 10,
-            bcy = 87,
-            bw2 = 20 * objScale / 2,
-            bh2 = 25 * objScale / 2;
-          const bzCorners = [[bcx - bw2, bcy - bh2], [bcx + bw2, bcy - bh2], [bcx + bw2, bcy + bh2], [bcx - bw2, bcy + bh2]];
+          const bzCorners = [[0, 75], [20, 75], [20, 100], [0, 100]];
           const bz = bzCorners.map(p => `${wIsoX(p[0], p[1], terrainH(p[0], p[1]))},${wIsoY(p[0], p[1], terrainH(p[0], p[1]))}`).join(" ");
-          const labelZ = terrainH(bcx, bcy);
+          const labelZ = terrainH(10, 87);
           return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("polygon", {
             points: bz,
             fill: "rgba(40,200,100,0.08)",
@@ -13460,31 +13036,27 @@ function TemporalReplay() {
             strokeWidth: 0.5,
             strokeDasharray: "3,2"
           }), /*#__PURE__*/React.createElement("text", {
-            x: wIsoX(bcx, bcy, labelZ + 1),
-            y: wIsoY(bcx, bcy, labelZ + 1),
+            x: wIsoX(10, 87, labelZ + 1),
+            y: wIsoY(10, 87, labelZ + 1),
             textAnchor: "middle",
             fill: "rgba(60,200,100,0.5)",
-            fontSize: 8 * objScale,
+            fontSize: 8,
             fontFamily: mono,
             fontWeight: 700
           }, "BASE"));
         })(), buildings.map((b, bi) => {
-          // Apply object scale to building dimensions
-          const sw = b.w * objScale,
-            sd = b.d * objScale,
-            sh = b.h * objScale;
           // Four base corners, each at own terrain height
-          const corners = [[b.gx, b.gy], [b.gx + sw, b.gy], [b.gx + sw, b.gy + sd], [b.gx, b.gy + sd]];
+          const corners = [[b.gx, b.gy], [b.gx + b.w, b.gy], [b.gx + b.w, b.gy + b.d], [b.gx, b.gy + b.d]];
           const gz = corners.map(c => terrainH(c[0], c[1]));
-          // Top = terrain at each corner + scaled building height
-          const topPts = corners.map((c, i) => `${wIsoX(c[0], c[1], gz[i] + sh)},${wIsoY(c[0], c[1], gz[i] + sh)}`).join(" ");
+          // Top = terrain at each corner + building height
+          const topPts = corners.map((c, i) => `${wIsoX(c[0], c[1], gz[i] + b.h)},${wIsoY(c[0], c[1], gz[i] + b.h)}`).join(" ");
           // Right face: corners 1→2 base to top
-          const rf = `${wIsoX(corners[1][0], corners[1][1], gz[1])},${wIsoY(corners[1][0], corners[1][1], gz[1])} ${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[2][0], corners[2][1], gz[2] + sh)},${wIsoY(corners[2][0], corners[2][1], gz[2] + sh)} ${wIsoX(corners[1][0], corners[1][1], gz[1] + sh)},${wIsoY(corners[1][0], corners[1][1], gz[1] + sh)}`;
+          const rf = `${wIsoX(corners[1][0], corners[1][1], gz[1])},${wIsoY(corners[1][0], corners[1][1], gz[1])} ${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)} ${wIsoX(corners[1][0], corners[1][1], gz[1] + b.h)},${wIsoY(corners[1][0], corners[1][1], gz[1] + b.h)}`;
           // Front face: corners 2→3 base to top
-          const ff = `${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[3][0], corners[3][1], gz[3])},${wIsoY(corners[3][0], corners[3][1], gz[3])} ${wIsoX(corners[3][0], corners[3][1], gz[3] + sh)},${wIsoY(corners[3][0], corners[3][1], gz[3] + sh)} ${wIsoX(corners[2][0], corners[2][1], gz[2] + sh)},${wIsoY(corners[2][0], corners[2][1], gz[2] + sh)}`;
-          const ctrZ = terrainH(b.gx + sw / 2, b.gy + sd / 2);
-          const tcx = wIsoX(b.gx + sw / 2, b.gy + sd / 2, ctrZ + sh + 1);
-          const tcy = wIsoY(b.gx + sw / 2, b.gy + sd / 2, ctrZ + sh + 1);
+          const ff = `${wIsoX(corners[2][0], corners[2][1], gz[2])},${wIsoY(corners[2][0], corners[2][1], gz[2])} ${wIsoX(corners[3][0], corners[3][1], gz[3])},${wIsoY(corners[3][0], corners[3][1], gz[3])} ${wIsoX(corners[3][0], corners[3][1], gz[3] + b.h)},${wIsoY(corners[3][0], corners[3][1], gz[3] + b.h)} ${wIsoX(corners[2][0], corners[2][1], gz[2] + b.h)},${wIsoY(corners[2][0], corners[2][1], gz[2] + b.h)}`;
+          const ctrZ = terrainH(b.gx + b.w / 2, b.gy + b.d / 2);
+          const tcx = wIsoX(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
+          const tcy = wIsoY(b.gx + b.w / 2, b.gy + b.d / 2, ctrZ + b.h + 1);
           return /*#__PURE__*/React.createElement("g", {
             key: `bld-${bi}`
           }, /*#__PURE__*/React.createElement("polygon", {
@@ -13507,106 +13079,58 @@ function TemporalReplay() {
             y: tcy,
             textAnchor: "middle",
             fill: `${b.color}dd`,
-            fontSize: 7 * objScale,
+            fontSize: 7,
             fontFamily: mono,
             fontWeight: 700
           }, b.label));
-        }), projectiles.map((proj, pi) => {
-          const t = proj.phase / proj.duration;
-          if (t > 1) return null;
-          const sx = wIsoX(proj.sx, proj.sy, mechGz + 6 * objScale);
-          const sy = wIsoY(proj.sx, proj.sy, mechGz + 6 * objScale);
-          const tx2 = wIsoX((proj.tx % 100 + 100) % 100, proj.ty, 0);
-          const ty2 = wIsoY((proj.tx % 100 + 100) % 100, proj.ty, 0);
-          const midX = (sx + tx2) / 2;
-          const midY = Math.min(sy, ty2) - (35 + pi * 8) * objScale;
-          const cx2 = sx + (tx2 - sx) * t;
-          const cy2 = sy + (ty2 - sy) * t + (midY - sy) * 4 * t * (1 - t);
-          return /*#__PURE__*/React.createElement("g", {
-            key: `proj-${pi}`
-          }, /*#__PURE__*/React.createElement("path", {
-            d: `M ${sx} ${sy} Q ${midX} ${midY} ${tx2} ${ty2}`,
-            fill: "none",
-            stroke: proj.color,
-            strokeWidth: 0.6,
-            opacity: 0.2,
-            strokeDasharray: "3,4"
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: cx2,
-            cy: cy2,
-            r: 2.5 * objScale,
-            fill: proj.color,
-            opacity: 0.9
-          }, /*#__PURE__*/React.createElement("animate", {
-            attributeName: "r",
-            values: `${2 * objScale};${3.5 * objScale};${2 * objScale}`,
-            dur: "0.3s",
-            repeatCount: "indefinite"
-          })), /*#__PURE__*/React.createElement("circle", {
-            cx: cx2,
-            cy: cy2,
-            r: 6 * objScale,
-            fill: proj.color,
-            opacity: 0.15,
-            filter: "url(#glow)"
-          }), t > 0.9 && /*#__PURE__*/React.createElement("circle", {
-            cx: tx2,
-            cy: ty2,
-            r: (4 + (t - 0.9) * 40) * objScale,
-            fill: proj.color,
-            opacity: Math.max(0, 0.4 - (t - 0.9) * 4),
-            filter: "url(#glow)"
-          }));
-        }), drones.map((dr, di) => {
-          const shadowX = wIsoX(dr.gx, dr.gy, 0);
-          const shadowY = wIsoY(dr.gx, dr.gy, 0);
-          return /*#__PURE__*/React.createElement("ellipse", {
-            key: `ds-${di}`,
-            cx: shadowX,
-            cy: shadowY,
-            rx: dr.size * 2.5,
-            ry: dr.size * 1.2,
-            fill: "rgba(0,0,0,0.25)"
+        }), time > 0.1 && Array.from({
+          length: 10
+        }, (_, i) => {
+          const tt = Math.max(0, progress - i * 0.035);
+          const tw = Math.sin(tt * 30 * 0.7) * 4 + Math.sin(tt * 30 * 1.3) * 2;
+          const th = Math.sin(tt * 30 * 0.5) * 3 + Math.cos(tt * 30 * 0.9) * 1.5;
+          const tgx = 10 + tt * 75 + tw + Math.sin(tt * Math.PI * 2) * 6;
+          const tgy = 85 - tt * 65 + th - Math.sin(tt * Math.PI * 1.5) * 5;
+          const tgz = terrainH(tgx, tgy);
+          return /*#__PURE__*/React.createElement("circle", {
+            key: `trail-${i}`,
+            cx: wIsoX(tgx, tgy, tgz),
+            cy: wIsoY(tgx, tgy, tgz),
+            r: 2.5,
+            fill: "#44ffaa",
+            opacity: Math.max(0, 0.4 - i * 0.035)
           });
         }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
           const cR = coneLen;
-          const lx = mechGx + Math.sin(viewYaw - fovHalf) * cR;
-          const ly = mechGy - Math.cos(viewYaw - fovHalf) * cR;
-          const rx = mechGx + Math.sin(viewYaw + fovHalf) * cR;
-          const ry = mechGy - Math.cos(viewYaw + fovHalf) * cR;
+          const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;
+          const ly = pgy - Math.cos(viewYaw - fovHalf) * cR;
+          const rx = pgx + Math.sin(viewYaw + fovHalf) * cR;
+          const ry = pgy - Math.cos(viewYaw + fovHalf) * cR;
           const lz = terrainH(lx, ly),
             rz = terrainH(rx, ry);
           return /*#__PURE__*/React.createElement("polygon", {
-            points: `${mpx},${mpy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
-            fill: "rgba(0,255,238,0.12)",
-            stroke: "rgba(0,255,238,0.35)",
-            strokeWidth: 0.8
+            points: `${ppx},${ppy} ${wIsoX(lx, ly, lz)},${wIsoY(lx, ly, lz)} ${wIsoX(rx, ry, rz)},${wIsoY(rx, ry, rz)}`,
+            fill: "rgba(0,255,238,0.15)",
+            stroke: "rgba(0,255,238,0.4)",
+            strokeWidth: 1.0
           });
         })(), /*#__PURE__*/React.createElement("polygon", {
-          points: `${mpx},${mpy - 8 * objScale} ${mpx + 5.5 * objScale},${mpy} ${mpx},${mpy + 5 * objScale} ${mpx - 5.5 * objScale},${mpy}`,
+          points: `${ppx},${ppy - 8} ${ppx + 5.5},${ppy} ${ppx},${ppy + 5} ${ppx - 5.5},${ppy}`,
           fill: "#44ffaa",
           stroke: "#88ffdd",
           strokeWidth: 1.2,
           opacity: 0.9
-        }), /*#__PURE__*/React.createElement("line", {
-          x1: mpx,
-          y1: mpy - 8 * objScale,
-          x2: mpx + Math.sin(viewYaw) * 6 * objScale,
-          y2: mpy - 8 * objScale - Math.cos(viewYaw) * 6 * objScale,
-          stroke: "#44ffaa",
-          strokeWidth: 1,
-          opacity: 0.7
         }), /*#__PURE__*/React.createElement("circle", {
-          cx: mpx,
-          cy: mpy,
-          r: 9 * objScale,
+          cx: ppx,
+          cy: ppy,
+          r: 9,
           fill: "none",
           stroke: "#44ffaa",
           strokeWidth: 0.7,
           opacity: 0.3
         }, /*#__PURE__*/React.createElement("animate", {
           attributeName: "r",
-          values: `${8 * objScale};${15 * objScale};${8 * objScale}`,
+          values: "8;15;8",
           dur: "2s",
           repeatCount: "indefinite"
         }), /*#__PURE__*/React.createElement("animate", {
@@ -13615,33 +13139,27 @@ function TemporalReplay() {
           dur: "2s",
           repeatCount: "indefinite"
         }))), time > 0.1 && buildings.map((b, bi) => {
-          const sw = b.w * objScale,
-            sd = b.d * objScale,
-            sh = b.h * objScale;
-          const bcx = b.gx + sw / 2,
-            bcy = b.gy + sd / 2;
-          const btz = terrainH(bcx, bcy) + sh / 2;
+          const bcx = b.gx + b.w / 2,
+            bcy = b.gy + b.d / 2;
+          const btz = terrainH(bcx, bcy) + b.h / 2;
           const tbx = wIsoX(bcx, bcy, btz),
             tby = wIsoY(bcx, bcy, btz);
-          // Distance in grid units
-          const dx2 = bcx - mechGx,
-            dy2 = bcy - mechGy;
+          const dx2 = bcx - pgx,
+            dy2 = bcy - pgy;
           const dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-          // Only show beams to buildings within range (50 units)
-          if (dist > 50) return null;
-          // Beam sweeps — each building gets activated in sequence
+          if (dist > 60) return null;
           const sweepCycle = (time * 0.8 + bi * 0.7) % (buildings.length * 0.7);
           const beamActive = sweepCycle < 0.5;
           const beamFade = sweepCycle < 0.5 ? 1 : sweepCycle < 1.2 ? Math.max(0, 1 - (sweepCycle - 0.5) / 0.7) : 0;
           if (beamFade < 0.02) return null;
           const distLabel = (dist * 2.5).toFixed(1) + "m";
-          const midPx = (mpx + tbx) / 2,
-            midPy = (mpy + tby) / 2;
+          const midPx = (ppx + tbx) / 2,
+            midPy = (ppy + tby) / 2;
           return /*#__PURE__*/React.createElement("g", {
             key: `dist-${bi}`
           }, /*#__PURE__*/React.createElement("line", {
-            x1: mpx,
-            y1: mpy,
+            x1: ppx,
+            y1: ppy,
             x2: tbx,
             y2: tby,
             stroke: "#00ff88",
@@ -13649,8 +13167,8 @@ function TemporalReplay() {
             opacity: beamFade * 0.5,
             strokeDasharray: beamActive ? "none" : "3,4"
           }), beamActive && /*#__PURE__*/React.createElement("line", {
-            x1: mpx,
-            y1: mpy,
+            x1: ppx,
+            y1: ppy,
             x2: tbx,
             y2: tby,
             stroke: "#00ff88",
@@ -13665,13 +13183,6 @@ function TemporalReplay() {
             stroke: "#00ff88",
             strokeWidth: 1,
             opacity: beamFade * 0.7
-          }), beamActive && /*#__PURE__*/React.createElement("circle", {
-            cx: tbx,
-            cy: tby,
-            r: 6,
-            fill: "#00ff88",
-            opacity: 0.15,
-            filter: "url(#glow)"
           }), beamFade > 0.3 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
             x: midPx - 12,
             y: midPy - 5,
@@ -13691,55 +13202,11 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: beamFade
           }, distLabel)));
-        }), drones.map((dr, di) => {
-          const dx = wIsoX(dr.gx, dr.gy, dr.alt);
-          const dy = wIsoY(dr.gx, dr.gy, dr.alt);
-          const rotorSpin = (nowMs * 0.02 + di * 120) % 360;
-          const rs = dr.size;
-          return /*#__PURE__*/React.createElement("g", {
-            key: `drone-${di}`
-          }, /*#__PURE__*/React.createElement("polygon", {
-            points: `${dx},${dy - rs * 1.8} ${dx + rs * 1.2},${dy} ${dx},${dy + rs * 0.8} ${dx - rs * 1.2},${dy}`,
-            fill: dr.color,
-            opacity: 0.7,
-            stroke: dr.color,
-            strokeWidth: 0.5
-          }), /*#__PURE__*/React.createElement("ellipse", {
-            cx: dx,
-            cy: dy - rs * 1.2,
-            rx: rs * 2.5,
-            ry: rs * 0.6,
-            fill: "none",
-            stroke: dr.color,
-            strokeWidth: 0.5,
-            opacity: 0.35,
-            transform: `rotate(${rotorSpin} ${dx} ${dy - rs * 1.2})`
-          }), /*#__PURE__*/React.createElement("line", {
-            x1: dx,
-            y1: dy,
-            x2: wIsoX(dr.gx, dr.gy, 0),
-            y2: wIsoY(dr.gx, dr.gy, 0),
-            stroke: dr.color,
-            strokeWidth: 0.3,
-            opacity: 0.15,
-            strokeDasharray: "2,3"
-          }), /*#__PURE__*/React.createElement("circle", {
-            cx: dx,
-            cy: dy - rs,
-            r: 0.8,
-            fill: dr.color,
-            opacity: 0.9
-          }, /*#__PURE__*/React.createElement("animate", {
-            attributeName: "opacity",
-            values: "0.9;0.2;0.9",
-            dur: `${1.2 + di * 0.3}s`,
-            repeatCount: "indefinite"
-          })));
         }), (() => {
           const towerGx = 60,
             towerGy = 50;
           const towerBaseZ = terrainH(towerGx, towerGy);
-          const towerH = 16 * objScale;
+          const towerH = 16;
           const bx2 = wIsoX(towerGx, towerGy, towerBaseZ);
           const by2 = wIsoY(towerGx, towerGy, towerBaseZ);
           const tx = wIsoX(towerGx, towerGy, towerBaseZ + towerH);

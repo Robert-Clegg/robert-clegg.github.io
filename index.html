@@ -13554,6 +13554,125 @@ function TemporalReplay() {
             fontWeight: 700,
             opacity: 0.7
           }, "DRONE-1"));
+        })(), time > 9 && (() => {
+          const launchT = 9;
+          const flightDur = 6;
+          const dt = time - launchT;
+          const flightProg = Math.min(1, dt / flightDur);
+          const landed = flightProg >= 1;
+          // Launch position = mech position at t=9
+          const lProg = Math.min(1, launchT / 30);
+          const lWx = Math.sin(launchT * 0.7) * 4 + Math.sin(launchT * 1.3) * 2;
+          const lWy = Math.sin(launchT * 0.5) * 3 + Math.cos(launchT * 0.9) * 1.5;
+          const launchGx = 10 + lProg * 75 + lWx + Math.sin(lProg * Math.PI * 2) * 6;
+          const launchGy = 85 - lProg * 65 + lWy - Math.sin(lProg * Math.PI * 1.5) * 5;
+          // Target = ARMORY roof center
+          const targetGx = 35 + 12 / 2,
+            targetGy = 30 + 5 / 2;
+          const targetGz = terrainH(targetGx, targetGy) + 8;
+          // Interpolate position with altitude arc
+          const dGx = launchGx + (targetGx - launchGx) * flightProg;
+          const dGy = launchGy + (targetGy - launchGy) * flightProg;
+          const cruiseAlt = 20;
+          const altArc = Math.sin(flightProg * Math.PI) * cruiseAlt;
+          const baseZ = terrainH(dGx, dGy);
+          const dGz = landed ? targetGz : baseZ + 2 + altArc;
+          const drx = wIsoX(dGx, dGy, dGz);
+          const dry = wIsoY(dGx, dGy, dGz);
+          // Drone heading — point toward target
+          const headingAngle = Math.atan2(targetGx - launchGx, -(targetGy - launchGy));
+          // Small FOV cone
+          const dFovHalf = 20 * Math.PI / 180;
+          const dConeLen = 10;
+          const dConeL = {
+            gx: dGx + Math.sin(headingAngle - dFovHalf) * dConeLen,
+            gy: dGy - Math.cos(headingAngle - dFovHalf) * dConeLen
+          };
+          const dConeR = {
+            gx: dGx + Math.sin(headingAngle + dFovHalf) * dConeLen,
+            gy: dGy - Math.cos(headingAngle + dFovHalf) * dConeLen
+          };
+          // Ground shadow
+          const shadowX = wIsoX(dGx, dGy, baseZ);
+          const shadowY = wIsoY(dGx, dGy, baseZ);
+          // Rotor spin
+          const rotorAngle = landed ? 0 : nowMs * 0.04 % 360;
+          const rotorOp = landed ? 0 : 1;
+          // Trail dots
+          const trail = [];
+          if (!landed) {
+            for (let ti = 1; ti <= 6; ti++) {
+              const tp = Math.max(0, flightProg - ti * 0.04);
+              const tgx = launchGx + (targetGx - launchGx) * tp;
+              const tgy = launchGy + (targetGy - launchGy) * tp;
+              const tz = terrainH(tgx, tgy) + 2 + Math.sin(tp * Math.PI) * cruiseAlt;
+              trail.push({
+                x: wIsoX(tgx, tgy, tz),
+                y: wIsoY(tgx, tgy, tz),
+                op: 0.3 - ti * 0.04
+              });
+            }
+          }
+          return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("ellipse", {
+            cx: shadowX,
+            cy: shadowY,
+            rx: landed ? 3 : 5,
+            ry: landed ? 1.5 : 2.5,
+            fill: "rgba(0,0,0,0.25)",
+            opacity: landed ? 0.5 : 0.35
+          }), !landed && (() => {
+            const clz = terrainH(dConeL.gx, dConeL.gy);
+            const crz = terrainH(dConeR.gx, dConeR.gy);
+            return /*#__PURE__*/React.createElement("polygon", {
+              points: `${wIsoX(dGx, dGy, baseZ)},${wIsoY(dGx, dGy, baseZ)} ${wIsoX(dConeL.gx, dConeL.gy, clz)},${wIsoY(dConeL.gx, dConeL.gy, clz)} ${wIsoX(dConeR.gx, dConeR.gy, crz)},${wIsoY(dConeR.gx, dConeR.gy, crz)}`,
+              fill: "rgba(255,200,0,0.10)",
+              stroke: "rgba(255,200,0,0.30)",
+              strokeWidth: 0.6
+            });
+          })(), trail.map((tp2, ti) => tp2.op > 0 && /*#__PURE__*/React.createElement("circle", {
+            key: `dt-${ti}`,
+            cx: tp2.x,
+            cy: tp2.y,
+            r: 1.5,
+            fill: "#ffcc44",
+            opacity: tp2.op
+          })), /*#__PURE__*/React.createElement("polygon", {
+            points: `${drx},${dry - 4} ${drx + 3},${dry} ${drx},${dry + 2} ${drx - 3},${dry}`,
+            fill: "#ffcc44",
+            stroke: "#ffdd66",
+            strokeWidth: 0.6,
+            opacity: 0.9
+          }), rotorOp > 0 && /*#__PURE__*/React.createElement("ellipse", {
+            cx: drx,
+            cy: dry - 3,
+            rx: 5,
+            ry: 1.5,
+            fill: "none",
+            stroke: "#ffcc44",
+            strokeWidth: 0.5,
+            opacity: 0.4,
+            transform: `rotate(${rotorAngle} ${drx} ${dry - 3})`
+          }), /*#__PURE__*/React.createElement("circle", {
+            cx: drx,
+            cy: dry - 2,
+            r: 0.8,
+            fill: "#ffcc44",
+            opacity: 0.9
+          }, /*#__PURE__*/React.createElement("animate", {
+            attributeName: "opacity",
+            values: "0.9;0.2;0.9",
+            dur: "0.8s",
+            repeatCount: "indefinite"
+          })), landed && /*#__PURE__*/React.createElement("text", {
+            x: drx,
+            y: dry + 8,
+            textAnchor: "middle",
+            fill: "#ffcc44",
+            fontSize: 4,
+            fontFamily: mono,
+            fontWeight: 700,
+            opacity: 0.7
+          }, "LANDED"));
         })(), time > 0.1 && buildings.map((b, bi) => {
           const bcx = b.gx + b.w / 2,
             bcy = b.gy + b.d / 2;

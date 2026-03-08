@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v307";
+  var v = "v308";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v307 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v308 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v307"), /*#__PURE__*/React.createElement("span", {
+  }, "v308"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13284,7 +13284,119 @@ function TemporalReplay() {
             fill: "#44ffaa",
             opacity: Math.max(0, 0.4 - i * 0.035)
           });
-        }), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
+        }), time > 0.1 && (() => {
+          const radSources = [{
+            gx: 45,
+            gy: 35,
+            intensity: 0.9
+          }, {
+            gx: 22,
+            gy: 72,
+            intensity: 0.7
+          }, {
+            gx: 65,
+            gy: 60,
+            intensity: 1.0
+          }, {
+            gx: 80,
+            gy: 40,
+            intensity: 0.6
+          }, {
+            gx: 35,
+            gy: 15,
+            intensity: 0.8
+          }, {
+            gx: 55,
+            gy: 80,
+            intensity: 0.5
+          }, {
+            gx: 15,
+            gy: 55,
+            intensity: 0.75
+          }];
+          // Point-in-cone test in game coordinates
+          const cR = coneLen;
+          const coneL = {
+            x: pgx + Math.sin(viewYaw - fovHalf) * cR,
+            y: pgy - Math.cos(viewYaw - fovHalf) * cR
+          };
+          const coneR2 = {
+            x: pgx + Math.sin(viewYaw + fovHalf) * cR,
+            y: pgy - Math.cos(viewYaw + fovHalf) * cR
+          };
+          // Triangle: player → coneL → coneR
+          const sign = (px, py, ax, ay, bx, by) => (px - bx) * (ay - by) - (ax - bx) * (py - by);
+          const inTri = (px, py) => {
+            const d1 = sign(px, py, pgx, pgy, coneL.x, coneL.y);
+            const d2 = sign(px, py, coneL.x, coneL.y, coneR2.x, coneR2.y);
+            const d3 = sign(px, py, coneR2.x, coneR2.y, pgx, pgy);
+            const hasNeg = d1 < 0 || d2 < 0 || d3 < 0;
+            const hasPos = d1 > 0 || d2 > 0 || d3 > 0;
+            return !(hasNeg && hasPos);
+          };
+          // Also check angular proximity for fade — how far from cone center
+          const angleTo = (rx, ry) => Math.atan2(rx - pgx, -(ry - pgy));
+          const angleDiff = (a, b) => {
+            let d = a - b;
+            while (d > Math.PI) d -= Math.PI * 2;
+            while (d < -Math.PI) d += Math.PI * 2;
+            return Math.abs(d);
+          };
+          return radSources.map((rs, ri) => {
+            const dist = Math.sqrt((rs.gx - pgx) ** 2 + (rs.gy - pgy) ** 2);
+            if (dist > cR * 1.8) return null; // too far to ever see
+            const inCone = inTri(rs.gx, rs.gy);
+            const angToSrc = angleTo(rs.gx, rs.gy);
+            const angFromCenter = angleDiff(angToSrc, viewYaw);
+            // Visible if in cone, fade based on angle distance from cone when just outside
+            const nearMiss = angFromCenter < fovHalf * 2.5;
+            const vis = inCone ? 1.0 : nearMiss ? Math.max(0, 1 - (angFromCenter - fovHalf) / (fovHalf * 1.5)) * 0.5 : 0;
+            if (vis < 0.02) return null;
+            const rz = terrainH(rs.gx, rs.gy);
+            const rx = wIsoX(rs.gx, rs.gy, rz + 1);
+            const ry2 = wIsoY(rs.gx, rs.gy, rz + 1);
+            const pulse = 0.8 + Math.sin(time * 4 + ri * 2.1) * 0.2;
+            return /*#__PURE__*/React.createElement("g", {
+              key: `rad-${ri}`,
+              opacity: vis * rs.intensity * pulse
+            }, /*#__PURE__*/React.createElement("circle", {
+              cx: rx,
+              cy: ry2,
+              r: 8,
+              fill: "#ffcc00",
+              opacity: 0.06 * vis,
+              filter: "url(#glow)"
+            }), [0, 120, 240].map((deg, ai) => {
+              const a = (deg - 90) * Math.PI / 180;
+              const lx = rx + Math.cos(a) * 4.5;
+              const ly = ry2 + Math.sin(a) * 4.5;
+              return /*#__PURE__*/React.createElement("circle", {
+                key: `rl-${ai}`,
+                cx: lx,
+                cy: ly,
+                r: 2.5,
+                fill: "none",
+                stroke: "#ffcc00",
+                strokeWidth: 1.2,
+                opacity: 0.85
+              });
+            }), /*#__PURE__*/React.createElement("circle", {
+              cx: rx,
+              cy: ry2,
+              r: 1.5,
+              fill: "#ffcc00",
+              opacity: 0.9
+            }), /*#__PURE__*/React.createElement("text", {
+              x: rx,
+              y: ry2 + 10,
+              textAnchor: "middle",
+              fill: "#ffcc00",
+              fontSize: 4.5,
+              fontFamily: mono,
+              fontWeight: 700
+            }, "RAD"));
+          });
+        })(), time > 0.1 && /*#__PURE__*/React.createElement("g", null, (() => {
           const cR = coneLen;
           const lx = pgx + Math.sin(viewYaw - fovHalf) * cR;
           const ly = pgy - Math.cos(viewYaw - fovHalf) * cR;

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v308";
+  var v = "v309";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v308 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v309 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7114,7 +7114,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v308"), /*#__PURE__*/React.createElement("span", {
+  }, "v309"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -12331,19 +12331,17 @@ function TemporalReplay() {
         const vcx = vx + vw / 2,
           vcy = vy + 14 + (vh - 14) / 2;
         const vr = Math.min(vw, vh - 16) / 2 - 6;
-        // Simulated look: micro-jitter base + occasional large saccades
-        // nowMs gives frame-rate jitter, time gives slower drift
-        const microJitterY = time > 0.1 ? Math.sin(nowMs * 0.013) * 3.5 + Math.sin(nowMs * 0.0071) * 2 + Math.cos(nowMs * 0.019) * 1.5 : 0;
-        const microJitterP = time > 0.1 ? Math.sin(nowMs * 0.011) * 1.8 + Math.cos(nowMs * 0.0083) * 1.2 : 0;
-        // Saccades: sharp jumps every ~2-5s, hold for ~0.5s then drift back
+        // ═══ Synced with WORLD cone — exact same formula ═══
+        const driftYaw = time > 0.1 ? Math.sin(time * 0.23) * 80 + Math.sin(time * 0.11) * 40 : 0;
+        const microJitterY = time > 0.1 ? Math.sin(nowMs * 0.013) * 3.5 + Math.sin(nowMs * 0.0071) * 2 : 0;
         const saccadePhase = time > 0.1 ? time % 3.7 : 99;
         const saccadeActive = saccadePhase < 0.4;
         const saccadeYaw = saccadeActive ? Math.sin(Math.floor(time / 3.7) * 7.3) * 55 : 0;
-        const saccadePitch = saccadeActive ? Math.sin(Math.floor(time / 3.7) * 4.1) * 15 : 0;
-        // Slow drift base (heading changes over time)
-        const driftYaw = time > 0.1 ? Math.sin(time * 0.23) * 80 + Math.sin(time * 0.11) * 40 : 0;
-        const driftPitch = time > 0.1 ? Math.sin(time * 0.17) * 12 - 3 : 0;
         const lookYaw = driftYaw + microJitterY + saccadeYaw;
+        // Pitch — independent (not shown in WORLD)
+        const microJitterP = time > 0.1 ? Math.sin(nowMs * 0.011) * 1.8 + Math.cos(nowMs * 0.0083) * 1.2 : 0;
+        const saccadePitch = saccadeActive ? Math.sin(Math.floor(time / 3.7) * 4.1) * 15 : 0;
+        const driftPitch = time > 0.1 ? Math.sin(time * 0.17) * 12 - 3 : 0;
         const lookPitch = driftPitch + microJitterP + saccadePitch;
         const yawRad = lookYaw * Math.PI / 180;
         const zoomLvl = time > 0.1 ? 0.5 + Math.sin(time * 0.3) * 0.3 : 0.5;
@@ -12460,24 +12458,24 @@ function TemporalReplay() {
         const isoY = (x3, y3, z3) => ccy - y3 + (x3 + z3) * 0.5;
         // Smooth forces — hold steady, change direction every 5-8s
         // smoothstep transition over ~1s when direction changes
-        const dirPeriod = 4.0;
+        const dirPeriod = 3.3;
         const dirPhase = time > 0.1 ? time % dirPeriod / dirPeriod : 0;
         const dirIdx = time > 0.1 ? Math.floor(time / dirPeriod) : 0;
         // Transition: smooth ramp over first 15% of each period
         const trans = dirPhase < 0.15 ? dirPhase / 0.15 : 1;
         const smooth = trans * trans * (3 - 2 * trans); // smoothstep
-        // Target forces — wide swings on all three axes
-        const targX = Math.sin(dirIdx * 7.3) * 25 + Math.cos(dirIdx * 3.1) * 10;
-        const targY = Math.sin(dirIdx * 3.7) * 20 + Math.cos(dirIdx * 5.9) * 12 - 10;
-        const targZ = Math.sin(dirIdx * 5.1) * 28 + Math.cos(dirIdx * 2.3) * 10;
+        // Target forces — 20% wider swings on all three axes
+        const targX = Math.sin(dirIdx * 7.3) * 30 + Math.cos(dirIdx * 3.1) * 12;
+        const targY = Math.sin(dirIdx * 3.7) * 24 + Math.cos(dirIdx * 5.9) * 14.4 - 12;
+        const targZ = Math.sin(dirIdx * 5.1) * 34 + Math.cos(dirIdx * 2.3) * 12;
         // Previous targets
-        const prevX = Math.sin((dirIdx - 1) * 7.3) * 25 + Math.cos((dirIdx - 1) * 3.1) * 10;
-        const prevY = Math.sin((dirIdx - 1) * 3.7) * 20 + Math.cos((dirIdx - 1) * 5.9) * 12 - 10;
-        const prevZ = Math.sin((dirIdx - 1) * 5.1) * 28 + Math.cos((dirIdx - 1) * 2.3) * 10;
+        const prevX = Math.sin((dirIdx - 1) * 7.3) * 30 + Math.cos((dirIdx - 1) * 3.1) * 12;
+        const prevY = Math.sin((dirIdx - 1) * 3.7) * 24 + Math.cos((dirIdx - 1) * 5.9) * 14.4 - 12;
+        const prevZ = Math.sin((dirIdx - 1) * 5.1) * 34 + Math.cos((dirIdx - 1) * 2.3) * 12;
         const fx = time > 0.1 ? prevX + (targX - prevX) * smooth : 0;
         const fy = time > 0.1 ? prevY + (targY - prevY) * smooth : 0;
         const fz = time > 0.1 ? prevZ + (targZ - prevZ) * smooth : 0;
-        const maxF = 35;
+        const maxF = 30;
         const vScale = cs * 0.7 / maxF;
         const axLen = fx * vScale,
           ayLen = fy * vScale,

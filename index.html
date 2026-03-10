@@ -289,16 +289,15 @@ const CHANNEL_TO_EVENTS={};for(const df of DERIVED_FEATURES){for(const src of df
 const RAW_BOXES=[{id:"interact",label:"MOUSE",sub:"pointer + click",color:"#44aaff",rawTypes:["mouse","click","scroll"]},{id:"key",label:"KEYBOARD",sub:"keys + abilities",color:"#ffcc00",rawTypes:["key"]},{id:"audio",label:"AUDIO",sub:"sound + speech",color:"#cc66ff",rawTypes:["audio"]},{id:"text",label:"TXT",sub:"",color:"#66ff88",rawTypes:["text"]},{id:"hud",label:"HUD",sub:"visual data",color:"#ffaa44",rawTypes:["hud"]},{id:"view",label:"VIEW",sub:"look direction",color:"#ff66aa",rawTypes:["view"]},{id:"movement",label:"MOVEMENT",sub:"heading + velocity",color:"#44ffaa",rawTypes:["movement"]},{id:"automation",label:"AUTOMATION",sub:"code → mech",color:"#88ddff",rawTypes:["automation"]},{id:"cam",label:"WORLD",sub:"game state",color:"#00ddff",rawTypes:["world"]}];const mouseH=55;const keyH=55;const viewH=55;const audioH=48;const textH=48;// Layout: Row 0: MOUSE, Row 1: VIEW|KB, Row 2: AUDIO|TXT, Row 3: MOVEMENT, Row 4: HUD + WORLD overlap
 const pairGap=4;const halfW=Math.floor((boxW-pairGap)/2);const leftX=boxX;const rightX=boxX+halfW+pairGap;const row1H=Math.max(viewH,keyH);const row2H=Math.max(audioH,textH);const boxGap=4;const rowY0=topPad;const rowY1=rowY0+mouseH+boxGap;const rowY2=rowY1+row1H+boxGap;const rowY3=rowY2+row2H+boxGap;// Discovery bottom
 const winStateBottom=683;// MOVEMENT at rowY3
-const moveH=120;const moveTop=autoY+autoH+8+5*16+moveH+boxGap;// below seismic
+const moveH=120;const autoH=48;const autoY=rowY0;// aligned with MOUSE top edge
+const moveTop=autoY+autoH+8+5*16+moveH+boxGap;// below seismic
 // HUD hidden (seismic moved to oscilloscope)
 const hudH=0;const hudTop=moveTop+moveH+boxGap;// WORLD starts after MOVEMENT
 // WORLD starts at hudTop, fills to winStateBottom
 const worldW=boxW*3.5;const worldH=winStateBottom-hudTop;const worldLeftX=boxX+boxW-worldW;// AUTOMATION on west side of WORLD, left edge aligned with WORLD's west corner
-const autoH=48;const autoW=boxW;const sensorListH=5*16+8;// 5 sensors × 16px + gap
+const autoW=boxW;const sensorListH=5*16+8;// 5 sensors × 16px + gap
 // Approximate WORLD west corner X: iso diamond west point = wcx - 0.866 * wScale
-const approxAreaW=worldW-4;const approxAreaH=worldH-14-4;const approxWScale=Math.min(approxAreaW/1.732,approxAreaH)*0.92;const approxWcx=worldLeftX+2+approxAreaW*0.5;const worldWestX=approxWcx-0.866*approxWScale;const autoX=worldWestX;// Move up so sensor list (below automation) doesn't overlap WORLD terrain
-const autoY=rowY0;// aligned with MOUSE top edge
-const rawBoxLayouts=[{x:smallBoxX,y:rowY0,w:smallBoxW,h:mouseH},// 0: MOUSE
+const approxAreaW=worldW-4;const approxAreaH=worldH-14-4;const approxWScale=Math.min(approxAreaW/1.732,approxAreaH)*0.92;const approxWcx=worldLeftX+2+approxAreaW*0.5;const worldWestX=approxWcx-0.866*approxWScale;const autoX=worldWestX;const rawBoxLayouts=[{x:smallBoxX,y:rowY0,w:smallBoxW,h:mouseH},// 0: MOUSE
 {x:smallBoxX,y:rowY1,w:smallBoxW,h:keyH},// 1: KEYBOARD (right)
 {x:leftX,y:rowY2,w:halfW,h:audioH},// 2: AUDIO (left)
 {x:rightX,y:rowY2,w:halfW,h:textH},// 3: TXT (right)

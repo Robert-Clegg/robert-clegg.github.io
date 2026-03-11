@@ -682,10 +682,10 @@ const terrainH=(gx,gy)=>{// Valley along bottom (high gy): negative height = dep
 const valleyCenter=90+Math.sin(gx*0.08)*4;const valleyDist=Math.abs(gy-valleyCenter);const valley=valleyDist<8?-(4-valleyDist*0.5):0;return Math.max(-3,valley);};// Arctic seismic research facility — shifted toward south corner
 const buildings=[{gx:68,gy:68,r:4.8,h:7.2,label:"MAIN DOME",color:"#4499bb",type:"dome"},{gx:67,gy:85,r:3,h:4.8,label:"SEISMIC LAB",color:"#44aacc",type:"dome"},{gx:84,gy:66,r:2.4,h:3.6,label:"SUPPLY",color:"#448866",type:"dome"},{gx:52,gy:86,w:6,d:3.6,h:4.2,label:"HANGAR",color:"#5599aa",type:"box"},{gx:81,gy:55,w:3,d:2.4,h:3,label:"GENERATOR",color:"#667788",type:"box"},{gx:10,gy:20,w:0,d:0,h:8,label:"Satellite",color:"#44bbee",type:"dish"},{gx:65,gy:10,w:0,d:0,h:10,label:"Geothermal",color:"#ff6644",type:"geothermal"}];// Helper: building center
 const bldCenter=b=>b.type==="dome"||b.type==="rig"||b.type==="dish"||b.type==="geothermal"?[b.gx,b.gy]:[b.gx+b.w/2,b.gy+b.d/2];// ══ SEISMIC SOURCE POINTS — thumper stations for subsurface survey ══
-const seismicSources=[{gx:20,gy:45,id:"A",color:"#ffff44"},{gx:75,gy:25,id:"B",color:"#ffcc00"},{gx:40,gy:80,id:"C",color:"#ffdd33"},{gx:90,gy:75,id:"D",color:"#ffee22"}];// Player position: waypoint path synced to video time (wallTime)
+const seismicSources=[{gx:20,gy:45,id:"A",color:"#ffff44"},{gx:75,gy:25,id:"B",color:"#ffcc00"},{gx:40,gy:80,id:"C",color:"#ffdd33"},{gx:90,gy:75,id:"D",color:"#ffee22"}];// Player position: waypoint path synced to dashboard time (top clock)
 // Hold at B5 until 5s, then B5→A3→Satellite
 // Thruster bursts: 9-13s, 17-18s, 24-29s (higher altitude)
-const wt=wallTime;const thrusterOn=wt>=9&&wt<=13||wt>=17&&wt<=18||wt>=24&&wt<=29;const thrusterHigh=wt>=24&&wt<=29;const thrusterAlt=thrusterOn?thrusterHigh?6:3:0;const waypoints=[{t:0,gx:25,gy:85},// B5 hold
+const wt=time;const thrusterOn=wt>=9&&wt<=13||wt>=17&&wt<=18||wt>=24&&wt<=29;const thrusterHigh=wt>=24&&wt<=29;const thrusterAlt=thrusterOn?thrusterHigh?6:3:0;const waypoints=[{t:0,gx:25,gy:85},// B5 hold
 {t:5,gx:25,gy:85},// B5 hold end
 {t:8,gx:22,gy:78},// leaving B5, drifting west
 {t:12,gx:18,gy:68},// thruster 1 midpoint

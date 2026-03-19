@@ -1,0 +1,20 @@
+{
+  "sectorId": "SW",
+  "sectorName": "Southwest Ridge Exposure",
+  "layers": [
+    { "id": "surface",   "name": "Glacial Till",          "thickness": 5,  "color": "#b8c8d0", "rockType": "unconsolidated", "description": "Glacially deposited debris.", "oilPotential": 0 },
+    { "id": "mudstone",  "name": "Paleocene Mudstone",    "thickness": 14, "color": "#8a7a6a", "rockType": "mudstone",       "description": "Fine-grained, low porosity.", "oilPotential": 0.1 },
+    { "id": "sandstone", "name": "Jurassic Sandstone",    "thickness": 28, "color": "#c8944a", "rockType": "sandstone",      "description": "Coarse porous reservoir. Good oil potential.", "oilPotential": 0.75 },
+    { "id": "evaporite", "name": "Triassic Evaporite",    "thickness": 20, "color": "#e8d4b0", "rockType": "evaporite",      "description": "Salt layer — excellent seal for hydrocarbons.", "oilPotential": 0.0 },
+    { "id": "basement",  "name": "Carboniferous Shale",   "thickness": 99, "color": "#4a5a62", "rockType": "shale",          "description": "Deep shale. Source rock for hydrocarbons.", "oilPotential": 0.2 }
+  ],
+  "faultLines": [
+    { "position": 0.28, "type": "reverse", "displacement": 18, "description": "Reverse fault — compressional stress, creates anticline trap" },
+    { "position": 0.65, "type": "normal",  "displacement": 8,  "description": "Normal fault — possible migration pathway" }
+  ],
+  "telemetryHints": {
+    "keyLayer": "evaporite",
+    "diagnosticSequence": ["evaporite", "sandstone"],
+    "careerSignals": { "geophysicist": ["evaporite","sandstone"], "seismologist": ["faultLines","reverse"] }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "sectorId": "NW",
+  "sectorName": "Northwest Thrust Belt",
+  "layers": [
+    { "id": "surface",   "name": "Scree Slope",           "thickness": 3,  "color": "#a8a89a", "rockType": "unconsolidated", "description": "Rockfall debris from ridge.", "oilPotential": 0 },
+    { "id": "quartzite", "name": "Proterozoic Quartzite",  "thickness": 35, "color": "#d4c87a", "rockType": "metamorphic",    "description": "Hard metamorphic rock. Excellent exposure in ridge face.", "oilPotential": 0 },
+    { "id": "shale",     "name": "Cambrian Black Shale",   "thickness": 20, "color": "#2e3e42", "rockType": "shale",          "description": "Organic-rich source rock. Hydrocarbon generator.", "oilPotential": 0.3 },
+    { "id": "sandstone", "name": "Ordovician Sandstone",   "thickness": 18, "color": "#b87840", "rockType": "sandstone",      "description": "Deep reservoir. High pressure expected.", "oilPotential": 0.65 },
+    { "id": "basement",  "name": "Archean Gneiss",         "thickness": 99, "color": "#5a5050", "rockType": "metamorphic",    "description": "Ancient basement complex.", "oilPotential": 0 }
+  ],
+  "faultLines": [
+    { "position": 0.22, "type": "thrust",  "displacement": 40, "description": "Major thrust fault — rock pushed over younger strata" },
+    { "position": 0.55, "type": "thrust",  "displacement": 25, "description": "Secondary thrust — imbricates with main fault" },
+    { "position": 0.78, "type": "normal",  "displacement": 10, "description": "Back-thrust normal fault" }
+  ],
+  "telemetryHints": {
+    "keyLayer": "shale",
+    "diagnosticSequence": ["quartzite", "shale", "faultLines"],
+    "careerSignals": { "seismologist": ["thrust","faultLines"], "geophysicist": ["shale","quartzite"] }
+  }
+}

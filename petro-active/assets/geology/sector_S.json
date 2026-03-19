@@ -1,0 +1,19 @@
+{
+  "sectorId": "S",
+  "sectorName": "Seismic Survey Zone Alpha",
+  "layers": [
+    { "id": "surface",   "name": "Permafrost",          "thickness": 8,  "color": "#c8d8e4", "rockType": "unconsolidated", "description": "Frozen surface layer. No oil potential.", "oilPotential": 0 },
+    { "id": "sandstone", "name": "Cretaceous Sandstone", "thickness": 22, "color": "#d4a96a", "rockType": "sandstone",      "description": "Porous reservoir rock. Primary target horizon.", "oilPotential": 0.85 },
+    { "id": "shale",     "name": "Devonian Shale",       "thickness": 18, "color": "#6b7c8a", "rockType": "shale",          "description": "Low permeability cap rock. Seals the reservoir.", "oilPotential": 0.05 },
+    { "id": "limestone", "name": "Silurian Limestone",   "thickness": 30, "color": "#b8c4a0", "rockType": "limestone",      "description": "Secondary reservoir. Fractured zones possible.", "oilPotential": 0.45 },
+    { "id": "basement",  "name": "Precambrian Granite",  "thickness": 99, "color": "#7a6e6e", "rockType": "igneous",        "description": "Basement rock. No oil potential.", "oilPotential": 0 }
+  ],
+  "faultLines": [
+    { "position": 0.35, "type": "normal", "displacement": 12, "description": "Normal fault — tensional stress" }
+  ],
+  "telemetryHints": {
+    "keyLayer": "sandstone",
+    "diagnosticSequence": ["shale", "sandstone"],
+    "careerSignals": { "geophysicist": ["shale","sandstone"], "drillEngineer": ["sandstone"], "seismologist": ["faultLines"] }
+  }
+}

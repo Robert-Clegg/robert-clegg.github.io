@@ -1,0 +1,17 @@
+{
+  "sectorId": "SE",
+  "sectorName": "Southeast Basin Margin",
+  "layers": [
+    { "id": "surface",   "name": "Permafrost",           "thickness": 10, "color": "#c8d8e4", "rockType": "unconsolidated", "description": "Thick permafrost — drilling challenge.", "oilPotential": 0 },
+    { "id": "chalk",     "name": "Cretaceous Chalk",     "thickness": 16, "color": "#e8e8dc", "rockType": "chalk",          "description": "Micro-porous carbonate. Moderate reservoir.", "oilPotential": 0.4 },
+    { "id": "sandstone", "name": "Carboniferous Sandstone","thickness":24, "color": "#c0845a", "rockType": "sandstone",      "description": "Deep sandstone reservoir.", "oilPotential": 0.7 },
+    { "id": "coal",      "name": "Coal Seam",            "thickness": 6,  "color": "#2a2a2a", "rockType": "coal",           "description": "Carboniferous coal. CBM potential.", "oilPotential": 0.15 },
+    { "id": "basement",  "name": "Devonian Basement",    "thickness": 99, "color": "#6a5a5a", "rockType": "igneous",        "description": "Basement complex.", "oilPotential": 0 }
+  ],
+  "faultLines": [],
+  "telemetryHints": {
+    "keyLayer": "sandstone",
+    "diagnosticSequence": ["chalk", "sandstone", "coal"],
+    "careerSignals": { "drillEngineer": ["sandstone"], "geophysicist": ["chalk","coal"] }
+  }
+}

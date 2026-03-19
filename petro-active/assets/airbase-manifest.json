@@ -1,0 +1,9 @@
+{
+  "terrain": {
+    "heightmap": "heightmaps/terrain_main.png",
+    "width": 600,
+    "depth": 600,
+    "height": 60
+  },
+  "buildings": []
+}

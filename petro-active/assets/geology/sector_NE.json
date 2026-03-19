@@ -1,0 +1,19 @@
+{
+  "sectorId": "NE",
+  "sectorName": "Northeast Shelf",
+  "layers": [
+    { "id": "surface",   "name": "Marine Sediment",       "thickness": 8,  "color": "#c0ccd4", "rockType": "unconsolidated", "description": "Recent marine deposit.", "oilPotential": 0 },
+    { "id": "limestone", "name": "Oligocene Limestone",   "thickness": 18, "color": "#d0c898", "rockType": "limestone",      "description": "Reef limestone — high porosity zones.", "oilPotential": 0.6 },
+    { "id": "anhydrite", "name": "Eocene Anhydrite",      "thickness": 10, "color": "#e8d8c8", "rockType": "evaporite",      "description": "Anhydrite seal above reservoir.", "oilPotential": 0 },
+    { "id": "sandstone", "name": "Paleocene Sandstone",   "thickness": 22, "color": "#b88850", "rockType": "sandstone",      "description": "Turbidite sandstone — deepwater fan deposit.", "oilPotential": 0.72 },
+    { "id": "basement",  "name": "Cretaceous Shale",      "thickness": 99, "color": "#50606a", "rockType": "shale",          "description": "Deep shale sequence.", "oilPotential": 0.1 }
+  ],
+  "faultLines": [
+    { "position": 0.38, "type": "normal", "displacement": 12, "description": "Shelf-edge fault — controls turbidite deposition" }
+  ],
+  "telemetryHints": {
+    "keyLayer": "sandstone",
+    "diagnosticSequence": ["anhydrite", "limestone", "sandstone"],
+    "careerSignals": { "geophysicist": ["limestone","anhydrite"], "drillEngineer": ["sandstone"] }
+  }
+}

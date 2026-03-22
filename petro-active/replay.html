@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PetroActive — Session Replay | KnoverseAI</title>
+<style>
+  :root {
+    --bg:       #050810;
+    --panel:    #090d18;
+    --border:   rgba(255,255,255,0.07);
+    --mouse:    #44ff44;
+    --keyboard: #ff4444;
+    --hud:      #ffaa44;
+    --world:    #00ddff;
+    --view:     #ff44ff;
+    --audio:    #ffff44;
+    --mono:     'JetBrains Mono', 'Courier New', monospace;
+    --sans:     'Outfit', system-ui, sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: var(--sans);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(5,8,16,0.95);
+  }
+  #topbar .logo {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 700;
+  }
+  #topbar .logo span { color: var(--world); }
+  #topbar .title {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    flex: 1;
+  }
+  #session-id {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1px;
+  }
+
+  /* ── LAYOUT ── */
+  #main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    grid-template-rows: 1fr 100px;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* ── VIDEO PANEL ── */
+  #video-panel {
+    grid-column: 1;
+    grid-row: 1;
+    background: #000;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  video#player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  #drop-video {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    border: 2px dashed rgba(0,221,255,0.15);
+    transition: border-color 0.2s;
+  }
+  #drop-video.drag-over { border-color: var(--world); background: rgba(0,221,255,0.04); }
+  #drop-video .icon { font-size: 40px; opacity: 0.2; }
+  #drop-video .hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.2);
+  }
+  #drop-video.hidden { display: none; }
+
+  /* ── TELEMETRY PANEL ── */
+  #telemetry-panel {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    overflow: hidden;
+  }
+  #tele-header {
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #tele-header .label {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 6px;
+  }
+  #drop-json {
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.2s, background 0.2s;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+  }
+  #drop-json:hover, #drop-json.drag-over { border-color: var(--mouse); color: var(--mouse); }
+  #drop-json.loaded { border-color: rgba(68,255,68,0.3); color: var(--mouse); }
+  #drop-json .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  #tele-status {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: rgba(255,255,255,0.2);
+    margin-top: 5px;
+    min-height: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── CONTAINERS ── */
+  #containers {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  #containers::-webkit-scrollbar { width: 3px; }
+  #containers::-webkit-scrollbar-track { background: transparent; }
+  #containers::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+  .container-block {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 5px;
+    padding: 7px 9px;
+    background: rgba(255,255,255,0.02);
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .container-block.active {
+    background: rgba(255,255,255,0.04);
+  }
+  .container-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .container-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.4;
+    transition: opacity 0.2s, box-shadow 0.2s;
+  }
+  .container-block.active .container-dot {
+    opacity: 1;
+  }
+  .container-name {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    flex: 1;
+  }
+  .container-block.active .container-name { opacity: 1; }
+  .container-rate {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.5px;
+  }
+  .container-block.active .container-rate { color: rgba(255,255,255,0.5); }
+
+  /* activity bar */
+  .activity-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+  .activity-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.15s;
+  }
+
+  /* event feed */
+  .event-feed {
+    min-height: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+  }
+  .event-entry {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    line-height: 1.4;
+  }
+  .event-entry .ts {
+    color: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+  .event-entry .ev-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .event-entry.fresh { color: rgba(255,255,255,0.7); }
+
+  /* ── TIMELINE ── */
+  #timeline-panel {
+    grid-column: 1;
+    grid-row: 2;
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: var(--bg);
+  }
+  #transport {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #btn-play {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    background: none;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+  #btn-play:hover { border-color: var(--world); color: var(--world); }
+  #btn-play.playing { border-color: rgba(255,255,255,0.3); color: #fff; }
+
+  #time-display {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 1px;
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  #sync-indicator {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+  }
+  #sync-indicator.synced {
+    color: var(--mouse);
+    border-color: rgba(68,255,68,0.2);
+    background: rgba(68,255,68,0.05);
+  }
+  #sync-indicator.unsynced {
+    color: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.06);
+  }
+  #speed-group {
+    display: flex;
+    gap: 3px;
+    margin-left: auto;
+  }
+  .speed-btn {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 7px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 3px;
+    background: none;
+    color: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .speed-btn.active { border-color: rgba(255,255,255,0.25); color: #fff; background: rgba(255,255,255,0.06); }
+  .speed-btn:hover { color: rgba(255,255,255,0.7); }
+
+  #scrubber-wrap {
+    position: relative;
+    height: 20px;
+    cursor: pointer;
+  }
+  #scrubber-track {
+    position: absolute;
+    top: 8px;
+    left: 0; right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+  }
+  #scrubber-fill {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--world), var(--view));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  #scrubber-thumb {
+    position: absolute;
+    top: -3px;
+    width: 10px; height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translateX(-5px);
+    left: 0%;
+    box-shadow: 0 0 6px rgba(255,255,255,0.4);
+    transition: left 0.1s linear;
+  }
+  /* event tick marks on scrubber */
+  .event-tick {
+    position: absolute;
+    top: 4px;
+    width: 2px;
+    height: 12px;
+    border-radius: 1px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* ── VIDEO OVERLAY (sync info) ── */
+  #video-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    pointer-events: none;
+    display: none;
+  }
+  #video-overlay.visible { display: block; }
+  #video-overlay span { color: var(--world); }
+
+  /* ── NO DATA STATE ── */
+  #no-data {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+  }
+  #no-data .big { font-size: 32px; opacity: 0.1; }
+  #no-data .msg { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.15); text-align: center; line-height: 1.8; }
+
+  input[type=file] { display: none; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">KNOVERSE<span>AI</span></div>
+  <div class="title">PETRO ACTIVE — SESSION REPLAY</div>
+  <div id="session-id">NO SESSION LOADED</div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div id="main">
+
+  <!-- VIDEO -->
+  <div id="video-panel">
+    <div id="drop-video">
+      <div class="icon">🎬</div>
+      <div class="hint">DROP .WEBM VIDEO HERE</div>
+      <div class="hint" style="opacity:0.5;font-size:8px;margin-top:4px;">OR CLICK TO BROWSE</div>
+    </div>
+    <video id="player" muted playsinline preload="auto"></video>
+    <div id="video-overlay">
+      VIDEO: <span id="vt-display">0:00.0</span> &nbsp;|&nbsp; SESSION: <span id="st-display">—</span>
+    </div>
+  </div>
+
+  <!-- TELEMETRY SIDEBAR -->
+  <div id="telemetry-panel">
+    <div id="tele-header">
+      <div class="label">COGNITIVE TELEMETRY</div>
+      <div id="drop-json">
+        <div class="dot"></div>
+        <span id="json-label">DROP .JSON TELEMETRY — OR CLICK</span>
+      </div>
+      <div id="tele-status"></div>
+    </div>
+
+    <!-- Containers or no-data placeholder -->
+    <div id="containers-wrap" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <div id="no-data">
+        <div class="big">📡</div>
+        <div class="msg">LOAD A TELEMETRY FILE<br>TO BEGIN REPLAY</div>
+      </div>
+      <div id="containers" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div id="timeline-panel">
+    <div id="transport">
+      <button id="btn-play" title="Space to play/pause">▶</button>
+      <div id="time-display">0:00.0 / 0:00</div>
+      <div id="sync-indicator" class="unsynced">NO SYNC</div>
+      <div id="speed-group">
+        <button class="speed-btn active" data-speed="1">1×</button>
+        <button class="speed-btn" data-speed="2">2×</button>
+        <button class="speed-btn" data-speed="0.5">½×</button>
+      </div>
+    </div>
+    <div id="scrubber-wrap">
+      <div id="scrubber-track">
+        <div id="scrubber-fill"></div>
+      </div>
+      <div id="scrubber-thumb"></div>
+      <!-- event ticks injected here -->
+    </div>
+  </div>
+
+</div>
+
+<input type="file" id="file-video" accept="video/*"/>
+<input type="file" id="file-json" accept=".json"/>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const video      = document.getElementById('player');
+const dropVideo  = document.getElementById('drop-video');
+const dropJson   = document.getElementById('drop-json');
+const fileVideo  = document.getElementById('file-video');
+const fileJson   = document.getElementById('file-json');
+const btnPlay    = document.getElementById('btn-play');
+const timeDis    = document.getElementById('time-display');
+const syncInd    = document.getElementById('sync-indicator');
+const fillEl     = document.getElementById('scrubber-fill');
+const thumbEl    = document.getElementById('scrubber-thumb');
+const scrubWrap  = document.getElementById('scrubber-wrap');
+const vtDisp     = document.getElementById('vt-display');
+const stDisp     = document.getElementById('st-display');
+const videoOverlay = document.getElementById('video-overlay');
+const sessionIdEl  = document.getElementById('session-id');
+const containersEl = document.getElementById('containers');
+const noDataEl     = document.getElementById('no-data');
+const jsonLabel    = document.getElementById('json-label');
+const teleStatus   = document.getElementById('tele-status');
+
+let session         = null;  // parsed JSON
+let videoStartOffset = 0;    // ms: offset from session start to video frame 0
+let videoLoaded     = false;
+let jsonLoaded      = false;
+let isSynced        = false;
+let duration        = 0;
+
+// Container definitions matching TelemetryCapture.ts
+const CONTAINERS = [
+  { id: 'MOUSE',    color: '#44ff44', label: 'MOUSE' },
+  { id: 'KEYBOARD', color: '#ff4444', label: 'KEYBOARD' },
+  { id: 'HUD',      color: '#ffaa44', label: 'HUD' },
+  { id: 'WORLD',    color: '#00ddff', label: 'WORLD' },
+  { id: 'VIEW',     color: '#ff44ff', label: 'VIEW' },
+  { id: 'AUDIO',    color: '#ffff44', label: 'AUDIO' },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// CONTAINER BLOCKS — built once
+// ═══════════════════════════════════════════════════════════════
+function buildContainers() {
+  containersEl.innerHTML = '';
+  CONTAINERS.forEach(c => {
+    const block = document.createElement('div');
+    block.className = 'container-block';
+    block.id = `cb-${c.id}`;
+    block.innerHTML = `
+      <div class="container-top">
+        <div class="container-dot" id="dot-${c.id}" style="background:${c.color};box-shadow:0 0 6px ${c.color}66;"></div>
+        <div class="container-name" style="color:${c.color}">${c.label}</div>
+        <div class="container-rate" id="rate-${c.id}">0 evt/s</div>
+      </div>
+      <div class="activity-bar">
+        <div class="activity-fill" id="fill-${c.id}" style="background:${c.color};"></div>
+      </div>
+      <div class="event-feed" id="feed-${c.id}"></div>
+    `;
+    containersEl.appendChild(block);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TELEMETRY SYNC — called on every timeupdate
+// ═══════════════════════════════════════════════════════════════
+const WINDOW_S = 5;   // events visible in feed (session time window)
+const FRESH_S  = 1.5; // "fresh" threshold
+
+function sessionTimeFromVideo(videoTimeSec) {
+  // formula: session_ms = video_currentTime * 1000 + videoStartOffset
+  return videoTimeSec * 1000 + videoStartOffset;
+}
+
+function updateTelemetry(sessionMs) {
+  if (!session) return;
+
+  const events = session.events;
+  const windowStart = sessionMs - WINDOW_S * 1000;
+
+  // Per-container state
+  const containerState = {};
+  CONTAINERS.forEach(c => { containerState[c.id] = { recent: [], count: 0 }; });
+
+  // Scan events in window
+  for (const ev of events) {
+    if (ev.timestamp > sessionMs) break;
+    if (ev.timestamp < windowStart) continue;
+    const cs = containerState[ev.container];
+    if (!cs) continue;
+    cs.recent.push(ev);
+    cs.count++;
+  }
+
+  // Count total events up to now per container for rate calculation
+  const rateCounts = {};
+  const elapsed = Math.max(1, sessionMs / 1000);
+  CONTAINERS.forEach(c => { rateCounts[c.id] = 0; });
+  for (const ev of events) {
+    if (ev.timestamp > sessionMs) break;
+    if (rateCounts[ev.container] !== undefined) rateCounts[ev.container]++;
+  }
+
+  // Update DOM
+  CONTAINERS.forEach(c => {
+    const cs = containerState[c.id];
+    const block = document.getElementById(`cb-${c.id}`);
+    const fill  = document.getElementById(`fill-${c.id}`);
+    const feed  = document.getElementById(`feed-${c.id}`);
+    const rate  = document.getElementById(`rate-${c.id}`);
+
+    const recentCount = cs.recent.length;
+    const hasActivity = recentCount > 0;
+
+    block.classList.toggle('active', hasActivity);
+
+    // Activity bar = fraction of window filled (capped at 100%)
+    const barPct = Math.min(100, recentCount / 8 * 100);
+    fill.style.width = barPct + '%';
+
+    // Rate (avg over session)
+    const evPerSec = (rateCounts[c.id] / elapsed).toFixed(1);
+    rate.textContent = evPerSec + ' evt/s';
+
+    // Event feed — last 3 events
+    const toShow = cs.recent.slice(-3);
+    feed.innerHTML = '';
+    toShow.forEach(ev => {
+      const age = (sessionMs - ev.timestamp) / 1000;
+      const entry = document.createElement('div');
+      entry.className = 'event-entry' + (age < FRESH_S ? ' fresh' : '');
+      const tSec = ev.timestamp / 1000;
+      const m = Math.floor(tSec / 60);
+      const s = (tSec % 60).toFixed(1).padStart(4, '0');
+      entry.innerHTML = `<span class="ts">${m}:${s}</span><span class="ev-label">${ev.type}</span>`;
+      feed.appendChild(entry);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCRUBBER TICK MARKS
+// ═══════════════════════════════════════════════════════════════
+function buildTicks() {
+  // Remove old ticks
+  scrubWrap.querySelectorAll('.event-tick').forEach(t => t.remove());
+  if (!session || duration <= 0) return;
+
+  const events = session.events;
+  // Thin the ticks — one per second bucket max
+  const buckets = new Set();
+  events.forEach(ev => {
+    // Convert session ms → video seconds → 0..1 fraction
+    const vidSec = (ev.timestamp - videoStartOffset) / 1000;
+    if (vidSec < 0 || vidSec > duration) return;
+    const bucket = Math.floor(vidSec);
+    if (buckets.has(bucket)) return;
+    buckets.add(bucket);
+
+    const frac = vidSec / duration;
+    const tick = document.createElement('div');
+    tick.className = 'event-tick';
+    tick.style.left = (frac * 100) + '%';
+    // Colour by first container in that bucket
+    const cColor = CONTAINERS.find(c => c.id === ev.container)?.color || '#fff';
+    tick.style.background = cColor;
+    scrubWrap.appendChild(tick);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TIME DISPLAY HELPERS
+// ═══════════════════════════════════════════════════════════════
+function fmtVideo(sec) {
+  const m = Math.floor(sec / 60);
+  const s = (sec % 60).toFixed(1).padStart(4, '0');
+  return `${m}:${s}`;
+}
+function fmtDur(sec) {
+  const m = Math.floor(sec / 60);
+  const s = String(Math.floor(sec % 60)).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VIDEO EVENTS
+// ═══════════════════════════════════════════════════════════════
+video.addEventListener('loadedmetadata', () => {
+  videoLoaded = true;
+  duration = video.duration;
+  checkSync();
+  dropVideo.classList.add('hidden');
+  videoOverlay.classList.add('visible');
+  buildTicks();
+});
+
+let lastTimeUpdate = 0;
+video.addEventListener('timeupdate', () => {
+  const now = performance.now();
+  if (now - lastTimeUpdate < 66) return; // ~15fps update
+  lastTimeUpdate = now;
+
+  const t = video.currentTime;
+  const frac = duration > 0 ? t / duration : 0;
+
+  fillEl.style.width  = (frac * 100) + '%';
+  thumbEl.style.left  = (frac * 100) + '%';
+  timeDis.textContent = `${fmtVideo(t)} / ${fmtDur(duration)}`;
+  vtDisp.textContent  = fmtVideo(t);
+
+  if (session) {
+    const sessionMs = sessionTimeFromVideo(t);
+    const sm = Math.floor(sessionMs / 1000);
+    stDisp.textContent = `${Math.floor(sm / 60)}:${String(sm % 60).padStart(2, '0')}`;
+    updateTelemetry(sessionMs);
+  }
+});
+
+video.addEventListener('play',  () => { btnPlay.textContent = '⏸'; btnPlay.classList.add('playing'); });
+video.addEventListener('pause', () => { btnPlay.textContent = '▶'; btnPlay.classList.remove('playing'); });
+
+// ═══════════════════════════════════════════════════════════════
+// SYNC CHECK
+// ═══════════════════════════════════════════════════════════════
+function checkSync() {
+  isSynced = videoLoaded && jsonLoaded;
+  if (isSynced) {
+    syncInd.className = 'synced';
+    syncInd.textContent = 'SYNCED';
+    buildTicks();
+  } else {
+    syncInd.className = 'unsynced';
+    syncInd.textContent = videoLoaded ? (jsonLoaded ? 'SYNCED' : 'NEED JSON') : (jsonLoaded ? 'NEED VIDEO' : 'NO SYNC');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOAD VIDEO
+// ═══════════════════════════════════════════════════════════════
+function loadVideoFile(file) {
+  if (!file || !file.type.startsWith('video/')) return;
+  if (video.src && video.src.startsWith('blob:')) URL.revokeObjectURL(video.src);
+  video.src = URL.createObjectURL(file);
+  video.load();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOAD JSON TELEMETRY
+// ═══════════════════════════════════════════════════════════════
+function loadJsonFile(file) {
+  if (!file || !file.name.endsWith('.json')) return;
+  teleStatus.textContent = '⏳ parsing…';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const raw = JSON.parse(ev.target.result);
+      // Support both PetroActive format (events[].timestamp) and direct
+      const events = (raw.events || []).map(e => ({
+        type:       e.type      || e.eventType,
+        timestamp:  e.timestamp != null ? e.timestamp : e.t * 1000,
+        container:  e.container || guessContainer(e.type || e.eventType),
+        layerWeight: e.layerWeight || 1,
+        data:       e.data || {},
+      })).sort((a, b) => a.timestamp - b.timestamp);
+
+      if (events.length === 0) { teleStatus.textContent = '❌ no events found'; return; }
+
+      // Extract videoSync
+      const vs = raw.videoSync;
+      if (vs && vs.videoStartOffset != null) {
+        videoStartOffset = vs.videoStartOffset;
+      } else {
+        // No sync data — assume video starts at session start
+        videoStartOffset = raw.startTime || 0;
+      }
+
+      session = { ...raw, events };
+      jsonLoaded = true;
+
+      // Update UI
+      sessionIdEl.textContent = raw.sessionId || file.name.replace('.json', '');
+      dropJson.classList.add('loaded');
+      jsonLabel.textContent = `✓ ${events.length} EVENTS LOADED`;
+
+      const totalSec = (events[events.length-1].timestamp / 1000).toFixed(0);
+      const hasSyncData = vs && vs.videoStartOffset != null;
+      teleStatus.textContent = `${events.length} events · ${totalSec}s · ${hasSyncData ? 'video sync ✓' : 'no video sync metadata'}`;
+
+      buildContainers();
+      noDataEl.style.display = 'none';
+      containersEl.style.display = 'flex';
+
+      checkSync();
+    } catch (err) {
+      teleStatus.textContent = '❌ parse error: ' + err.message;
+    }
+  };
+  reader.readAsText(file);
+}
+
+const CONTAINER_MAP = {
+  'ev_geophonePlace':     'MOUSE',
+  'ev_drillSelect':       'MOUSE',
+  'ev_terrainClick':      'MOUSE',
+  'ev_oscilloscopeClick': 'MOUSE',
+  'ev_filterKey':         'KEYBOARD',
+  'ev_cameraKey':         'KEYBOARD',
+  'ev_phaseAdvanceKey':   'KEYBOARD',
+  'ev_oscilloscope':      'HUD',
+  'ev_equipment':         'HUD',
+  'ev_briefingScroll':    'HUD',
+  'ev_assessment':        'HUD',
+  'ev_terrainExplore':    'WORLD',
+  'ev_gridHover':         'WORLD',
+  'ev_subsurfaceInspect': 'WORLD',
+  'ev_phaseChange':       'WORLD',
+  'ev_cameraZoom':        'VIEW',
+  'ev_cameraPan':         'VIEW',
+  'ev_ridgeScan':         'VIEW',
+};
+function guessContainer(type) {
+  return CONTAINER_MAP[type] || 'WORLD';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════
+btnPlay.addEventListener('click', () => {
+  if (!videoLoaded) return;
+  video.paused ? video.play() : video.pause();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target === document.body) {
+    e.preventDefault();
+    if (videoLoaded) { video.paused ? video.play() : video.pause(); }
+  }
+});
+
+// Speed buttons
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    video.playbackRate = parseFloat(btn.dataset.speed);
+  });
+});
+
+// Scrubber
+let scrubbing = false;
+function scrubTo(e) {
+  if (!videoLoaded || duration <= 0) return;
+  const rect = scrubWrap.getBoundingClientRect();
+  const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  video.currentTime = frac * duration;
+}
+scrubWrap.addEventListener('mousedown', e => { scrubbing = true; scrubTo(e); });
+document.addEventListener('mousemove', e => { if (scrubbing) scrubTo(e); });
+document.addEventListener('mouseup',   () => { scrubbing = false; });
+
+// ═══════════════════════════════════════════════════════════════
+// FILE DROP / CLICK — VIDEO
+// ═══════════════════════════════════════════════════════════════
+dropVideo.addEventListener('click', () => fileVideo.click());
+fileVideo.addEventListener('change', e => loadVideoFile(e.target.files[0]));
+
+['dragover','dragenter'].forEach(ev => {
+  document.getElementById('video-panel').addEventListener(ev, e => { e.preventDefault(); dropVideo.classList.add('drag-over'); });
+});
+document.getElementById('video-panel').addEventListener('dragleave', () => dropVideo.classList.remove('drag-over'));
+document.getElementById('video-panel').addEventListener('drop', e => {
+  e.preventDefault(); dropVideo.classList.remove('drag-over');
+  const f = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('video/'));
+  if (f) loadVideoFile(f);
+});
+
+// Drag onto video element after loaded
+video.addEventListener('dragover', e => e.preventDefault());
+video.addEventListener('drop', e => {
+  e.preventDefault();
+  const f = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('video/'));
+  if (f) loadVideoFile(f);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// FILE DROP / CLICK — JSON
+// ═══════════════════════════════════════════════════════════════
+dropJson.addEventListener('click', () => fileJson.click());
+fileJson.addEventListener('change', e => { loadJsonFile(e.target.files[0]); e.target.value = ''; });
+
+['dragover','dragenter'].forEach(ev => {
+  dropJson.addEventListener(ev, e => { e.preventDefault(); dropJson.classList.add('drag-over'); });
+});
+dropJson.addEventListener('dragleave', () => dropJson.classList.remove('drag-over'));
+dropJson.addEventListener('drop', e => {
+  e.preventDefault(); dropJson.classList.remove('drag-over');
+  const f = Array.from(e.dataTransfer.files).find(f => f.name.endsWith('.json'));
+  if (f) loadJsonFile(f);
+});
+
+// Also accept drops anywhere on the page
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const files = Array.from(e.dataTransfer.files);
+  const vid = files.find(f => f.type.startsWith('video/'));
+  const json = files.find(f => f.name.endsWith('.json'));
+  if (vid)  loadVideoFile(vid);
+  if (json) loadJsonFile(json);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+checkSync();
+</script>
+</body>
+</html>

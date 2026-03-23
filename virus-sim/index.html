@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v270";
+  var v = "v271";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v270 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v271 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6971,76 +6971,6 @@ function TemporalReplay() {
     }
   }, [time, playing, speed, activeCamUrl, videoOffset]);
 
-  // ═══ FLOATING OVERVIEW SYNC ═══
-  useEffect(() => {
-    const vid = floatOverviewRef.current;
-    if (!vid || !overviewUrl) return;
-    if (!vid.src || vid.src !== overviewUrl) { vid.src = overviewUrl; vid.load(); }
-    const targetVideoTime = time + videoOffset;
-    if (!playing) {
-      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-      if (!vid.paused) vid.pause();
-    } else {
-      if (vid.paused) vid.play().catch(() => {});
-      vid.playbackRate = speed * 0.8;
-      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-    }
-  }, [time, playing, speed, overviewUrl, videoOffset]);
-
-  // ═══ FLOATING ACTION SYNC ═══
-  useEffect(() => {
-    const vid = floatActionRef.current;
-    if (!vid || !actionUrl) return;
-    if (!vid.src || vid.src !== actionUrl) { vid.src = actionUrl; vid.load(); }
-    const targetVideoTime = time + videoOffset;
-    if (!playing) {
-      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-      if (!vid.paused) vid.pause();
-    } else {
-      if (vid.paused) vid.play().catch(() => {});
-      vid.playbackRate = speed * 0.8;
-      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-    }
-  }, [time, playing, speed, actionUrl, videoOffset]);
-
-  // ═══ OVERVIEW VIDEO TAB SYNC ═══
-  useEffect(() => {
-    const vid = overviewVideoRef.current;
-    if (!vid || !overviewLoaded) return;
-    const targetVideoTime = time + videoOffset;
-    if (!playing) {
-      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-      if (!vid.paused) vid.pause();
-    } else {
-      if (vid.paused) vid.play().catch(() => {});
-      vid.playbackRate = speed * 0.8;
-      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-    }
-  }, [time, playing, speed, overviewLoaded, videoOffset]);
-
-  // ═══ ACTION VIDEO TAB SYNC ═══
-  useEffect(() => {
-    const vid = actionVideoRef.current;
-    if (!vid || !actionLoaded) return;
-    const targetVideoTime = time + videoOffset;
-    if (!playing) {
-      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-      if (!vid.paused) vid.pause();
-    } else {
-      if (vid.paused) vid.play().catch(() => {});
-      vid.playbackRate = speed * 0.8;
-      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-    }
-  }, [time, playing, speed, actionLoaded, videoOffset]);
-
   // ═══ RESOLVED DATA — loaded or demo ═══
   const isLoaded = telemetrySource === "loaded" && loadedEvents;
   const activeEvents = isLoaded ? loadedEvents : treeSession === "commander" ? COMMANDER_EVENTS : SOLDIER_EVENTS;
@@ -7139,9 +7069,9 @@ function TemporalReplay() {
           }).catch(() => {});
         };
         loadVideo(playerFile, setVideoUrl, setVideoFileName, setVideoLoaded);
-        // All 3 URLs stored; only activeCamera is assigned to the single <video> element
-        loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, setOverviewLoaded);
-        loadVideo(actionToLoad, setActionUrl, setActionFileName, setActionLoaded);
+        // Store filenames only — blobs fetched on-demand when user clicks camera button
+        if (overviewFile) setOverviewFileName(overviewFile);
+        if (actionToLoad) setActionFileName(actionToLoad);
         // Load telemetry
         if (telemetryFile) {
           const telemetryMatch = files.find(f => f.name === telemetryFile);
@@ -7412,7 +7342,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v270"), /*#__PURE__*/React.createElement("span", {
+  }, "v271"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13746,7 +13676,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v270 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v271 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

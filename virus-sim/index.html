@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v261";
+  var v = "v262";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v261 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v262 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7116,24 +7116,19 @@ function TemporalReplay() {
         const overviewFile = cameras.overview || "";
         const actionFile = cameras.action || "";
         const telemetryFile = syncJson.telemetryFile || "";
-        // Helper: load a video blob into a ref
-        const loadVideo = (filename, setUrl, setName, ref, setLoaded) => {
+        // Helper: load a video blob — set state immediately, sync effects handle the element
+        const loadVideo = (filename, setUrl, setName, setLoaded) => {
           if (!filename) return;
           fetch(SERVER + "/" + filename).then(r => r.blob()).then(blob => {
             const url = URL.createObjectURL(blob);
             setUrl(url);
             setName(filename);
-            const vid = ref.current;
-            if (vid) {
-              if (vid.src && vid.src.startsWith("blob:")) URL.revokeObjectURL(vid.src);
-              vid.src = url; vid.load();
-              vid.onloadedmetadata = () => { setLoaded(true); };
-            }
+            setLoaded(true);
           }).catch(() => {});
         };
-        loadVideo(playerFile, setVideoUrl, setVideoFileName, videoRef, setVideoLoaded);
-        loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, overviewVideoRef, setOverviewLoaded);
-        loadVideo(actionFile, setActionUrl, setActionFileName, actionVideoRef, setActionLoaded);
+        loadVideo(playerFile, setVideoUrl, setVideoFileName, setVideoLoaded);
+        loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, setOverviewLoaded);
+        loadVideo(actionFile, setActionUrl, setActionFileName, setActionLoaded);
         // Load telemetry
         if (telemetryFile) {
           const telemetryMatch = files.find(f => f.name === telemetryFile);
@@ -7404,7 +7399,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v261"), /*#__PURE__*/React.createElement("span", {
+  }, "v262"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13750,7 +13745,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v261 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v262 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

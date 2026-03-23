@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v255";
+  var v = "v256";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v255 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v256 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6779,6 +6779,8 @@ function TemporalReplay() {
   // ═══ VIDEO SYNC STATE ═══
   const videoRef = useRef(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(null);
+  const floatVideoRef = useRef(null);
   const [videoOffset, setVideoOffset] = useState(0); // seconds: videoTime - offset = telemetryTime
   const [videoStatus, setVideoStatus] = useState("");
   const [syncData, setSyncData] = useState(null);
@@ -6836,6 +6838,7 @@ function TemporalReplay() {
   const handleVideoFile = useCallback(file => {
     if (!file || !file.type.startsWith("video/")) return;
     const url = URL.createObjectURL(file);
+    setVideoUrl(url);
     if (videoRef.current) {
       if (videoRef.current.src && videoRef.current.src.startsWith("blob:")) URL.revokeObjectURL(videoRef.current.src);
       videoRef.current.src = url;
@@ -6891,6 +6894,24 @@ function TemporalReplay() {
       }
     }
   }, [time, playing, speed, videoLoaded, videoOffset]);
+
+  // ═══ FLOATING VIDEO SYNC ═══
+  useEffect(() => {
+    const vid = floatVideoRef.current;
+    if (!vid || !videoUrl) return;
+    if (!vid.src || vid.src !== videoUrl) { vid.src = videoUrl; vid.load(); }
+    const targetVideoTime = time + videoOffset;
+    if (!playing) {
+      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+      if (!vid.paused) vid.pause();
+    } else {
+      if (vid.paused) vid.play().catch(() => {});
+      vid.playbackRate = speed * 0.8;
+      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+    }
+  }, [time, playing, speed, videoUrl, videoOffset]);
 
   // ═══ RESOLVED DATA — loaded or demo ═══
   const isLoaded = telemetrySource === "loaded" && loadedEvents;
@@ -7302,7 +7323,9 @@ function TemporalReplay() {
       color: telemetryStatus.startsWith("❌") ? "#ff4444" : telemetryStatus.startsWith("✅") ? "#00e5ff" : "#ffaa00",
       fontFamily: mono
     }
-  }, telemetryStatus))), /*#__PURE__*/React.createElement("div", {
+  }, telemetryStatus), isLoaded && loadedMeta && /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 7, color: "rgba(255,255,255,0.3)", fontFamily: mono, marginLeft: 8 }
+  }, "\u23F0 ", loadedMeta.sessionId || ""))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginLeft: 0,
       transition: "margin-left 0.3s"
@@ -13377,7 +13400,30 @@ function TemporalReplay() {
     }, "\u23F1 SYNC.JSON", /*#__PURE__*/React.createElement("input", {
       type: "file", accept: ".json", style: { display: "none" },
       onChange: e => { handleSyncFile(e.target.files[0]); e.target.value = ""; }
-    }))))))), /*#__PURE__*/React.createElement("div", {
+    }))))))), videoLoaded && tab !== "video" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed", bottom: 16, right: 16, width: 380, zIndex: 1000,
+      background: "rgba(6,6,16,0.95)", borderRadius: 10,
+      border: "1px solid rgba(0,229,255,0.15)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between",
+      borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 8, fontFamily: mono, letterSpacing: 2, color: "rgba(255,255,255,0.3)" }
+  }, "GAMEPLAY"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", alignItems: "center", gap: 6 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 5, height: 5, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71" }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 9, fontFamily: mono, color: "white" }
+  }, Math.floor(time / 60) + ":" + String(Math.floor(time % 60)).padStart(2, "0")))), /*#__PURE__*/React.createElement("video", {
+    ref: floatVideoRef, muted: true, playsInline: true,
+    style: { width: "100%", height: 214, objectFit: "contain", background: "#000", display: "block" }
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       marginTop: 20,
@@ -13386,7 +13432,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v47 \u2022 AUTO-LOAD \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v256 \u2022 AUTO-LOAD \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

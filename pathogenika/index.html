@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v258";
+  var v = "v259";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v258 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v259 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6781,7 +6781,12 @@ function TemporalReplay() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
   const floatVideoRef = useRef(null);
-  const algVideoRef = useRef(null);
+  const [videoFileName, setVideoFileName] = useState(() => {
+    try { return localStorage.getItem("pathogenika-video-file") || ""; } catch(e) { return ""; }
+  });
+  const [telemetryFileName, setTelemetryFileName] = useState(() => {
+    try { return localStorage.getItem("pathogenika-telemetry-file") || ""; } catch(e) { return ""; }
+  });
   const [videoOffset, setVideoOffset] = useState(0); // seconds: videoTime - offset = telemetryTime
   const [videoStatus, setVideoStatus] = useState("");
   const [syncData, setSyncData] = useState(null);
@@ -6823,6 +6828,8 @@ function TemporalReplay() {
         setLoadedMeta(meta);
         setTelemetrySource("loaded");
         setTelemetryStatus("✅ " + events.length + " events • " + meta.duration.toFixed(0) + "s • " + meta.label);
+        setTelemetryFileName(file.name);
+        try { localStorage.setItem("pathogenika-telemetry-file", file.name); } catch(e) {}
       } catch (err) {
         setTelemetryStatus("❌ Parse error: " + err.message);
       }
@@ -6840,6 +6847,8 @@ function TemporalReplay() {
     if (!file || !file.type.startsWith("video/")) return;
     const url = URL.createObjectURL(file);
     setVideoUrl(url);
+    setVideoFileName(file.name);
+    try { localStorage.setItem("pathogenika-video-file", file.name); } catch(e) {}
     if (videoRef.current) {
       if (videoRef.current.src && videoRef.current.src.startsWith("blob:")) URL.revokeObjectURL(videoRef.current.src);
       videoRef.current.src = url;
@@ -6899,24 +6908,6 @@ function TemporalReplay() {
   // ═══ FLOATING VIDEO SYNC ═══
   useEffect(() => {
     const vid = floatVideoRef.current;
-    if (!vid || !videoUrl) return;
-    if (!vid.src || vid.src !== videoUrl) { vid.src = videoUrl; vid.load(); }
-    const targetVideoTime = time + videoOffset;
-    if (!playing) {
-      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-      if (!vid.paused) vid.pause();
-    } else {
-      if (vid.paused) vid.play().catch(() => {});
-      vid.playbackRate = speed * 0.8;
-      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
-        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
-    }
-  }, [time, playing, speed, videoUrl, videoOffset]);
-
-  // ═══ ALGORITHM TAB VIDEO SYNC ═══
-  useEffect(() => {
-    const vid = algVideoRef.current;
     if (!vid || !videoUrl) return;
     if (!vid.src || vid.src !== videoUrl) { vid.src = videoUrl; vid.load(); }
     const targetVideoTime = time + videoOffset;
@@ -7349,7 +7340,87 @@ function TemporalReplay() {
       marginLeft: 0,
       transition: "margin-left 0.3s"
     }
-  }, tab === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, videoLoaded && tab !== "video" && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 12, background: "rgba(6,6,16,0.95)", borderRadius: 10,
+      border: "1px solid rgba(0,229,255,0.12)", overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", alignItems: "stretch" }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 560, minHeight: 315, background: "#000", position: "relative", flexShrink: 0 }
+  }, /*#__PURE__*/React.createElement("video", {
+    ref: floatVideoRef, muted: true, playsInline: true,
+    style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", top: 6, left: 8, display: "flex", alignItems: "center", gap: 6 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 7, height: 7, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 8px #00ff88" : "none" }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 10, color: "rgba(255,255,255,0.6)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "GAMEPLAY")), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", bottom: 6, right: 8 }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 12, color: "white", background: "rgba(0,0,0,0.7)", padding: "2px 8px", borderRadius: 4, fontWeight: 600 }
+  }, Math.floor(time / 60) + ":" + String(Math.floor(time % 60)).padStart(2, "0") + "." + Math.floor((time % 1) * 10))),
+    videoFileName && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", bottom: 6, left: 8 }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.3)", background: "rgba(0,0,0,0.5)", padding: "2px 5px", borderRadius: 3 }
+  }, videoFileName))), /*#__PURE__*/React.createElement("div", {
+    style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "12px 16px", gap: 8 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 9, fontFamily: mono, letterSpacing: 2, color: "rgba(255,255,255,0.3)" }
+  }, "SESSION"), isLoaded && loadedMeta && /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 11, fontFamily: mono, color: "#00e5ff", fontWeight: 600 }
+  }, loadedMeta.label || "LOADED"),
+    isLoaded && loadedMeta && /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 9, fontFamily: mono, color: "rgba(255,255,255,0.3)" }
+  }, loadedMeta.sessionId, " \u2022 ", loadedMeta.duration, "s \u2022 ", loadedMeta.eventCount, " events"),
+    syncData && /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 8, fontFamily: mono, color: "rgba(255,255,255,0.2)", marginTop: 4 }
+  }, "Offset: ", videoOffset.toFixed(2), "s \u2022 ", syncData.recordStartCST || ""),
+    telemetryFileName && /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 8, fontFamily: mono, color: "rgba(255,255,255,0.15)", marginTop: 2 }
+  }, "\uD83D\uDCCA ", telemetryFileName)))),
+  /*#__PURE__*/React.createElement("div", {
+    style: { padding: "6px 12px 8px", cursor: "pointer", position: "relative", height: 20 },
+    onClick: e => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const newTime = pct * activeDuration;
+      setTime(newTime);
+    },
+    onMouseDown: e => {
+      const bar = e.currentTarget;
+      const scrub = ev => {
+        const rect = bar.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+        setTime(pct * activeDuration);
+      };
+      const stop = () => { document.removeEventListener("mousemove", scrub); document.removeEventListener("mouseup", stop); };
+      document.addEventListener("mousemove", scrub);
+      document.addEventListener("mouseup", stop);
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute", top: 8, left: 12, right: 12, height: 4,
+      background: "rgba(255,255,255,0.06)", borderRadius: 2
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute", top: 8, left: 12, height: 4, borderRadius: 2,
+      width: (activeDuration > 0 ? (time / activeDuration) * 100 : 0) + "%",
+      background: "linear-gradient(90deg, #00e5ff, #a855f7)", maxWidth: "calc(100% - 24px)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute", top: 4, height: 12, width: 12, borderRadius: "50%",
+      background: "#fff", border: "2px solid #00e5ff", boxShadow: "0 0 8px rgba(0,229,255,0.4)",
+      left: "calc(" + (activeDuration > 0 ? (time / activeDuration) * 100 : 0) + "% + " + (12 - 6) + "px)",
+      transform: "translateX(-50%)", cursor: "grab"
+    }
+  })), tab === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -10846,9 +10917,9 @@ function TemporalReplay() {
         direction: "ltr"
       }
     }, /*#__PURE__*/React.createElement("svg", {
-      width: W + 300,
+      width: W,
       height: H,
-      viewBox: `-392 0 ${W + 392} ${H}`,
+      viewBox: `-92 0 ${W + 92} ${H}`,
       style: {
         display: "block",
         margin: "0 auto",
@@ -10880,25 +10951,7 @@ function TemporalReplay() {
       in: "blur"
     }), /*#__PURE__*/React.createElement("feMergeNode", {
       in: "SourceGraphic"
-    })))), videoLoaded && /*#__PURE__*/React.createElement("foreignObject", {
-      x: -385, y: 20, width: 285, height: 400
-    }, /*#__PURE__*/React.createElement("div", {
-      xmlns: "http://www.w3.org/1999/xhtml",
-      style: { width: "100%", height: "100%", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(0,229,255,0.2)", background: "#000", position: "relative", boxShadow: "0 4px 24px rgba(0,0,0,0.5)" }
-    }, /*#__PURE__*/React.createElement("video", {
-      ref: algVideoRef, muted: true, playsInline: true,
-      style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
-    }), /*#__PURE__*/React.createElement("div", {
-      style: { position: "absolute", top: 4, left: 6, display: "flex", alignItems: "center", gap: 5 }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: { width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 6px #00ff88" : "none" }
-    }), /*#__PURE__*/React.createElement("span", {
-      style: { fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.6)", letterSpacing: 1.5 }
-    }, "GAMEPLAY")), /*#__PURE__*/React.createElement("div", {
-      style: { position: "absolute", bottom: 4, right: 6 }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: { fontFamily: mono, fontSize: 10, color: "white", background: "rgba(0,0,0,0.7)", padding: "2px 6px", borderRadius: 4 }
-    }, Math.floor(time / 60) + ":" + String(Math.floor(time % 60)).padStart(2, "0") + "." + Math.floor((time % 1) * 10))))), [{
+    })))), [{
       label: "INPUT",
       sub: "devices",
       x: boxX + boxW / 2,
@@ -13437,30 +13490,7 @@ function TemporalReplay() {
     }, "\u23F1 SYNC.JSON", /*#__PURE__*/React.createElement("input", {
       type: "file", accept: ".json", style: { display: "none" },
       onChange: e => { handleSyncFile(e.target.files[0]); e.target.value = ""; }
-    }))))))), videoLoaded && tab !== "video" && tab !== "career" && /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "fixed", bottom: 16, right: 16, width: 380, zIndex: 1000,
-      background: "rgba(6,6,16,0.95)", borderRadius: 10,
-      border: "1px solid rgba(0,229,255,0.15)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-      overflow: "hidden"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between",
-      borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)"
-    }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: { fontSize: 8, fontFamily: mono, letterSpacing: 2, color: "rgba(255,255,255,0.3)" }
-  }, "GAMEPLAY"), /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", alignItems: "center", gap: 6 }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: { width: 5, height: 5, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71" }
-  }), /*#__PURE__*/React.createElement("span", {
-    style: { fontSize: 9, fontFamily: mono, color: "white" }
-  }, Math.floor(time / 60) + ":" + String(Math.floor(time % 60)).padStart(2, "0")))), /*#__PURE__*/React.createElement("video", {
-    ref: floatVideoRef, muted: true, playsInline: true,
-    style: { width: "100%", height: 214, objectFit: "contain", background: "#000", display: "block" }
-  })), /*#__PURE__*/React.createElement("div", {
+    }))))))), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       marginTop: 20,
@@ -13469,7 +13499,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v258 \u2022 AUTO-LOAD \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v259 \u2022 AUTO-LOAD \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

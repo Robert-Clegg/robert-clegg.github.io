@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v262";
+  var v = "v263";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v262 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v263 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6945,6 +6945,20 @@ function TemporalReplay() {
     }
   }, [time, playing, speed, videoLoaded, videoOffset]);
 
+  // ═══ FLOATING VIDEO SRC ASSIGNMENT (handles late-arriving blobs) ═══
+  useEffect(() => {
+    const vid = floatVideoRef.current;
+    if (vid && videoUrl && (!vid.src || !vid.src.startsWith("blob:"))) { vid.src = videoUrl; vid.load(); }
+  }, [videoUrl, videoLoaded]);
+  useEffect(() => {
+    const vid = floatOverviewRef.current;
+    if (vid && overviewUrl && (!vid.src || !vid.src.startsWith("blob:"))) { vid.src = overviewUrl; vid.load(); }
+  }, [overviewUrl, overviewLoaded]);
+  useEffect(() => {
+    const vid = floatActionRef.current;
+    if (vid && actionUrl && (!vid.src || !vid.src.startsWith("blob:"))) { vid.src = actionUrl; vid.load(); }
+  }, [actionUrl, actionLoaded]);
+
   // ═══ FLOATING VIDEO SYNC ═══
   useEffect(() => {
     const vid = floatVideoRef.current;
@@ -7399,7 +7413,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v262"), /*#__PURE__*/React.createElement("span", {
+  }, "v263"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -13745,7 +13759,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v262 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v263 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

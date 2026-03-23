@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v267";
+  var v = "v268";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v267 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v268 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7145,9 +7145,9 @@ function TemporalReplay() {
           }).catch(() => {});
         };
         loadVideo(playerFile, setVideoUrl, setVideoFileName, setVideoLoaded);
-        // DISABLED: overview decode causes player video stutter (3x 1080p concurrent decode)
+        // DISABLED: concurrent video decode causes stutter
         // loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, setOverviewLoaded);
-        loadVideo(actionToLoad, setActionUrl, setActionFileName, setActionLoaded);
+        // loadVideo(actionToLoad, setActionUrl, setActionFileName, setActionLoaded);
         // Load telemetry
         if (telemetryFile) {
           const telemetryMatch = files.find(f => f.name === telemetryFile);
@@ -7418,7 +7418,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v267"), /*#__PURE__*/React.createElement("span", {
+  }, "v268"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7557,13 +7557,12 @@ function TemporalReplay() {
       border: "1px solid rgba(0,229,255,0.12)", overflow: "hidden"
     }
   },
-  // ── 3-CAMERA GRID ──
+  // ── PLAYER VIEW (full width — single video for performance) ──
   /*#__PURE__*/React.createElement("div", {
     style: { display: "flex", gap: 2, background: "#000", maxHeight: "31vh" }
   },
-  // ── PLAYER VIEW (large, left) ──
   /*#__PURE__*/React.createElement("div", {
-    style: { flex: "1 1 60%", position: "relative", overflow: "hidden" }
+    style: { flex: "1 1 100%", position: "relative", overflow: "hidden" }
   }, /*#__PURE__*/React.createElement("video", {
     ref: floatVideoRef, muted: true, playsInline: true,
     style: { width: "100%", height: "100%", objectFit: "contain", objectPosition: "center bottom", display: "block", background: "#000" }
@@ -7582,29 +7581,7 @@ function TemporalReplay() {
     style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
   }, /*#__PURE__*/React.createElement("span", {
     style: { fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.15)", letterSpacing: 2 }
-  }, "NO PLAYER VIDEO"))),
-  // ── RIGHT COLUMN: ACTION ONLY (overview disabled for performance) ──
-  /*#__PURE__*/React.createElement("div", {
-    style: { flex: "1 1 40%", display: "flex", flexDirection: "column", gap: 2 }
-  },
-  // ── ACTION ──
-  /*#__PURE__*/React.createElement("div", {
-    style: { flex: 1, position: "relative", background: "#000", overflow: "hidden" }
-  }, /*#__PURE__*/React.createElement("video", {
-    ref: floatActionRef, muted: true, playsInline: true,
-    style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: { position: "absolute", top: 4, left: 6, display: "flex", alignItems: "center", gap: 4 }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: { width: 5, height: 5, borderRadius: "50%", background: actionLoaded ? "#ff6b35" : "rgba(255,255,255,0.15)" }
-  }), /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, fontWeight: 600 }
-  }, "ACTION")),
-  !actionLoaded && /*#__PURE__*/React.createElement("div", {
-    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)", letterSpacing: 2 }
-  }, "DECISION ZONE"))))),
+  }, "NO PLAYER VIDEO")))),
   // ── SCRUBBER (below all 3 videos) ──
   /*#__PURE__*/React.createElement("div", {
     style: { padding: "6px 12px 8px", cursor: "pointer", position: "relative", height: 20 },
@@ -13746,7 +13723,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v267 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v268 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

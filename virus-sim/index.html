@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v265";
+  var v = "v267";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v265 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v267 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7141,7 +7141,8 @@ function TemporalReplay() {
           }).catch(() => {});
         };
         loadVideo(playerFile, setVideoUrl, setVideoFileName, setVideoLoaded);
-        loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, setOverviewLoaded);
+        // DISABLED: overview decode causes player video stutter (3x 1080p concurrent decode)
+        // loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, setOverviewLoaded);
         loadVideo(actionFile, setActionUrl, setActionFileName, setActionLoaded);
         // Load telemetry
         if (telemetryFile) {
@@ -7413,7 +7414,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v265"), /*#__PURE__*/React.createElement("span", {
+  }, "v267"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7558,7 +7559,7 @@ function TemporalReplay() {
   },
   // ── PLAYER VIEW (large, left) ──
   /*#__PURE__*/React.createElement("div", {
-    style: { flex: "1 1 55%", position: "relative", overflow: "hidden" }
+    style: { flex: "1 1 60%", position: "relative", overflow: "hidden" }
   }, /*#__PURE__*/React.createElement("video", {
     ref: floatVideoRef, muted: true, playsInline: true,
     style: { width: "100%", height: "100%", objectFit: "contain", objectPosition: "center bottom", display: "block", background: "#000" }
@@ -7578,28 +7579,10 @@ function TemporalReplay() {
   }, /*#__PURE__*/React.createElement("span", {
     style: { fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.15)", letterSpacing: 2 }
   }, "NO PLAYER VIDEO"))),
-  // ── RIGHT COLUMN: OVERVIEW + ACTION (stacked) ──
+  // ── RIGHT COLUMN: ACTION ONLY (overview disabled for performance) ──
   /*#__PURE__*/React.createElement("div", {
-    style: { flex: "1 1 45%", display: "flex", flexDirection: "column", gap: 2 }
+    style: { flex: "1 1 40%", display: "flex", flexDirection: "column", gap: 2 }
   },
-  // ── OVERVIEW ──
-  /*#__PURE__*/React.createElement("div", {
-    style: { flex: 1, position: "relative", background: "#000", overflow: "hidden" }
-  }, /*#__PURE__*/React.createElement("video", {
-    ref: floatOverviewRef, muted: true, playsInline: true,
-    style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
-  }), /*#__PURE__*/React.createElement("div", {
-    style: { position: "absolute", top: 4, left: 6, display: "flex", alignItems: "center", gap: 4 }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: { width: 5, height: 5, borderRadius: "50%", background: overviewLoaded ? "#a855f7" : "rgba(255,255,255,0.15)" }
-  }), /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, fontWeight: 600 }
-  }, "OVERVIEW")),
-  !overviewLoaded && /*#__PURE__*/React.createElement("div", {
-    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
-  }, /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)", letterSpacing: 2 }
-  }, "GOD MODE"))),
   // ── ACTION ──
   /*#__PURE__*/React.createElement("div", {
     style: { flex: 1, position: "relative", background: "#000", overflow: "hidden" }
@@ -13759,7 +13742,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v265 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v267 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

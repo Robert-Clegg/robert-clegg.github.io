@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v259";
+  var v = "v260";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Pathogenika v259 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Pathogenika v260 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6776,11 +6776,23 @@ function TemporalReplay() {
   const [loadedEvents, setLoadedEvents] = useState(null);
   const [loadedMeta, setLoadedMeta] = useState(null); // {duration, playerTeam, sessionId, label}
   const [telemetryStatus, setTelemetryStatus] = useState("");
-  // ═══ VIDEO SYNC STATE ═══
+  // ═══ VIDEO SYNC STATE (3-CAMERA) ═══
   const videoRef = useRef(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoUrl, setVideoUrl] = useState(null);
   const floatVideoRef = useRef(null);
+  // ── Overview camera (god-mode) ──
+  const overviewVideoRef = useRef(null);
+  const [overviewLoaded, setOverviewLoaded] = useState(false);
+  const [overviewUrl, setOverviewUrl] = useState(null);
+  const floatOverviewRef = useRef(null);
+  const [overviewFileName, setOverviewFileName] = useState("");
+  // ── Action camera (tight zoom) ──
+  const actionVideoRef = useRef(null);
+  const [actionLoaded, setActionLoaded] = useState(false);
+  const [actionUrl, setActionUrl] = useState(null);
+  const floatActionRef = useRef(null);
+  const [actionFileName, setActionFileName] = useState("");
   const [videoFileName, setVideoFileName] = useState(() => {
     try { return localStorage.getItem("pathogenika-video-file") || ""; } catch(e) { return ""; }
   });
@@ -6860,6 +6872,34 @@ function TemporalReplay() {
     }
   }, []);
 
+  // ═══ OVERVIEW VIDEO FILE HANDLING ═══
+  const handleOverviewFile = useCallback(file => {
+    if (!file || !file.type.startsWith("video/")) return;
+    const url = URL.createObjectURL(file);
+    setOverviewUrl(url);
+    setOverviewFileName(file.name);
+    if (overviewVideoRef.current) {
+      if (overviewVideoRef.current.src && overviewVideoRef.current.src.startsWith("blob:")) URL.revokeObjectURL(overviewVideoRef.current.src);
+      overviewVideoRef.current.src = url;
+      overviewVideoRef.current.load();
+      overviewVideoRef.current.onloadedmetadata = () => { setOverviewLoaded(true); };
+    }
+  }, []);
+
+  // ═══ ACTION VIDEO FILE HANDLING ═══
+  const handleActionFile = useCallback(file => {
+    if (!file || !file.type.startsWith("video/")) return;
+    const url = URL.createObjectURL(file);
+    setActionUrl(url);
+    setActionFileName(file.name);
+    if (actionVideoRef.current) {
+      if (actionVideoRef.current.src && actionVideoRef.current.src.startsWith("blob:")) URL.revokeObjectURL(actionVideoRef.current.src);
+      actionVideoRef.current.src = url;
+      actionVideoRef.current.load();
+      actionVideoRef.current.onloadedmetadata = () => { setActionLoaded(true); };
+    }
+  }, []);
+
   const handleSyncFile = useCallback(file => {
     if (!file || !file.name.endsWith(".json")) return;
     const reader = new FileReader();
@@ -6922,6 +6962,76 @@ function TemporalReplay() {
         vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
     }
   }, [time, playing, speed, videoUrl, videoOffset]);
+
+  // ═══ FLOATING OVERVIEW SYNC ═══
+  useEffect(() => {
+    const vid = floatOverviewRef.current;
+    if (!vid || !overviewUrl) return;
+    if (!vid.src || vid.src !== overviewUrl) { vid.src = overviewUrl; vid.load(); }
+    const targetVideoTime = time + videoOffset;
+    if (!playing) {
+      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+      if (!vid.paused) vid.pause();
+    } else {
+      if (vid.paused) vid.play().catch(() => {});
+      vid.playbackRate = speed * 0.8;
+      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+    }
+  }, [time, playing, speed, overviewUrl, videoOffset]);
+
+  // ═══ FLOATING ACTION SYNC ═══
+  useEffect(() => {
+    const vid = floatActionRef.current;
+    if (!vid || !actionUrl) return;
+    if (!vid.src || vid.src !== actionUrl) { vid.src = actionUrl; vid.load(); }
+    const targetVideoTime = time + videoOffset;
+    if (!playing) {
+      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+      if (!vid.paused) vid.pause();
+    } else {
+      if (vid.paused) vid.play().catch(() => {});
+      vid.playbackRate = speed * 0.8;
+      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+    }
+  }, [time, playing, speed, actionUrl, videoOffset]);
+
+  // ═══ OVERVIEW VIDEO TAB SYNC ═══
+  useEffect(() => {
+    const vid = overviewVideoRef.current;
+    if (!vid || !overviewLoaded) return;
+    const targetVideoTime = time + videoOffset;
+    if (!playing) {
+      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+      if (!vid.paused) vid.pause();
+    } else {
+      if (vid.paused) vid.play().catch(() => {});
+      vid.playbackRate = speed * 0.8;
+      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+    }
+  }, [time, playing, speed, overviewLoaded, videoOffset]);
+
+  // ═══ ACTION VIDEO TAB SYNC ═══
+  useEffect(() => {
+    const vid = actionVideoRef.current;
+    if (!vid || !actionLoaded) return;
+    const targetVideoTime = time + videoOffset;
+    if (!playing) {
+      if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+      if (!vid.paused) vid.pause();
+    } else {
+      if (vid.paused) vid.play().catch(() => {});
+      vid.playbackRate = speed * 0.8;
+      if (Math.abs(vid.currentTime - targetVideoTime) > 1.0)
+        vid.currentTime = Math.max(0, Math.min(targetVideoTime, vid.duration || 9999));
+    }
+  }, [time, playing, speed, actionLoaded, videoOffset]);
 
   // ═══ RESOLVED DATA — loaded or demo ═══
   const isLoaded = telemetrySource === "loaded" && loadedEvents;
@@ -7210,7 +7320,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v259"), /*#__PURE__*/React.createElement("span", {
+  }, "v260"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7340,49 +7450,79 @@ function TemporalReplay() {
       marginLeft: 0,
       transition: "margin-left 0.3s"
     }
-  }, videoLoaded && tab !== "video" && /*#__PURE__*/React.createElement("div", {
+  }, (videoLoaded || overviewLoaded || actionLoaded) && tab !== "video" && /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 12, background: "rgba(6,6,16,0.95)", borderRadius: 10,
       border: "1px solid rgba(0,229,255,0.12)", overflow: "hidden"
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", alignItems: "stretch" }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: { width: 560, minHeight: 315, background: "#000", position: "relative", flexShrink: 0 }
+  },
+  // ── 3-CAMERA GRID ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 2, background: "#000" }
+  },
+  // ── PLAYER VIEW (large, left) ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: "1 1 50%", position: "relative", minHeight: 280 }
   }, /*#__PURE__*/React.createElement("video", {
     ref: floatVideoRef, muted: true, playsInline: true,
-    style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
+    style: { width: "100%", height: "100%", objectFit: "contain", display: "block", background: "#000" }
   }), /*#__PURE__*/React.createElement("div", {
     style: { position: "absolute", top: 6, left: 8, display: "flex", alignItems: "center", gap: 6 }
   }, /*#__PURE__*/React.createElement("div", {
     style: { width: 7, height: 7, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 8px #00ff88" : "none" }
   }), /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 10, color: "rgba(255,255,255,0.6)", letterSpacing: 1.5, fontWeight: 600 }
-  }, "GAMEPLAY")), /*#__PURE__*/React.createElement("div", {
+    style: { fontFamily: mono, fontSize: 10, color: "rgba(255,255,255,0.7)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "PLAYER VIEW")), /*#__PURE__*/React.createElement("div", {
     style: { position: "absolute", bottom: 6, right: 8 }
   }, /*#__PURE__*/React.createElement("span", {
     style: { fontFamily: mono, fontSize: 12, color: "white", background: "rgba(0,0,0,0.7)", padding: "2px 8px", borderRadius: 4, fontWeight: 600 }
   }, Math.floor(time / 60) + ":" + String(Math.floor(time % 60)).padStart(2, "0") + "." + Math.floor((time % 1) * 10))),
-    videoFileName && /*#__PURE__*/React.createElement("div", {
-    style: { position: "absolute", bottom: 6, left: 8 }
+  !videoLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
   }, /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.3)", background: "rgba(0,0,0,0.5)", padding: "2px 5px", borderRadius: 3 }
-  }, videoFileName))), /*#__PURE__*/React.createElement("div", {
-    style: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "12px 16px", gap: 8 }
+    style: { fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.15)", letterSpacing: 2 }
+  }, "NO PLAYER VIDEO"))),
+  // ── RIGHT COLUMN: OVERVIEW + ACTION (stacked) ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: "1 1 50%", display: "flex", flexDirection: "column", gap: 2 }
+  },
+  // ── OVERVIEW ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: 1, position: "relative", minHeight: 139, background: "#000" }
+  }, /*#__PURE__*/React.createElement("video", {
+    ref: floatOverviewRef, muted: true, playsInline: true,
+    style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", top: 4, left: 6, display: "flex", alignItems: "center", gap: 4 }
   }, /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 9, fontFamily: mono, letterSpacing: 2, color: "rgba(255,255,255,0.3)" }
-  }, "SESSION"), isLoaded && loadedMeta && /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 11, fontFamily: mono, color: "#00e5ff", fontWeight: 600 }
-  }, loadedMeta.label || "LOADED"),
-    isLoaded && loadedMeta && /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 9, fontFamily: mono, color: "rgba(255,255,255,0.3)" }
-  }, loadedMeta.sessionId, " \u2022 ", loadedMeta.duration, "s \u2022 ", loadedMeta.eventCount, " events"),
-    syncData && /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 8, fontFamily: mono, color: "rgba(255,255,255,0.2)", marginTop: 4 }
-  }, "Offset: ", videoOffset.toFixed(2), "s \u2022 ", syncData.recordStartCST || ""),
-    telemetryFileName && /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 8, fontFamily: mono, color: "rgba(255,255,255,0.15)", marginTop: 2 }
-  }, "\uD83D\uDCCA ", telemetryFileName)))),
+    style: { width: 5, height: 5, borderRadius: "50%", background: overviewLoaded ? "#a855f7" : "rgba(255,255,255,0.15)" }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "OVERVIEW")),
+  !overviewLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)", letterSpacing: 2 }
+  }, "GOD MODE"))),
+  // ── ACTION ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: 1, position: "relative", minHeight: 139, background: "#000" }
+  }, /*#__PURE__*/React.createElement("video", {
+    ref: floatActionRef, muted: true, playsInline: true,
+    style: { width: "100%", height: "100%", objectFit: "contain", display: "block" }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", top: 4, left: 6, display: "flex", alignItems: "center", gap: 4 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 5, height: 5, borderRadius: "50%", background: actionLoaded ? "#ff6b35" : "rgba(255,255,255,0.15)" }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "ACTION")),
+  !actionLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)", letterSpacing: 2 }
+  }, "DECISION ZONE"))))),
+  // ── SCRUBBER (below all 3 videos) ──
   /*#__PURE__*/React.createElement("div", {
     style: { padding: "6px 12px 8px", cursor: "pointer", position: "relative", height: 20 },
     onClick: e => {
@@ -7420,7 +7560,7 @@ function TemporalReplay() {
       left: "calc(" + (activeDuration > 0 ? (time / activeDuration) * 100 : 0) + "% + " + (12 - 6) + "px)",
       transform: "translateX(-50%)", cursor: "grab"
     }
-  })), tab === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }))), tab === "overview" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -13350,16 +13490,18 @@ function TemporalReplay() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: { display: "flex", gap: 16, alignItems: "stretch", minHeight: 500 }
-  }, /*#__PURE__*/React.createElement("div", {
+  },
+  // ── LEFT: 3 VIDEO PANELS ──
+  /*#__PURE__*/React.createElement("div", {
     style: { flex: "1 1 65%", display: "flex", flexDirection: "column", gap: 8 }
   }, /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 9, letterSpacing: 2, color: "rgba(255,255,255,0.3)", fontFamily: mono, marginBottom: 4 }
+  }, "MULTI-CAMERA CAPTURE \u2022 3 SIMULTANEOUS VIEWS"),
+  // ── DROP ZONE (handles all files) ──
+  /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 9, letterSpacing: 2, color: "rgba(255,255,255,0.3)", fontFamily: mono, marginBottom: 4
-    }
-  }, "GAMEPLAY VIDEO"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      flex: 1, background: "#000", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)",
-      position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden"
+      background: "#000", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)",
+      position: "relative", padding: 8, overflow: "hidden"
     },
     onDragOver: e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(168,85,247,0.5)"; },
     onDragLeave: e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; },
@@ -13367,130 +13509,152 @@ function TemporalReplay() {
       e.preventDefault();
       e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
       const files = Array.from(e.dataTransfer.files);
-      const vid = files.find(f => f.type.startsWith("video/"));
+      // Auto-detect multi-camera files by name pattern
+      const player = files.find(f => f.name.includes("_player") && f.type.startsWith("video/"));
+      const overview = files.find(f => f.name.includes("_overview") && f.type.startsWith("video/"));
+      const action = files.find(f => f.name.includes("_action") && f.type.startsWith("video/"));
       const sync = files.find(f => f.name.endsWith("_sync.json"));
-      if (vid) handleVideoFile(vid);
+      const anyVid = files.find(f => f.type.startsWith("video/"));
+      // If multi-camera names detected, load each; else fallback to single video
+      if (player) handleVideoFile(player);
+      else if (anyVid && !overview && !action) handleVideoFile(anyVid);
+      if (overview) handleOverviewFile(overview);
+      if (action) handleActionFile(action);
       if (sync) handleSyncFile(sync);
     }
-  }, !videoLoaded ? /*#__PURE__*/React.createElement("div", {
-    style: { textAlign: "center", color: "rgba(255,255,255,0.15)" }
+  },
+  // ── Drop prompt (shown when nothing loaded) ──
+  !(videoLoaded || overviewLoaded || actionLoaded) && /*#__PURE__*/React.createElement("div", {
+    style: { textAlign: "center", color: "rgba(255,255,255,0.15)", padding: "40px 0" }
   }, /*#__PURE__*/React.createElement("div", { style: { fontSize: 36, marginBottom: 8 } }, "\uD83C\uDFAC"),
     /*#__PURE__*/React.createElement("div", {
       style: { fontSize: 10, fontFamily: mono, letterSpacing: 2 }
-    }, "DROP VIDEO + SYNC.JSON HERE"),
+    }, "DROP ALL FILES HERE"),
     /*#__PURE__*/React.createElement("div", {
       style: { fontSize: 8, fontFamily: mono, marginTop: 8, color: "rgba(255,255,255,0.1)" }
-    }, "From Desktop/PathogenikaCapture/")
-  ) : null, /*#__PURE__*/React.createElement("video", {
-    ref: videoRef,
-    muted: true,
-    playsInline: true,
-    style: {
-      width: "100%", height: "100%", objectFit: "contain", display: videoLoaded ? "block" : "none"
-    }
-  }), videoLoaded && /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute", bottom: 6, left: 6, background: "rgba(0,0,0,0.75)",
-      borderRadius: 6, padding: "4px 10px", display: "flex", alignItems: "center", gap: 8
-    }
+    }, "_player.mp4 \u2022 _overview.mp4 \u2022 _action.mp4 \u2022 _sync.json")),
+  // ── 3-CAMERA GRID ──
+  (videoLoaded || overviewLoaded || actionLoaded) && /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 4 }
+  },
+  // Player View
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: "1 1 50%", position: "relative", minHeight: 260, background: "#111", borderRadius: 4, overflow: "hidden" }
+  }, /*#__PURE__*/React.createElement("video", {
+    ref: videoRef, muted: true, playsInline: true,
+    style: { width: "100%", height: "100%", objectFit: "contain", display: videoLoaded ? "block" : "none" }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", top: 4, left: 6, display: "flex", alignItems: "center", gap: 4 }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 6, height: 6, borderRadius: "50%",
-      background: playing ? "#00ff88" : "#ff3d71",
-      boxShadow: playing ? "0 0 8px #00ff88" : "none"
-    }
+    style: { width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : (videoLoaded ? "#ff3d71" : "rgba(255,255,255,0.15)") }
   }), /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 11, color: "white" }
-  }, Math.floor((time + videoOffset) / 60) + ":" + String(Math.floor((time + videoOffset) % 60)).padStart(2, "0") + "." + Math.floor(((time + videoOffset) % 1) * 10)),
-    /*#__PURE__*/React.createElement("span", {
-      style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.3)", letterSpacing: 1 }
-    }, "VIDEO TIME")
-  ))), /*#__PURE__*/React.createElement("div", {
+    style: { fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.6)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "PLAYER VIEW")),
+  videoLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", bottom: 4, right: 6 }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 11, color: "white", background: "rgba(0,0,0,0.7)", padding: "2px 6px", borderRadius: 3, fontWeight: 600 }
+  }, Math.floor((time + videoOffset) / 60) + ":" + String(Math.floor((time + videoOffset) % 60)).padStart(2, "0"))),
+  !videoLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)" } }, "No player video"))),
+  // Right column: Overview + Action stacked
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: "1 1 50%", display: "flex", flexDirection: "column", gap: 4 }
+  },
+  // Overview
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: 1, position: "relative", minHeight: 128, background: "#111", borderRadius: 4, overflow: "hidden" }
+  }, /*#__PURE__*/React.createElement("video", {
+    ref: overviewVideoRef, muted: true, playsInline: true,
+    style: { width: "100%", height: "100%", objectFit: "contain", display: overviewLoaded ? "block" : "none" }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", top: 3, left: 5, display: "flex", alignItems: "center", gap: 3 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 5, height: 5, borderRadius: "50%", background: overviewLoaded ? "#a855f7" : "rgba(255,255,255,0.15)" }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 7, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "OVERVIEW \u2022 GOD MODE")),
+  !overviewLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)" } }, "Drop _overview.mp4"))),
+  // Action
+  /*#__PURE__*/React.createElement("div", {
+    style: { flex: 1, position: "relative", minHeight: 128, background: "#111", borderRadius: 4, overflow: "hidden" }
+  }, /*#__PURE__*/React.createElement("video", {
+    ref: actionVideoRef, muted: true, playsInline: true,
+    style: { width: "100%", height: "100%", objectFit: "contain", display: actionLoaded ? "block" : "none" }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", top: 3, left: 5, display: "flex", alignItems: "center", gap: 3 }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { width: 5, height: 5, borderRadius: "50%", background: actionLoaded ? "#ff6b35" : "rgba(255,255,255,0.15)" }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: { fontFamily: mono, fontSize: 7, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5, fontWeight: 600 }
+  }, "ACTION \u2022 DECISION ZONE")),
+  !actionLoaded && /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
+  }, /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.1)" } }, "Drop _action.mp4")))))),
+  // ── RIGHT SIDEBAR: SYNC CONTROLS ──
+  /*#__PURE__*/React.createElement("div", {
     style: { flex: "1 1 35%", display: "flex", flexDirection: "column", gap: 12 }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 9, letterSpacing: 2, color: "rgba(255,255,255,0.3)", fontFamily: mono
-    }
+    style: { fontSize: 9, letterSpacing: 2, color: "rgba(255,255,255,0.3)", fontFamily: mono }
   }, "SYNC CONTROLS"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12,
-      border: "1px solid rgba(255,255,255,0.04)"
-    }
+    style: { background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12, border: "1px solid rgba(255,255,255,0.04)" }
   }, /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: mono, marginBottom: 8 }
   }, "VIDEO OFFSET (seconds)"), /*#__PURE__*/React.createElement("div", {
     style: { display: "flex", gap: 4, alignItems: "center" }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setVideoOffset(prev => prev - 0.5),
-    style: {
-      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-      color: "white", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 10
-    }
+    style: { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 10 }
   }, "-0.5"), /*#__PURE__*/React.createElement("span", {
     style: { fontFamily: mono, fontSize: 14, color: "#00e5ff", minWidth: 60, textAlign: "center" }
   }, videoOffset.toFixed(2) + "s"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setVideoOffset(prev => prev + 0.5),
-    style: {
-      background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-      color: "white", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 10
-    }
+    style: { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 10 }
   }, "+0.5"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setVideoOffset(0),
-    style: {
-      background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-      color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, marginLeft: 8
-    }
-  }, "RESET"))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12,
-      border: "1px solid rgba(255,255,255,0.04)"
-    }
+    style: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 9, marginLeft: 8 }
+  }, "RESET"))),
+  // ── Camera status ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12, border: "1px solid rgba(255,255,255,0.04)" }
   }, /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: mono, marginBottom: 8 }
-  }, "STATUS"), videoStatus ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 10, fontFamily: mono, color: videoStatus.startsWith("\u274C") ? "#ff4444" : "#00e5ff",
-      lineHeight: 1.6, wordBreak: "break-all"
-    }
-  }, videoStatus) : /*#__PURE__*/React.createElement("div", {
-    style: { fontSize: 9, fontFamily: mono, color: "rgba(255,255,255,0.15)" }
-  }, "No video loaded")), syncData && /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12,
-      border: "1px solid rgba(255,255,255,0.04)"
-    }
+  }, "CAMERA STATUS"),
+  [["PLAYER", videoLoaded, videoFileName, "#00e5ff"], ["OVERVIEW", overviewLoaded, overviewFileName, "#a855f7"], ["ACTION", actionLoaded, actionFileName, "#ff6b35"]].map(function(c) { return /*#__PURE__*/React.createElement("div", {
+    key: c[0],
+    style: { fontSize: 9, fontFamily: mono, color: c[1] ? c[3] : "rgba(255,255,255,0.15)", lineHeight: 2 }
+  }, c[1] ? "\u2713" : "\u2717", " ", c[0], c[1] ? " \u2022 " + c[2] : ""); })),
+  // ── Sync metadata ──
+  syncData && /*#__PURE__*/React.createElement("div", {
+    style: { background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12, border: "1px solid rgba(255,255,255,0.04)" }
   }, /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: mono, marginBottom: 8 }
-  }, "SYNC METADATA"), Object.entries(syncData).filter(([k]) => k !== "telemetryPattern").slice(0, 8).map(([k, v]) => /*#__PURE__*/React.createElement("div", {
-    key: k,
+  }, "SYNC METADATA", syncData.version === 2 ? " (v2 — 3-CAM)" : ""), Object.entries(syncData).filter(function(e) { return e[0] !== "telemetryPattern" && e[0] !== "cameras" && e[0] !== "resolution"; }).slice(0, 8).map(function(e) { return /*#__PURE__*/React.createElement("div", {
+    key: e[0],
     style: { fontSize: 8, fontFamily: mono, color: "rgba(255,255,255,0.25)", lineHeight: 1.8 }
-  }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.4)" } }, k), ": ", /*#__PURE__*/React.createElement("span", { style: { color: "#00e5ff" } }, String(v))))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12,
-      border: "1px solid rgba(255,255,255,0.04)"
-    }
+  }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.4)" } }, e[0]), ": ", /*#__PURE__*/React.createElement("span", { style: { color: "#00e5ff" } }, String(e[1]))); })),
+  // ── File inputs ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 12, border: "1px solid rgba(255,255,255,0.04)" }
   }, /*#__PURE__*/React.createElement("div", {
     style: { fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: mono, marginBottom: 8 }
-  }, "FILE INPUTS"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 8 } },
+  }, "FILE INPUTS"), /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6 } },
+  /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6 } },
     /*#__PURE__*/React.createElement("label", {
-      style: {
-        flex: 1, background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.3)",
-        borderRadius: 4, padding: "8px 12px", cursor: "pointer", textAlign: "center",
-        fontFamily: mono, fontSize: 9, color: "#a855f7", letterSpacing: 1
-      }
-    }, "\uD83C\uDFAC VIDEO", /*#__PURE__*/React.createElement("input", {
-      type: "file", accept: "video/*", style: { display: "none" },
-      onChange: e => { handleVideoFile(e.target.files[0]); e.target.value = ""; }
-    })), /*#__PURE__*/React.createElement("label", {
-      style: {
-        flex: 1, background: "rgba(0,229,255,0.1)", border: "1px solid rgba(0,229,255,0.3)",
-        borderRadius: 4, padding: "8px 12px", cursor: "pointer", textAlign: "center",
-        fontFamily: mono, fontSize: 9, color: "#00e5ff", letterSpacing: 1
-      }
-    }, "\u23F1 SYNC.JSON", /*#__PURE__*/React.createElement("input", {
-      type: "file", accept: ".json", style: { display: "none" },
-      onChange: e => { handleSyncFile(e.target.files[0]); e.target.value = ""; }
-    }))))))), /*#__PURE__*/React.createElement("div", {
+      style: { flex: 1, background: "rgba(0,229,255,0.08)", border: "1px solid rgba(0,229,255,0.25)", borderRadius: 4, padding: "6px 8px", cursor: "pointer", textAlign: "center", fontFamily: mono, fontSize: 8, color: "#00e5ff", letterSpacing: 1 }
+    }, "\uD83C\uDFAC PLAYER", /*#__PURE__*/React.createElement("input", { type: "file", accept: "video/*", style: { display: "none" }, onChange: function(e) { handleVideoFile(e.target.files[0]); e.target.value = ""; } })),
+    /*#__PURE__*/React.createElement("label", {
+      style: { flex: 1, background: "rgba(168,85,247,0.08)", border: "1px solid rgba(168,85,247,0.25)", borderRadius: 4, padding: "6px 8px", cursor: "pointer", textAlign: "center", fontFamily: mono, fontSize: 8, color: "#a855f7", letterSpacing: 1 }
+    }, "\uD83C\uDF10 OVERVIEW", /*#__PURE__*/React.createElement("input", { type: "file", accept: "video/*", style: { display: "none" }, onChange: function(e) { handleOverviewFile(e.target.files[0]); e.target.value = ""; } })),
+    /*#__PURE__*/React.createElement("label", {
+      style: { flex: 1, background: "rgba(255,107,53,0.08)", border: "1px solid rgba(255,107,53,0.25)", borderRadius: 4, padding: "6px 8px", cursor: "pointer", textAlign: "center", fontFamily: mono, fontSize: 8, color: "#ff6b35", letterSpacing: 1 }
+    }, "\uD83C\uDFAF ACTION", /*#__PURE__*/React.createElement("input", { type: "file", accept: "video/*", style: { display: "none" }, onChange: function(e) { handleActionFile(e.target.files[0]); e.target.value = ""; } }))),
+  /*#__PURE__*/React.createElement("label", {
+    style: { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "6px 8px", cursor: "pointer", textAlign: "center", fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.4)", letterSpacing: 1 }
+  }, "\u23F1 SYNC.JSON", /*#__PURE__*/React.createElement("input", { type: "file", accept: ".json", style: { display: "none" }, onChange: function(e) { handleSyncFile(e.target.files[0]); e.target.value = ""; } })))))))), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       marginTop: 20,
@@ -13499,7 +13663,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v259 \u2022 AUTO-LOAD \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v260 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

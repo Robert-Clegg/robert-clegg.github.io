@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v260";
+  var v = "v261";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v260 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v261 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7089,6 +7089,90 @@ function TemporalReplay() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // ═══ AUTO-LOAD FROM CAPTURE SERVER (localhost:8099) ═══
+  const [autoLoadStatus, setAutoLoadStatus] = useState("");
+  const autoLoadAttempted = useRef(false);
+  useEffect(() => {
+    if (autoLoadAttempted.current) return;
+    autoLoadAttempted.current = true;
+    const SERVER = "http://localhost:8099";
+    setAutoLoadStatus("Connecting to capture server...");
+    fetch(SERVER + "/", { mode: "cors" }).then(r => r.json()).then(files => {
+      setAutoLoadStatus("Found " + files.length + " files");
+      // Find the latest sync.json by modified date
+      const syncs = files.filter(f => f.name.endsWith("_sync.json")).sort((a, b) => b.modified.localeCompare(a.modified));
+      if (syncs.length === 0) { setAutoLoadStatus("No sync.json found"); return; }
+      const latestSync = syncs[0];
+      setAutoLoadStatus("Loading session: " + latestSync.name);
+      // Fetch and parse sync.json
+      fetch(SERVER + "/" + latestSync.path).then(r => r.json()).then(syncJson => {
+        // Apply sync data
+        setSyncData(syncJson);
+        setVideoOffset(syncJson.videoToTelemetryOffset || 0);
+        // Determine video filenames (v2 multi-cam or v1 single)
+        const cameras = syncJson.cameras || {};
+        const playerFile = cameras.player || syncJson.videoFile || "";
+        const overviewFile = cameras.overview || "";
+        const actionFile = cameras.action || "";
+        const telemetryFile = syncJson.telemetryFile || "";
+        // Helper: load a video blob into a ref
+        const loadVideo = (filename, setUrl, setName, ref, setLoaded) => {
+          if (!filename) return;
+          fetch(SERVER + "/" + filename).then(r => r.blob()).then(blob => {
+            const url = URL.createObjectURL(blob);
+            setUrl(url);
+            setName(filename);
+            const vid = ref.current;
+            if (vid) {
+              if (vid.src && vid.src.startsWith("blob:")) URL.revokeObjectURL(vid.src);
+              vid.src = url; vid.load();
+              vid.onloadedmetadata = () => { setLoaded(true); };
+            }
+          }).catch(() => {});
+        };
+        loadVideo(playerFile, setVideoUrl, setVideoFileName, videoRef, setVideoLoaded);
+        loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, overviewVideoRef, setOverviewLoaded);
+        loadVideo(actionFile, setActionUrl, setActionFileName, actionVideoRef, setActionLoaded);
+        // Load telemetry
+        if (telemetryFile) {
+          const telemetryMatch = files.find(f => f.name === telemetryFile);
+          const telemetryUrl = telemetryMatch ? telemetryMatch.path : ("telemetry/" + telemetryFile);
+          fetch(SERVER + "/" + telemetryUrl).then(r => r.json()).then(raw => {
+            const events = (raw.events || []).map(e => ({
+              t: e.timestamp != null ? e.timestamp : e.t,
+              type: e.eventType || e.type,
+              data: e.data || {}
+            })).sort((a, b) => a.t - b.t);
+            if (events.length === 0) return;
+            const pathogenTypes = new Set(["VirusType", "PneumoniaType", "MycobacteriumType", "TuberculosisType"]);
+            const immuneTypes = new Set(["NeutrophilType", "TCellType", "NKCellType", "MacrophageType"]);
+            const firstSwitch = events.find(e => e.type === "SwitchEvent");
+            const unitType = firstSwitch?.data?.toUnitType || "";
+            const team = pathogenTypes.has(unitType) ? "pathogen" : immuneTypes.has(unitType) ? "immune" : "unknown";
+            const duration = raw.matchDuration || Math.max(...events.map(e => e.t || 0));
+            const meta = {
+              duration: Math.round(duration * 10) / 10,
+              playerTeam: raw.playerTeam || (team === "pathogen" ? 1 : 2),
+              sessionId: raw.sessionId || telemetryFile.replace(".json", ""),
+              label: team === "pathogen" ? "PATHOGEN PLAYER" : team === "immune" ? "IMMUNE PLAYER" : telemetryFile.replace(".json", ""),
+              team, eventCount: events.length, fileName: telemetryFile
+            };
+            setLoadedEvents(events);
+            setLoadedMeta(meta);
+            setTelemetrySource("loaded");
+            setTelemetryStatus("\u2705 " + events.length + " events \u2022 " + meta.duration.toFixed(0) + "s \u2022 " + meta.label);
+            setTelemetryFileName(telemetryFile);
+          }).catch(() => {});
+        }
+        setAutoLoadStatus("\u2705 " + latestSync.name.replace("_sync.json", ""));
+        setVideoStatus("\u2705 Auto-loaded from capture server");
+      }).catch(err => { setAutoLoadStatus("\u274C Sync error: " + err.message); });
+    }).catch(() => {
+      setAutoLoadStatus("No capture server");
+    });
+  }, []);
+
   const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
   const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
   const treeEvents = isLoaded ? loadedEvents : treeSession === "commander" ? COMMANDER_EVENTS : SOLDIER_EVENTS;
@@ -7320,7 +7404,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v260"), /*#__PURE__*/React.createElement("span", {
+  }, "v261"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7445,7 +7529,10 @@ function TemporalReplay() {
     }
   }, telemetryStatus), isLoaded && loadedMeta && /*#__PURE__*/React.createElement("span", {
     style: { fontSize: 7, color: "rgba(255,255,255,0.3)", fontFamily: mono, marginLeft: 8 }
-  }, "\u23F0 ", loadedMeta.sessionId || ""))), /*#__PURE__*/React.createElement("div", {
+  }, "\u23F0 ", loadedMeta.sessionId || ""),
+    autoLoadStatus && /*#__PURE__*/React.createElement("span", {
+    style: { fontSize: 7, color: autoLoadStatus.startsWith("\u2705") ? "#00e5ff" : autoLoadStatus.startsWith("\u274C") ? "#ff4444" : "#ffaa00", fontFamily: mono, marginLeft: 8 }
+  }, "\uD83D\uDD17 ", autoLoadStatus))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginLeft: 0,
       transition: "margin-left 0.3s"
@@ -13663,7 +13750,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v260 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v261 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

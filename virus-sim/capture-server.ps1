@@ -110,10 +110,11 @@ try {
             $Response.Close()
 
             $SizeMB = [math]::Round($FileInfo.Length / 1MB, 1)
-            Write-Host "[200] $UrlPath ($SizeMB MB)" -ForegroundColor Green
+            Write-Host "[200] $UrlPath - ${SizeMB} MB" -ForegroundColor Green
         } else {
             $Response.StatusCode = 404
-            $Body = [System.Text.Encoding]::UTF8.GetBytes("Not found: $UrlPath")
+            $NotFoundMsg = "Not found: $UrlPath"
+            $Body = [System.Text.Encoding]::UTF8.GetBytes($NotFoundMsg)
             $Response.OutputStream.Write($Body, 0, $Body.Length)
             $Response.Close()
             Write-Host "[404] $UrlPath" -ForegroundColor Yellow
@@ -121,5 +122,6 @@ try {
     }
 } finally {
     $Listener.Stop()
-    Write-Host "`n[STOPPED] Server shut down." -ForegroundColor Red
+    Write-Host ""
+    Write-Host "[STOPPED] Server shut down." -ForegroundColor Red
 }

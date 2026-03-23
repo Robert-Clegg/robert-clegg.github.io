@@ -7129,6 +7129,10 @@ function TemporalReplay() {
         const playerFile = cameras.player || syncJson.videoFile || "";
         const overviewFile = cameras.overview || "";
         const actionFile = cameras.action || "";
+        // Prefer downscaled action (_action_sm.mp4) for smooth playback
+        const actionSmFile = actionFile ? actionFile.replace("_action.mp4", "_action_sm.mp4") : "";
+        const hasActionSm = actionSmFile && files.some(f => f.name === actionSmFile);
+        const actionToLoad = hasActionSm ? actionSmFile : actionFile;
         const telemetryFile = syncJson.telemetryFile || "";
         // Helper: load a video blob — set state immediately, sync effects handle the element
         const loadVideo = (filename, setUrl, setName, setLoaded) => {
@@ -7143,7 +7147,7 @@ function TemporalReplay() {
         loadVideo(playerFile, setVideoUrl, setVideoFileName, setVideoLoaded);
         // DISABLED: overview decode causes player video stutter (3x 1080p concurrent decode)
         // loadVideo(overviewFile, setOverviewUrl, setOverviewFileName, setOverviewLoaded);
-        loadVideo(actionFile, setActionUrl, setActionFileName, setActionLoaded);
+        loadVideo(actionToLoad, setActionUrl, setActionFileName, setActionLoaded);
         // Load telemetry
         if (telemetryFile) {
           const telemetryMatch = files.find(f => f.name === telemetryFile);

@@ -50,12 +50,7 @@ try {
         $UrlPath = $Request.Url.LocalPath.TrimStart("/")
 
         if ($UrlPath -eq "" -or $UrlPath -eq "/") {
-            # Exclude web/ subdirectory — those are compressed copies for hosting.
-            # Dashboard should always load the full-resolution originals from root.
-            $WebDir = Join-Path $Root "web"
-            $AllFiles = Get-ChildItem -Path $Root -Recurse -File |
-                Where-Object { -not $_.FullName.StartsWith($WebDir) } |
-                ForEach-Object {
+            $AllFiles = Get-ChildItem -Path $Root -Recurse -File | ForEach-Object {
                 $RelPath = $_.FullName.Substring($Root.Length + 1).Replace("\", "/")
                 @{
                     name = $_.Name

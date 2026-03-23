@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v278";
+  var v = "v279";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v278 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v279 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -6794,6 +6794,7 @@ function TemporalReplay() {
   const floatActionRef = useRef(null);
   const [actionFileName, setActionFileName] = useState("");
   const [activeCamera, setActiveCamera] = useState("player"); // "player" | "overview" | "action"
+  const loadInputRef = useRef(null);
   const [videoFileName, setVideoFileName] = useState(() => {
     try { return localStorage.getItem("pathogenika-video-file") || ""; } catch(e) { return ""; }
   });
@@ -7263,7 +7264,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v278"), /*#__PURE__*/React.createElement("span", {
+  }, "v279"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7396,10 +7397,39 @@ function TemporalReplay() {
       marginLeft: 0,
       transition: "margin-left 0.3s"
     }
-  }, tab !== "video" && /*#__PURE__*/React.createElement("div", {
+  },
+  // ── Hidden file input at root level for LOAD button (avoids positioned container issues) ──
+  /*#__PURE__*/React.createElement("input", {
+    ref: loadInputRef, type: "file", multiple: true, accept: "video/*,.json",
+    style: { display: "none" },
+    onChange: e => {
+      Array.from(e.target.files).forEach(f => {
+        if (f.name.includes("_player") && f.type.startsWith("video/")) handleVideoFile(f);
+        else if (f.name.includes("_overview") && f.type.startsWith("video/")) handleOverviewFile(f);
+        else if (f.name.includes("_action") && f.type.startsWith("video/")) handleActionFile(f);
+        else if (f.type.startsWith("video/")) handleVideoFile(f);
+        else if (f.name.endsWith("_sync.json")) handleSyncFile(f);
+        else if (f.name.endsWith(".json")) parseTelemetryFile(f);
+      });
+      e.target.value = "";
+    }
+  }),
+  tab !== "video" && /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: 12, background: "rgba(6,6,16,0.95)", borderRadius: 10,
       border: "1px solid rgba(0,229,255,0.12)", overflow: "hidden"
+    },
+    onDragOver: e => { e.preventDefault(); e.stopPropagation(); },
+    onDrop: e => {
+      e.preventDefault(); e.stopPropagation();
+      Array.from(e.dataTransfer.files).forEach(f => {
+        if (f.name.includes("_player") && f.type.startsWith("video/")) handleVideoFile(f);
+        else if (f.name.includes("_overview") && f.type.startsWith("video/")) handleOverviewFile(f);
+        else if (f.name.includes("_action") && f.type.startsWith("video/")) handleActionFile(f);
+        else if (f.type.startsWith("video/")) handleVideoFile(f);
+        else if (f.name.endsWith("_sync.json")) handleSyncFile(f);
+        else if (f.name.endsWith(".json")) parseTelemetryFile(f);
+      });
     }
   },
   // ── SINGLE VIDEO + CAMERA SWITCHER (one decode at a time) ──
@@ -7445,31 +7475,12 @@ function TemporalReplay() {
       borderColor: activeCamera === "action" ? "rgba(255,107,53,0.5)" : "rgba(255,255,255,0.15)",
       color: activeCamera === "action" ? "#ff6b35" : "rgba(255,255,255,0.4)" }
   }, "ACTION"),
-  // ── LOAD button — input[type=file] styled as button (most reliable) ──
-  /*#__PURE__*/React.createElement("div", {
-    style: { position: "relative", overflow: "hidden", display: "inline-block", marginLeft: 4,
-      borderRadius: 3, border: "1px solid rgba(0,255,136,0.5)", background: "rgba(0,255,136,0.15)" }
-  },
-  /*#__PURE__*/React.createElement("span", {
-    style: { fontFamily: mono, fontSize: 8, letterSpacing: 1, padding: "2px 8px", color: "#00ff88",
-      pointerEvents: "none", position: "relative", zIndex: 1 }
-  }, "\u2795 LOAD"),
-  /*#__PURE__*/React.createElement("input", {
-    type: "file", multiple: true, accept: "video/*,.json",
-    style: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
-      opacity: 0, cursor: "pointer" },
-    onChange: e => {
-      Array.from(e.target.files).forEach(f => {
-        if (f.name.includes("_player") && f.type.startsWith("video/")) handleVideoFile(f);
-        else if (f.name.includes("_overview") && f.type.startsWith("video/")) handleOverviewFile(f);
-        else if (f.name.includes("_action") && f.type.startsWith("video/")) handleActionFile(f);
-        else if (f.type.startsWith("video/")) handleVideoFile(f);
-        else if (f.name.endsWith("_sync.json")) handleSyncFile(f);
-        else if (f.name.endsWith(".json")) parseTelemetryFile(f);
-      });
-      e.target.value = "";
-    }
-  }))),
+  // ── LOAD button — clicks the hidden input ref at root level ──
+  /*#__PURE__*/React.createElement("button", {
+    onClick: () => { if (loadInputRef.current) loadInputRef.current.click(); },
+    style: { fontFamily: mono, fontSize: 8, letterSpacing: 1, padding: "2px 8px", borderRadius: 3, border: "1px solid",
+      cursor: "pointer", background: "rgba(0,255,136,0.15)", borderColor: "rgba(0,255,136,0.5)", color: "#00ff88", marginLeft: 4 }
+  }, "\u2795 LOAD")),
   // ── Timestamp (bottom-right) ──
   /*#__PURE__*/React.createElement("div", {
     style: { position: "absolute", bottom: 6, right: 8 }
@@ -13622,7 +13633,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v278 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v279 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

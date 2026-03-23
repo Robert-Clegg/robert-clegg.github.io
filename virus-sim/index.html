@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v276";
+  var v = "v277";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v276 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v277 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7263,7 +7263,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v276"), /*#__PURE__*/React.createElement("span", {
+  }, "v277"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7445,14 +7445,15 @@ function TemporalReplay() {
       borderColor: activeCamera === "action" ? "rgba(255,107,53,0.5)" : "rgba(255,255,255,0.15)",
       color: activeCamera === "action" ? "#ff6b35" : "rgba(255,255,255,0.4)" }
   }, "ACTION"),
-  // ── LOAD button — programmatically opens file picker ──
+  // ── LOAD button — appends input to body for reliable file picker ──
   /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       const inp = document.createElement("input");
       inp.type = "file"; inp.multiple = true; inp.accept = "video/*,.json";
+      inp.style.display = "none";
+      document.body.appendChild(inp);
       inp.onchange = () => {
-        const files = Array.from(inp.files);
-        files.forEach(f => {
+        Array.from(inp.files).forEach(f => {
           if (f.name.includes("_player") && f.type.startsWith("video/")) handleVideoFile(f);
           else if (f.name.includes("_overview") && f.type.startsWith("video/")) handleOverviewFile(f);
           else if (f.name.includes("_action") && f.type.startsWith("video/")) handleActionFile(f);
@@ -7460,6 +7461,7 @@ function TemporalReplay() {
           else if (f.name.endsWith("_sync.json")) handleSyncFile(f);
           else if (f.name.endsWith(".json")) parseTelemetryFile(f);
         });
+        document.body.removeChild(inp);
       };
       inp.click();
     },
@@ -13618,7 +13620,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v276 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v277 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

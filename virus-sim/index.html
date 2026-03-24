@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v279";
+  var v = "v281";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v279 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v281 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -7264,7 +7264,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v279"), /*#__PURE__*/React.createElement("span", {
+  }, "v281"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -7475,8 +7475,24 @@ function TemporalReplay() {
       borderColor: activeCamera === "action" ? "rgba(255,107,53,0.5)" : "rgba(255,255,255,0.15)",
       color: activeCamera === "action" ? "#ff6b35" : "rgba(255,255,255,0.4)" }
   }, "ACTION"),
-  // ── LOAD button — clicks the hidden input ref at root level ──
-  /*#__PURE__*/React.createElement("label",{style:{fontFamily:mono,fontSize:8,letterSpacing:1,padding:"2px 8px",borderRadius:3,border:"1px solid",cursor:"pointer",background:"rgba(0,255,136,0.15)",borderColor:"rgba(0,255,136,0.5)",color:"#00ff88",marginLeft:4,display:"inline-block"}},"\u2795 LOAD",React.createElement("input",{type:"file",multiple:true,accept:"video/*,.json",style:{display:"none"},onChange:e=>{Array.from(e.target.files).forEach(f=>{if(f.name.includes("_player")&&f.type.startsWith("video/"))handleVideoFile(f);else if(f.name.includes("_overview")&&f.type.startsWith("video/"))handleOverviewFile(f);else if(f.name.includes("_action")&&f.type.startsWith("video/"))handleActionFile(f);else if(f.type.startsWith("video/"))handleVideoFile(f);else if(f.name.endsWith("_sync.json"))handleSyncFile(f);else if(f.name.endsWith(".json"))parseTelemetryFile(f);});e.target.value=""}})),
+  // ── LOAD button — label wrapping hidden file input (same pattern as working 📊 button) ──
+  /*#__PURE__*/React.createElement("label", {
+    style: { fontFamily: mono, fontSize: 8, letterSpacing: 1, padding: "2px 8px", borderRadius: 3, border: "1px solid",
+      cursor: "pointer", background: "rgba(0,255,136,0.15)", borderColor: "rgba(0,255,136,0.5)", color: "#00ff88", marginLeft: 4, display: "inline-flex", alignItems: "center" }
+  }, "\u2795 LOAD", /*#__PURE__*/React.createElement("input", {
+    type: "file", multiple: true, accept: "video/*,.json", style: { display: "none" },
+    onChange: e => {
+      Array.from(e.target.files).forEach(f => {
+        if (f.name.includes("_player") && f.type.startsWith("video/")) handleVideoFile(f);
+        else if (f.name.includes("_overview") && f.type.startsWith("video/")) handleOverviewFile(f);
+        else if (f.name.includes("_action") && f.type.startsWith("video/")) handleActionFile(f);
+        else if (f.type.startsWith("video/")) handleVideoFile(f);
+        else if (f.name.endsWith("_sync.json")) handleSyncFile(f);
+        else if (f.name.endsWith(".json")) parseTelemetryFile(f);
+      });
+      e.target.value = "";
+    }
+  }))),
   // ── Timestamp (bottom-right) ──
   /*#__PURE__*/React.createElement("div", {
     style: { position: "absolute", bottom: 6, right: 8 }
@@ -13629,7 +13645,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v279 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v281 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

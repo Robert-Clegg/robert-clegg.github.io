@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v285";
+  var v = "v286";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v285 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v286 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2447,10 +2447,10 @@ function TemporalReplay() {
 
   // ═══ RESOLVED DATA — loaded or demo ═══
   const isLoaded = telemetrySource === "loaded" && loadedEvents;
-  const activeEvents = isLoaded ? loadedEvents : treeSession === "commander" ? COMMANDER_EVENTS : SOLDIER_EVENTS;
+  const activeEvents = isLoaded ? loadedEvents : [];
   const activeDuration = isLoaded ? loadedMeta?.duration || MAX_DUR : MAX_DUR;
-  const activeLabel = isLoaded ? loadedMeta?.label || "LOADED" : treeSession === "commander" ? "THE COMMANDER" : "THE SOLDIER";
-  const activeTeam = isLoaded ? loadedMeta?.team || "unknown" : treeSession;
+  const activeLabel = isLoaded ? loadedMeta?.label || "LOADED" : "NO DATA";
+  const activeTeam = isLoaded ? loadedMeta?.team || "unknown" : "none";
   const activeColor = activeTeam === "pathogen" ? C_COLOR : S_COLOR;
 
   // ═══ AUTO-LOAD from local server ═══
@@ -2506,9 +2506,9 @@ function TemporalReplay() {
   const [autoLoadStatus, setAutoLoadStatus] = useState("Load files via VIDEO tab");
   const autoLoadAttempted = useRef(false);
 
-  const soldierProfile = computeProfile(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
-  const commanderProfile = computeProfile(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
-  const treeEvents = isLoaded ? loadedEvents : treeSession === "commander" ? COMMANDER_EVENTS : SOLDIER_EVENTS;
+  const soldierProfile = isLoaded ? computeProfile(loadedEvents, time) : {};
+  const commanderProfile = isLoaded ? computeProfile(loadedEvents, time) : {};
+  const treeEvents = isLoaded ? loadedEvents : [];
   const treeActivation = useMemo(() => computeTreeActivation(treeEvents, time), [treeEvents, time]);
   const radarData = AXES.map(axis => ({
     axis: AXIS_LABELS[axis],
@@ -2521,11 +2521,11 @@ function TemporalReplay() {
 
   // Filtered event feeds - exclude background combat
   const filterFeed = (events, t) => events.filter(e => e.t <= t && e.t > t - 15 && e.type !== "CombatEvent" && e.type !== "ViewEvent").slice(-5);
-  const recentSoldier = filterFeed(isLoaded ? loadedEvents : SOLDIER_EVENTS, time);
-  const recentCommander = filterFeed(isLoaded ? loadedEvents : COMMANDER_EVENTS, time);
+  const recentSoldier = isLoaded ? filterFeed(loadedEvents, time) : [];
+  const recentCommander = isLoaded ? filterFeed(loadedEvents, time) : [];
 
   // Also count background combat as rolling stats
-  const recentCombatCount = (isLoaded ? loadedEvents : COMMANDER_EVENTS).filter(e => e.type === "CombatEvent" && e.t <= time && e.t > time - 10).length;
+  const recentCombatCount = isLoaded ? loadedEvents.filter(e => e.type === "CombatEvent" && e.t <= time && e.t > time - 10).length : 0;
   const formatEvent = e => {
     const icons = {
       SwitchEvent: "🔄",
@@ -2737,7 +2737,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v285"), /*#__PURE__*/React.createElement("span", {
+  }, "v286"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -3480,7 +3480,7 @@ function TemporalReplay() {
     }
   }, "BATTLEFIELD \u2022 COMBAT DENSITY \u2022 ", Math.round(time), "s"), /*#__PURE__*/React.createElement(BattlefieldMap, {
     time: time,
-    events: isLoaded ? loadedEvents : COMMANDER_EVENTS,
+    events: isLoaded ? loadedEvents : [],
     height: 300
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3729,7 +3729,7 @@ function TemporalReplay() {
       maxHeight: 200,
       overflowY: "auto"
     }
-  }, (isLoaded ? loadedEvents : COMMANDER_EVENTS).filter(e => e.type === "NodeCaptureEvent" && e.t <= time).map((e, i) => {
+  }, (isLoaded ? loadedEvents : []).filter(e => e.type === "NodeCaptureEvent" && e.t <= time).map((e, i) => {
     const isPathogen = e.data.capturedByTeam === 1;
     const isPlayer = e.data.playerInvolved;
     return /*#__PURE__*/React.createElement("div", {
@@ -3790,7 +3790,7 @@ function TemporalReplay() {
       flexWrap: "wrap",
       gap: 3
     }
-  }, (isLoaded ? loadedEvents : COMMANDER_EVENTS).filter(e => e.type === "SwitchEvent" && e.t <= time).map((e, i) => {
+  }, (isLoaded ? loadedEvents : []).filter(e => e.type === "SwitchEvent" && e.t <= time).map((e, i) => {
     const unit = (e.data.toUnitType || "").replace("Type", "");
     const c = UNIT_COLORS[e.data.toUnitType] || "#888";
     return /*#__PURE__*/React.createElement("div", {
@@ -9126,7 +9126,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v285 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v286 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

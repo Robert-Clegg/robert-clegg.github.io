@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v287";
+  var v = "v288";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v287 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v288 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2157,6 +2157,10 @@ const MBTIScatter = ({
 };
 function TemporalReplay() {
   const [time, setTime] = useState(0);
+  const [dataTime, setDataTime] = useState(0); // throttled time for telemetry (updates every 200ms)
+  const lastDataTimeRef = useRef(0);
+  // seekTo: sets both smooth time and data time immediately (for scrubber/reset)
+  const seekTo = useCallback(t => { setTime(t); setDataTime(t); lastDataTimeRef.current = t; }, []);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [tab, setTab] = useState("career");
@@ -2458,15 +2462,21 @@ function TemporalReplay() {
     if (!playingRef.current) return;
     const now = performance.now();
     if (lastFrameRef.current != null) {
-      const realDt = (now - lastFrameRef.current) / 1000; // real seconds
-      const dt = realDt * speed * 0.8; // game-time seconds (5x slower than real)
+      const realDt = (now - lastFrameRef.current) / 1000;
+      const dt = realDt * speed * 0.8;
       setWallTime(prev => prev + realDt);
       setTime(prev => {
         const next = prev + dt;
         if (next >= activeDuration) {
           playingRef.current = false;
           setPlaying(false);
+          setDataTime(activeDuration);
           return activeDuration;
+        }
+        // Throttle dataTime — only update every 200ms of game time
+        if (next - lastDataTimeRef.current >= 0.2) {
+          lastDataTimeRef.current = next;
+          setDataTime(next);
         }
         return next;
       });
@@ -2506,26 +2516,26 @@ function TemporalReplay() {
   const [autoLoadStatus, setAutoLoadStatus] = useState("Load files via VIDEO tab");
   const autoLoadAttempted = useRef(false);
 
-  const soldierProfile = isLoaded ? computeProfile(loadedEvents, time) : {};
-  const commanderProfile = isLoaded ? computeProfile(loadedEvents, time) : {};
+  const soldierProfile = isLoaded ? computeProfile(loadedEvents, dataTime) : {};
+  const commanderProfile = isLoaded ? computeProfile(loadedEvents, dataTime) : {};
   const treeEvents = isLoaded ? loadedEvents : [];
-  const treeActivation = useMemo(() => computeTreeActivation(treeEvents, time), [treeEvents, time]);
+  const treeActivation = useMemo(() => computeTreeActivation(treeEvents, dataTime), [treeEvents, dataTime]);
   const radarData = AXES.map(axis => ({
     axis: AXIS_LABELS[axis],
     soldier: Math.round(soldierProfile[axis]),
     commander: Math.round(commanderProfile[axis])
   }));
-  const isCommanderWin = time >= 196.8;
+  const isCommanderWin = dataTime >= 196.8;
   const mono = "'JetBrains Mono', monospace";
   const display = "'Outfit', sans-serif";
 
   // Filtered event feeds - exclude background combat
   const filterFeed = (events, t) => events.filter(e => e.t <= t && e.t > t - 15 && e.type !== "CombatEvent" && e.type !== "ViewEvent").slice(-5);
-  const recentSoldier = isLoaded ? filterFeed(loadedEvents, time) : [];
-  const recentCommander = isLoaded ? filterFeed(loadedEvents, time) : [];
+  const recentSoldier = isLoaded ? filterFeed(loadedEvents, dataTime) : [];
+  const recentCommander = isLoaded ? filterFeed(loadedEvents, dataTime) : [];
 
   // Also count background combat as rolling stats
-  const recentCombatCount = isLoaded ? loadedEvents.filter(e => e.type === "CombatEvent" && e.t <= time && e.t > time - 10).length : 0;
+  const recentCombatCount = isLoaded ? loadedEvents.filter(e => e.type === "CombatEvent" && e.t <= dataTime && e.t > dataTime - 10).length : 0;
   const formatEvent = e => {
     const icons = {
       SwitchEvent: "🔄",
@@ -2663,7 +2673,7 @@ function TemporalReplay() {
     onClick: () => {
       playingRef.current = false;
       if (animRef.current) cancelAnimationFrame(animRef.current);
-      setTime(0);
+      seekTo(0);
       setWallTime(0);
       setBioSeed(Math.random());
       setPlaying(false);
@@ -2684,7 +2694,7 @@ function TemporalReplay() {
       playingRef.current = next;
       if (!next && animRef.current) cancelAnimationFrame(animRef.current);
       if (!playing && time >= MAX_DUR - 0.1) {
-        setTime(0);
+        seekTo(0);
         setWallTime(0);
         setBioSeed(Math.random());
       }
@@ -2737,7 +2747,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v287"), /*#__PURE__*/React.createElement("span", {
+  }, "v288"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -2983,14 +2993,14 @@ function TemporalReplay() {
       const rect = e.currentTarget.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       const newTime = pct * activeDuration;
-      setTime(newTime);
+      seekTo(newTime);
     },
     onMouseDown: e => {
       const bar = e.currentTarget;
       const scrub = ev => {
         const rect = bar.getBoundingClientRect();
         const pct = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-        setTime(pct * activeDuration);
+        seekTo(pct * activeDuration);
       };
       const stop = () => { document.removeEventListener("mousemove", scrub); document.removeEventListener("mouseup", stop); };
       document.addEventListener("mousemove", scrub);
@@ -3376,7 +3386,7 @@ function TemporalReplay() {
       letterSpacing: 2
     }
   }, "COMMANDER \u2014 COGNITIVE QUADRANT"), /*#__PURE__*/React.createElement(MBTIScatter, {
-    time: time,
+    time: dataTime,
     session: "commander"
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3387,7 +3397,7 @@ function TemporalReplay() {
       letterSpacing: 2
     }
   }, "SOLDIER \u2014 COGNITIVE QUADRANT"), /*#__PURE__*/React.createElement(MBTIScatter, {
-    time: time,
+    time: dataTime,
     session: "soldier"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3479,7 +3489,7 @@ function TemporalReplay() {
       textAlign: "center"
     }
   }, "BATTLEFIELD \u2022 COMBAT DENSITY \u2022 ", Math.round(time), "s"), /*#__PURE__*/React.createElement(BattlefieldMap, {
-    time: time,
+    time: dataTime,
     events: isLoaded ? loadedEvents : [],
     height: 300
   }), /*#__PURE__*/React.createElement("div", {
@@ -3621,7 +3631,7 @@ function TemporalReplay() {
       marginBottom: 4
     }
   }, "COMMANDER (PATHOGEN)"), /*#__PURE__*/React.createElement(BattlefieldMap, {
-    time: time,
+    time: dataTime,
     session: "commander",
     height: 260
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -3634,7 +3644,7 @@ function TemporalReplay() {
       marginBottom: 4
     }
   }, "SOLDIER (IMMUNE)"), /*#__PURE__*/React.createElement(BattlefieldMap, {
-    time: time,
+    time: dataTime,
     session: "soldier",
     height: 260
   }))), /*#__PURE__*/React.createElement("div", {
@@ -3663,9 +3673,9 @@ function TemporalReplay() {
         binSize = 10;
       const bins = [];
       for (let t = 0; t < maxT; t += binSize) {
-        if (t > time) break;
-        const cmdKills = CMD_COMBAT_DETAIL.filter(c => c[0] >= t && c[0] < t + binSize && c[0] <= time).length;
-        const immKills = IMM_COMBAT_DETAIL.filter(c => c[0] >= t && c[0] < t + binSize && c[0] <= time).length;
+        if (t > dataTime) break;
+        const cmdKills = CMD_COMBAT_DETAIL.filter(c => c[0] >= t && c[0] < t + binSize && c[0] <= dataTime).length;
+        const immKills = IMM_COMBAT_DETAIL.filter(c => c[0] >= t && c[0] < t + binSize && c[0] <= dataTime).length;
         bins.push({
           t: `${t}s`,
           cmd: cmdKills,
@@ -3729,7 +3739,7 @@ function TemporalReplay() {
       maxHeight: 200,
       overflowY: "auto"
     }
-  }, (isLoaded ? loadedEvents : []).filter(e => e.type === "NodeCaptureEvent" && e.t <= time).map((e, i) => {
+  }, (isLoaded ? loadedEvents : []).filter(e => e.type === "NodeCaptureEvent" && e.t <= dataTime).map((e, i) => {
     const isPathogen = e.data.capturedByTeam === 1;
     const isPlayer = e.data.playerInvolved;
     return /*#__PURE__*/React.createElement("div", {
@@ -3790,7 +3800,7 @@ function TemporalReplay() {
       flexWrap: "wrap",
       gap: 3
     }
-  }, (isLoaded ? loadedEvents : []).filter(e => e.type === "SwitchEvent" && e.t <= time).map((e, i) => {
+  }, (isLoaded ? loadedEvents : []).filter(e => e.type === "SwitchEvent" && e.t <= dataTime).map((e, i) => {
     const unit = (e.data.toUnitType || "").replace("Type", "");
     const c = UNIT_COLORS[e.data.toUnitType] || "#888";
     return /*#__PURE__*/React.createElement("div", {
@@ -4345,7 +4355,7 @@ function TemporalReplay() {
     let currentSpeed = 0; // pixels/sec
     const speedHistory = []; // {t, speed} for meter display
     for (const r of rawInputs) {
-      if (r.t > time) break;
+      if (r.t > dataTime) break;
       rawLastFire[r.type] = r.t;
       if (r.hot) rawLastHot[r.type] = r.t;
       if (r.type === "mouse") {
@@ -4430,7 +4440,7 @@ function TemporalReplay() {
     const SPEECH_EVENTS = new Set(["ev_waypoint", "ev_farSwitch", "ev_dock", "ev_capture", "ev_worldDeath"]);
     const TEXT_EVENTS = new Set(["ev_waypoint", "ev_farSwitch", "ev_capture", "ev_dock"]);
     const ICON_EVENTS = new Set(["ev_zoomIn", "ev_zoomOut", "ev_midSwitch", "ev_nearSwitch", "ev_mouseFollow", "ev_death", "ev_worldDeath", "ev_waypoint", "ev_emit", "ev_replicate"]);
-    const allClassified = time < 0.2 ? [] : treeEvents.filter(e => e.t <= time);
+    const allClassified = dataTime < 0.2 ? [] : treeEvents.filter(e => e.t <= dataTime);
     for (const e of allClassified) {
       const sigs = classifyEvent(e);
       for (const s of sigs) {
@@ -4592,7 +4602,7 @@ function TemporalReplay() {
 
     // Trajectory: player-controlled cell positions (most reliable location data)
     for (const t2 of trajectory) {
-      if (t2[0] > time) break;
+      if (t2[0] > dataTime) break;
       const age = time - t2[0];
       const isPath = ["VirusType", "PneumoniaType", "MycobacteriumType", "TuberculosisType"].includes(t2[3]);
       cellSightings.push({
@@ -4605,7 +4615,7 @@ function TemporalReplay() {
     }
     // Combat: both killer and victim positions
     for (const c of combatDetail) {
-      if (c[0] > time) break;
+      if (c[0] > dataTime) break;
       inputNodeFire.enemyDist = c[0];
       inputNodeFire.cellCount = c[0];
       const age = time - c[0];
@@ -4646,7 +4656,7 @@ function TemporalReplay() {
     // Player position from trajectory
     let playerPos = null;
     for (const t2 of trajectory) {
-      if (t2[0] > time) break;
+      if (t2[0] > dataTime) break;
       playerPos = {
         x: t2[1],
         z: t2[2],
@@ -4661,11 +4671,11 @@ function TemporalReplay() {
     nodeOwnership["Base1Node"] = 2; // immune base starts clean
     const nodeCaptures = treeSession === "commander" ? CMD_NODE_CAPTURES : IMM_NODE_CAPTURES;
     for (const c of nodeCaptures) {
-      if (c[0] > time) break;
+      if (c[0] > dataTime) break;
       nodeOwnership[c[1]] = c[2]; // [time, nodeName, capturedByTeam, playerInvolved]
     }
     // Switch events for CELLS input node
-    const treeEventsUpToNow = treeEvents.filter(e => e.t <= time);
+    const treeEventsUpToNow = treeEvents.filter(e => e.t <= dataTime);
     for (const e of treeEventsUpToNow) {
       if (e.type === "SwitchEvent") {
         inputNodeFire.teamPop = e.t;
@@ -4879,12 +4889,12 @@ function TemporalReplay() {
     };
 
     // Event stream: classified events
-    const rawEvents = time < 0.2 ? [] : treeEvents.filter(e => e.t <= time).slice(-14);
+    const rawEvents = dataTime < 0.2 ? [] : treeEvents.filter(e => e.t <= dataTime).slice(-14);
 
     // Compute live-brightness floor from treeActivation (matches mid-playback look)
     const maxEventCount = Math.max(1, ...Object.values(treeActivation.activeCounts || {}));
     const getLiveFinalFloor = (id, type) => {
-      if (time < 2) return 0;
+      if (dataTime < 2) return 0;
       if (type === "event") {
         const c = treeActivation.activeCounts[id] || 0;
         if (id === "ev_worldDeath") return Math.min(0.85, c * 0.012);
@@ -4942,7 +4952,7 @@ function TemporalReplay() {
     const RAW_BURST_INTERVAL = 0.6; // seconds between raw-input bursts
     const RAW_BURST_DURATION = 0.25; // how long each burst lasts
     for (const r of rawInputs) {
-      if (r.t > time) break;
+      if (r.t > dataTime) break;
       // Only seed during burst windows
       const burstPhase = r.t % RAW_BURST_INTERVAL;
       if (burstPhase > RAW_BURST_DURATION) continue;
@@ -4982,7 +4992,7 @@ function TemporalReplay() {
         if (fromArrival === undefined || fromArrival < -900) return;
         const delay = typeof delayFn === "function" ? delayFn(toId) : delayFn;
         const toArrival = fromArrival + delay;
-        if (toArrival <= time) {
+        if (toArrival <= dataTime) {
           propArrival[toId] = Math.max(propArrival[toId] || -999, toArrival);
         }
       });
@@ -5224,7 +5234,7 @@ function TemporalReplay() {
 
     // Is a source currently live? (has signal flowing)
     const isLive = id => {
-      if (time < 2.0) return true; // warmup: everything live at start
+      if (dataTime < 2.0) return true; // warmup: everything live at start
       if (inputNodeFire[id] !== undefined) {
         return firehoseSet.has(id) || time - inputNodeFire[id] < 3.0;
       }
@@ -6699,7 +6709,7 @@ function TemporalReplay() {
 
       // — MOUSE box: LMB | scroll | RMB layout —
       if (box.id === "interact") {
-        const clickData = rawInputs.filter(r => r.type === "click" && r.t <= time && r.t > 0.5).slice(-1)[0];
+        const clickData = rawInputs.filter(r => r.type === "click" && r.t <= dataTime && r.t > 0.5).slice(-1)[0];
         const clickAge = clickData ? time - clickData.t : 999;
         const clickFresh = clickAge < 0.4;
         const isRMB = clickData?.data?.includes("RMB");
@@ -6846,7 +6856,7 @@ function TemporalReplay() {
           const maxSpeed = 400;
           const normSpeed = Math.min(1, currentSpeed / maxSpeed);
           // Compute X and Y deltas from recent mouse data
-          const recentMouse = rawInputs.filter(r => r.type === "mouse" && r.t <= time && r.t > time - 0.5).slice(-5);
+          const recentMouse = rawInputs.filter(r => r.type === "mouse" && r.t <= dataTime && r.t > dataTime - 0.5).slice(-5);
           let deltaX = 0,
             deltaY = 0;
           if (recentMouse.length >= 2) {
@@ -7101,7 +7111,7 @@ function TemporalReplay() {
         const fxAge = time - inputNodeFire.audio;
         const spAge = time - inputNodeFire.linguistic;
         // Mission briefing: both channels alive from t=0 until first real events take over
-        const briefing = time <= 6.0;
+        const briefing = dataTime <= 6.0;
         const briefingFade = briefing ? Math.max(0, 1 - time / 6.0) : 0;
         const fxActive = fxAge < 1.5 && time > 0.1 || briefing;
         const spActive = spAge < 2.0 && time > 0.1 || briefing;
@@ -7407,7 +7417,7 @@ function TemporalReplay() {
         const contentH = boxH - labelH - 2;
 
         // ── UNIT state (embedded at right edge) ──
-        const switchEvents = treeEvents.filter(e => e.type === "SwitchEvent" && e.t <= time);
+        const switchEvents = treeEvents.filter(e => e.type === "SwitchEvent" && e.t <= dataTime);
         const lastSwitch = switchEvents.length > 0 ? switchEvents[switchEvents.length - 1] : null;
         const currentUnit = time > 0.1 && lastSwitch ? lastSwitch?.data?.toUnitType || "" : "";
         const switchAge = lastSwitch ? time - lastSwitch.t : 999;
@@ -8349,7 +8359,7 @@ function TemporalReplay() {
       },
       onClick: e => {
         const rect = e.currentTarget.getBoundingClientRect();
-        setTime((e.clientX - rect.left) / rect.width * MAX_DUR);
+        seekTo((e.clientX - rect.left) / rect.width * MAX_DUR);
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -9133,7 +9143,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v287 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v288 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

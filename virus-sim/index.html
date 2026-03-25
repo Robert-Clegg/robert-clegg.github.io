@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v302";
+  var v = "v303";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v302 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v303 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2771,13 +2771,14 @@ function TemporalReplay() {
   useEffect(() => {
     const vid = floatVideoRef.current;
     if (!vid || !activeCamUrl) return;
-    if (!vid.src || vid.src !== activeCamUrl) { vid.src = activeCamUrl; vid.load(); }
+    // vid.src returns absolute URL; activeCamUrl may be relative — compare by endsWith
+    if (!vid.src || !vid.src.endsWith(activeCamUrl)) { vid.src = activeCamUrl; vid.load(); }
   }, [activeCamUrl, activeCamera, tab]);
 
   // ═══ FLOATING VIDEO SYNC ═══
   useEffect(() => {
     const vid = floatVideoRef.current;
-    if (!vid || !activeCamUrl) return;
+    if (!vid || !activeCamUrl || vid.readyState < 1) return;
     const targetVideoTime = time + videoOffset;
     if (!playing) {
       if (Math.abs(vid.currentTime - targetVideoTime) > 0.3)
@@ -3153,7 +3154,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v302"), /*#__PURE__*/React.createElement("span", {
+  }, "v303"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",

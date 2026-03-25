@@ -2068,7 +2068,7 @@ function SpatialEventMap({ events, time, height = 480 }) {
     // Main SVG
     /*#__PURE__*/React.createElement("svg", {
       viewBox: `0 0 ${W} ${H}`,
-      style: { width: "100%", height, background: "rgba(0,0,0,0.4)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }
+      style: { width: "100%", height, background: "rgba(0,0,0,0.3)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.025)" }
     },
       // Grid lines
       [0.25, 0.5, 0.75].map(f => /*#__PURE__*/React.createElement("g", { key: f },
@@ -3091,7 +3091,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v289"), /*#__PURE__*/React.createElement("span", {
+  }, "v290"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9369,75 +9369,41 @@ function TemporalReplay() {
     };
     return /*#__PURE__*/React.createElement(React.Fragment, null,
       /*#__PURE__*/React.createElement("div", {
-        style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 10, textAlign: "center" }
-      }, "SPATIAL EVENT MAP \u2022 LIVE TELEMETRY \u2022 ", Math.round(time), "s"),
-      // ═══ THREE-COLUMN LAYOUT ═══
-      /*#__PURE__*/React.createElement("div", { style: { display: "grid", gridTemplateColumns: "200px 1fr 210px", gap: 10 }},
-        // ═══ LEFT: EVENT FEED ═══
-        /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: 8, border: "1px solid rgba(255,255,255,0.04)", maxHeight: 560, overflowY: "auto" }},
-          /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 6, textAlign: "center", textTransform: "uppercase" }}, "event feed"),
-          evts.filter(function(e){
-            return e.t <= dt && e.t > dt - 20 && e.type !== "ViewEvent";
-          }).reverse().slice(0,25).map(function(e, i) {
-            var d = e.data;
-            var evColor = "#888", evLabel = e.type.replace("Event", ""), evDetail = "";
-            if (e.type === "CombatEvent") {
-              evColor = (d.playerWasKiller || d.playerUnitKill) ? "#00ff88" : d.playerWasVictim ? "#ff4444" : "#554444";
-              evLabel = d.playerWasVictim ? "DEATH" : (d.playerWasKiller || d.playerUnitKill) ? "Kill" : "AI";
-              evDetail = (d.killerType||"").replace("Type","").substring(0,4) + "\u2192" + (d.victimType||"").replace("Type","").substring(0,4);
-            } else if (e.type === "SwitchEvent") {
-              evColor = d.switchMethod === "DeathRespawn" ? "#ff6b35" : "#00e5ff";
-              evLabel = d.switchMethod === "DeathRespawn" ? "Respwn" : "Swtch";
-              evDetail = (d.toUnitType||"").replace("Type","").substring(0,6);
-            } else if (e.type === "AbilityEvent") {
-              evColor = "#a855f7"; evLabel = (d.ability||"").substring(0,6);
-              evDetail = (d.unitType||"").replace("Type","").substring(0,5);
-            } else if (e.type === "NodeCaptureEvent") {
-              evColor = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff";
-              evLabel = "Capture"; evDetail = (d.nodeName||"").replace("Node","").replace("_"," ");
-            } else if (e.type === "ControlStateEvent") {
-              evColor = "#ffaa00"; evLabel = (d.trigger||"").substring(0,7);
-              evDetail = "";
-            } else if (e.type === "WaypointOutcomeEvent") {
-              evColor = d.outcome === "Arrived" ? "#00ff88" : "#ff4444";
-              evLabel = "WP"; evDetail = (d.outcome||"").substring(0,5);
-            }
-            return /*#__PURE__*/React.createElement("div", {
-              key: i, style: {
-                display: "flex", alignItems: "center", gap: 4, padding: "3px 6px", marginBottom: 2,
-                background: evColor + "08", borderLeft: "2px solid " + evColor, borderRadius: "0 4px 4px 0",
-                fontSize: 8, fontFamily: mono
-              }
-            }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.25)", minWidth: 28 } }, e.t.toFixed(0) + "s"),
-               /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600, minWidth: 42 } }, evLabel),
-               /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.3)", fontSize: 7 } }, evDetail));
-          })
-        ),
-        // ═══ CENTER: MAP ═══
-        /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 560 }),
-        // ═══ RIGHT: DASHBOARD + POPULATION + PROFILE ═══
-        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 }},
-          // Win state indicator
-          /*#__PURE__*/React.createElement("div", { style: {
-            padding: "8px 10px", borderRadius: 8, textAlign: "center",
-            background: pathNodes > immNodes ? "rgba(255,107,53,0.1)" : immNodes > pathNodes ? "rgba(0,212,255,0.1)" : "rgba(255,255,255,0.04)",
-            border: "1px solid " + (pathNodes > immNodes ? "rgba(255,107,53,0.3)" : immNodes > pathNodes ? "rgba(0,212,255,0.3)" : "rgba(255,255,255,0.06)")
-          }},
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.3)", fontFamily: mono, textTransform: "uppercase" }}, "territory"),
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 14, fontWeight: 700, fontFamily: mono, color: pathNodes > immNodes ? "#ff6b35" : immNodes > pathNodes ? "#00d4ff" : "#888" }},
-              "P:", pathNodes, " / I:", immNodes)
+        style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 8, textAlign: "center" }
+      }, "SPATIAL ANALYSIS \u2022 ", Math.round(time), "s \u2022 ", activeLabel),
+      // ═══ TWO-COLUMN: DATA LEFT, MAP RIGHT ═══
+      /*#__PURE__*/React.createElement("div", { style: { display: "grid", gridTemplateColumns: "220px 1fr", gap: 8 }},
+        // ═══ LEFT COLUMN: ALL DATA ═══
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 700, overflowY: "auto" }},
+          // ── Cognitive Profile (top priority) ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,255,0.03)" }},
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 6, textAlign: "center", textTransform: "uppercase" }}, "cognitive profile"),
+            pBar("NT Logic", nt/totalQ*100, "#00d4ff"),
+            pBar("ST Facts", st/totalQ*100, "#ff6b35"),
+            pBar("NF Creative", nf/totalQ*100, "#a855f7"),
+            pBar("SF Emotion", sf/totalQ*100, "#e74c8b"),
+            /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", marginTop: 4, fontSize: 12, fontWeight: 700, color: dominant==="NT"?"#00d4ff":dominant==="ST"?"#ff6b35":dominant==="NF"?"#a855f7":"#e74c8b", fontFamily: mono }}, dominant, " DOMINANT"),
+            /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", fontSize: 7, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginTop: 2 }},
+              dominant === "NT" ? "Strategic planner, systems thinker" :
+              dominant === "ST" ? "Hands-on tactical, detail-focused" :
+              dominant === "NF" ? "Creative explorer, experimenter" : "Cooperative, reactive responder"
+            )
           ),
-          // Counters
-          cBox("Player Kills", playerKills, "#00ff88"),
-          cBox("Deaths", playerDeaths, "#ff4444"),
-          cBox("Waypoints", waypointsSet, "#00d4ff"),
-          cBox("Switches", switches, "#00e5ff"),
-          loadedMeta?.team === "pathogen" && cBox("Replicate", replicates, "#a855f7"),
-          loadedMeta?.team === "pathogen" && cBox("Emit", emits, "#ffaa00"),
-          // Population graph
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: 6, border: "1px solid rgba(255,255,255,0.04)" }},
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "attrition"),
-            /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 70 },
+          // ── Analysis (text insights) ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,255,0.03)" }},
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "analysis"),
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 8, color: "rgba(255,255,255,0.45)", fontFamily: mono, lineHeight: 1.6 }},
+              waypointsSet > 3 ? "High delegation: " + waypointsSet + " waypoints. " : "",
+              playerKills > 10 ? "Active combatant: " + playerKills + " kills. " : "",
+              playerDeaths === 0 ? "Zero deaths. " : playerDeaths > 3 ? playerDeaths + " deaths: under pressure. " : "",
+              replicates > 4 ? "Force multiplier: " + replicates + "x replicate. " : "",
+              switches > 8 ? "High rotation: " + switches + " switches. " : ""
+            )
+          ),
+          // ── Population / Attrition Graph ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)" }},
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "population attrition"),
+            /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 80 },
               /*#__PURE__*/React.createElement(AreaChart, { data: popData },
                 /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "pathLoss", stroke: "#ff6b35", fill: "#ff6b3520", strokeWidth: 1.5, name: "Pathogen losses" }),
                 /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "immLoss", stroke: "#00d4ff", fill: "#00d4ff20", strokeWidth: 1.5, name: "Immune losses" }),
@@ -9445,37 +9411,66 @@ function TemporalReplay() {
                 /*#__PURE__*/React.createElement(YAxis, { hide: true })
               )
             ),
-            /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 7, fontFamily: mono, color: "rgba(255,255,255,0.2)" }},
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 7, fontFamily: mono }},
               /*#__PURE__*/React.createElement("span", { style: { color: "#ff6b35" } }, "Path: -", popData.length > 0 ? popData[popData.length-1].pathLoss : 0),
               /*#__PURE__*/React.createElement("span", { style: { color: "#00d4ff" } }, "Imm: -", popData.length > 0 ? popData[popData.length-1].immLoss : 0)
             )
           ),
-          // Profile emergence
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: 8, border: "1px solid rgba(255,255,255,0.04)" }},
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 6, textAlign: "center", textTransform: "uppercase" }}, "cognitive profile"),
-            pBar("NT Logic", nt/totalQ*100, "#00d4ff"),
-            pBar("ST Facts", st/totalQ*100, "#ff6b35"),
-            pBar("NF Creative", nf/totalQ*100, "#a855f7"),
-            pBar("SF Emotion", sf/totalQ*100, "#e74c8b"),
-            /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", marginTop: 4, fontSize: 10, fontWeight: 700, color: dominant==="NT"?"#00d4ff":dominant==="ST"?"#ff6b35":dominant==="NF"?"#a855f7":"#e74c8b", fontFamily: mono }}, dominant, " DOMINANT"),
-            /*#__PURE__*/React.createElement("div", { style: { textAlign: "center", fontSize: 7, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginTop: 2 }},
-              dominant === "NT" ? "Strategic planner, systems thinker" :
-              dominant === "ST" ? "Hands-on tactical, detail-focused" :
-              dominant === "NF" ? "Creative explorer, experimenter" : "Cooperative, reactive responder"
-            )
+          // ── Event Feed (compact, 8 items) ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)" }},
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "event feed"),
+            evts.filter(function(e){
+              return e.t <= dt && e.t > dt - 20 && e.type !== "ViewEvent";
+            }).reverse().slice(0,8).map(function(e, i) {
+              var d = e.data;
+              var evColor = "#888", evLabel = e.type.replace("Event", "");
+              if (e.type === "CombatEvent") {
+                evColor = (d.playerWasKiller || d.playerUnitKill) ? "#00ff88" : d.playerWasVictim ? "#ff4444" : "#554444";
+                evLabel = d.playerWasVictim ? "DEATH" : (d.playerWasKiller || d.playerUnitKill) ? "Kill" : "AI";
+              } else if (e.type === "SwitchEvent") {
+                evColor = d.switchMethod === "DeathRespawn" ? "#ff6b35" : "#00e5ff";
+                evLabel = d.switchMethod === "DeathRespawn" ? "Respawn" : "Switch";
+              } else if (e.type === "AbilityEvent") {
+                evColor = "#a855f7"; evLabel = (d.ability||"").substring(0,7);
+              } else if (e.type === "NodeCaptureEvent") {
+                evColor = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff"; evLabel = "Capture";
+              } else if (e.type === "ControlStateEvent") {
+                evColor = "#ffaa00"; evLabel = (d.trigger||"").substring(0,7);
+              } else if (e.type === "WaypointOutcomeEvent") {
+                evColor = d.outcome === "Arrived" ? "#00ff88" : "#ff4444"; evLabel = "WP";
+              }
+              return /*#__PURE__*/React.createElement("div", {
+                key: i, style: {
+                  display: "flex", alignItems: "center", gap: 4, padding: "2px 5px", marginBottom: 1,
+                  borderLeft: "2px solid " + evColor, borderRadius: "0 3px 3px 0",
+                  fontSize: 8, fontFamily: mono
+                }
+              }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.25)", minWidth: 24 } }, e.t.toFixed(0) + "s"),
+                 /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600 } }, evLabel));
+            })
           ),
-          // Analysis
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: 8, border: "1px solid rgba(255,255,255,0.04)" }},
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "analysis"),
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 9, color: "rgba(255,255,255,0.45)", fontFamily: mono, lineHeight: 1.5 }},
-              waypointsSet > 3 ? "High delegation: " + waypointsSet + " waypoints suggests strategic planning over direct control. " : "",
-              playerKills > 10 ? "Active combatant: " + playerKills + " kills indicates engagement-focused play. " : "",
-              playerDeaths === 0 ? "Zero deaths: cautious or dominant positioning. " : playerDeaths > 3 ? "Multiple deaths (" + playerDeaths + "): aggressive posture or under pressure. " : "",
-              replicates > 4 ? "Force multiplier: " + replicates + " replicates shows systems-level resource management. " : "",
-              switches > 8 ? "High unit rotation (" + switches + "): managing multiple assets simultaneously. " : ""
-            )
+          // ── Player Stats (lower priority) ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)" }},
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "stats"),
+            /*#__PURE__*/React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }},
+              cBox("Kills", playerKills, "#00ff88"),
+              cBox("Deaths", playerDeaths, "#ff4444"),
+              cBox("WP", waypointsSet, "#00d4ff"),
+              cBox("Switches", switches, "#00e5ff"),
+              loadedMeta?.team === "pathogen" && cBox("Replicate", replicates, "#a855f7"),
+              loadedMeta?.team === "pathogen" && cBox("Emit", emits, "#ffaa00")
+            ),
+            // Territory
+            /*#__PURE__*/React.createElement("div", { style: {
+              marginTop: 4, padding: "4px 6px", borderRadius: 4, textAlign: "center",
+              background: pathNodes > immNodes ? "rgba(255,107,53,0.08)" : immNodes > pathNodes ? "rgba(0,212,255,0.08)" : "rgba(255,255,255,0.02)",
+              fontSize: 9, fontWeight: 700, fontFamily: mono,
+              color: pathNodes > immNodes ? "#ff6b35" : immNodes > pathNodes ? "#00d4ff" : "#888"
+            }}, "Territory P:", pathNodes, " / I:", immNodes)
           )
-        )
+        ),
+        // ═══ RIGHT: MAP (reduced border) ═══
+        /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 700 })
       )
     );
   })(), tab === "video" && /*#__PURE__*/React.createElement("div", {
@@ -9670,7 +9665,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v289 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v290 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

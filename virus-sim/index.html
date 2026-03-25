@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v306";
+  var v = "v307";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v306 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v307 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2754,6 +2754,7 @@ function TemporalReplay() {
     if (!vid.src || !vid.src.endsWith(activeCamUrl)) {
       vid.src = activeCamUrl;
       vid.onloadedmetadata = function() {
+        setVideoLoaded(true);
         // Seek to current timeline position once video is ready
         var target = time + videoOffset;
         vid.currentTime = Math.max(0, Math.min(target, vid.duration || 9999));
@@ -2877,10 +2878,9 @@ function TemporalReplay() {
       try { localStorage.setItem("pathogenika-telemetry-cache", JSON.stringify({ events: events, meta: meta })); } catch(e) {}
       // Seek to end so all data visible immediately
       seekTo(duration);
-      // Load hosted video directly (no HEAD check — just set the URL)
+      // Load hosted video — videoLoaded will be set by onloadedmetadata in the src-assignment effect
       if (session.video) {
         setVideoUrl(session.video);
-        setVideoLoaded(true);
         setVideoFileName(session.video);
       }
     }).catch(function(err) {
@@ -2901,6 +2901,10 @@ function TemporalReplay() {
           setTelemetryStatus("♻ " + parsed.events.length + " events • " + parsed.meta.duration.toFixed(0) + "s • " + parsed.meta.label + " (cached)");
           setTelemetryFileName(parsed.meta.fileName || "cached");
           seekTo(parsed.meta.duration || 60);
+          // Restore hosted video URL — cache stores telemetry but not the video src
+          var matchedSession = HOSTED_SESSIONS.find(function(s) { return s.team === parsed.meta.team || s.id === parsed.meta.sessionId; }) || HOSTED_SESSIONS[0];
+          setVideoUrl(matchedSession.video);
+          setVideoFileName(matchedSession.video);
           return;
         }
       }
@@ -3097,7 +3101,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v306"), /*#__PURE__*/React.createElement("span", {
+  }, "v307"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9755,7 +9759,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v306 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v307 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v288";
+  var v = "v289";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v288 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v289 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1883,6 +1883,347 @@ const UNIT_ABBR = {
 };
 
 // ═══════════════════════════════════════════════════════════════
+// SPATIAL EVENT MAP — Live telemetry overlay with event labels
+// ═══════════════════════════════════════════════════════════════
+
+const EVENT_ICONS = {
+  SwitchEvent: { icon: "⇄", color: "#00e5ff", label: "Switch" },
+  ViewEvent: null, // too frequent, skip rendering
+  CombatEvent: { icon: "⚔", color: "#ff4444", label: "Kill" },
+  NodeCaptureEvent: { icon: "⚑", color: "#00ff88", label: "Capture" },
+  AbilityEvent: { icon: "✦", color: "#a855f7", label: "" },
+  ControlStateEvent: null, // shown via ability/switch
+  WaypointOutcomeEvent: { icon: "◎", color: "#00d4ff", label: "WP" }
+};
+
+const ABILITY_ICONS = {
+  WaypointSet: { icon: "✕", color: "#00d4ff", label: "Waypoint" },
+  Replicate: { icon: "◈", color: "#a855f7", label: "Replicate" },
+  Emit: { icon: "◉", color: "#ffaa00", label: "Emit" },
+  MouseFollowON: { icon: "⊛", color: "#888", label: "Follow" }
+};
+
+const HEATMAP_MODES = ["battle", "dwell", "pathway"];
+
+function SpatialEventMap({ events, time, height = 480 }) {
+  const [hover, setHover] = useState(null);
+  const [heatMode, setHeatMode] = useState("battle");
+  const W = 640, H = 460;
+  const pad = 24;
+  const mono = "'JetBrains Mono', monospace";
+
+  const toSvg = (gameX, gameZ) => {
+    const sx = pad + (gameX - MAP.minX) / (MAP.maxX - MAP.minX) * (W - 2 * pad);
+    const sy = H - pad - (gameZ - MAP.minZ) / (MAP.maxZ - MAP.minZ) * (H - 2 * pad);
+    return [sx, sy];
+  };
+
+  // Extract trajectory from ViewEvents with player position
+  const trajectory = useMemo(() => {
+    if (!events) return [];
+    return events.filter(e => e.t <= time && e.data.playerX != null)
+      .map(e => ({ t: e.t, pos: toSvg(e.data.playerX, e.data.playerZ), unit: e.data.currentUnitType || e.data.unitType || e.data.toUnitType || "" }));
+  }, [events, time]);
+
+  // Extract combat events with positions
+  const combatDots = useMemo(() => {
+    if (!events) return [];
+    return events.filter(e => e.type === "CombatEvent" && e.t <= time && e.data.posX != null)
+      .map((e, i) => ({
+        t: e.t, pos: toSvg(e.data.posX, e.data.posZ), i,
+        killer: (e.data.killerType || "").replace("Type", ""),
+        victim: (e.data.victimType || "").replace("Type", ""),
+        isPlayerKill: e.data.playerWasKiller || e.data.playerUnitKill || false,
+        isPlayerDeath: e.data.playerWasVictim || false
+      }));
+  }, [events, time]);
+
+  // Extract ability events with positions
+  const abilityDots = useMemo(() => {
+    if (!events) return [];
+    return events.filter(e => e.type === "AbilityEvent" && e.t <= time && e.data.posX != null)
+      .map(e => ({
+        t: e.t, pos: toSvg(e.data.posX, e.data.posZ),
+        ability: e.data.ability, unit: (e.data.unitType || "").replace("Type", "")
+      }));
+  }, [events, time]);
+
+  // Extract node captures
+  const nodeCaptures = useMemo(() => {
+    if (!events) return [];
+    return events.filter(e => e.type === "NodeCaptureEvent" && e.t <= time);
+  }, [events, time]);
+
+  const nodeStates = useMemo(() => {
+    const states = {};
+    for (const e of nodeCaptures) {
+      states[e.data.nodeName] = e.data.capturedByTeam === 1 ? "pathogen" : "immune";
+    }
+    return states;
+  }, [nodeCaptures]);
+
+  // Extract switch events with positions
+  const switchDots = useMemo(() => {
+    if (!events) return [];
+    return events.filter(e => e.type === "SwitchEvent" && e.t <= time && e.data.toX != null && e.data.switchMethod === "DirectClick")
+      .map(e => ({
+        t: e.t,
+        from: toSvg(e.data.fromX, e.data.fromZ),
+        to: toSvg(e.data.toX, e.data.toZ),
+        unit: (e.data.toUnitType || "").replace("Type", ""),
+        dist: e.data.switchDistance
+      }));
+  }, [events, time]);
+
+  // EVENT LABELS — events near current time that appear and fade
+  const LABEL_WINDOW = 4; // seconds visible
+  const eventLabels = useMemo(() => {
+    if (!events) return [];
+    return events.filter(e => {
+      if (e.t > time || e.t < time - LABEL_WINDOW) return false;
+      if (e.type === "ViewEvent") return false; // too many
+      if (e.type === "ControlStateEvent" && e.data.trigger !== "NodeDock" && e.data.trigger !== "WASDCancel") return false;
+      // Need a position
+      const d = e.data;
+      return (d.posX != null || d.playerX != null || d.toX != null || d.fromX != null);
+    }).map(e => {
+      const d = e.data;
+      const x = d.posX || d.playerX || d.toX || d.fromX || 0;
+      const z = d.posZ || d.playerZ || d.toZ || d.fromZ || 0;
+      const pos = toSvg(x, z);
+      const age = time - e.t;
+      const opacity = Math.max(0, 1 - age / LABEL_WINDOW);
+
+      let icon = "●", color = "#888", label = e.type.replace("Event", "");
+
+      if (e.type === "AbilityEvent") {
+        const ab = ABILITY_ICONS[d.ability] || { icon: "✦", color: "#a855f7", label: d.ability };
+        icon = ab.icon; color = ab.color; label = ab.label;
+      } else if (e.type === "CombatEvent") {
+        if (d.playerWasVictim) { icon = "💀"; color = "#ff0000"; label = "DEATH"; }
+        else if (d.playerWasKiller || d.playerUnitKill) { icon = "⚔"; color = "#00ff88"; label = "Kill"; }
+        else { icon = "·"; color = "#ff444466"; label = ""; }
+      } else if (e.type === "SwitchEvent") {
+        if (d.switchMethod === "DeathRespawn") { icon = "↻"; color = "#ff6b35"; label = "Respawn"; }
+        else { icon = "⇄"; color = "#00e5ff"; label = (d.toUnitType || "").replace("Type", ""); }
+      } else if (e.type === "NodeCaptureEvent") {
+        icon = "⚑"; color = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff";
+        label = (d.nodeName || "").replace("Node", "").replace("_", " ");
+      } else if (e.type === "ControlStateEvent") {
+        if (d.trigger === "NodeDock") { icon = "⊙"; color = "#ffaa00"; label = "Docking"; }
+        else if (d.trigger === "WASDCancel") { icon = "⌨"; color = "#ff6b35"; label = "Manual"; }
+      }
+
+      return { t: e.t, pos, opacity, icon, color, label, type: e.type };
+    });
+  }, [events, time]);
+
+  // HEATMAP — grid cells colored by mode
+  const heatCells = useMemo(() => {
+    const gridSize = 30, cells = {};
+    const addToCell = (sx, sy, weight) => {
+      const gx = Math.floor(sx / gridSize), gy = Math.floor(sy / gridSize);
+      const key = `${gx},${gy}`;
+      if (!cells[key]) cells[key] = { x: gx * gridSize, y: gy * gridSize, value: 0 };
+      cells[key].value += weight;
+    };
+
+    if (heatMode === "battle") {
+      combatDots.forEach(d => addToCell(d.pos[0], d.pos[1], 1));
+    } else if (heatMode === "dwell") {
+      // Time spent in each area (from trajectory sampling)
+      for (let i = 1; i < trajectory.length; i++) {
+        const dt = trajectory[i].t - trajectory[i-1].t;
+        if (dt < 10) addToCell(trajectory[i].pos[0], trajectory[i].pos[1], dt);
+      }
+    } else if (heatMode === "pathway") {
+      trajectory.forEach(t => addToCell(t.pos[0], t.pos[1], 0.5));
+    }
+    return Object.values(cells);
+  }, [combatDots, trajectory, heatMode, time]);
+
+  const maxHeat = Math.max(1, ...heatCells.map(c => c.value));
+  const heatColors = { battle: [255, 60, 60], dwell: [255, 170, 0], pathway: [0, 180, 255] };
+  const [hr, hg, hb] = heatColors[heatMode] || [255, 255, 255];
+
+  // Death markers
+  const deaths = useMemo(() => {
+    return combatDots.filter(d => d.isPlayerDeath);
+  }, [combatDots]);
+
+  return /*#__PURE__*/React.createElement("div", null,
+    // Heatmap mode toggle
+    /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8, justifyContent: "center" } },
+      HEATMAP_MODES.map(mode => /*#__PURE__*/React.createElement("button", {
+        key: mode, onClick: () => setHeatMode(mode),
+        style: {
+          padding: "3px 12px", borderRadius: 6, fontSize: 10, fontFamily: mono, cursor: "pointer",
+          letterSpacing: 1.5, textTransform: "uppercase",
+          background: heatMode === mode ? "rgba(255,255,255,0.12)" : "transparent",
+          border: "1px solid " + (heatMode === mode ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.06)"),
+          color: heatMode === mode ? "white" : "rgba(255,255,255,0.3)"
+        }
+      }, mode))
+    ),
+    // Main SVG
+    /*#__PURE__*/React.createElement("svg", {
+      viewBox: `0 0 ${W} ${H}`,
+      style: { width: "100%", height, background: "rgba(0,0,0,0.4)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)" }
+    },
+      // Grid lines
+      [0.25, 0.5, 0.75].map(f => /*#__PURE__*/React.createElement("g", { key: f },
+        /*#__PURE__*/React.createElement("line", { x1: pad + f * (W - 2 * pad), y1: pad, x2: pad + f * (W - 2 * pad), y2: H - pad, stroke: "rgba(255,255,255,0.03)" }),
+        /*#__PURE__*/React.createElement("line", { x1: pad, y1: pad + f * (H - 2 * pad), x2: W - pad, y2: pad + f * (H - 2 * pad), stroke: "rgba(255,255,255,0.03)" })
+      )),
+
+      // Heatmap layer
+      heatCells.map((cell, i) => {
+        const intensity = Math.min(cell.value / maxHeat, 1);
+        return /*#__PURE__*/React.createElement("rect", {
+          key: `h-${i}`, x: cell.x, y: cell.y, width: 30, height: 30, rx: 4,
+          fill: `rgba(${hr},${hg},${hb},${intensity * 0.4})`
+        });
+      }),
+
+      // Trajectory trail
+      trajectory.length > 1 && /*#__PURE__*/React.createElement("polyline", {
+        points: trajectory.map(p => `${p.pos[0]},${p.pos[1]}`).join(" "),
+        fill: "none", stroke: "rgba(255,255,255,0.15)", strokeWidth: 1.5
+      }),
+
+      // Trajectory dots colored by unit
+      trajectory.filter((_, i) => i % 2 === 0).map((p, i) => {
+        const age = (time - p.t) / Math.max(time, 1);
+        const c = UNIT_COLORS[p.unit] || "#888";
+        return /*#__PURE__*/React.createElement("circle", {
+          key: `tr-${i}`, cx: p.pos[0], cy: p.pos[1], r: 2.5,
+          fill: c, opacity: Math.max(0.1, 1 - age)
+        });
+      }),
+
+      // Switch lines (from → to)
+      switchDots.filter(s => time - s.t < 8).map((s, i) => {
+        const age = time - s.t;
+        const op = Math.max(0, 0.5 - age / 8);
+        return /*#__PURE__*/React.createElement("line", {
+          key: `sw-${i}`, x1: s.from[0], y1: s.from[1], x2: s.to[0], y2: s.to[1],
+          stroke: "#00e5ff", strokeWidth: 1, strokeDasharray: "4 3", opacity: op
+        });
+      }),
+
+      // Ability markers
+      abilityDots.map((ab, i) => {
+        const age = time - ab.t;
+        const opacity = Math.max(0.15, 0.8 - age / 60);
+        const cfg = ABILITY_ICONS[ab.ability] || { icon: "✦", color: "#a855f7" };
+        return /*#__PURE__*/React.createElement("circle", {
+          key: `ab-${i}`, cx: ab.pos[0], cy: ab.pos[1],
+          r: ab.ability === "WaypointSet" ? 5 : 4,
+          fill: ab.ability === "WaypointSet" ? "none" : cfg.color + "40",
+          stroke: cfg.color, strokeWidth: 1.5, opacity
+        });
+      }),
+
+      // Nodes
+      Object.entries(NODES).map(([name, node]) => {
+        const [sx, sy] = toSvg(node.x, node.z);
+        const state = nodeStates[name];
+        const isBase = name.includes("Base");
+        const isLarge = name.includes("Large");
+        const r = isBase ? 16 : isLarge ? 12 : 9;
+        const fill = state === "pathogen" ? "rgba(255,107,53,0.3)" : state === "immune" ? "rgba(0,212,255,0.3)" : "rgba(100,100,100,0.15)";
+        const stroke = state === "pathogen" ? "#ff6b35" : state === "immune" ? "#00d4ff" : "rgba(255,255,255,0.12)";
+        return /*#__PURE__*/React.createElement("g", { key: name },
+          /*#__PURE__*/React.createElement("circle", { cx: sx, cy: sy, r, fill, stroke, strokeWidth: 1.5 }),
+          /*#__PURE__*/React.createElement("text", {
+            x: sx, y: sy + r + 12, textAnchor: "middle",
+            fill: "rgba(255,255,255,0.3)", fontSize: 7, fontFamily: mono
+          }, node.label || name.replace("Node", "").replace("_", " "))
+        );
+      }),
+
+      // Death markers
+      deaths.map((d, i) => /*#__PURE__*/React.createElement("g", { key: `death-${i}` },
+        /*#__PURE__*/React.createElement("circle", {
+          cx: d.pos[0], cy: d.pos[1], r: 12,
+          fill: "rgba(255,0,0,0.12)", stroke: "rgba(255,0,0,0.5)", strokeWidth: 1.5
+        }),
+        /*#__PURE__*/React.createElement("text", {
+          x: d.pos[0], y: d.pos[1] + 4, textAnchor: "middle", dominantBaseline: "middle",
+          fill: "#ff4444", fontSize: 12, fontWeight: "bold"
+        }, "💀")
+      )),
+
+      // EVENT LABELS — appear and fade at game coordinates
+      eventLabels.map((ev, i) => {
+        // Skip world kills with no label
+        if (!ev.label && ev.type === "CombatEvent") return null;
+        const yOff = -12; // above the point
+        return /*#__PURE__*/React.createElement("g", {
+          key: `lbl-${i}`, opacity: ev.opacity,
+          transform: `translate(${ev.pos[0]}, ${ev.pos[1]})`
+        },
+          // Icon
+          /*#__PURE__*/React.createElement("text", {
+            x: 0, y: yOff, textAnchor: "middle", fill: ev.color,
+            fontSize: 13, fontWeight: "bold"
+          }, ev.icon),
+          // Label text
+          ev.label && /*#__PURE__*/React.createElement("text", {
+            x: 0, y: yOff - 13, textAnchor: "middle",
+            fill: ev.color, fontSize: 8, fontFamily: mono,
+            fontWeight: "600", letterSpacing: 0.5
+          }, ev.label),
+          // Time stamp
+          /*#__PURE__*/React.createElement("text", {
+            x: 0, y: yOff + 12, textAnchor: "middle",
+            fill: "rgba(255,255,255,0.25)", fontSize: 6, fontFamily: mono
+          }, ev.t.toFixed(0) + "s")
+        );
+      }),
+
+      // Current player position (pulsing)
+      trajectory.length > 0 && (() => {
+        const last = trajectory[trajectory.length - 1];
+        const c = UNIT_COLORS[last.unit] || "#fff";
+        return /*#__PURE__*/React.createElement("g", null,
+          /*#__PURE__*/React.createElement("circle", {
+            cx: last.pos[0], cy: last.pos[1], r: 8,
+            fill: "none", stroke: c, strokeWidth: 2, opacity: 0.8
+          },
+            /*#__PURE__*/React.createElement("animate", { attributeName: "r", values: "6;14;6", dur: "2s", repeatCount: "indefinite" }),
+            /*#__PURE__*/React.createElement("animate", { attributeName: "opacity", values: "0.8;0.2;0.8", dur: "2s", repeatCount: "indefinite" })
+          ),
+          /*#__PURE__*/React.createElement("circle", { cx: last.pos[0], cy: last.pos[1], r: 4, fill: c })
+        );
+      })(),
+
+      // Corner labels
+      /*#__PURE__*/React.createElement("text", { x: W - pad, y: pad + 10, textAnchor: "end", fill: "rgba(255,255,255,0.1)", fontSize: 7, fontFamily: mono }, "PATHOGEN BASE"),
+      /*#__PURE__*/React.createElement("text", { x: pad + 2, y: H - pad - 5, textAnchor: "start", fill: "rgba(255,255,255,0.1)", fontSize: 7, fontFamily: mono }, "IMMUNE BASE"),
+
+      // Legend
+      /*#__PURE__*/React.createElement("g", { transform: `translate(${pad}, ${H - 8})` },
+        /*#__PURE__*/React.createElement("text", { x: 0, y: 0, fill: "#00d4ff", fontSize: 10 }, "✕"),
+        /*#__PURE__*/React.createElement("text", { x: 14, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Waypoint"),
+        /*#__PURE__*/React.createElement("text", { x: 70, y: 0, fill: "#a855f7", fontSize: 10 }, "◈"),
+        /*#__PURE__*/React.createElement("text", { x: 84, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Replicate"),
+        /*#__PURE__*/React.createElement("text", { x: 140, y: 0, fill: "#ffaa00", fontSize: 10 }, "◉"),
+        /*#__PURE__*/React.createElement("text", { x: 154, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Emit"),
+        /*#__PURE__*/React.createElement("text", { x: 195, y: 0, fill: "#00e5ff", fontSize: 10 }, "⇄"),
+        /*#__PURE__*/React.createElement("text", { x: 210, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Switch"),
+        /*#__PURE__*/React.createElement("text", { x: 255, y: 0, fill: "#ff4444", fontSize: 10 }, "⚔"),
+        /*#__PURE__*/React.createElement("text", { x: 270, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Kill"),
+        /*#__PURE__*/React.createElement("text", { x: 300, y: 0, fill: "#00ff88", fontSize: 10 }, "⚑"),
+        /*#__PURE__*/React.createElement("text", { x: 314, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Capture"),
+        /*#__PURE__*/React.createElement("text", { x: 370, y: 0, fill: "#ff0000", fontSize: 10 }, "💀"),
+        /*#__PURE__*/React.createElement("text", { x: 386, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Death")
+      )
+    )
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 // MBTI QUADRANT SCATTER VISUALIZATION
 // ═══════════════════════════════════════════════════════════════
 const MBTIScatter = ({
@@ -2641,6 +2982,9 @@ function TemporalReplay() {
     id: "compare",
     label: "COMPARE"
   }, {
+    id: "spatial",
+    label: "SPATIAL"
+  }, {
     id: "video",
     label: "VIDEO"
   }];
@@ -2747,7 +3091,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v288"), /*#__PURE__*/React.createElement("span", {
+  }, "v289"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -8951,7 +9295,55 @@ function TemporalReplay() {
         fontFamily: mono
       }
     }, "Your trajectory most closely follows the ", playerMatch.name, " archetype.", " ", "Players in this group tend toward ", playerMatch.career, " career pathways.")));
-  })(), tab === "video" && /*#__PURE__*/React.createElement("div", {
+  })(), tab === "spatial" && isLoaded && /*#__PURE__*/React.createElement(React.Fragment, null,
+  /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 10, textAlign: "center" }
+  }, "SPATIAL EVENT MAP \u2022 LIVE TELEMETRY \u2022 ", Math.round(time), "s"),
+  /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 520 }),
+  /*#__PURE__*/React.createElement("div", {
+    style: { marginTop: 14, background: "rgba(255,255,255,0.08)", borderRadius: 12, padding: 14, border: "1px solid rgba(255,255,255,0.04)" }
+  },
+  /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 8, textAlign: "center" }
+  }, "EVENT FEED \u2022 LAST 15 SECONDS"),
+  /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", flexDirection: "column", gap: 3, maxHeight: 200, overflowY: "auto" }
+  }, (loadedEvents || []).filter(function(e) {
+    return e.t <= dataTime && e.t > dataTime - 15 && e.type !== "ViewEvent";
+  }).reverse().map(function(e, i) {
+    var d = e.data;
+    var evColor = "#888", evLabel = e.type.replace("Event", ""), evDetail = "";
+    if (e.type === "CombatEvent") {
+      evColor = (d.playerWasKiller || d.playerUnitKill) ? "#00ff88" : d.playerWasVictim ? "#ff4444" : "#ff444466";
+      evLabel = d.playerWasVictim ? "DEATH" : (d.playerWasKiller || d.playerUnitKill) ? "Kill" : "World Kill";
+      evDetail = (d.killerType||"").replace("Type","") + " \u2192 " + (d.victimType||"").replace("Type","");
+    } else if (e.type === "SwitchEvent") {
+      evColor = d.switchMethod === "DeathRespawn" ? "#ff6b35" : "#00e5ff";
+      evLabel = d.switchMethod === "DeathRespawn" ? "Respawn" : "Switch";
+      evDetail = (d.toUnitType||"").replace("Type","") + " dist=" + (d.switchDistance||0).toFixed(0);
+    } else if (e.type === "AbilityEvent") {
+      evColor = "#a855f7"; evLabel = d.ability || "Ability";
+      evDetail = (d.unitType||"").replace("Type","");
+    } else if (e.type === "NodeCaptureEvent") {
+      evColor = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff";
+      evLabel = "Capture"; evDetail = (d.nodeName||"").replace("_"," ") + (d.playerInvolved ? " \u2605" : "");
+    } else if (e.type === "ControlStateEvent") {
+      evColor = "#ffaa00"; evLabel = d.trigger || "Control";
+      evDetail = d.fromState + " \u2192 " + d.toState;
+    } else if (e.type === "WaypointOutcomeEvent") {
+      evColor = d.outcome === "Arrived" ? "#00ff88" : "#ff4444";
+      evLabel = "WP " + (d.outcome||""); evDetail = (d.unitType||"").replace("Type","");
+    }
+    return /*#__PURE__*/React.createElement("div", {
+      key: i, style: {
+        display: "flex", alignItems: "center", gap: 8, padding: "4px 10px",
+        background: evColor + "08", borderLeft: "3px solid " + evColor, borderRadius: "0 6px 6px 0",
+        fontSize: 10, fontFamily: mono
+      }
+    }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.3)", minWidth: 36 } }, e.t.toFixed(1) + "s"),
+       /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600, minWidth: 70 } }, evLabel),
+       /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.4)", fontSize: 9 } }, evDetail));
+  })))), tab === "video" && /*#__PURE__*/React.createElement("div", {
     style: {
       background: "rgba(255,255,255,0.02)",
       borderRadius: 8,
@@ -9143,7 +9535,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v288 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v289 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

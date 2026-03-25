@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v310";
+  var v = "v311";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v310 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v311 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -109,7 +109,7 @@ const NODES = {
     label: "LARGE"
   },
   Base2Node: {
-    x: 26,
+    x: 78,
     z: 92,
     r: 18,
     label: "LYMPH NODE",
@@ -3111,7 +3111,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v310"), /*#__PURE__*/React.createElement("span", {
+  }, "v311"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9325,7 +9325,7 @@ function TemporalReplay() {
         style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 8, textAlign: "left" }
       }, "SPATIAL ANALYSIS \u2022 ", Math.round(time), "s \u2022 ", activeLabel),
       // ═══ TWO-COLUMN: DATA LEFT, MAP RIGHT ═══
-      /*#__PURE__*/React.createElement("div", { id: "spatial-grid", style: { display: "grid", gridTemplateColumns: "220px 1fr", gap: 0 }},
+      /*#__PURE__*/React.createElement("div", { id: "spatial-grid", style: { display: "grid", gridTemplateColumns: "165px 175px 1fr", gap: 0 }},
         // ═══ LEFT COLUMN: ALL DATA ═══
         /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
           // ── Event Feed (fixed 7 rows) — TOP ──
@@ -9339,21 +9339,30 @@ function TemporalReplay() {
               for (var ri = 0; ri < 7; ri++) {
                 if (ri < items.length) {
                   var e = items[ri], d = e.data;
-                  var evColor = "#888", evLabel = e.type.replace("Event", "");
+                  var evColor = "#888", evLabel = e.type.replace("Event", ""), domainLabel = "";
+                  var isPath = loadedMeta && loadedMeta.team === "pathogen";
                   if (e.type === "CombatEvent") {
                     evColor = (d.playerWasKiller || d.playerUnitKill) ? "#00ff88" : d.playerWasVictim ? "#ff4444" : "#554444";
                     evLabel = d.playerWasVictim ? "DEATH" : (d.playerWasKiller || d.playerUnitKill) ? "Kill" : "AI";
+                    if (d.playerWasKiller || d.playerUnitKill) domainLabel = isPath ? "Host cell lysis" : "Phagocytosis";
+                    else if (d.playerWasVictim) domainLabel = isPath ? "Immune clearance" : "Apoptosis";
                   } else if (e.type === "SwitchEvent") {
                     evColor = d.switchMethod === "DeathRespawn" ? "#ff6b35" : "#00e5ff";
                     evLabel = d.switchMethod === "DeathRespawn" ? "Respawn" : "Switch";
+                    if (d.switchMethod !== "DeathRespawn") domainLabel = isPath ? "Morphogenesis" : "Differentiation";
                   } else if (e.type === "AbilityEvent") {
                     evColor = "#a855f7"; evLabel = (d.ability||"").substring(0,7);
+                    if (d.ability === "Replicate") domainLabel = isPath ? "Viral replication" : "Clonal expansion";
+                    else if (d.ability === "Emit") domainLabel = isPath ? "Toxin emission" : "Cytokine signal";
+                    else if (d.ability === "WaypointSet") domainLabel = isPath ? "Directed migration" : "Chemotaxis";
                   } else if (e.type === "NodeCaptureEvent") {
                     evColor = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff"; evLabel = "Capture";
+                    domainLabel = isPath ? "Colonization" : "Node capture";
                   } else if (e.type === "ControlStateEvent") {
                     evColor = "#ffaa00"; evLabel = (d.trigger||"").substring(0,7);
                   } else if (e.type === "WaypointOutcomeEvent") {
                     evColor = d.outcome === "Arrived" ? "#00ff88" : "#ff4444"; evLabel = "WP";
+                    domainLabel = d.outcome === "Arrived" ? "Target reached" : "Route failed";
                   }
                   rows.push(/*#__PURE__*/React.createElement("div", {
                     key: ri, style: {
@@ -9362,7 +9371,8 @@ function TemporalReplay() {
                       fontSize: 8, fontFamily: mono, height: 14
                     }
                   }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.25)", minWidth: 24 } }, e.t.toFixed(0) + "s"),
-                     /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600 } }, evLabel)));
+                     /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600, minWidth: 36 } }, evLabel),
+                     domainLabel && /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.25)", fontSize: 6, fontFamily: mono, letterSpacing: 0.3, marginLeft: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 80 } }, domainLabel)));
                 } else {
                   rows.push(/*#__PURE__*/React.createElement("div", {
                     key: ri, style: { height: 14, marginBottom: 1, borderLeft: "2px solid rgba(255,255,255,0.03)", borderRadius: "0 3px 3px 0", padding: "2px 5px" }
@@ -9457,7 +9467,24 @@ function TemporalReplay() {
             }}, "Territory P:", pathNodes, " / I:", immNodes)
           )
         ),
-        // ═══ RIGHT: MAP (reduced border) ═══
+        // ═══ MIDDLE: COGNITIVE SIGNATURE ═══
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", paddingLeft: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
+          /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, marginTop: 2, textAlign: "center", textTransform: "uppercase" }}, "cognitive signature"),
+          /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 200 },
+            /*#__PURE__*/React.createElement(RadarChart, { data: radarData, cx: "50%", cy: "50%", outerRadius: "62%" },
+              /*#__PURE__*/React.createElement(PolarGrid, { stroke: "rgba(255,255,255,0.1)" }),
+              /*#__PURE__*/React.createElement(PolarAngleAxis, { dataKey: "axis", tick: { fill: "rgba(255,255,255,0.4)", fontSize: 7, fontFamily: "'JetBrains Mono', monospace" } }),
+              /*#__PURE__*/React.createElement(PolarRadiusAxis, { tick: false, domain: [0, 100] }),
+              /*#__PURE__*/React.createElement(Radar, { name: "Player", dataKey: "soldier", stroke: S_COLOR, fill: S_COLOR, fillOpacity: 0.15, strokeWidth: 1.5, dot: false, isAnimationActive: true }),
+              /*#__PURE__*/React.createElement(Radar, { name: "Ref", dataKey: "commander", stroke: C_COLOR, fill: C_COLOR, fillOpacity: 0.08, strokeWidth: 1, dot: false, isAnimationActive: false })
+            )
+          ),
+          /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "center", gap: 12, marginTop: 4 }},
+            /*#__PURE__*/React.createElement("span", { style: { fontSize: 8, color: S_COLOR, fontFamily: mono } }, "\u2501 PLAYER"),
+            /*#__PURE__*/React.createElement("span", { style: { fontSize: 8, color: C_COLOR, fontFamily: mono } }, "\u2501 REF")
+          )
+        ),
+        // ═══ RIGHT: MAP ═══
         /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 700 })
       )
     );
@@ -9653,7 +9680,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v310 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v311 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

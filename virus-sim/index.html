@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v304";
+  var v = "v305";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v304 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v305 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -1903,11 +1903,8 @@ const ABILITY_ICONS = {
   MouseFollowON: { icon: "⊛", color: "#888", label: "Follow" }
 };
 
-const HEATMAP_MODES = ["battle", "dwell", "pathway"];
-
 function SpatialEventMap({ events, time, height = 480 }) {
   const [hover, setHover] = useState(null);
-  const [heatMode, setHeatMode] = useState("battle");
   const W = 640, H = 460;
   const pad = 24;
   const mono = "'JetBrains Mono', monospace";
@@ -2020,55 +2017,29 @@ function SpatialEventMap({ events, time, height = 480 }) {
 
   // HEATMAP — grid cells colored by mode
   const heatCells = useMemo(() => {
-    const gridSize = 30, cells = {};
-    const addToCell = (sx, sy, weight) => {
+    const gridSize = 30, battleCells = {}, pathCells = {};
+    const addTo = (cells, sx, sy, weight) => {
       const gx = Math.floor(sx / gridSize), gy = Math.floor(sy / gridSize);
       const key = `${gx},${gy}`;
       if (!cells[key]) cells[key] = { x: gx * gridSize, y: gy * gridSize, value: 0 };
       cells[key].value += weight;
     };
+    combatDots.forEach(d => addTo(battleCells, d.pos[0], d.pos[1], 1));
+    trajectory.forEach(t => addTo(pathCells, t.pos[0], t.pos[1], 0.5));
+    return { battle: Object.values(battleCells), path: Object.values(pathCells) };
+  }, [combatDots, trajectory, time]);
 
-    if (heatMode === "battle") {
-      combatDots.forEach(d => addToCell(d.pos[0], d.pos[1], 1));
-    } else if (heatMode === "dwell") {
-      // Time spent in each area (from trajectory sampling)
-      for (let i = 1; i < trajectory.length; i++) {
-        const dt = trajectory[i].t - trajectory[i-1].t;
-        if (dt < 10) addToCell(trajectory[i].pos[0], trajectory[i].pos[1], dt);
-      }
-    } else if (heatMode === "pathway") {
-      trajectory.forEach(t => addToCell(t.pos[0], t.pos[1], 0.5));
-    }
-    return Object.values(cells);
-  }, [combatDots, trajectory, heatMode, time]);
-
-  const maxHeat = Math.max(1, ...heatCells.map(c => c.value));
-  const heatColors = { battle: [255, 60, 60], dwell: [255, 170, 0], pathway: [0, 180, 255] };
-  const [hr, hg, hb] = heatColors[heatMode] || [255, 255, 255];
+  const maxBattle = Math.max(1, ...heatCells.battle.map(c => c.value));
+  const maxPath = Math.max(1, ...heatCells.path.map(c => c.value));
 
   // Death markers
   const deaths = useMemo(() => {
     return combatDots.filter(d => d.isPlayerDeath);
   }, [combatDots]);
 
-  return /*#__PURE__*/React.createElement("div", null,
-    // Heatmap mode toggle
-    /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8, justifyContent: "flex-start" } },
-      HEATMAP_MODES.map(mode => /*#__PURE__*/React.createElement("button", {
-        key: mode, onClick: () => setHeatMode(mode),
-        style: {
-          padding: "3px 12px", borderRadius: 6, fontSize: 10, fontFamily: mono, cursor: "pointer",
-          letterSpacing: 1.5, textTransform: "uppercase",
-          background: heatMode === mode ? "rgba(255,255,255,0.12)" : "transparent",
-          border: "1px solid " + (heatMode === mode ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.06)"),
-          color: heatMode === mode ? "white" : "rgba(255,255,255,0.3)"
-        }
-      }, mode))
-    ),
-    // Main SVG
-    /*#__PURE__*/React.createElement("svg", {
+  return /*#__PURE__*/React.createElement("svg", {
       viewBox: `0 0 ${W} ${H}`,
-      style: { width: "100%", height, background: "rgba(0,0,0,0.3)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.025)" }
+      style: { width: "100%", height, background: "rgba(0,0,0,0.3)", borderRadius: 0, border: "none" }
     },
       // Grid lines
       [0.25, 0.5, 0.75].map(f => /*#__PURE__*/React.createElement("g", { key: f },
@@ -2076,12 +2047,21 @@ function SpatialEventMap({ events, time, height = 480 }) {
         /*#__PURE__*/React.createElement("line", { x1: pad, y1: pad + f * (H - 2 * pad), x2: W - pad, y2: pad + f * (H - 2 * pad), stroke: "rgba(255,255,255,0.03)" })
       )),
 
-      // Heatmap layer
-      heatCells.map((cell, i) => {
-        const intensity = Math.min(cell.value / maxHeat, 1);
+      // Pathway heatmap (blue, underneath)
+      heatCells.path.map((cell, i) => {
+        const intensity = Math.min(cell.value / maxPath, 1);
         return /*#__PURE__*/React.createElement("rect", {
-          key: `h-${i}`, x: cell.x, y: cell.y, width: 30, height: 30, rx: 4,
-          fill: `rgba(${hr},${hg},${hb},${intensity * 0.4})`
+          key: `p-${i}`, x: cell.x, y: cell.y, width: 30, height: 30, rx: 4,
+          fill: `rgba(0,140,255,${intensity * 0.2})`
+        });
+      }),
+
+      // Battle heatmap (red, on top)
+      heatCells.battle.map((cell, i) => {
+        const intensity = Math.min(cell.value / maxBattle, 1);
+        return /*#__PURE__*/React.createElement("rect", {
+          key: `b-${i}`, x: cell.x, y: cell.y, width: 30, height: 30, rx: 4,
+          fill: `rgba(255,60,60,${intensity * 0.4})`
         });
       }),
 
@@ -2219,8 +2199,7 @@ function SpatialEventMap({ events, time, height = 480 }) {
         /*#__PURE__*/React.createElement("text", { x: 370, y: 0, fill: "#ff0000", fontSize: 10 }, "💀"),
         /*#__PURE__*/React.createElement("text", { x: 386, y: 0, fill: "rgba(255,255,255,0.25)", fontSize: 7, fontFamily: mono }, "Death")
       )
-    )
-  );
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3116,7 +3095,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v304"), /*#__PURE__*/React.createElement("span", {
+  }, "v305"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9448,7 +9427,7 @@ function TemporalReplay() {
       // ═══ TWO-COLUMN: DATA LEFT, MAP RIGHT ═══
       /*#__PURE__*/React.createElement("div", { id: "spatial-grid", style: { display: "grid", gridTemplateColumns: "220px 1fr", gap: 0 }},
         // ═══ LEFT COLUMN: ALL DATA ═══
-        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 700, overflowY: "auto", paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
           // ── Event Feed (fixed 7 rows) — TOP ──
           /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)", minHeight: 130 }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "event feed"),
@@ -9774,7 +9753,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v304 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v305 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

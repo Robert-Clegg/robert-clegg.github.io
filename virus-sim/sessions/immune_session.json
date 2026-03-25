@@ -1,0 +1,955 @@
+{
+    "sessionId": "20260324_062036p",
+    "sessionStart": "2026-03-24 6:20:36 PM",
+    "sessionEnd": "2026-03-24 6:22:58 PM",
+    "exportTime": "2026-03-24 6:22:58 PM",
+    "timezone": "CST (UTC-6)",
+    "matchDuration": 135.4333,
+    "playerTeam": 2,
+    "totalEvents": 187,
+    "switchEvents": 13,
+    "viewEvents": 31,
+    "mapModeEvents": 0,
+    "combatEvents": 123,
+    "nodeCaptureEvents": 6,
+    "abilityEvents": 4,
+    "waypointOutcomeEvents": 3,
+    "controlStateEvents": 7,
+    "events": [
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 0,
+            "data": {"fromUnitType":"None","toUnitType":"NeutrophilType","fromX":102.75651550292969,"fromZ":117.53815460205078,"toX":102.75651550292969,"toZ":117.53815460205078,"switchDistance":0.0,"switchMethod":"InitialSpawn","zoomLevel":75.0,"timeSinceLastSwitch":0.0,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 0,
+            "data": {"zoomLevel":75.0,"zoomDelta":0.0,"isMapMode":false,"playerX":102.75651550292969,"playerZ":117.53815460205078,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 1,
+            "data": {"zoomLevel":65.0,"zoomDelta":-10.0,"isMapMode":false,"playerX":102.75651550292969,"playerZ":117.93595123291016,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 1.5,
+            "data": {"zoomLevel":85.0,"zoomDelta":20.0,"isMapMode":false,"playerX":102.75651550292969,"playerZ":119.60874938964844,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 2,
+            "data": {"zoomLevel":95.0,"zoomDelta":10.0,"isMapMode":false,"playerX":102.75651550292969,"playerZ":122.816650390625,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 3.5,
+            "data": {"zoomLevel":115.0,"zoomDelta":20.0,"isMapMode":false,"playerX":112.7568588256836,"playerZ":125.96067810058594,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 4,
+            "data": {"zoomLevel":125.0,"zoomDelta":10.0,"isMapMode":false,"playerX":119.23316955566406,"playerZ":130.45767211914063,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 4.838573,
+            "data": {"fromState":"DirectControl","toState":"MouseFollow","trigger":"FKeyToggle","unitType":"NeutrophilType","posX":126.41081237792969,"posZ":142.20919799804688,"zoomLevel":125.0,"timeInPreviousState":0.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 4.838573,
+            "data": {"ability":"MouseFollowON","triggerMethod":"Keyboard","unitType":"NeutrophilType","posX":126.41081237792969,"posZ":142.20919799804688,"zoomLevel":125.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 6,
+            "data": {"zoomLevel":185.0,"zoomDelta":60.0,"isMapMode":false,"playerX":143.4261016845703,"playerZ":152.45401000976563,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 11.91857,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":238.89662170410157,"posZ":196.71890258789063,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 14.53333,
+            "data": {"zoomLevel":155.0,"zoomDelta":-30.0,"isMapMode":false,"playerX":268.6836242675781,"playerZ":207.13380432128907,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 15.03333,
+            "data": {"zoomLevel":145.0,"zoomDelta":-10.0,"isMapMode":false,"playerX":274.0052490234375,"playerZ":215.10052490234376,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 16.03333,
+            "data": {"zoomLevel":125.0,"zoomDelta":-20.0,"isMapMode":false,"playerX":286.348388671875,"playerZ":234.299072265625,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 16.14857,
+            "data": {"killerType":"TCellType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":171.3533477783203,"posZ":157.87388610839845,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 18.90857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":332.0299987792969,"posZ":255.95236206054688,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 18.93857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":332.3789978027344,"posZ":258.3280334472656,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 18.96857,
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":234.09140014648438,"posZ":196.71165466308595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 19.02857,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":335.5512390136719,"posZ":254.447265625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 19.26857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":336.8782653808594,"posZ":256.9107360839844,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 19.41857,
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":340.94818115234377,"posZ":256.7130432128906,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 20.34857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":333.4679870605469,"posZ":254.90696716308595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 20.40857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":332.7748107910156,"posZ":257.2108459472656,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 20.64857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":335.23028564453127,"posZ":258.3473205566406,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 20.67857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":335.3904113769531,"posZ":255.6855010986328,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 21.12857,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":336.0287780761719,"posZ":247.59054565429688,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 21.30857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":337.3467712402344,"posZ":254.00698852539063,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 21.45857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":337.09515380859377,"posZ":256.41546630859377,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 21.63857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":335.3263244628906,"posZ":259.1153564453125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 21.66857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":333.0119323730469,"posZ":257.8702087402344,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 21.81857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":330.61090087890627,"posZ":255.72962951660157,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 22.74857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":323.93841552734377,"posZ":259.0135192871094,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 23.43857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":334.9197082519531,"posZ":255.10768127441407,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 23.55857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":335.36090087890627,"posZ":252.20639038085938,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 24.18857,
+            "data": {"nodeName":"SmallNode_LL","capturedByTeam":2,"playerInvolved":false,"captureMethod":"NKProjectile","playerDistance":279.9395751953125,"playerUnitType":"NeutrophilType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 24.18857,
+            "data": {"zoomLevel":125.0,"zoomDelta":0.0,"isMapMode":false,"playerX":341.4786071777344,"playerZ":251.52357482910157,"currentUnitType":"NeutrophilType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":76.36296844482422,"posZ":252.03897094726563,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":73.541015625,"posZ":233.58619689941407,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":90.68519592285156,"posZ":235.84359741210938,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":71.69954681396485,"posZ":220.949462890625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":57.580360412597659,"posZ":208.2507781982422,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":78.48261260986328,"posZ":183.16851806640626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 24.18857,
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":62.968807220458987,"posZ":200.36587524414063,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 26.49857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":327.16119384765627,"posZ":241.52301025390626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 29.67857,
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":250.8911590576172,"posZ":175.30816650390626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 31.08857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":344.5171813964844,"posZ":285.86083984375,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 31.23857,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":346.7455139160156,"posZ":288.1312255859375,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 34.92857,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":348.4779357910156,"posZ":260.8900146484375,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 35.55857,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":338.57574462890627,"posZ":257.3071594238281,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 36.15857,
+            "data": {"killerType":"TuberculosisType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":93.82957458496094,"posZ":233.4720916748047,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 40.05857,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":195.34417724609376,"posZ":206.9082489013672,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 40.83857,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":292.404052734375,"posZ":212.79891967773438,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 44.25856,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":255.3533935546875,"posZ":173.1806640625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 44.34856,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":252.63681030273438,"posZ":174.60292053222657,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 45.03856,
+            "data": {"killerType":"TuberculosisType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":true,"posX":259.0167236328125,"posZ":168.5640106201172,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 47.04856,
+            "data": {"fromUnitType":"None","toUnitType":"NeutrophilType","fromX":276.227294921875,"fromZ":217.0785675048828,"toX":276.227294921875,"toZ":217.0785675048828,"switchDistance":0.0,"switchMethod":"DeathRespawn","zoomLevel":125.0,"timeSinceLastSwitch":0.0,"timeSinceLastDeath":2.0100021362304689}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 47.04856,
+            "data": {"zoomLevel":125.0,"zoomDelta":0.0,"isMapMode":false,"playerX":276.227294921875,"playerZ":217.0785675048828,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 49.14856,
+            "data": {"killerType":"TuberculosisType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":89.16021728515625,"posZ":239.70904541015626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 49.77856,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":288.02001953125,"posZ":153.00254821777345,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 53.73333,
+            "data": {"fromUnitType":"NeutrophilType","toUnitType":"TCellType","fromX":239.35414123535157,"fromZ":214.4290008544922,"toX":185.87022399902345,"toZ":202.70486450195313,"switchDistance":54.974159240722659,"switchMethod":"DirectClick","zoomLevel":125.0,"timeSinceLastSwitch":6.6847686767578129,"timeSinceLastDeath":8.694770812988282}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 53.73333,
+            "data": {"zoomLevel":125.0,"zoomDelta":0.0,"isMapMode":false,"playerX":239.35414123535157,"playerZ":214.4290008544922,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 53.97856,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":238.9900360107422,"posZ":205.2316131591797,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 54.57856,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":236.9148406982422,"posZ":198.2432098388672,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 56.06667,
+            "data": {"zoomLevel":185.0,"zoomDelta":60.0,"isMapMode":false,"playerX":192.9734344482422,"playerZ":194.555419921875,"currentUnitType":"TCellType","trigger":"periodic"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 57.36667,
+            "data": {"fromUnitType":"TCellType","toUnitType":"NKCellType","fromX":182.35179138183595,"fromZ":196.074951171875,"toX":92.01952362060547,"toZ":225.348876953125,"switchDistance":95.04147338867188,"switchMethod":"DirectClick","zoomLevel":185.0,"timeSinceLastSwitch":3.6333351135253908,"timeSinceLastDeath":12.328105926513672}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 57.36667,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":182.35179138183595,"playerZ":196.074951171875,"currentUnitType":"TCellType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 58.38856,
+            "data": {"killerType":"MycobacteriumType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":true,"posX":92.35195922851563,"posZ":223.122314453125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 60.03856,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":183.2426300048828,"posZ":210.94020080566407,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 60.39856,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":197.10052490234376,"posZ":203.54345703125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 60.39856,
+            "data": {"fromUnitType":"None","toUnitType":"NeutrophilType","fromX":276.227294921875,"fromZ":217.0785675048828,"toX":276.227294921875,"toZ":217.0785675048828,"switchDistance":0.0,"switchMethod":"DeathRespawn","zoomLevel":185.0,"timeSinceLastSwitch":3.0318946838378908,"timeSinceLastDeath":2.0100021362304689}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 60.39856,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":276.227294921875,"playerZ":217.0785675048828,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 61.20856,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":210.62632751464845,"posZ":213.2908477783203,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 62.01856,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":309.6548767089844,"posZ":133.5542755126953,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 62.13856,
+            "data": {"killerType":"PneumoniaType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":91.833740234375,"posZ":222.18040466308595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 67.05856,
+            "data": {"nodeName":"SmallNode_UL","capturedByTeam":2,"playerInvolved":false,"captureMethod":"NKProjectile","playerDistance":170.39382934570313,"playerUnitType":"NeutrophilType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 67.05856,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":212.906982421875,"playerZ":191.3476104736328,"currentUnitType":"NeutrophilType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 67.05856,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":101.6893539428711,"posZ":309.79803466796877,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 67.05856,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":88.25232696533203,"posZ":291.98779296875,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 67.05856,
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":92.15933990478516,"posZ":282.5552978515625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 67.05856,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":81.28700256347656,"posZ":263.1121826171875,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 67.11855,
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":203.68040466308595,"posZ":212.9540252685547,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 67.44855,
+            "data": {"killerType":"MycobacteriumType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":93.16056060791016,"posZ":227.8743896484375,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 68.25855,
+            "data": {"nodeName":"SmallNode_LL","capturedByTeam":1,"playerInvolved":false,"captureMethod":"AIAutonomous","playerDistance":159.41224670410157,"playerUnitType":"NeutrophilType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 68.25855,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":216.67239379882813,"playerZ":173.34597778320313,"currentUnitType":"NeutrophilType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 71.19855,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":315.0854797363281,"posZ":133.24899291992188,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 72.12856,
+            "data": {"fromState":"MouseFollow","toState":"WaypointNavigation","trigger":"WaypointSet","unitType":"NeutrophilType","posX":280.23876953125,"posZ":186.68606567382813,"zoomLevel":185.0,"timeInPreviousState":67.28998565673828}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 72.12856,
+            "data": {"ability":"WaypointSet","triggerMethod":"Mouse","unitType":"NeutrophilType","posX":324.1749267578125,"posZ":234.10350036621095,"zoomLevel":185.0}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 75.6,
+            "data": {"fromUnitType":"NeutrophilType","toUnitType":"NeutrophilType","fromX":319.9800109863281,"fromZ":229.42080688476563,"toX":167.9108428955078,"toZ":188.41067504882813,"switchDistance":157.57867431640626,"switchMethod":"DirectClick","zoomLevel":185.0,"timeSinceLastSwitch":15.201435089111329,"timeSinceLastDeath":17.211437225341798}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 75.6,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":319.9800109863281,"playerZ":229.42080688476563,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 75.6,
+            "data": {"fromState":"WaypointNavigation","toState":"MouseFollow","trigger":"UnitSwitch","unitType":"NeutrophilType","posX":319.9800109863281,"posZ":229.42080688476563,"zoomLevel":185.0,"timeInPreviousState":3.4714431762695314}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 75.63855,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":200.517822265625,"posZ":220.9468231201172,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 75.87856,
+            "data": {"outcome":"Arrived","unitName":"ImmuneNeutrophilPrefab(Clone)","unitType":"NeutrophilType","deathPosX":321.9815979003906,"deathPosZ":232.7963409423828,"waypointX":324.1749267578125,"waypointZ":234.10350036621095,"distToWaypoint":2.6872384548187258,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 75.90855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":325.63287353515627,"posZ":230.79949951171876,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 76.02856,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":323.35284423828127,"posZ":227.8516845703125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 76.02856,
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":327.2622375488281,"posZ":228.2994384765625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 76.68855,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":315.9627380371094,"posZ":230.32647705078126,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 76.77855,
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":197.1976318359375,"posZ":226.07504272460938,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 77.43855,
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":311.3616638183594,"posZ":230.73114013671876,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 77.43855,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":305.95379638671877,"posZ":229.1027069091797,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 80.25855,
+            "data": {"fromState":"MouseFollow","toState":"WaypointNavigation","trigger":"WaypointSet","unitType":"NeutrophilType","posX":133.53404235839845,"posZ":220.65113830566407,"zoomLevel":185.0,"timeInPreviousState":4.6585540771484379}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 80.25855,
+            "data": {"ability":"WaypointSet","triggerMethod":"Mouse","unitType":"NeutrophilType","posX":92.41706848144531,"posZ":294.8306884765625,"zoomLevel":185.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 80.37856,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":313.24676513671877,"posZ":129.67311096191407,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 80.85855,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":184.55917358398438,"posZ":205.52755737304688,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 80.85855,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":177.52597045898438,"posZ":209.20298767089845,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 81.93333,
+            "data": {"fromUnitType":"NeutrophilType","toUnitType":"TCellType","fromX":119.68812561035156,"fromZ":245.63050842285157,"toX":172.32388305664063,"toZ":202.89520263671876,"switchDistance":67.79991912841797,"switchMethod":"DirectClick","zoomLevel":185.0,"timeSinceLastSwitch":6.3333282470703129,"timeSinceLastDeath":23.54476547241211}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 81.93333,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":119.68812561035156,"playerZ":245.63050842285157,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 81.93333,
+            "data": {"fromState":"WaypointNavigation","toState":"MouseFollow","trigger":"UnitSwitch","unitType":"TCellType","posX":119.68812561035156,"posZ":245.63050842285157,"zoomLevel":185.0,"timeInPreviousState":1.674774169921875}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 82.20855,
+            "data": {"killerType":"TCellType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":177.21556091308595,"posZ":218.82142639160157,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 84.48855,
+            "data": {"fromState":"MouseFollow","toState":"WaypointNavigation","trigger":"WaypointSet","unitType":"TCellType","posX":154.19358825683595,"posZ":213.2313232421875,"zoomLevel":185.0,"timeInPreviousState":2.5552215576171877}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 84.48855,
+            "data": {"ability":"WaypointSet","triggerMethod":"Mouse","unitType":"TCellType","posX":91.1597900390625,"posZ":285.2555236816406,"zoomLevel":185.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 85.95855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":85.5298843383789,"posZ":290.2535400390625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 86.10855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":82.38397216796875,"posZ":288.58380126953127,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 86.16855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":82.3558578491211,"posZ":291.7350769042969,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 86.19855,
+            "data": {"fromState":"WaypointNavigation","toState":"MouseFollow","trigger":"WaypointCleared","unitType":"TCellType","posX":142.706787109375,"posZ":226.3567352294922,"zoomLevel":185.0,"timeInPreviousState":1.7099990844726563}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 86.22855,
+            "data": {"outcome":"Arrived","unitName":"ImmuneNeutrophilPrefab(Clone)","unitType":"NeutrophilType","deathPosX":93.09529113769531,"deathPosZ":292.10394287109377,"waypointX":92.41706848144531,"waypointZ":294.8306884765625,"distToWaypoint":4.888264179229736,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 86.70855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":80.70651245117188,"posZ":292.72918701171877,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 87.00855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":85.36042785644531,"posZ":284.5130310058594,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 87.06667,
+            "data": {"fromUnitType":"TCellType","toUnitType":"NKCellType","fromX":136.8626251220703,"fromZ":233.03457641601563,"toX":93.5904541015625,"toZ":297.9856872558594,"switchDistance":78.14962768554688,"switchMethod":"DirectClick","zoomLevel":185.0,"timeSinceLastSwitch":5.133338928222656,"timeSinceLastDeath":28.678104400634767}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 87.06667,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":136.8626251220703,"playerZ":233.03457641601563,"currentUnitType":"TCellType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 87.09855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":83.7240982055664,"posZ":284.30926513671877,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 87.51855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":83.87254333496094,"posZ":282.83819580078127,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 87.69855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":83.96135711669922,"posZ":284.7431945800781,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 87.90855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":83.49691009521485,"posZ":284.3264465332031,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 88.35855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":84.13323974609375,"posZ":279.477783203125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 88.35855,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":74.3579330444336,"posZ":274.0266418457031,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 88.44855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":85.8443374633789,"posZ":278.9060974121094,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 88.53855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":84.0746078491211,"posZ":278.3738708496094,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 88.65855,
+            "data": {"killerType":"PneumoniaType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":true,"posX":98.6087875366211,"posZ":295.86114501953127,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 88.92855,
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":81.27010345458985,"posZ":274.3954772949219,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 89.01855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":84.3480224609375,"posZ":274.22332763671877,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 90.12855,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":78.35491180419922,"posZ":268.9538269042969,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 90.48855,
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":78.17477416992188,"posZ":262.6785888671875,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 90.66666,
+            "data": {"fromUnitType":"None","toUnitType":"NeutrophilType","fromX":276.227294921875,"fromZ":217.0785675048828,"toX":276.227294921875,"toZ":217.0785675048828,"switchDistance":0.0,"switchMethod":"DeathRespawn","zoomLevel":185.0,"timeSinceLastSwitch":3.5999984741210939,"timeSinceLastDeath":2.00811767578125}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 90.66666,
+            "data": {"zoomLevel":185.0,"zoomDelta":0.0,"isMapMode":false,"playerX":276.227294921875,"playerZ":217.0785675048828,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 90.78855,
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":252.00436401367188,"posZ":205.3679962158203,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 91.06667,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":16.765167236328126,"isMapMode":false,"playerX":276.227294921875,"playerZ":217.0785675048828,"currentUnitType":"NeutrophilType","trigger":"periodic"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 91.35855,
+            "data": {"killerType":"TCellType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":103.6303939819336,"posZ":271.3306579589844,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 91.59855,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":310.88116455078127,"posZ":137.95755004882813,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 93.2,
+            "data": {"fromUnitType":"NeutrophilType","toUnitType":"NKCellType","fromX":269.28131103515627,"fromZ":218.06871032714845,"toX":90.34159088134766,"toZ":246.02243041992188,"switchDistance":181.3813018798828,"switchMethod":"DirectClick","zoomLevel":201.76516723632813,"timeSinceLastSwitch":2.5333328247070314,"timeSinceLastDeath":4.541450500488281}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 93.2,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":269.28131103515627,"playerZ":218.06871032714845,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 93.43333,
+            "data": {"fromUnitType":"NKCellType","toUnitType":"NeutrophilType","fromX":90.29012298583985,"fromZ":246.19744873046876,"toX":79.34416961669922,"toZ":276.060546875,"switchDistance":33.05478286743164,"switchMethod":"DirectClick","zoomLevel":201.76516723632813,"timeSinceLastSwitch":0.23332977294921876,"timeSinceLastDeath":4.7747802734375}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 93.43333,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":90.29012298583985,"playerZ":246.19744873046876,"currentUnitType":"NKCellType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 93.93855,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":257.3456115722656,"posZ":204.1470489501953,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.38855,
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":true,"posX":80.91297149658203,"posZ":275.73797607421877,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.89855,
+            "data": {"killerType":"TCellType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":90.85084533691406,"posZ":288.2783508300781,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 95.04855,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":245.61412048339845,"posZ":199.11021423339845,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 96.39855,
+            "data": {"fromUnitType":"None","toUnitType":"NeutrophilType","fromX":276.227294921875,"fromZ":217.0785675048828,"toX":276.227294921875,"toZ":217.0785675048828,"switchDistance":0.0,"switchMethod":"DeathRespawn","zoomLevel":201.76516723632813,"timeSinceLastSwitch":2.9652252197265627,"timeSinceLastDeath":2.0100021362304689}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 96.39855,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":276.227294921875,"playerZ":217.0785675048828,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 96.54855,
+            "data": {"outcome":"Arrived","unitName":"ImmuneTCellPrefab(Clone)","unitType":"TCellType","deathPosX":93.96966552734375,"deathPosZ":285.16412353515627,"waypointX":91.1597900390625,"waypointZ":285.2555236816406,"distToWaypoint":4.88914680480957,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 98,
+            "data": {"fromUnitType":"NeutrophilType","toUnitType":"NKCellType","fromX":275.2360534667969,"fromZ":217.48411560058595,"toX":68.34302520751953,"toZ":302.610595703125,"switchDistance":223.72303771972657,"switchMethod":"DirectClick","zoomLevel":201.76516723632813,"timeSinceLastSwitch":1.6014480590820313,"timeSinceLastDeath":3.6114501953125}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 98,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":275.2360534667969,"playerZ":217.48411560058595,"currentUnitType":"NeutrophilType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 98.34855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":81.66316223144531,"posZ":256.6861877441406,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.09855,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":75.15253448486328,"posZ":248.53660583496095,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.39854,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":300.685302734375,"posZ":229.39805603027345,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.78854,
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":207.455322265625,"posZ":207.89849853515626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 100.0585,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":179.2461700439453,"posZ":210.18548583984376,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 100.7785,
+            "data": {"killerType":"TuberculosisType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":317.6958923339844,"posZ":132.11155700683595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.0185,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":319.102783203125,"posZ":230.0208740234375,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.0785,
+            "data": {"killerType":"TCellType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":76.3297119140625,"posZ":240.0524139404297,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.1085,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":320.0138854980469,"posZ":229.8821258544922,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.2285,
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":322.3455505371094,"posZ":230.28182983398438,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 102.8785,
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":315.02252197265627,"posZ":238.18748474121095,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 104.8585,
+            "data": {"killerType":"MacrophageType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":311.22967529296877,"posZ":131.9559326171875,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 105.9385,
+            "data": {"killerType":"TCellType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":166.96949768066407,"posZ":214.8938446044922,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 108.3385,
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":82.41252899169922,"posZ":216.7143096923828,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 108.6685,
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":53.95841598510742,"posZ":218.920654296875,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 109.7185,
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":72.31515502929688,"posZ":226.00167846679688,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 109.9885,
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":289.2328796386719,"posZ":226.35264587402345,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 110.1685,
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":72.32182312011719,"posZ":225.5343475341797,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 110.1985,
+            "data": {"killerType":"NeutrophilType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":67.70255279541016,"posZ":230.52162170410157,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 111.1285,
+            "data": {"nodeName":"SmallNode_LL","capturedByTeam":2,"playerInvolved":false,"captureMethod":"NKProjectile","playerDistance":91.77449798583985,"playerUnitType":"NKCellType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 111.1285,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":151.45437622070313,"playerZ":244.25608825683595,"currentUnitType":"NKCellType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 111.1285,
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":51.3198127746582,"posZ":188.15817260742188,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 111.3385,
+            "data": {"killerType":"MycobacteriumType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":51.86198425292969,"posZ":217.8026580810547,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 112.4485,
+            "data": {"killerType":"PneumoniaType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":174.3385772705078,"posZ":214.92172241210938,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 115.7485,
+            "data": {"nodeName":"LargeNode","capturedByTeam":2,"playerInvolved":true,"captureMethod":"NKProjectile","playerDistance":17.014986038208009,"playerUnitType":"NKCellType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 115.7485,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":177.09176635742188,"playerZ":227.50071716308595,"currentUnitType":"NKCellType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 115.7485,
+            "data": {"killerType":"NodeType","victimType":"TuberculosisType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":230.37423706054688,"posZ":197.6865997314453,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 115.7485,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":236.7185516357422,"posZ":192.2624969482422,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 115.7485,
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":163.3072509765625,"posZ":214.7681121826172,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 116.1085,
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":272.1202697753906,"posZ":209.9466094970703,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 129.3685,
+            "data": {"nodeName":"Base1Node","capturedByTeam":2,"playerInvolved":true,"captureMethod":"NKProjectile","playerDistance":135.69253540039063,"playerUnitType":"NKCellType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 129.3685,
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":247.8539581298828,"playerZ":263.9494323730469,"currentUnitType":"NKCellType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 129.3685,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":346.77203369140627,"posZ":292.63909912109377,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 129.3685,
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":349.05157470703127,"posZ":293.664306640625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 130.0585,
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":291.9740295410156,"posZ":222.32632446289063,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 132.5667,
+            "data": {"zoomLevel":151.76516723632813,"zoomDelta":-50.0,"isMapMode":false,"playerX":242.64512634277345,"playerZ":257.8363037109375,"currentUnitType":"NKCellType","trigger":"periodic"}
+        }
+    ]
+}

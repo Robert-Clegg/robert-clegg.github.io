@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v294";
+  var v = "v295";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v294 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v295 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2856,7 +2856,47 @@ function TemporalReplay() {
 
   // ═══ AUTO-LOAD DISABLED — use VIDEO tab file inputs ═══
   const [autoLoadStatus, setAutoLoadStatus] = useState("Load files via VIDEO tab");
-  // ═══ AUTO-RESTORE cached telemetry from localStorage ═══
+  // ═══ HOSTED SESSIONS — telemetry + video served from GitHub Pages ═══
+  const HOSTED_SESSIONS = [
+    { id: "pathogen", label: "PATHOGEN SESSION", file: "sessions/pathogen_session.json", video: "sessions/pathogen_player.mp4", team: "pathogen" },
+    { id: "immune", label: "IMMUNE SESSION", file: "sessions/immune_session.json", video: "sessions/immune_player.mp4", team: "immune" }
+  ];
+  const loadHostedSession = useCallback(function(session) {
+    setTelemetryStatus("⏳ Loading " + session.label + "...");
+    fetch(session.file).then(function(r) { return r.json(); }).then(function(raw) {
+      var events = (raw.events || []).map(function(e) {
+        return { t: e.timestamp != null ? e.timestamp : e.t, type: e.eventType || e.type, data: e.data || {} };
+      }).sort(function(a, b) { return a.t - b.t; });
+      var pathogenTypes = ["VirusType","TuberculosisType","PneumoniaType","MycobacteriumType"];
+      var firstSwitch = events.find(function(e) { return e.type === "SwitchEvent"; });
+      var unitType = firstSwitch && firstSwitch.data.toUnitType || "";
+      var team = pathogenTypes.indexOf(unitType) >= 0 ? "pathogen" : "immune";
+      var duration = raw.matchDuration || Math.max.apply(null, events.map(function(e) { return e.t || 0; }));
+      var meta = {
+        duration: Math.round(duration * 10) / 10,
+        playerTeam: raw.playerTeam || (team === "pathogen" ? 1 : 2),
+        sessionId: raw.sessionId || session.id,
+        label: session.label, team: team,
+        eventCount: events.length, fileName: session.file
+      };
+      setLoadedEvents(events);
+      setLoadedMeta(meta);
+      setTelemetrySource("loaded");
+      setTelemetryStatus("✅ " + events.length + " events • " + meta.duration.toFixed(0) + "s • " + session.label);
+      setTelemetryFileName(session.file);
+      try { localStorage.setItem("pathogenika-telemetry-cache", JSON.stringify({ events: events, meta: meta })); } catch(e) {}
+      // Try loading hosted video
+      if (session.video) {
+        fetch(session.video, { method: "HEAD" }).then(function(r) {
+          if (r.ok) { setVideoUrl(session.video); setVideoLoaded(true); setVideoFileName(session.video); }
+        }).catch(function() {});
+      }
+    }).catch(function(err) {
+      setTelemetryStatus("❌ Failed: " + err.message);
+    });
+  }, []);
+
+  // ═══ AUTO-LOAD: try cache first, then default hosted session ═══
   useEffect(function() {
     try {
       var cached = localStorage.getItem("pathogenika-telemetry-cache");
@@ -2868,9 +2908,12 @@ function TemporalReplay() {
           setTelemetrySource("loaded");
           setTelemetryStatus("♻ " + parsed.events.length + " events • " + parsed.meta.duration.toFixed(0) + "s • " + parsed.meta.label + " (cached)");
           setTelemetryFileName(parsed.meta.fileName || "cached");
+          return;
         }
       }
     } catch(e) {}
+    // No cache — load default hosted session
+    loadHostedSession(HOSTED_SESSIONS[0]);
   }, []);
   const autoLoadAttempted = useRef(false);
 
@@ -3107,7 +3150,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v294"), /*#__PURE__*/React.createElement("span", {
+  }, "v295"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -3235,7 +3278,20 @@ function TemporalReplay() {
   }, "\u23F0 ", loadedMeta.sessionId || ""),
     autoLoadStatus && /*#__PURE__*/React.createElement("span", {
     style: { fontSize: 7, color: autoLoadStatus.startsWith("\u2705") ? "#00e5ff" : autoLoadStatus.startsWith("\u274C") ? "#ff4444" : "#ffaa00", fontFamily: mono, marginLeft: 8 }
-  }, "\uD83D\uDD17 ", autoLoadStatus))), /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDD17 ", autoLoadStatus),
+  // ── Session picker buttons ──
+  HOSTED_SESSIONS.map(function(s) {
+    var isActive = loadedMeta && loadedMeta.sessionId === s.id;
+    return /*#__PURE__*/React.createElement("button", {
+      key: s.id, onClick: function() { loadHostedSession(s); },
+      style: {
+        fontFamily: mono, fontSize: 7, letterSpacing: 1, padding: "2px 8px", borderRadius: 3, cursor: "pointer", marginLeft: 4,
+        background: isActive ? (s.team === "pathogen" ? "rgba(255,107,53,0.2)" : "rgba(0,212,255,0.2)") : "rgba(255,255,255,0.04)",
+        border: "1px solid " + (isActive ? (s.team === "pathogen" ? "rgba(255,107,53,0.5)" : "rgba(0,212,255,0.5)") : "rgba(255,255,255,0.08)"),
+        color: isActive ? (s.team === "pathogen" ? "#ff6b35" : "#00d4ff") : "rgba(255,255,255,0.3)"
+      }
+    }, s.label);
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginLeft: 0,
       transition: "margin-left 0.3s"

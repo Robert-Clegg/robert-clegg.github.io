@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v314";
+  var v = "v315";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v314 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v315 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2039,6 +2039,7 @@ function SpatialEventMap({ events, time, height = 480 }) {
 
   return /*#__PURE__*/React.createElement("svg", {
       viewBox: `0 0 ${W} ${H}`,
+      preserveAspectRatio: "xMinYMin meet",
       style: { width: "100%", height, background: "rgba(0,0,0,0.3)", borderRadius: 0, border: "none" }
     },
       // Grid lines
@@ -3111,7 +3112,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v314"), /*#__PURE__*/React.createElement("span", {
+  }, "v315"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9448,8 +9449,10 @@ function TemporalReplay() {
               )
             )
           ),
-          // ── ROW 2: Battle Map (full width, left edge flush with col0 right) ──
-          /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 500 })
+          // ── ROW 2: Battle Map, left-aligned with 6px padding ──
+          /*#__PURE__*/React.createElement("div", { style: { paddingLeft: 6 } },
+            /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 500 })
+          )
         )
       )
     );
@@ -9645,7 +9648,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v314 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v315 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

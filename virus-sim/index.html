@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v298";
+  var v = "v299";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v298 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v299 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2053,7 +2053,7 @@ function SpatialEventMap({ events, time, height = 480 }) {
 
   return /*#__PURE__*/React.createElement("div", null,
     // Heatmap mode toggle
-    /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8, justifyContent: "center" } },
+    /*#__PURE__*/React.createElement("div", { style: { display: "flex", gap: 6, marginBottom: 8, justifyContent: "flex-start" } },
       HEATMAP_MODES.map(mode => /*#__PURE__*/React.createElement("button", {
         key: mode, onClick: () => setHeatMode(mode),
         style: {
@@ -3054,7 +3054,7 @@ function TemporalReplay() {
       background: "#060610",
       color: "white",
       fontFamily: display,
-      padding: "20px 16px",
+      padding: "20px 8px 20px 8px",
       overflow: "hidden"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -3150,7 +3150,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v298"), /*#__PURE__*/React.createElement("span", {
+  }, "v299"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9502,7 +9502,7 @@ function TemporalReplay() {
     };
     return /*#__PURE__*/React.createElement(React.Fragment, null,
       /*#__PURE__*/React.createElement("div", {
-        style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 8, textAlign: "center" }
+        style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 8, textAlign: "left" }
       }, "SPATIAL ANALYSIS \u2022 ", Math.round(time), "s \u2022 ", activeLabel),
       // ═══ TWO-COLUMN: DATA LEFT, MAP RIGHT ═══
       /*#__PURE__*/React.createElement("div", { style: { display: "grid", gridTemplateColumns: "220px 1fr", gap: 8 }},

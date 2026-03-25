@@ -9263,8 +9263,8 @@ function TemporalReplay() {
         style: { fontSize: 9, letterSpacing: 3, color: "rgba(255,255,255,0.25)", fontFamily: mono, marginBottom: 8, textAlign: "left" }
       }, "SPATIAL ANALYSIS \u2022 ", Math.round(time), "s \u2022 ", activeLabel),
       // ═══ TWO-COLUMN: DATA LEFT, MAP RIGHT ═══
-      /*#__PURE__*/React.createElement("div", { id: "spatial-grid", style: { display: "inline-grid", gridTemplateColumns: "minmax(0,165px) auto", gap: 0, alignItems: "start" }},
-        // ═══ LEFT COLUMN: ALL DATA ═══
+      /*#__PURE__*/React.createElement("div", { id: "spatial-grid", style: { display: "inline-grid", gridTemplateColumns: "165px 220px auto", gap: 0, alignItems: "start" }},
+        // ═══ COL0: DATA PANELS ═══
         /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
           // ── Event Feed (fixed 7 rows) — TOP ──
           /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,0,0.6)", minHeight: 130 }},
@@ -9405,52 +9405,51 @@ function TemporalReplay() {
             }}, "Territory P:", pathNodes, " / I:", immNodes)
           )
         ),
-        // ═══ RIGHT SECTION: fixed 640px, never stretches ═══
-        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", width: 640, flexShrink: 0 }},
-          // ── ROW 1: Cognitive Signature (left) + Video (right) ──
-          /*#__PURE__*/React.createElement("div", { style: { display: "flex", alignItems: "stretch", borderBottom: "1px solid rgba(255,255,255,0.04)" }},
-            // Cognitive Signature
-            /*#__PURE__*/React.createElement("div", { style: { width: 380, flexShrink: 0, paddingLeft: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)", display: "flex", flexDirection: "column", justifyContent: "center" }},
-              /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 0, marginTop: 2, textAlign: "center", textTransform: "uppercase" }}, "cognitive signature"),
-              /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 200 },
-                /*#__PURE__*/React.createElement(RadarChart, { data: radarData, cx: "50%", cy: "50%", outerRadius: "62%" },
-                  /*#__PURE__*/React.createElement(PolarGrid, { stroke: "rgba(255,255,255,0.1)" }),
-                  /*#__PURE__*/React.createElement(PolarAngleAxis, { dataKey: "axis",
-                    tick: function(props) {
-                      var SHORT = {"Reactivity":"React","Strategic Depth":"Strat","Spatial Awareness":"Space","Tool Adoption":"Tools","Unit Diversity":"Units","Combat Focus":"Combat"};
-                      var short = SHORT[props.payload.value] || props.payload.value.substring(0,6);
-                      return /*#__PURE__*/React.createElement("text", { x: props.x, y: props.y, textAnchor: props.textAnchor, dominantBaseline: "central", fill: "rgba(255,255,255,0.45)", fontSize: 7, fontFamily: "'JetBrains Mono', monospace" }, short);
-                    }
-                  }),
-                  /*#__PURE__*/React.createElement(PolarRadiusAxis, { tick: false, domain: [0, 100] }),
-                  /*#__PURE__*/React.createElement(Radar, { name: "Player", dataKey: "soldier", stroke: S_COLOR, fill: S_COLOR, fillOpacity: 0.15, strokeWidth: 1.5, dot: false, isAnimationActive: true }),
-                  /*#__PURE__*/React.createElement(Radar, { name: "Ref", dataKey: "commander", stroke: C_COLOR, fill: C_COLOR, fillOpacity: 0.08, strokeWidth: 1, dot: false, isAnimationActive: false })
-                )
-              )
-            ),
-            // Video: fixed 260px to make row1 total = 640px
-            /*#__PURE__*/React.createElement("div", { style: { width: 260, flexShrink: 0, position: "relative", background: "#000", overflow: "hidden" }},
-              /*#__PURE__*/React.createElement("div", { style: { position: "absolute", top: 5, left: 8, display: "flex", alignItems: "center", gap: 5, zIndex: 2 }},
-                /*#__PURE__*/React.createElement("div", { style: { width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 6px #00ff88" : "none" } }),
-                /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5 } }, activeCamera === "overview" ? "OVERVIEW" : activeCamera === "action" ? "ACTION" : "PLAYER VIEW")
-              ),
-              /*#__PURE__*/React.createElement("div", { style: { position: "absolute", top: 5, right: 8, display: "flex", gap: 3, zIndex: 2 }},
-                /*#__PURE__*/React.createElement("button", { onClick: () => setActiveCamera("player"), style: { fontFamily: mono, fontSize: 7, padding: "2px 6px", borderRadius: 3, border: "1px solid", cursor: "pointer", background: activeCamera === "player" ? "rgba(0,229,255,0.2)" : "rgba(0,0,0,0.6)", borderColor: activeCamera === "player" ? "rgba(0,229,255,0.5)" : "rgba(255,255,255,0.1)", color: activeCamera === "player" ? "#00e5ff" : "rgba(255,255,255,0.3)" } }, "P"),
-                /*#__PURE__*/React.createElement("button", { onClick: () => setActiveCamera("overview"), style: { fontFamily: mono, fontSize: 7, padding: "2px 6px", borderRadius: 3, border: "1px solid", cursor: "pointer", background: activeCamera === "overview" ? "rgba(168,85,247,0.2)" : "rgba(0,0,0,0.6)", borderColor: activeCamera === "overview" ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.1)", color: activeCamera === "overview" ? "#a855f7" : "rgba(255,255,255,0.3)" } }, "O"),
-                /*#__PURE__*/React.createElement("button", { onClick: () => setActiveCamera("action"), style: { fontFamily: mono, fontSize: 7, padding: "2px 6px", borderRadius: 3, border: "1px solid", cursor: "pointer", background: activeCamera === "action" ? "rgba(255,107,53,0.2)" : "rgba(0,0,0,0.6)", borderColor: activeCamera === "action" ? "rgba(255,107,53,0.5)" : "rgba(255,255,255,0.1)", color: activeCamera === "action" ? "#ff6b35" : "rgba(255,255,255,0.3)" } }, "A")
-              ),
-              /*#__PURE__*/React.createElement("video", { ref: floatVideoRef, muted: true, playsInline: true,
-                style: { width: "100%", height: "100%", display: "block", objectFit: "cover" }
+        // ═══ COL1: COGNITIVE SIGNATURE ═══
+        /*#__PURE__*/React.createElement("div", { style: { paddingLeft: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)", display: "flex", flexDirection: "column", justifyContent: "flex-start" }},
+          /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 0, marginTop: 2, textAlign: "center", textTransform: "uppercase" }}, "cognitive signature"),
+          /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 200 },
+            /*#__PURE__*/React.createElement(RadarChart, { data: radarData, cx: "50%", cy: "50%", outerRadius: "62%" },
+              /*#__PURE__*/React.createElement(PolarGrid, { stroke: "rgba(255,255,255,0.1)" }),
+              /*#__PURE__*/React.createElement(PolarAngleAxis, { dataKey: "axis",
+                tick: function(props) {
+                  var SHORT = {"Reactivity":"React","Strategic Depth":"Strat","Spatial Awareness":"Space","Tool Adoption":"Tools","Unit Diversity":"Units","Combat Focus":"Combat"};
+                  var short = SHORT[props.payload.value] || props.payload.value.substring(0,6);
+                  return /*#__PURE__*/React.createElement("text", { x: props.x, y: props.y, textAnchor: props.textAnchor, dominantBaseline: "central", fill: "rgba(255,255,255,0.45)", fontSize: 7, fontFamily: "'JetBrains Mono', monospace" }, short);
+                }
               }),
-              /*#__PURE__*/React.createElement("div", { style: { position: "absolute", bottom: 5, right: 8, zIndex: 2 }},
-                /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 11, color: "white", background: "rgba(0,0,0,0.7)", padding: "2px 6px", borderRadius: 4, fontWeight: 600 }},
-                  Math.floor(time/60) + ":" + String(Math.floor(time%60)).padStart(2,"0") + "." + Math.floor((time%1)*10)
-                )
+              /*#__PURE__*/React.createElement(PolarRadiusAxis, { tick: false, domain: [0, 100] }),
+              /*#__PURE__*/React.createElement(Radar, { name: "Player", dataKey: "soldier", stroke: S_COLOR, fill: S_COLOR, fillOpacity: 0.15, strokeWidth: 1.5, dot: false, isAnimationActive: true }),
+              /*#__PURE__*/React.createElement(Radar, { name: "Ref", dataKey: "commander", stroke: C_COLOR, fill: C_COLOR, fillOpacity: 0.08, strokeWidth: 1, dot: false, isAnimationActive: false })
+            )
+          )
+        ),
+        // ═══ COL2: VIDEO (row1) + BATTLE MAP (row2) ═══
+        /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column" }},
+          // ROW1: Video
+          /*#__PURE__*/React.createElement("div", { style: { position: "relative", background: "#000", overflow: "hidden", height: 212, flexShrink: 0 }},
+            /*#__PURE__*/React.createElement("div", { style: { position: "absolute", top: 5, left: 8, display: "flex", alignItems: "center", gap: 5, zIndex: 2 }},
+              /*#__PURE__*/React.createElement("div", { style: { width: 6, height: 6, borderRadius: "50%", background: playing ? "#00ff88" : "#ff3d71", boxShadow: playing ? "0 0 6px #00ff88" : "none" } }),
+              /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 8, color: "rgba(255,255,255,0.5)", letterSpacing: 1.5 } }, activeCamera === "overview" ? "OVERVIEW" : activeCamera === "action" ? "ACTION" : "PLAYER VIEW")
+            ),
+            /*#__PURE__*/React.createElement("div", { style: { position: "absolute", top: 5, right: 8, display: "flex", gap: 3, zIndex: 2 }},
+              /*#__PURE__*/React.createElement("button", { onClick: () => setActiveCamera("player"), style: { fontFamily: mono, fontSize: 7, padding: "2px 6px", borderRadius: 3, border: "1px solid", cursor: "pointer", background: activeCamera === "player" ? "rgba(0,229,255,0.2)" : "rgba(0,0,0,0.6)", borderColor: activeCamera === "player" ? "rgba(0,229,255,0.5)" : "rgba(255,255,255,0.1)", color: activeCamera === "player" ? "#00e5ff" : "rgba(255,255,255,0.3)" } }, "P"),
+              /*#__PURE__*/React.createElement("button", { onClick: () => setActiveCamera("overview"), style: { fontFamily: mono, fontSize: 7, padding: "2px 6px", borderRadius: 3, border: "1px solid", cursor: "pointer", background: activeCamera === "overview" ? "rgba(168,85,247,0.2)" : "rgba(0,0,0,0.6)", borderColor: activeCamera === "overview" ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.1)", color: activeCamera === "overview" ? "#a855f7" : "rgba(255,255,255,0.3)" } }, "O"),
+              /*#__PURE__*/React.createElement("button", { onClick: () => setActiveCamera("action"), style: { fontFamily: mono, fontSize: 7, padding: "2px 6px", borderRadius: 3, border: "1px solid", cursor: "pointer", background: activeCamera === "action" ? "rgba(255,107,53,0.2)" : "rgba(0,0,0,0.6)", borderColor: activeCamera === "action" ? "rgba(255,107,53,0.5)" : "rgba(255,255,255,0.1)", color: activeCamera === "action" ? "#ff6b35" : "rgba(255,255,255,0.3)" } }, "A")
+            ),
+            /*#__PURE__*/React.createElement("video", { ref: floatVideoRef, muted: true, playsInline: true,
+              style: { width: "100%", height: "100%", display: "block", objectFit: "cover" }
+            }),
+            /*#__PURE__*/React.createElement("div", { style: { position: "absolute", bottom: 5, right: 8, zIndex: 2 }},
+              /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 11, color: "white", background: "rgba(0,0,0,0.7)", padding: "2px 6px", borderRadius: 4, fontWeight: 600 }},
+                Math.floor(time/60) + ":" + String(Math.floor(time%60)).padStart(2,"0") + "." + Math.floor((time%1)*10)
               )
             )
           ),
-          // ── ROW 2: Battle Map, fixed width ──
-          /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 500 })
+          // ROW2: Battle Map — own container, left-anchored
+          /*#__PURE__*/React.createElement("div", { style: { overflow: "hidden" }},
+            /*#__PURE__*/React.createElement(SpatialEventMap, { events: loadedEvents, time: dataTime, height: 500 })
+          )
         )
       )
     );

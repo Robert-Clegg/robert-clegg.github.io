@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v301";
+  var v = "v302";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v301 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v302 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2885,6 +2885,8 @@ function TemporalReplay() {
       setTelemetryStatus("✅ " + events.length + " events • " + meta.duration.toFixed(0) + "s • " + session.label);
       setTelemetryFileName(session.file);
       try { localStorage.setItem("pathogenika-telemetry-cache", JSON.stringify({ events: events, meta: meta })); } catch(e) {}
+      // Seek to end so all data visible immediately
+      seekTo(duration);
       // Try loading hosted video
       if (session.video) {
         fetch(session.video, { method: "HEAD" }).then(function(r) {
@@ -2908,6 +2910,7 @@ function TemporalReplay() {
           setTelemetrySource("loaded");
           setTelemetryStatus("♻ " + parsed.events.length + " events • " + parsed.meta.duration.toFixed(0) + "s • " + parsed.meta.label + " (cached)");
           setTelemetryFileName(parsed.meta.fileName || "cached");
+          seekTo(parsed.meta.duration || 60);
           return;
         }
       }
@@ -3150,7 +3153,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v301"), /*#__PURE__*/React.createElement("span", {
+  }, "v302"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9508,38 +9511,49 @@ function TemporalReplay() {
       /*#__PURE__*/React.createElement("div", { id: "spatial-grid", style: { display: "grid", gridTemplateColumns: "220px 1fr", gap: 0 }},
         // ═══ LEFT COLUMN: ALL DATA ═══
         /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, maxHeight: 700, overflowY: "auto", paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
-          // ── Event Feed (compact, 8 items) — TOP ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)" }},
+          // ── Event Feed (fixed 7 rows) — TOP ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)", minHeight: 130 }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "event feed"),
-            evts.filter(function(e){
-              return e.t <= dt && e.t > dt - 20 && e.type !== "ViewEvent";
-            }).reverse().slice(0,8).map(function(e, i) {
-              var d = e.data;
-              var evColor = "#888", evLabel = e.type.replace("Event", "");
-              if (e.type === "CombatEvent") {
-                evColor = (d.playerWasKiller || d.playerUnitKill) ? "#00ff88" : d.playerWasVictim ? "#ff4444" : "#554444";
-                evLabel = d.playerWasVictim ? "DEATH" : (d.playerWasKiller || d.playerUnitKill) ? "Kill" : "AI";
-              } else if (e.type === "SwitchEvent") {
-                evColor = d.switchMethod === "DeathRespawn" ? "#ff6b35" : "#00e5ff";
-                evLabel = d.switchMethod === "DeathRespawn" ? "Respawn" : "Switch";
-              } else if (e.type === "AbilityEvent") {
-                evColor = "#a855f7"; evLabel = (d.ability||"").substring(0,7);
-              } else if (e.type === "NodeCaptureEvent") {
-                evColor = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff"; evLabel = "Capture";
-              } else if (e.type === "ControlStateEvent") {
-                evColor = "#ffaa00"; evLabel = (d.trigger||"").substring(0,7);
-              } else if (e.type === "WaypointOutcomeEvent") {
-                evColor = d.outcome === "Arrived" ? "#00ff88" : "#ff4444"; evLabel = "WP";
-              }
-              return /*#__PURE__*/React.createElement("div", {
-                key: i, style: {
-                  display: "flex", alignItems: "center", gap: 4, padding: "2px 5px", marginBottom: 1,
-                  borderLeft: "2px solid " + evColor, borderRadius: "0 3px 3px 0",
-                  fontSize: 8, fontFamily: mono
+            (function() {
+              var items = evts.filter(function(e){
+                return e.t <= dt && e.t > dt - 20 && e.type !== "ViewEvent";
+              }).reverse().slice(0,7);
+              var rows = [];
+              for (var ri = 0; ri < 7; ri++) {
+                if (ri < items.length) {
+                  var e = items[ri], d = e.data;
+                  var evColor = "#888", evLabel = e.type.replace("Event", "");
+                  if (e.type === "CombatEvent") {
+                    evColor = (d.playerWasKiller || d.playerUnitKill) ? "#00ff88" : d.playerWasVictim ? "#ff4444" : "#554444";
+                    evLabel = d.playerWasVictim ? "DEATH" : (d.playerWasKiller || d.playerUnitKill) ? "Kill" : "AI";
+                  } else if (e.type === "SwitchEvent") {
+                    evColor = d.switchMethod === "DeathRespawn" ? "#ff6b35" : "#00e5ff";
+                    evLabel = d.switchMethod === "DeathRespawn" ? "Respawn" : "Switch";
+                  } else if (e.type === "AbilityEvent") {
+                    evColor = "#a855f7"; evLabel = (d.ability||"").substring(0,7);
+                  } else if (e.type === "NodeCaptureEvent") {
+                    evColor = d.capturedByTeam === 1 ? "#ff6b35" : "#00d4ff"; evLabel = "Capture";
+                  } else if (e.type === "ControlStateEvent") {
+                    evColor = "#ffaa00"; evLabel = (d.trigger||"").substring(0,7);
+                  } else if (e.type === "WaypointOutcomeEvent") {
+                    evColor = d.outcome === "Arrived" ? "#00ff88" : "#ff4444"; evLabel = "WP";
+                  }
+                  rows.push(/*#__PURE__*/React.createElement("div", {
+                    key: ri, style: {
+                      display: "flex", alignItems: "center", gap: 4, padding: "2px 5px", marginBottom: 1,
+                      borderLeft: "2px solid " + evColor, borderRadius: "0 3px 3px 0",
+                      fontSize: 8, fontFamily: mono, height: 14
+                    }
+                  }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.25)", minWidth: 24 } }, e.t.toFixed(0) + "s"),
+                     /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600 } }, evLabel)));
+                } else {
+                  rows.push(/*#__PURE__*/React.createElement("div", {
+                    key: ri, style: { height: 14, marginBottom: 1, borderLeft: "2px solid rgba(255,255,255,0.03)", borderRadius: "0 3px 3px 0", padding: "2px 5px" }
+                  }));
                 }
-              }, /*#__PURE__*/React.createElement("span", { style: { color: "rgba(255,255,255,0.25)", minWidth: 24 } }, e.t.toFixed(0) + "s"),
-                 /*#__PURE__*/React.createElement("span", { style: { color: evColor, fontWeight: 600 } }, evLabel));
-            })
+              }
+              return rows;
+            })()
           ),
           // ── Cognitive Profile ──
           /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,255,0.03)" }},

@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v297";
+  var v = "v298";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v297 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v298 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -3150,7 +3150,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v297"), /*#__PURE__*/React.createElement("span", {
+  }, "v298"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -3316,11 +3316,10 @@ function TemporalReplay() {
   tab !== "video" && /*#__PURE__*/React.createElement("div", {
     id: "pip-panel",
     style: {
-      position: "fixed", top: 44, left: 12, width: 320, minWidth: 200, minHeight: 130, zIndex: 100,
+      position: "fixed", top: 44, right: 12, width: 320, minWidth: 200, minHeight: 130, zIndex: 100,
       background: "rgba(6,6,16,0.95)", borderRadius: 8,
       border: "1px solid rgba(0,229,255,0.12)", overflow: "hidden",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-      resize: "both", cursor: "default"
+      boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
     },
     onDragOver: e => { e.preventDefault(); e.stopPropagation(); },
     onDrop: e => {
@@ -3343,13 +3342,13 @@ function TemporalReplay() {
       if (!el) return;
       var startX = e.clientX, startY = e.clientY;
       var rect = el.getBoundingClientRect();
-      var origLeft = rect.left;
+      var origRight = window.innerWidth - rect.right;
       var origTop = rect.top;
       function onMove(ev) {
         var dx = ev.clientX - startX, dy = ev.clientY - startY;
-        el.style.left = Math.max(0, origLeft + dx) + "px";
-        el.style.top = Math.max(0, origTop + dy) + "px";
-        el.style.right = "auto";
+        el.style.right = Math.max(0, origRight - dx) + "px";
+        el.style.top = Math.max(40, origTop + dy) + "px";
+        el.style.left = "auto";
         el.style.bottom = "auto";
       }
       function onUp() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); }
@@ -3469,6 +3468,30 @@ function TemporalReplay() {
       left: "calc(" + (activeDuration > 0 ? (time / activeDuration) * 100 : 0) + "% + " + (12 - 6) + "px)",
       transform: "translateX(-50%)", cursor: "grab"
     }
+  }))),
+  // ── RESIZE HANDLE (bottom-left corner) ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", bottom: 0, left: 0, width: 16, height: 16, cursor: "sw-resize", zIndex: 10 },
+    onMouseDown: function(e) {
+      var el = document.getElementById("pip-panel");
+      if (!el) return;
+      var startX = e.clientX, startY = e.clientY;
+      var rect = el.getBoundingClientRect();
+      var origW = rect.width, origH = rect.height;
+      var origRight = window.innerWidth - rect.right;
+      function onMove(ev) {
+        var dx = ev.clientX - startX, dy = ev.clientY - startY;
+        el.style.width = Math.max(200, origW - dx) + "px";
+        el.style.height = Math.max(130, origH + dy) + "px";
+        el.style.right = origRight + "px";
+      }
+      function onUp() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { position: "absolute", bottom: 2, left: 2, width: 8, height: 8, borderLeft: "2px solid rgba(255,255,255,0.2)", borderBottom: "2px solid rgba(255,255,255,0.2)" }
   }))), tab === "overview" && isLoaded && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",

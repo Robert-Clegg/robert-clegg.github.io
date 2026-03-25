@@ -1,0 +1,18 @@
+{
+  "version": "media-v1",
+  "note": "Update this file + create a new GitHub Release to swap videos. No dashboard code changes needed.",
+  "sessions": {
+    "pathogen": {
+      "video": "https://github.com/Robert-Clegg/robert-clegg.github.io/releases/download/media-v1/pathogen_player.mp4",
+      "label": "Pathogen Player — placeholder capture",
+      "updated": "2026-03-25",
+      "status": "placeholder"
+    },
+    "immune": {
+      "video": "https://github.com/Robert-Clegg/robert-clegg.github.io/releases/download/media-v1/immune_player.mp4",
+      "label": "Immune Player — placeholder capture",
+      "updated": "2026-03-25",
+      "status": "placeholder"
+    }
+  }
+}

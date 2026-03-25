@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v307";
+  var v = "v308";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v307 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v308 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2847,11 +2847,21 @@ function TemporalReplay() {
 
   // ═══ AUTO-LOAD DISABLED — use VIDEO tab file inputs ═══
   const [autoLoadStatus, setAutoLoadStatus] = useState("Load files via VIDEO tab");
-  // ═══ HOSTED SESSIONS — telemetry + video served from GitHub Pages ═══
-  const HOSTED_SESSIONS = [
-    { id: "pathogen", label: "PATHOGEN SESSION", file: "sessions/pathogen_session.json", video: "sessions/pathogen_player.mp4", team: "pathogen" },
-    { id: "immune", label: "IMMUNE SESSION", file: "sessions/immune_session.json", video: "sessions/immune_player.mp4", team: "immune" }
+  // ═══ HOSTED SESSIONS — driven by media-manifest.json (update manifest + new GitHub Release to swap videos, no code change needed) ═══
+  const MANIFEST_DEFAULTS = [
+    { id: "pathogen", label: "PATHOGEN SESSION", file: "sessions/pathogen_session.json", video: "https://github.com/Robert-Clegg/robert-clegg.github.io/releases/download/media-v1/pathogen_player.mp4", team: "pathogen" },
+    { id: "immune", label: "IMMUNE SESSION", file: "sessions/immune_session.json", video: "https://github.com/Robert-Clegg/robert-clegg.github.io/releases/download/media-v1/immune_player.mp4", team: "immune" }
   ];
+  const [HOSTED_SESSIONS, setHostedSessions] = useState(MANIFEST_DEFAULTS);
+  useEffect(function() {
+    fetch("media-manifest.json?v=" + Date.now()).then(function(r) { return r.json(); }).then(function(manifest) {
+      if (!manifest.sessions) return;
+      setHostedSessions([
+        { id: "pathogen", label: "PATHOGEN SESSION", file: "sessions/pathogen_session.json", video: manifest.sessions.pathogen.video, team: "pathogen" },
+        { id: "immune", label: "IMMUNE SESSION", file: "sessions/immune_session.json", video: manifest.sessions.immune.video, team: "immune" }
+      ]);
+    }).catch(function() { /* keep defaults on fetch failure */ });
+  }, []);
   const loadHostedSession = useCallback(function(session) {
     setTelemetryStatus("⏳ Loading " + session.label + "...");
     fetch(session.file).then(function(r) { return r.json(); }).then(function(raw) {
@@ -3101,7 +3111,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v307"), /*#__PURE__*/React.createElement("span", {
+  }, "v308"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9759,7 +9769,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v307 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v308 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

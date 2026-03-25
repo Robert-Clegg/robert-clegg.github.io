@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v319";
+  var v = "v320";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v319 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v320 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -3112,7 +3112,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v319"), /*#__PURE__*/React.createElement("span", {
+  }, "v320"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -9194,7 +9194,7 @@ function TemporalReplay() {
         // ═══ COL0: DATA PANELS ═══
         /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, paddingRight: 6, borderRight: "1px solid rgba(255,255,255,0.04)" }},
           // ── Event Feed (fixed 7 rows) — TOP ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,0,0.6)", minHeight: 130 }},
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.06)", minHeight: 130 }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "event feed"),
             (function() {
               var items = evts.filter(function(e){
@@ -9248,7 +9248,7 @@ function TemporalReplay() {
             })()
           ),
           // ── Cognitive Profile ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,0,0.6)" }},
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,255,0.06)" }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 6, textAlign: "center", textTransform: "uppercase" }}, "cognitive profile"),
             pBar("NT Logic", nt/totalQ*100, "#00d4ff"),
             pBar("ST Facts", st/totalQ*100, "#ff6b35"),
@@ -9262,7 +9262,7 @@ function TemporalReplay() {
             )
           ),
           // ── Analysis (text insights) ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,0,0.6)" }},
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 8, border: "1px solid rgba(255,255,255,0.06)" }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "analysis"),
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 8, color: "rgba(255,255,255,0.45)", fontFamily: mono, lineHeight: 1.6 }},
               waypointsSet > 3 ? "High delegation: " + waypointsSet + " waypoints. " : "",
@@ -9273,7 +9273,7 @@ function TemporalReplay() {
             )
           ),
           // ── Population / Attrition + Cell Type Breakdown ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,0,0.6)" }},
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.06)" }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "population losses by team"),
             /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 65 },
               /*#__PURE__*/React.createElement(AreaChart, { data: popData },
@@ -9289,7 +9289,7 @@ function TemporalReplay() {
             )
           ),
           // ── Cell Type Losses Over Time ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,0,0.6)" }},
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.06)" }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "losses by cell type"),
             /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 90 },
               /*#__PURE__*/React.createElement(AreaChart, { data: cellPopData },
@@ -9313,7 +9313,7 @@ function TemporalReplay() {
             )
           ),
           // ── Player Stats (lower priority) ──
-          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,0,0.6)" }},
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.06)" }},
             /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "stats"),
             /*#__PURE__*/React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }},
               cBox("Kills", playerKills, "#00ff88"),
@@ -9572,7 +9572,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v319 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v320 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026"));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

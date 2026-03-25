@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v305";
+  var v = "v306";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v305 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v306 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2757,6 +2757,8 @@ function TemporalReplay() {
         // Seek to current timeline position once video is ready
         var target = time + videoOffset;
         vid.currentTime = Math.max(0, Math.min(target, vid.duration || 9999));
+        // Force first frame to paint — browsers won't render until play() is called at least once
+        vid.play().then(function() { vid.pause(); }).catch(function() {});
       };
       vid.load();
     }
@@ -3095,7 +3097,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v305"), /*#__PURE__*/React.createElement("span", {
+  }, "v306"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -3281,7 +3283,7 @@ function TemporalReplay() {
   /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 7, color: "rgba(255,255,255,0.15)" } }, "\u2725 drag")),
   // ── SINGLE VIDEO + CAMERA SWITCHER (one decode at a time) ──
   /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", gap: 2, background: "#000", maxHeight: 200 }
+    style: { display: "flex", gap: 2, background: "#000", height: 180, maxHeight: 200 }
   },
   /*#__PURE__*/React.createElement("div", {
     style: { flex: "1 1 100%", position: "relative", overflow: "hidden" }
@@ -9753,7 +9755,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v305 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v306 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

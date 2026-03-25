@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v292";
+  var v = "v293";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v292 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v293 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2662,6 +2662,7 @@ function TemporalReplay() {
         setTelemetryStatus("✅ " + events.length + " events • " + meta.duration.toFixed(0) + "s • " + meta.label);
         setTelemetryFileName(file.name);
         try { localStorage.setItem("pathogenika-telemetry-file", file.name); } catch(e) {}
+        try { localStorage.setItem("pathogenika-telemetry-cache", JSON.stringify({ events: events, meta: meta })); } catch(e) {}
       } catch (err) {
         setTelemetryStatus("❌ Parse error: " + err.message);
       }
@@ -2855,6 +2856,22 @@ function TemporalReplay() {
 
   // ═══ AUTO-LOAD DISABLED — use VIDEO tab file inputs ═══
   const [autoLoadStatus, setAutoLoadStatus] = useState("Load files via VIDEO tab");
+  // ═══ AUTO-RESTORE cached telemetry from localStorage ═══
+  useEffect(function() {
+    try {
+      var cached = localStorage.getItem("pathogenika-telemetry-cache");
+      if (cached) {
+        var parsed = JSON.parse(cached);
+        if (parsed.events && parsed.events.length > 0 && parsed.meta) {
+          setLoadedEvents(parsed.events);
+          setLoadedMeta(parsed.meta);
+          setTelemetrySource("loaded");
+          setTelemetryStatus("♻ " + parsed.events.length + " events • " + parsed.meta.duration.toFixed(0) + "s • " + parsed.meta.label + " (cached)");
+          setTelemetryFileName(parsed.meta.fileName || "cached");
+        }
+      }
+    } catch(e) {}
+  }, []);
   const autoLoadAttempted = useRef(false);
 
   const soldierProfile = isLoaded ? computeProfile(loadedEvents, dataTime) : {};
@@ -3090,7 +3107,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v292"), /*#__PURE__*/React.createElement("span", {
+  }, "v293"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",

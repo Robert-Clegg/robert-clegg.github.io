@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v291";
+  var v = "v292";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v291 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v292 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -3001,8 +3001,7 @@ function TemporalReplay() {
     style: {
       position: "fixed",
       left: 0,
-      top: "50%",
-      transform: "translateY(-50%)",
+      bottom: 80,
       zIndex: 100,
       display: "flex",
       flexDirection: "column",
@@ -3091,7 +3090,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v291"), /*#__PURE__*/React.createElement("span", {
+  }, "v292"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -3242,11 +3241,13 @@ function TemporalReplay() {
     }
   }),
   tab !== "video" && /*#__PURE__*/React.createElement("div", {
+    id: "pip-panel",
     style: {
-      position: "fixed", bottom: 12, right: 12, width: 280, zIndex: 100,
+      position: "fixed", bottom: 12, right: 12, width: 320, minWidth: 200, minHeight: 130, zIndex: 100,
       background: "rgba(6,6,16,0.95)", borderRadius: 8,
       border: "1px solid rgba(0,229,255,0.12)", overflow: "hidden",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
+      boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+      resize: "both", cursor: "default"
     },
     onDragOver: e => { e.preventDefault(); e.stopPropagation(); },
     onDrop: e => {
@@ -3261,9 +3262,32 @@ function TemporalReplay() {
       });
     }
   },
+  // ── DRAG HANDLE BAR ──
+  /*#__PURE__*/React.createElement("div", {
+    style: { padding: "3px 8px", background: "rgba(255,255,255,0.04)", cursor: "grab", display: "flex", justifyContent: "space-between", alignItems: "center", userSelect: "none" },
+    onMouseDown: function(e) {
+      var el = document.getElementById("pip-panel");
+      if (!el) return;
+      var startX = e.clientX, startY = e.clientY;
+      var rect = el.getBoundingClientRect();
+      var origRight = window.innerWidth - rect.right;
+      var origBottom = window.innerHeight - rect.bottom;
+      function onMove(ev) {
+        var dx = ev.clientX - startX, dy = ev.clientY - startY;
+        el.style.right = Math.max(0, origRight - dx) + "px";
+        el.style.bottom = Math.max(0, origBottom + dy) + "px";
+      }
+      function onUp() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+      e.preventDefault();
+    }
+  },
+  /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 7, color: "rgba(255,255,255,0.25)", letterSpacing: 2 } }, "GAMEPLAY"),
+  /*#__PURE__*/React.createElement("span", { style: { fontFamily: mono, fontSize: 7, color: "rgba(255,255,255,0.15)" } }, "\u2725 drag")),
   // ── SINGLE VIDEO + CAMERA SWITCHER (one decode at a time) ──
   /*#__PURE__*/React.createElement("div", {
-    style: { display: "flex", gap: 2, background: "#000", maxHeight: 160 }
+    style: { display: "flex", gap: 2, background: "#000", maxHeight: 200 }
   },
   /*#__PURE__*/React.createElement("div", {
     style: { flex: "1 1 100%", position: "relative", overflow: "hidden" }
@@ -9316,6 +9340,9 @@ function TemporalReplay() {
     // Population proxy: net kills by each side over time (10s bins)
     var popData = [];
     var pathKillAccum = 0, immKillAccum = 0;
+    // Per-cell-type kill tracking
+    var cellTypes = { VirusType:0, TuberculosisType:0, PneumoniaType:0, MycobacteriumType:0, NeutrophilType:0, TCellType:0, NKCellType:0, MacrophageType:0 };
+    var cellPopData = [];
     for (var bin = 0; bin < dt + 10; bin += 10) {
       var binEnd = Math.min(bin + 10, dt);
       evts.filter(function(e){ return e.type==="CombatEvent" && e.t>=bin && e.t<binEnd && e.t<=dt; }).forEach(function(e){
@@ -9324,8 +9351,14 @@ function TemporalReplay() {
         var immuneTypes = ["NeutrophilType","TCellType","NKCellType","MacrophageType","DCellType"];
         if (pathogenTypes.indexOf(d.victimType)>=0) pathKillAccum++;
         if (immuneTypes.indexOf(d.victimType)>=0) immKillAccum++;
+        if (cellTypes.hasOwnProperty(d.victimType)) cellTypes[d.victimType]++;
       });
-      if (bin <= dt) popData.push({ t: Math.round(bin) + "s", pathLoss: pathKillAccum, immLoss: immKillAccum });
+      if (bin <= dt) {
+        popData.push({ t: Math.round(bin) + "s", pathLoss: pathKillAccum, immLoss: immKillAccum });
+        var row = { t: Math.round(bin) + "s" };
+        for (var ct in cellTypes) row[ct.replace("Type","")] = cellTypes[ct];
+        cellPopData.push(row);
+      }
     }
     // Real-time MBTI quadrant scores
     var st=0, sf=0, nt=0, nf=0;
@@ -9402,13 +9435,13 @@ function TemporalReplay() {
               switches > 8 ? "High rotation: " + switches + " switches. " : ""
             )
           ),
-          // ── Population / Attrition Graph ──
+          // ── Population / Attrition + Cell Type Breakdown ──
           /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)" }},
-            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "population attrition"),
-            /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 80 },
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "population losses by team"),
+            /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 65 },
               /*#__PURE__*/React.createElement(AreaChart, { data: popData },
-                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "pathLoss", stroke: "#ff6b35", fill: "#ff6b3520", strokeWidth: 1.5, name: "Pathogen losses" }),
-                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "immLoss", stroke: "#00d4ff", fill: "#00d4ff20", strokeWidth: 1.5, name: "Immune losses" }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "pathLoss", stroke: "#ff6b35", fill: "#ff6b3520", strokeWidth: 1.5, name: "Pathogen" }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "immLoss", stroke: "#00d4ff", fill: "#00d4ff20", strokeWidth: 1.5, name: "Immune" }),
                 /*#__PURE__*/React.createElement(XAxis, { dataKey: "t", tick: { fontSize: 6, fill: "rgba(255,255,255,0.15)" }, interval: "preserveStartEnd" }),
                 /*#__PURE__*/React.createElement(YAxis, { hide: true })
               )
@@ -9416,6 +9449,30 @@ function TemporalReplay() {
             /*#__PURE__*/React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 7, fontFamily: mono }},
               /*#__PURE__*/React.createElement("span", { style: { color: "#ff6b35" } }, "Path: -", popData.length > 0 ? popData[popData.length-1].pathLoss : 0),
               /*#__PURE__*/React.createElement("span", { style: { color: "#00d4ff" } }, "Imm: -", popData.length > 0 ? popData[popData.length-1].immLoss : 0)
+            )
+          ),
+          // ── Cell Type Losses Over Time ──
+          /*#__PURE__*/React.createElement("div", { style: { background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: 6, border: "1px solid rgba(255,255,255,0.03)" }},
+            /*#__PURE__*/React.createElement("div", { style: { fontSize: 7, letterSpacing: 2, color: "rgba(255,255,255,0.2)", fontFamily: mono, marginBottom: 4, textAlign: "center", textTransform: "uppercase" }}, "losses by cell type"),
+            /*#__PURE__*/React.createElement(ResponsiveContainer, { width: "100%", height: 90 },
+              /*#__PURE__*/React.createElement(AreaChart, { data: cellPopData },
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "Virus", stackId: "1", stroke: "#ff3d71", fill: "#ff3d7140", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "Tuberculosis", stackId: "1", stroke: "#ff6b35", fill: "#ff6b3540", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "Pneumonia", stackId: "1", stroke: "#ffaa00", fill: "#ffaa0040", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "Mycobacterium", stackId: "1", stroke: "#cc66ff", fill: "#cc66ff40", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "Neutrophil", stackId: "2", stroke: "#00d4ff", fill: "#00d4ff40", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "TCell", stackId: "2", stroke: "#00ff88", fill: "#00ff8840", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "NKCell", stackId: "2", stroke: "#4488ff", fill: "#4488ff40", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(Area, { type: "monotone", dataKey: "Macrophage", stackId: "2", stroke: "#88ddff", fill: "#88ddff40", strokeWidth: 1 }),
+                /*#__PURE__*/React.createElement(XAxis, { dataKey: "t", tick: { fontSize: 6, fill: "rgba(255,255,255,0.15)" }, interval: "preserveStartEnd" }),
+                /*#__PURE__*/React.createElement(YAxis, { hide: true })
+              )
+            ),
+            // Cell type legend (compact)
+            /*#__PURE__*/React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center", marginTop: 2 }},
+              [["Vir","#ff3d71"],["Tub","#ff6b35"],["Pne","#ffaa00"],["Myc","#cc66ff"],["Neu","#00d4ff"],["TCe","#00ff88"],["NK","#4488ff"],["Mac","#88ddff"]].map(function(c) {
+                return /*#__PURE__*/React.createElement("span", { key: c[0], style: { fontSize: 6, fontFamily: mono, color: c[1], padding: "0 3px" } }, c[0]);
+              })
             )
           ),
           // ── Event Feed (compact, 8 items) ──

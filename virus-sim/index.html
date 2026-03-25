@@ -8,7 +8,7 @@
 <script>
 // Force reload if browser is serving a cached version
 (function(){
-  var v = "v303";
+  var v = "v304";
   var key = "pathogenika-version";
   var stored = sessionStorage.getItem(key);
   if (stored !== v) {
@@ -17,7 +17,7 @@
   }
 })();
 </script>
-<title>Virus Simulation v303 — Cognitive Telemetry Dashboard | KnoverseAI</title>
+<title>Virus Simulation v304 — Cognitive Telemetry Dashboard | KnoverseAI</title>
 <meta name="description" content="Real-time cognitive profiling through gameplay telemetry."/>
 <meta property="og:title" content="Pathogenika — Cognitive Telemetry Dashboard"/>
 <meta property="og:description" content="Machine Learning vs Human Learning. See how players think in real-time."/>
@@ -2772,7 +2772,15 @@ function TemporalReplay() {
     const vid = floatVideoRef.current;
     if (!vid || !activeCamUrl) return;
     // vid.src returns absolute URL; activeCamUrl may be relative — compare by endsWith
-    if (!vid.src || !vid.src.endsWith(activeCamUrl)) { vid.src = activeCamUrl; vid.load(); }
+    if (!vid.src || !vid.src.endsWith(activeCamUrl)) {
+      vid.src = activeCamUrl;
+      vid.onloadedmetadata = function() {
+        // Seek to current timeline position once video is ready
+        var target = time + videoOffset;
+        vid.currentTime = Math.max(0, Math.min(target, vid.duration || 9999));
+      };
+      vid.load();
+    }
   }, [activeCamUrl, activeCamera, tab]);
 
   // ═══ FLOATING VIDEO SYNC ═══
@@ -2888,11 +2896,11 @@ function TemporalReplay() {
       try { localStorage.setItem("pathogenika-telemetry-cache", JSON.stringify({ events: events, meta: meta })); } catch(e) {}
       // Seek to end so all data visible immediately
       seekTo(duration);
-      // Try loading hosted video
+      // Load hosted video directly (no HEAD check — just set the URL)
       if (session.video) {
-        fetch(session.video, { method: "HEAD" }).then(function(r) {
-          if (r.ok) { setVideoUrl(session.video); setVideoLoaded(true); setVideoFileName(session.video); }
-        }).catch(function() {});
+        setVideoUrl(session.video);
+        setVideoLoaded(true);
+        setVideoFileName(session.video);
       }
     }).catch(function(err) {
       setTelemetryStatus("❌ Failed: " + err.message);
@@ -3063,70 +3071,24 @@ function TemporalReplay() {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      position: "fixed",
-      left: 0,
-      bottom: 80,
-      zIndex: 100,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 6,
-      padding: "8px 4px",
-      background: "rgba(6,6,16,0.85)",
-      borderRight: "1px solid rgba(255,255,255,0.06)",
-      borderRadius: "0 6px 6px 0"
+      position: "fixed", left: 8, bottom: 8, zIndex: 100,
+      display: "flex", alignItems: "center", gap: 6, padding: "4px 8px",
+      background: "rgba(6,6,16,0.9)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6
     }
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      playingRef.current = false;
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      seekTo(0);
-      setWallTime(0);
-      setBioSeed(Math.random());
-      setPlaying(false);
-    },
-    style: {
-      background: "none",
-      border: "1px solid rgba(255,255,255,0.1)",
-      color: "rgba(255,255,255,0.4)",
-      borderRadius: 4,
-      padding: "4px 6px",
-      cursor: "pointer",
-      fontFamily: mono,
-      fontSize: 11
-    }
+    onClick: () => { playingRef.current = false; if (animRef.current) cancelAnimationFrame(animRef.current); seekTo(0); setWallTime(0); setBioSeed(Math.random()); setPlaying(false); },
+    style: { background: "none", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.4)", borderRadius: 4, padding: "3px 5px", cursor: "pointer", fontFamily: mono, fontSize: 10 }
   }, "\u23EE"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => {
-      const next = !playing;
-      playingRef.current = next;
-      if (!next && animRef.current) cancelAnimationFrame(animRef.current);
-      if (!playing && time >= MAX_DUR - 0.1) {
-        seekTo(0);
-        setWallTime(0);
-        setBioSeed(Math.random());
-      }
-      setPlaying(next);
-    },
-    style: {
-      background: playing ? C_COLOR + "22" : S_COLOR + "22",
-      border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "66",
-      color: playing ? C_COLOR : S_COLOR,
-      borderRadius: 4,
-      padding: "6px 8px",
-      cursor: "pointer",
-      fontFamily: mono,
-      fontSize: 16,
-      fontWeight: 700
-    }
-  }, playing ? "⏸" : "▶"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: mono,
-      fontSize: 7,
-      color: "rgba(255,255,255,0.25)",
-      textAlign: "center",
-      lineHeight: 1.4
-    }
-  }, String(Math.floor(time % 60)).padStart(2, "0"), /*#__PURE__*/React.createElement("br", null), ".", Math.floor(time % 1 * 10))), /*#__PURE__*/React.createElement("link", {
+    onClick: () => { const next = !playing; playingRef.current = next; if (!next && animRef.current) cancelAnimationFrame(animRef.current); if (!playing && time >= MAX_DUR - 0.1) { seekTo(0); setWallTime(0); setBioSeed(Math.random()); } setPlaying(next); },
+    style: { background: playing ? C_COLOR + "22" : S_COLOR + "22", border: "1px solid " + (playing ? C_COLOR : S_COLOR) + "66", color: playing ? C_COLOR : S_COLOR, borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: mono, fontSize: 14, fontWeight: 700 }
+  }, playing ? "\u23F8" : "\u25B6"), /*#__PURE__*/React.createElement("div", {
+    style: { fontFamily: mono, fontSize: 9, color: "rgba(255,255,255,0.35)", minWidth: 36, textAlign: "center" }
+  }, Math.floor(time / 60) + ":" + String(Math.floor(time % 60)).padStart(2, "0")),
+  /*#__PURE__*/React.createElement("div", { style: { width: 1, height: 16, background: "rgba(255,255,255,0.08)" } }),
+  [1, 2, 4, 8].map(s => /*#__PURE__*/React.createElement("button", {
+    key: s, onClick: () => setSpeed(s),
+    style: { background: speed === s ? "rgba(255,255,255,0.1)" : "none", border: "1px solid " + (speed === s ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.06)"), color: speed === s ? "white" : "rgba(255,255,255,0.25)", borderRadius: 3, padding: "2px 6px", cursor: "pointer", fontFamily: mono, fontSize: 8, fontWeight: speed === s ? 700 : 400 }
+  }, s + "x"))), /*#__PURE__*/React.createElement("link", {
     href: "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap",
     rel: "stylesheet"
   }), /*#__PURE__*/React.createElement("div", {
@@ -3154,7 +3116,7 @@ function TemporalReplay() {
       textShadow: "0 0 8px #00ff8866",
       marginRight: 4
     }
-  }, "v303"), /*#__PURE__*/React.createElement("span", {
+  }, "v304"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 8,
       color: "#ff8888",
@@ -3168,32 +3130,7 @@ function TemporalReplay() {
       minWidth: 72,
       textAlign: "center"
     }
-  }, Math.floor(time / 60), ":", String(Math.floor(time % 60)).padStart(2, "0"), ".", Math.floor(time % 1 * 10), " / ", Math.floor(MAX_DUR / 60), ":", String(Math.floor(MAX_DUR % 60)).padStart(2, "0")), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 2
-    }
-  }, [1, 2, 4, 8].map(s => /*#__PURE__*/React.createElement("button", {
-    key: s,
-    onClick: () => setSpeed(s),
-    style: {
-      background: speed === s ? "rgba(255,255,255,0.1)" : "none",
-      border: "1px solid " + (speed === s ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.06)"),
-      color: speed === s ? "white" : "rgba(255,255,255,0.3)",
-      borderRadius: 3,
-      padding: "2px 5px",
-      cursor: "pointer",
-      fontFamily: mono,
-      fontSize: 9
-    }
-  }, s, "x"))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: 1,
-      height: 16,
-      background: "rgba(255,255,255,0.08)",
-      margin: "0 2px"
-    }
-  }), TABS.map(t => /*#__PURE__*/React.createElement("button", {
+  }, Math.floor(time / 60), ":", String(Math.floor(time % 60)).padStart(2, "0"), ".", Math.floor(time % 1 * 10), " / ", Math.floor(MAX_DUR / 60), ":", String(Math.floor(MAX_DUR % 60)).padStart(2, "0")), TABS.map(t => /*#__PURE__*/React.createElement("button", {
     key: t.id,
     onClick: () => setTab(t.id),
     style: {
@@ -9837,7 +9774,7 @@ function TemporalReplay() {
       fontFamily: mono,
       letterSpacing: 2
     }
-  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v303 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
+  }, "PATHOGENIKA \u2022 COGNITIVE MECHANICS v304 \u2022 3-CAMERA CAPTURE \u2022 KNOVERSE AI \xA9 2026")));
 }
 ReactDOM.render(React.createElement(TemporalReplay), document.getElementById("root"));
 </script>

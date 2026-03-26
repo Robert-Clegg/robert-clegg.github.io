@@ -815,11 +815,16 @@ function gameLoop(ts) {
     const [nx, ny] = clampToArena(state.cx + dx, state.cy + dy);
     setCellPos(nx, ny);
 
-    // Always face the mouse
-    const cellCX = state.cx + 18;
-    const cellCY = state.cy + 18;
-    const angle = Math.atan2(state.my - cellCY, state.mx - cellCX) * 180 / Math.PI;
-    setCellAngle(angle);
+    // Nose direction: mouse-tracking in follow mode, movement direction in WASD mode
+    if (state.followMode) {
+      const cellCX = state.cx + 18;
+      const cellCY = state.cy + 18;
+      const angle = Math.atan2(state.my - cellCY, state.mx - cellCX) * 180 / Math.PI;
+      setCellAngle(angle);
+    } else if (dx !== 0 || dy !== 0) {
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      setCellAngle(angle);
+    }
   }
 
   // Update elapsed

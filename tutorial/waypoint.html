@@ -184,9 +184,11 @@
     transition: opacity 0.2s;
     pointer-events: none;
     z-index: 3;
+  }
+  #cell.follow-mode #cell-ring {
+    opacity: 1;
     animation: ring-pulse 1.5s ease-in-out infinite;
   }
-  #cell.follow-mode #cell-ring { opacity: 1; }
 
   @keyframes ring-pulse {
     0%, 100% { transform: scale(1); opacity: 0.9; }

@@ -539,14 +539,20 @@ const state = {
 
   // Telemetry
   sessionStart: null,
-  clickTime: null,       // time of first cell click
-  wasdDiscoveryTime: null,  // first WASD keydown after click
+  clickTime: null,
+  wasdDiscoveryTime: null,
   wasdStartTime: null,
   wasdDwellStart: null,
   fKeyTime: null,
+  wasdMovedOnce: false,
+
+  // Waypoint autonomous travel
+  waypointActive: false,
+  waypointX: null,
+  waypointY: null,
 
   // Phases
-  phase: 1,              // 1=click, 2=wasd, 3=follow
+  phase: 1,              // 1=click, 2=wasd, 3=follow, 4=waypoint
   skipTriggered: false,
 
   // Log
@@ -642,9 +648,10 @@ function flashWaypoint(x, y) {
 
 // ── INSTRUCTIONS ──────────────────────────────────────────────────────────
 const instructions = [
-  /* phase 1 */ '<span class="highlight">Click the cell</span> to take control.',
-  /* phase 2 */ 'Use <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> to move your cell.',
-  /* phase 3 */ 'Press <span class="key">F</span> to enter <span class="highlight">Follow Mode</span> — the cell will track your mouse while you hold <span class="key">W</span>.',
+  /* 0 */ '<span class="highlight">Click the cell</span> to take control.',
+  /* 1 */ 'Use <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> to move your cell.',
+  /* 2 */ 'Press <span class="key">F</span> to enter <span class="highlight">Follow Mode</span> — the cell tracks your mouse while you hold <span class="key">W</span>.',
+  /* 3 */ 'Now <span class="highlight">right-click</span> anywhere to set a waypoint — your cell travels there on its own.',
 ];
 
 function setInstruction(idx) {
@@ -659,14 +666,11 @@ function setInstruction(idx) {
 cell.addEventListener('click', (e) => {
   e.stopPropagation();
   if (state.selected) return;
-
   state.selected = true;
   state.sessionStart = now();
   state.clickTime = now();
-
   cell.classList.add('selected');
   clickHint.style.display = 'none';
-
   setMetric(mControl, 'WASD', 'active');
   setMetric(mMode, 'DIRECT', '');
   log('CellClick — control acquired', 'key-event');
@@ -674,16 +678,15 @@ cell.addEventListener('click', (e) => {
   setInstruction(1);
 });
 
-// Track all keypresses from the moment the page loads (for discovery latency)
+// Track keypresses before cell click (probe behavior)
 let firstKeyTime = null;
 let preClickKeys = 0;
 
 // ── KEYBOARD ───────────────────────────────────────────────────────────────
 document.addEventListener('keydown', (e) => {
-  if (state.keys[e.code]) return; // already held
+  if (state.keys[e.code]) return;
   state.keys[e.code] = true;
 
-  // Pre-click probing behavior
   if (!state.selected) {
     if (!firstKeyTime) firstKeyTime = now();
     preClickKeys++;
@@ -703,30 +706,24 @@ document.addEventListener('keydown', (e) => {
   }
 
   // F key — follow mode toggle
-  if (e.code === 'KeyF' && state.selected) {
+  if (e.code === 'KeyF') {
     e.preventDefault();
-    const wasFollow = state.followMode;
-    state.followMode = !wasFollow;
-
+    state.followMode = !state.followMode;
     if (state.followMode) {
-      // Record F key latency from WASD discovery
       state.fKeyTime = now();
       if (state.wasdDwellStart) {
         const dwell = (state.fKeyTime - state.wasdDwellStart).toFixed(0);
         setMetric(mWasdDwell, dwell + ' ms', '');
       }
-      const fLatency = state.wasdDiscoveryTime
-        ? (state.fKeyTime - state.wasdDiscoveryTime).toFixed(0)
-        : '—';
+      const fLatency = state.wasdDiscoveryTime ? (state.fKeyTime - state.wasdDiscoveryTime).toFixed(0) : '?';
       setMetric(mFLatency, fLatency + ' ms', 'active');
       setMetric(mFollow, 'YES', 'active');
       setMetric(mMode, 'FOLLOW', 'active');
       cell.classList.add('follow-mode');
       modeInd.textContent = 'MODE: FOLLOW';
       modeInd.classList.add('follow');
-      log('F-key: FOLLOW MODE ON — WASD dwell was ' + (state.wasdDwellStart ? ((state.fKeyTime - state.wasdDwellStart).toFixed(0)) : '?') + 'ms', 'mode-event');
-      setPhase(3);
-      setInstruction(2);
+      log('F-key: FOLLOW MODE ON — WASD dwell ' + (state.wasdDwellStart ? ((state.fKeyTime - state.wasdDwellStart).toFixed(0)) : '?') + 'ms', 'mode-event');
+      if (state.phase < 3) { setPhase(3); setInstruction(2); }
     } else {
       setMetric(mFollow, 'NO', 'inactive');
       setMetric(mMode, 'DIRECT', '');
@@ -738,9 +735,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-document.addEventListener('keyup', (e) => {
-  state.keys[e.code] = false;
-});
+document.addEventListener('keyup', (e) => { state.keys[e.code] = false; });
 
 // ── MOUSE TRACKING ─────────────────────────────────────────────────────────
 arena.addEventListener('mousemove', (e) => {
@@ -749,14 +744,32 @@ arena.addEventListener('mousemove', (e) => {
   state.my = e.clientY - rect.top;
 });
 
+// ── RMB WAYPOINT ───────────────────────────────────────────────────────────
+arena.addEventListener('mousedown', (e) => {
+  if (e.button !== 2) return;
+  if (!state.followMode) return;  // waypoint only available in follow mode
+
+  const rect = arena.getBoundingClientRect();
+  const wx = e.clientX - rect.left;
+  const wy = e.clientY - rect.top;
+
+  // Single waypoint — replace any existing
+  state.waypointActive = true;
+  state.waypointX = wx;
+  state.waypointY = wy;
+
+  flashWaypoint(wx, wy);
+  log('WaypointSet x=' + wx.toFixed(0) + ' y=' + wy.toFixed(0), 'mode-event');
+
+  if (state.phase < 4) { setPhase(4); setInstruction(3); }
+});
+
 // ── SKIP ───────────────────────────────────────────────────────────────────
 skipBtn.addEventListener('click', () => {
   if (state.skipTriggered) return;
   state.skipTriggered = true;
   const t = state.sessionStart ? ((now() - state.sessionStart) / 1000).toFixed(3) : '0.000';
   log('SKIP at phase ' + state.phase + ' t=' + t + 's', 'key-event');
-  // Advance all phases as done
-  setPhase(4);
   p1Dot.className='phase-dot done'; p1Lbl.className='phase-label done';
   p2Dot.className='phase-dot done'; p2Lbl.className='phase-label done';
   p3Dot.className='phase-dot done'; p3Lbl.className='phase-label done';
@@ -767,14 +780,12 @@ skipBtn.addEventListener('click', () => {
 
 // ── GAME LOOP ──────────────────────────────────────────────────────────────
 const arenaRect = () => arena.getBoundingClientRect();
-const CELL_R = 18; // radius for boundary clamping
 
 function clampToArena(x, y) {
   const r = arenaRect();
-  const w = r.width, h = r.height;
   return [
-    Math.max(0, Math.min(w - 36, x)),
-    Math.max(0, Math.min(h - 36, y))
+    Math.max(0, Math.min(r.width - 36, x)),
+    Math.max(0, Math.min(r.height - 36, y))
   ];
 }
 
@@ -782,55 +793,79 @@ let lastTime = null;
 
 function gameLoop(ts) {
   if (!lastTime) lastTime = ts;
-  const dt = Math.min((ts - lastTime) / 16.67, 3); // normalized to 60fps ticks
+  const dt = Math.min((ts - lastTime) / 16.67, 3);
   lastTime = ts;
 
   if (state.selected) {
     let dx = 0, dy = 0;
 
-    if (state.followMode) {
-      // Follow mode: W moves toward mouse cursor direction
+    if (state.waypointActive) {
+      // Autonomous travel to waypoint — player has no WASD control
+      const cellCX = state.cx + 18;
+      const cellCY = state.cy + 18;
+      const toX = state.waypointX - cellCX;
+      const toY = state.waypointY - cellCY;
+      const dist = Math.sqrt(toX*toX + toY*toY);
+      const ARRIVE_THRESHOLD = 6;
+      if (dist > ARRIVE_THRESHOLD) {
+        const spd = 2.0;
+        dx = (toX / dist) * spd * dt;
+        dy = (toY / dist) * spd * dt;
+        setCellAngle(Math.atan2(toY, toX) * 180 / Math.PI);
+      } else {
+        // Arrived — stop
+        state.waypointActive = false;
+        log('WaypointArrived', 'key-event');
+      }
+
+    } else if (state.followMode) {
+      // Follow mode: W moves toward mouse
       if (state.keys['KeyW']) {
-        // Direction from cell center to mouse
-        const cellCenterX = state.cx + 18;
-        const cellCenterY = state.cy + 18;
-        const toMx = state.mx - cellCenterX;
-        const toMy = state.my - cellCenterY;
+        const cellCX = state.cx + 18;
+        const cellCY = state.cy + 18;
+        const toMx = state.mx - cellCX;
+        const toMy = state.my - cellCY;
         const dist = Math.sqrt(toMx*toMx + toMy*toMy);
         if (dist > 2) {
           dx = (toMx / dist) * state.speed * dt;
           dy = (toMy / dist) * state.speed * dt;
         }
       }
+      // Always face mouse in follow mode
+      const cellCX = state.cx + 18;
+      const cellCY = state.cy + 18;
+      setCellAngle(Math.atan2(state.my - cellCY, state.mx - cellCX) * 180 / Math.PI);
+
     } else {
       // WASD direct
       if (state.keys['KeyW'] || state.keys['ArrowUp'])    dy -= state.speed * dt;
       if (state.keys['KeyS'] || state.keys['ArrowDown'])  dy += state.speed * dt;
       if (state.keys['KeyA'] || state.keys['ArrowLeft'])  dx -= state.speed * dt;
       if (state.keys['KeyD'] || state.keys['ArrowRight']) dx += state.speed * dt;
-      // normalize diagonal
       if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
+
+      // Advance instruction when player first actually moves
+      if (!state.wasdMovedOnce && (dx !== 0 || dy !== 0)) {
+        state.wasdMovedOnce = true;
+        if (state.phase === 2) { setPhase(3); setInstruction(2); }
+      }
+
+      if (dx !== 0 || dy !== 0) {
+        setCellAngle(Math.atan2(dy, dx) * 180 / Math.PI);
+      }
     }
 
-    const [nx, ny] = clampToArena(state.cx + dx, state.cy + dy);
-    setCellPos(nx, ny);
-
-    // Nose direction: mouse-tracking in follow mode, movement direction in WASD mode
-    if (state.followMode) {
-      const cellCX = state.cx + 18;
-      const cellCY = state.cy + 18;
-      const angle = Math.atan2(state.my - cellCY, state.mx - cellCX) * 180 / Math.PI;
-      setCellAngle(angle);
+    if (!state.followMode || state.waypointActive) {
+      const [nx, ny] = clampToArena(state.cx + dx, state.cy + dy);
+      setCellPos(nx, ny);
     } else if (dx !== 0 || dy !== 0) {
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      setCellAngle(angle);
+      const [nx, ny] = clampToArena(state.cx + dx, state.cy + dy);
+      setCellPos(nx, ny);
     }
   }
 
-  // Update elapsed
   if (state.sessionStart) {
-    const elapsed = ((now() - state.sessionStart) / 1000).toFixed(3);
-    elapsedNum.textContent = elapsed;
+    elapsedNum.textContent = ((now() - state.sessionStart) / 1000).toFixed(3);
   }
 
   requestAnimationFrame(gameLoop);
@@ -844,12 +879,8 @@ cell.addEventListener('contextmenu', (e) => e.preventDefault());
 positionHint();
 setInstruction(0);
 requestAnimationFrame(gameLoop);
-
-// Position click hint dynamically
 setInterval(positionHint, 100);
 
 </script>
 </body>
 </html>
-
-function setMetric(el, val, active

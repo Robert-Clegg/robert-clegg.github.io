@@ -173,20 +173,19 @@
       inset 0 0 8px rgba(0,0,0,0.3);
   }
 
-  /* Yellow ring for follow mode */
+  /* Yellow ring for follow mode — hidden until F pressed */
   #cell-ring {
     position: absolute;
     inset: -8px;
     border-radius: 50%;
     border: 2px solid var(--cell-ring);
     box-shadow: 0 0 10px rgba(255,235,59,0.7), inset 0 0 6px rgba(255,235,59,0.2);
-    opacity: 0;
-    transition: opacity 0.2s;
+    display: none;
     pointer-events: none;
     z-index: 3;
   }
   #cell.follow-mode #cell-ring {
-    opacity: 1;
+    display: block;
     animation: ring-pulse 1.5s ease-in-out infinite;
   }
 

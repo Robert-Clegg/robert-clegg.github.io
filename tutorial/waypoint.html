@@ -836,6 +836,10 @@ function gameLoop(ts) {
   requestAnimationFrame(gameLoop);
 }
 
+// ── SUPPRESS CONTEXT MENU ─────────────────────────────────────────────────
+arena.addEventListener('contextmenu', (e) => e.preventDefault());
+cell.addEventListener('contextmenu', (e) => e.preventDefault());
+
 // ── INIT ───────────────────────────────────────────────────────────────────
 positionHint();
 setInstruction(0);

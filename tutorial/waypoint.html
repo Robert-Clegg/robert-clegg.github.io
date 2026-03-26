@@ -412,7 +412,7 @@
   <div class="logo">KNOVERSEAI</div>
   <div class="title">WAYPOINT · L1 BASELINE</div>
   <div id="phase-badge">PHASE 1 / 3</div>
-  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#2e3d50;letter-spacing:1px;">v10</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#2e3d50;letter-spacing:1px;">v11</div>
 </div>
 
 <!-- INSTRUCTION STRIP -->
@@ -545,6 +545,7 @@ const state = {
   wasdDwellStart: null,
   fKeyTime: null,
   wasdMovedOnce: false,
+  followMovedOnce: false,  // has player actually moved in follow mode
 
   // Waypoint autonomous travel
   waypointActive: false,
@@ -742,7 +743,7 @@ document.addEventListener('keydown', (e) => {
       modeInd.textContent = 'MODE: FOLLOW';
       modeInd.classList.add('follow');
       log('F-key: FOLLOW MODE ON — WASD dwell ' + (state.wasdDwellStart ? ((state.fKeyTime - state.wasdDwellStart).toFixed(0)) : '?') + 'ms', 'mode-event');
-      if (state.phase < 3) { setPhase(3); setInstruction(2); }
+      // Phase/instruction advances only after player demonstrates follow movement
     } else {
       setMetric(mFollow, 'NO', 'inactive');
       setMetric(mMode, 'DIRECT', '');
@@ -816,7 +817,7 @@ arena.addEventListener('mousedown', (e) => {
   flashWaypoint(wx, wy);
   log('WaypointSet x=' + wx.toFixed(0) + ' y=' + wy.toFixed(0), 'mode-event');
 
-  if (state.phase < 4) { setPhase(4); setInstruction(3); }
+  // Phase 4 already set when follow movement was first detected
 });
 
 // ── SKIP ───────────────────────────────────────────────────────────────────
@@ -905,6 +906,12 @@ function gameLoop(ts) {
           dy = (toMy / dist) * state.speed * dt;
         }
       }
+      // Detect first actual follow movement — advance instruction to waypoint step
+      if (!state.followMovedOnce && (dx !== 0 || dy !== 0)) {
+        state.followMovedOnce = true;
+        if (state.phase === 3) { setPhase(4); setInstruction(3); }
+      }
+
       // Always face mouse in follow mode
       const cellCX = state.cx + 18;
       const cellCY = state.cy + 18;

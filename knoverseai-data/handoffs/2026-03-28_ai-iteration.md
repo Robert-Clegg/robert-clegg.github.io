@@ -95,9 +95,29 @@ The AI played as Immune (Team 2) in this session. TryEmit/TryReplicate only work
 2. Test with AI playing Pathogen to confirm Emit/Replicate fire
 3. Add generic combat actions (melee engage) that work for all cell types
 
+## AI-v2.1 Iteration (from v2.0 + all prior session data)
+
+### Additional Bugs Found in v2.0 Data
+| Bug | Evidence | Fix |
+|-----|----------|-----|
+| A: playerType pollution | 33-96 AbilityEvents with triggerMethod="AIDecision" tagged as human | Added playerType param to RecordAbility() |
+| B: No combat engagement | 0 kills, 0 combat events — AI was Immune, can't Emit/Replicate | All cell types now chase enemies via melee waypoint |
+| C: Survey spam | 17/64 decisions (27%) were Survey — human never surveys | surveyInterval 10s → 30s |
+| D: No waypoint outcomes | Human had 56 Arrived + 4 Died, AI had 0 | ClearWaypointState + death handler emit outcomes |
+| E: No ControlStateEvents | Human had 7-13 control changes, AI had 0 | Deferred to v2.2 |
+
+### v2.1 Changes
+- `BehavioralTelemetryRecorder.RecordAbility()` and `RecordWaypointOutcome()` now accept playerType param
+- AI passes `"ai"` for all its telemetry calls
+- Combat P3 now drives ALL cell types toward enemies (melee engage), overrides waypoint when enemy <15m
+- Survey interval tripled (10s → 30s)
+- Waypoint arrival/death tracking added
+
+### Commit: `2b785cd` on two-player branch
+
 ## What's Next
-1. Test AI-v2.0 with AI playing **Pathogen** (swap teams) to verify Emit/Replicate
-2. Add Immune-specific combat actions if those abilities don't exist for Immune cells
-3. If abilities still blocked: bypass cooldown check or call PerformEmission directly
-4. Consider varying decision interval (human is bursty, not metronomic at 0.5s)
-5. AI surveys too much (27% of decisions) — reduce surveyInterval or make surveys cheaper
+1. Play match with AI-v2.1 — verify AI AbilityEvents now tagged "ai", WaypointOutcomeEvents appear
+2. Test with human as Immune (AI plays Pathogen) to verify Emit/Replicate fire
+3. Add ControlStateEvent emission (BUG E) — v2.2
+4. Vary decision interval to mimic human burstiness
+5. Track AI kills — if melee engage works, CombatEvents should appear with AI attribution

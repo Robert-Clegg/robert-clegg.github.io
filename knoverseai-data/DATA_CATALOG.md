@@ -19,6 +19,13 @@ robert-clegg/robert-clegg.github.io (main branch)
 **Full local path:** `C:\Users\rcleg\robert-clegg.github.io\knoverseai-data\`
 **GitHub URL:** `https://github.com/Robert-Clegg/robert-clegg.github.io/tree/main/knoverseai-data`
 
+### Session Annotations (machine-readable metadata)
+Raw telemetry JSONs are **never modified**. Corrected metadata lives in companion files:
+- `pathogenika/telemetry/session_annotations.json` — team mapping, playerType status, AI version, notes per session
+- `petro-active/telemetry/session_annotations.json` — WP version, radar event counts, notes per session
+
+These annotation files document which sessions have playerType pollution, which teams played which side, and what each session was testing. Use these for analysis — don't rely on raw JSON headers for team attribution in sessions 1-7.
+
 ## Source Code Repositories
 
 | Project | Repo | Branch | Local Path |

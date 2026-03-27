@@ -75,10 +75,29 @@ Analyzed all 5 Pathogenika sessions in `knoverseai-data/pathogenika/telemetry/`:
 | Ability uses | 0 | 4-23 | ? |
 | Decision diversity | 96% waypoint | Mixed | ? |
 
+## AI-v2.0 Results (Session: 2026-03-27_04-04-41pm)
+
+Match: Team 1 (Pathogen=human), 176s, 607 events (543 human, 64 ai)
+
+| Metric | AI-v1.x S1 | AI-v1.x S2 | AI-v2.0 | Human Avg | Status |
+|--------|-----------|-----------|---------|-----------|--------|
+| Active duration | 43% | 12% | **100%** | 100% | FIXED |
+| Switches | 1 | 0 | **14** | 13 | FIXED |
+| Unit types | 2 | 1 | **5** | 4 | FIXED |
+| Unique WP targets | 2 | 1 | **27** | 5 | FIXED |
+| Max WP streak | 90 | 60 | **2** | 1 | FIXED |
+| Ability uses | 0 | 0 | **0** | 4-23 | NOT FIXED |
+| Decision variety | 96% WP | 95% WP | **52/27/22** | Mixed | FIXED |
+
+### Why Abilities Still Don't Fire
+The AI played as Immune (Team 2) in this session. TryEmit/TryReplicate only work on Pathogen cell types (PneumoniaType, MycobacteriumType, TuberculosisType). When AI is Immune, it controls NeutrophilType, NKCellType, etc. — these don't have the ability. Need to either:
+1. Add Immune-specific abilities to the AI (if they exist)
+2. Test with AI playing Pathogen to confirm Emit/Replicate fire
+3. Add generic combat actions (melee engage) that work for all cell types
+
 ## What's Next
-1. Run a match with AI-v2.0 and export telemetry
-2. Compare metrics table above
-3. If abilities still don't fire: check cooldown timers and character type filtering
-4. If AI still doesn't kill: may need to drive the controlled cell toward enemies more aggressively
-5. Consider adding map mode usage (human uses zoom/pan extensively)
-6. Consider varying decision interval (human is bursty, not metronomic)
+1. Test AI-v2.0 with AI playing **Pathogen** (swap teams) to verify Emit/Replicate
+2. Add Immune-specific combat actions if those abilities don't exist for Immune cells
+3. If abilities still blocked: bypass cooldown check or call PerformEmission directly
+4. Consider varying decision interval (human is bursty, not metronomic at 0.5s)
+5. AI surveys too much (27% of decisions) — reduce surveyInterval or make surveys cheaper

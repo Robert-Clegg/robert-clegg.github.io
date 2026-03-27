@@ -1,0 +1,84 @@
+# AI Iteration Handoff — 2026-03-28
+**Version:** AI-v2.0
+**Branch:** `two-player` on Robert-Clegg/pathogenika
+**Commit:** `22ccf23`
+
+## What the Telemetry Told Me
+
+Analyzed all 5 Pathogenika sessions in `knoverseai-data/pathogenika/telemetry/`:
+
+### Human Behavioral Baseline (from 2 pre-AI + 3 two-player sessions)
+| Metric | Human Average | Range |
+|--------|--------------|-------|
+| Switches per match | 13 | 11-15 |
+| Unit types used | 4 | 3-5 (Neutrophil, NKCell, TCell, Macrophage, Virus, Mycobacterium) |
+| Kills per match | 26 | 2-45 |
+| Deaths per match | 3 | 1-4 |
+| Waypoints set | 5 | 3-6, each to DIFFERENT target |
+| Control state changes | 10 | 7-16 |
+| Active for | 100% | Full match duration |
+
+### AI Behavioral Profile (AI-v1.0 through v1.3)
+| Metric | AI Actual | Problem |
+|--------|----------|---------|
+| Switches | 1 total | Should be ~13 |
+| Unit types | 1-2 | Should be 3-5 |
+| Kills | 0 | Should be >0 |
+| Ability uses | 0 | Emit/Replicate never fired |
+| Unique waypoint targets | 1-2 | Spammed same target 60-90x |
+| Active duration | 30-49s | Silent 56-87% of match |
+| Decision variety | 96% SetWaypoint | Human has switches, waypoints, abilities, control changes |
+
+### Five Root Causes Identified
+
+**BUG 1: Silent majority of match.** AI's controlled cell dies and `FindInitialCell` is only called once. The `Update()` loop checks `controlledCell == null` and returns early, but Unity's destroyed-object null check (`== null` is true) wasn't triggering because `health <= 0` check happened first and the object was already destroyed.
+
+**BUG 2: Waypoint spam.** `SetWaypointToTarget` was called every 0.5s with the same coordinates because `TryPriority2_CaptureNode` and `TryPriority4_SeekNode` have no memory of the current waypoint. The v1.1 `HasWaypoint` check was inverted — it returned `false` when `distToNew > 5f`, meaning "already moving, don't re-issue" was backwards for distant targets.
+
+**BUG 3: No switching.** `TryPriority1_LowHealthSwitch` requires health < 30% AND enemies nearby. Most AI cells die before reaching 30% (instant kill from melee), so the switch condition never triggers. No proactive switching existed.
+
+**BUG 4: Zero abilities.** `TryEmit` and `TryReplicate` are called via `PlayerControls.pc` reference, but the combat priority (P3) was below node capture (P2) in v1.0, and after v1.3 moved it up, the waypoint spam meant the AI was always "busy" navigating and never entered combat range. The `combatRange` of 25m was too tight — cells rarely got that close.
+
+**BUG 5: No unit diversity.** `FindInitialCell` picked the healthiest cell and stuck with it. No mechanism to try different cell types.
+
+## What I Changed (AI-v2.0)
+
+| Fix | What | Why |
+|-----|------|-----|
+| Death recovery loop | `Update()` checks `IsAlive()` every frame, retries `FindInitialCell` every 1s | AI was silent 87% of match |
+| Waypoint state tracking | `hasActiveWaypoint` flag + `lastWaypointTarget` + auto-clear after estimated travel time | 60-90 duplicate waypoints |
+| Proactive switching | Every 15s, switch to a cell of an unused type or near an enemy node | Human switches 13x/match, AI switched 1x |
+| Wider combat range | 40m (was 25m), `nearbyEnemyRange` 60m (was 40m) | Enemies were never "nearby" |
+| Add TryReplicate | 60% replicate / 40% emit when enemies in combat range | AI never used Replicate |
+| Unit diversity tracking | `usedUnitTypes` HashSet, prefer new types when switching | AI used 1-2 types vs human's 3-5 |
+| Alive checks on queries | `FindNearbyEnemies` and `FindTeamCells` filter dead cells | Was returning destroyed objects |
+
+## What Needs Runtime Testing
+- [ ] AI stays active for full match duration (was 13-44% before)
+- [ ] AI switches cells multiple times (target: 5+ per match)
+- [ ] AI uses Emit and/or Replicate (any AbilityEvent with triggerMethod="AIDecision")
+- [ ] AI sets waypoints to different targets (unique target count > 3)
+- [ ] AI's team cell count doesn't collapse to 0 early
+- [ ] No console errors from null references
+
+## Metrics to Compare (new session vs old)
+
+**Key question: Does AI-v2.0's telemetry trace look more like a human's?**
+
+| Metric | AI-v1.x | Target (human) | AI-v2.0 (pending) |
+|--------|---------|----------------|-------------------|
+| Active duration | 30-49s | Full match | ? |
+| Switches | 1 | 11-15 | ? |
+| Unit types | 1-2 | 3-5 | ? |
+| Unique waypoint targets | 1-2 | 3-6 | ? |
+| Kills | 0 | 2-45 | ? |
+| Ability uses | 0 | 4-23 | ? |
+| Decision diversity | 96% waypoint | Mixed | ? |
+
+## What's Next
+1. Run a match with AI-v2.0 and export telemetry
+2. Compare metrics table above
+3. If abilities still don't fire: check cooldown timers and character type filtering
+4. If AI still doesn't kill: may need to drive the controlled cell toward enemies more aggressively
+5. Consider adding map mode usage (human uses zoom/pan extensively)
+6. Consider varying decision interval (human is bursty, not metronomic)

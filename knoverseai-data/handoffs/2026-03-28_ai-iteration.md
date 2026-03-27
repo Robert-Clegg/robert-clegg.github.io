@@ -115,9 +115,38 @@ The AI played as Immune (Team 2) in this session. TryEmit/TryReplicate only work
 
 ### Commit: `2b785cd` on two-player branch
 
+## AI-v2.1 Results (Session: 2026-03-27_04-32-19pm)
+
+Match: Human=Team2 (Immune), AI=Team1 (Pathogen), 216s, 835 events (487 human, 348 ai)
+
+| Metric | v1.x best | v2.0 | v2.1 | Human | Status |
+|--------|-----------|------|------|-------|--------|
+| Active duration | 43% | 100% | **98%** | 100% | FIXED |
+| Switches | 1 | 14 | **14** | 27 | FIXED |
+| Unit types | 2 | 5 | **4** | 3-5 | FIXED |
+| Decision count | 101 | 64 | **254** | — | IMPROVED |
+| UseAbility decisions | 0 | 0 | **119** | — | FIXED |
+| Combat decisions | 0 | 0 | **41** | — | FIXED |
+| WP outcomes | 0 | 0 | **21** (11 arr, 10 lost) | 4-60 | FIXED |
+| Ability events (tagged ai) | 0 | 0 | **73** (WaypointSet) | — | PARTIAL |
+| Emit/Replicate fired | 0 | 0 | **35** (19 Emit, 16 Replicate) | 4-25 | FIRES but tagged human |
+| Survey % | 4% | 27% | **3%** | 0% | FIXED |
+| playerType polluted | 33-96 | 33 | **35** | 0 | v2.1.1 fix pushed |
+
+### Key Finding: Abilities ARE Firing
+The 35 "polluted" human AbilityEvents are actually AI Emit (19) and Replicate (16) — they fire correctly but `PlayerControls.TryEmit/TryReplicate` calls `RecordAbility` without the playerType param. Fixed in v2.1.1 (`b3fa212`).
+
+### AI-v2.1.1 Fix
+`PlayerControls.cs`: TryEmit and TryReplicate now pass `playerType="ai"` when `triggerMethod=="AIDecision"`.
+
+### Remaining Gaps
+- **AI CombatEvents still 0** — the AI drives cells toward enemies and the per-cell AI fights, but kills aren't attributed to the AIPlayerController. CombatEvents are emitted by `HealthAndDamage.cs` which doesn't know about the AI player.
+- **AI ControlStateEvents still 0** — deferred to v2.2
+- **AI nodes went from 4 → 0** — the AI lost all nodes despite 254 decisions. Human captured 10 nodes. The AI's strategy isn't effective at holding territory.
+
 ## What's Next
-1. Play match with AI-v2.1 — verify AI AbilityEvents now tagged "ai", WaypointOutcomeEvents appear
-2. Test with human as Immune (AI plays Pathogen) to verify Emit/Replicate fire
-3. Add ControlStateEvent emission (BUG E) — v2.2
-4. Vary decision interval to mimic human burstiness
-5. Track AI kills — if melee engage works, CombatEvents should appear with AI attribution
+1. Verify v2.1.1 fixes playerType pollution (Emit/Replicate tagged "ai")
+2. Address AI node loss — AI needs defensive behavior (return to threatened nodes)
+3. Add ControlStateEvent emission (BUG E)
+4. Consider attributing CombatEvents to AI when the killer cell is AI-controlled
+5. AI strategy: currently all offense, no defense — losing all 4 starting nodes

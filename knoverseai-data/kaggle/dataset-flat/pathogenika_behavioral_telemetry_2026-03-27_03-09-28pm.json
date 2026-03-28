@@ -1,0 +1,2036 @@
+{
+    "sessionId": "20260327_030927p",
+    "sessionStart": "2026-03-27 3:09:27 PM",
+    "sessionEnd": "2026-03-27 3:11:24 PM",
+    "exportTime": "2026-03-27 3:11:24 PM",
+    "timezone": "CST (UTC-6)",
+    "matchDuration": 111.0333,
+    "playerTeam": 1,
+    "totalEvents": 336,
+    "switchEvents": 11,
+    "viewEvents": 24,
+    "mapModeEvents": 0,
+    "combatEvents": 71,
+    "nodeCaptureEvents": 7,
+    "abilityEvents": 111,
+    "waypointOutcomeEvents": 4,
+    "controlStateEvents": 7,
+    "events": [
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 0,
+            "playerType": "human",
+            "data": {"fromUnitType":"None","toUnitType":"VirusType","fromX":320.9859619140625,"fromZ":330.8828430175781,"toX":320.9859619140625,"toZ":330.8828430175781,"switchDistance":0.0,"switchMethod":"InitialSpawn","zoomLevel":75.0,"timeSinceLastSwitch":0.0,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 0,
+            "playerType": "human",
+            "data": {"zoomLevel":75.0,"zoomDelta":0.0,"isMapMode":false,"playerX":320.9859619140625,"playerZ":330.8828430175781,"currentUnitType":"VirusType","trigger":"switch"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 1.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":75.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 1.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":4,"description":"SeekUncapturedNode at (64, 218)","alternatives":"dist=127m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":136.2112274169922,"posZ":113.79774475097656}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 1.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":75.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 1.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":4,"description":"SeekUncapturedNode at (64, 218)","alternatives":"dist=122m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":133.2325439453125,"posZ":118.0624008178711}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 2,
+            "playerType": "human",
+            "data": {"zoomLevel":115.0,"zoomDelta":40.0,"isMapMode":false,"playerX":319.96075439453127,"playerZ":333.1466369628906,"currentUnitType":"VirusType","trigger":"periodic"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 2.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":115.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 2.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":4,"description":"SeekUncapturedNode at (64, 218)","alternatives":"dist=117m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":130.2538604736328,"posZ":122.32705688476563}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 2.5,
+            "playerType": "human",
+            "data": {"zoomLevel":95.0,"zoomDelta":-20.0,"isMapMode":false,"playerX":317.1723937988281,"playerZ":333.91424560546877,"currentUnitType":"VirusType","trigger":"periodic"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 2.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":95.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 2.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":4,"description":"SeekUncapturedNode at (64, 218)","alternatives":"dist=112m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":127.45036315917969,"posZ":126.34085083007813}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 3,
+            "playerType": "human",
+            "data": {"zoomLevel":105.0,"zoomDelta":10.0,"isMapMode":false,"playerX":315.9639892578125,"playerZ":329.4836730957031,"currentUnitType":"VirusType","trigger":"periodic"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 3.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 3.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":4,"description":"SeekUncapturedNode at (64, 218)","alternatives":"dist=106m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":124.47154998779297,"posZ":130.6055908203125}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 3.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 3.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":4,"description":"SeekUncapturedNode at (64, 218)","alternatives":"dist=101m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":121.49273681640625,"posZ":134.87037658691407}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 4.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 4.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=96m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":118.68914794921875,"posZ":138.88429260253907}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 4.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 4.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=91m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":115.71033477783203,"posZ":143.14907836914063}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 4.666667,
+            "playerType": "human",
+            "data": {"fromUnitType":"VirusType","toUnitType":"MycobacteriumType","fromX":311.4736022949219,"fromZ":315.51318359375,"toX":365.1964416503906,"toZ":282.5342102050781,"switchDistance":63.223026275634769,"switchMethod":"DirectClick","zoomLevel":105.0,"timeSinceLastSwitch":0.0,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 4.666667,
+            "playerType": "human",
+            "data": {"zoomLevel":105.0,"zoomDelta":0.0,"isMapMode":false,"playerX":311.4736022949219,"playerZ":315.51318359375,"currentUnitType":"VirusType","trigger":"switch"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 5.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 5.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=89m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":112.76078796386719,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 5.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 5.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=88m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":110.0787582397461,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 6.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 6.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=87m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":107.34320831298828,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 6.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 6.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=85m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":104.72718811035156,"posZ":143.16668701171876}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 7.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 7.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=84m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":102.37442016601563,"posZ":143.16665649414063}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 7.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 7.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=83m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":99.99021911621094,"posZ":143.16668701171876}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 8.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 8.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=82m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":97.72421264648438,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 8.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 8.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=81m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":95.69792938232422,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 9.033334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 9.033334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=81m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":93.6557388305664,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 9.533334,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 9.533334,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=80m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":91.72512817382813,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 10.03333,
+            "playerType": "ai",
+            "data": {"action":"Survey","priority":5,"description":"Survey: 6 cells, 4/7 nodes owned","alternatives":"Periodic strategic overview","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":90.0071792602539,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 10.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 10.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=79m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":90.0071792602539,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 10.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 10.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=79m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":88.28364562988281,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 10.81382,
+            "playerType": "human",
+            "data": {"ability":"Replicate","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":321.5176086425781,"posZ":253.7517547607422,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 11.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 11.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=78m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":86.66130828857422,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 11.32382,
+            "playerType": "human",
+            "data": {"ability":"Emit","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":317.1069641113281,"posZ":249.895751953125,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 11.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 11.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=78m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":85.22325897216797,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 12.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 12.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=77m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":83.78556823730469,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 12.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 12.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=77m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":82.43685150146485,"posZ":143.16665649414063}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 13.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 13.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=77m","teamCellCount":6,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":81.24484252929688,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 13.36382,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":303.0974426269531,"posZ":239.7941436767578,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 13.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 13.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=77m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":80.0562744140625,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 14.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 14.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=76m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":78.94395446777344,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 14.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 14.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=76m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":77.96295166015625,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 15.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 15.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=76m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":76.98665618896485,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 15.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 15.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=76m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":76.0745620727539,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 16.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":105.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 16.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=76m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":75.27134704589844,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 16.5,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":60.0,"isMapMode":false,"playerX":294.9832763671875,"playerZ":242.03488159179688,"currentUnitType":"MycobacteriumType","trigger":"periodic"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 16.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 16.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=76m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":74.4730224609375,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 17.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 17.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":73.72809600830078,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 17.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 17.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":73.0727310180664,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 18.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 18.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":72.42193603515625,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 18.16667,
+            "playerType": "human",
+            "data": {"fromUnitType":"MycobacteriumType","toUnitType":"MycobacteriumType","fromX":280.6634216308594,"fromZ":237.46913146972657,"toX":159.3686065673828,"toZ":265.427490234375,"switchDistance":124.5370101928711,"switchMethod":"DirectClick","zoomLevel":165.0,"timeSinceLastSwitch":13.500000953674317,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 18.16667,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":280.6634216308594,"playerZ":237.46913146972657,"currentUnitType":"MycobacteriumType","trigger":"switch"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 18.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 18.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":71.81514739990235,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 19.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 19.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":71.28172302246094,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 19.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 19.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":70.75233459472656,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 20.03333,
+            "playerType": "ai",
+            "data": {"action":"Survey","priority":5,"description":"Survey: 5 cells, 4/7 nodes owned","alternatives":"Periodic strategic overview","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":70.2590103149414,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 20.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 20.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":70.2590103149414,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 20.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 20.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":69.82552337646485,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 21.03333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 21.03333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":69.3954849243164,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 21.53333,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 21.53333,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":68.99488830566406,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 22.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 22.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":68.6006088256836,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 22.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 22.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":68.27417755126953,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 23.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 23.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":67.95049285888672,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 23.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 23.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":67.6482925415039,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 24.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 24.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":67.38291931152344,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 24.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 24.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":67.11988067626953,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 24.79382,
+            "playerType": "human",
+            "data": {"fromState":"DirectControl","toState":"MouseFollow","trigger":"FKeyToggle","unitType":"MycobacteriumType","posX":125.80950927734375,"posZ":234.56362915039063,"zoomLevel":165.0,"timeInPreviousState":0.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 24.79382,
+            "playerType": "human",
+            "data": {"ability":"MouseFollowON","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":125.80950927734375,"posZ":234.56362915039063,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 25.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 25.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":5,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":66.8750228881836,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 25.51382,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":324.6195983886719,"posZ":197.92149353027345,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 25.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 25.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":4,"controlledUnit":"TCellType","posX":66.66002655029297,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 25.83334,
+            "playerType": "human",
+            "data": {"nodeName":"SmallNode_UR","capturedByTeam":1,"playerInvolved":false,"captureMethod":"AIAutonomous","playerDistance":209.1924285888672,"playerUnitType":"MycobacteriumType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 25.83334,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":113.60559844970703,"playerZ":230.1507110595703,"currentUnitType":"MycobacteriumType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 26.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 26.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"TCellType","posX":66.44686889648438,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 26.17382,
+            "playerType": "human",
+            "data": {"fromState":"MouseFollow","toState":"WaypointNavigation","trigger":"WaypointSet","unitType":"MycobacteriumType","posX":109.6904296875,"posZ":228.62060546875,"zoomLevel":165.0,"timeInPreviousState":1.3800010681152344}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 26.17382,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"Mouse","unitType":"MycobacteriumType","posX":88.06534576416016,"posZ":219.03143310546876,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 26.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 26.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"TCellType","posX":66.24844360351563,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 27.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 27.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"TCellType","posX":66.07425689697266,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 27.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 27.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"TCellType","posX":65.90164947509766,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 27.97382,
+            "playerType": "human",
+            "data": {"fromState":"WaypointNavigation","toState":"MouseFollow","trigger":"WaypointCleared","unitType":"MycobacteriumType","posX":90.85321807861328,"posZ":219.9464569091797,"zoomLevel":165.0,"timeInPreviousState":1.7999992370605469}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 28.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 28.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"TCellType","posX":65.7409439086914,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 28.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"TCellType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 28.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=75m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"TCellType","posX":65.59979248046875,"posZ":143.1666717529297}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 28.76667,
+            "playerType": "human",
+            "data": {"fromUnitType":"MycobacteriumType","toUnitType":"TuberculosisType","fromX":92.06300354003906,"fromZ":221.7913055419922,"toX":123.48786926269531,"toZ":268.94940185546877,"switchDistance":56.669288635253909,"switchMethod":"DirectClick","zoomLevel":165.0,"timeSinceLastSwitch":10.599998474121094,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 28.76667,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":92.06300354003906,"playerZ":221.7913055419922,"currentUnitType":"MycobacteriumType","trigger":"switch"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 29.06667,
+            "playerType": "human",
+            "data": {"fromUnitType":"TCellType","toUnitType":"NeutrophilType","fromX":65.4599838256836,"fromZ":143.1666717529297,"toX":38.80720138549805,"toZ":145.75389099121095,"switchDistance":26.778060913085939,"switchMethod":"AIDecision","zoomLevel":165.0,"timeSinceLastSwitch":0.3000030517578125,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 29.06667,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":123.56468963623047,"playerZ":269.1449890136719,"currentUnitType":"TuberculosisType","trigger":"switch"}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 29.06667,
+            "playerType": "ai",
+            "data": {"action":"SwitchCell","priority":1,"description":"Switched from TCellType to NeutrophilType","alternatives":"Low health or better cell available","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.80720138549805,"posZ":145.75389099121095}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 29.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 29.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=78m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.82792282104492,"posZ":144.00477600097657}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 30.06667,
+            "playerType": "ai",
+            "data": {"action":"Survey","priority":5,"description":"Survey: 4 cells, 3/7 nodes owned","alternatives":"Periodic strategic overview","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":151.4156494140625}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 30.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 30.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=71m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":151.4156494140625}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 30.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 30.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=63m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":159.5186004638672}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 31.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 31.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=56m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":167.47097778320313}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 31.21382,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":64.96783447265625,"posZ":143.4703369140625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 31.23333,
+            "playerType": "human",
+            "data": {"outcome":"Died","unitName":"ImmuneTCellPrefab(Clone)","unitType":"TCellType","deathPosX":64.96783447265625,"deathPosZ":143.1666717529297,"waypointX":63.581077575683597,"waypointZ":217.78269958496095,"distToWaypoint":74.62891387939453,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 31.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 31.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=50m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":174.76368713378907}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 31.72382,
+            "playerType": "human",
+            "data": {"fromState":"MouseFollow","toState":"WaypointNavigation","trigger":"WaypointSet","unitType":"TuberculosisType","posX":107.36131286621094,"posZ":257.35919189453127,"zoomLevel":165.0,"timeInPreviousState":3.75}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 31.72382,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"Mouse","unitType":"TuberculosisType","posX":72.94035339355469,"posZ":247.61721801757813,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 32.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 32.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=44m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":182.22409057617188}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 32.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 32.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=38m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":188.6514434814453}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 33.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 33.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=36m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":191.60012817382813}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 33.1,
+            "playerType": "human",
+            "data": {"fromUnitType":"TuberculosisType","toUnitType":"PneumoniaType","fromX":84.77644348144531,"fromZ":251.00604248046876,"toX":157.80638122558595,"toZ":247.9334259033203,"switchDistance":73.09454345703125,"switchMethod":"DirectClick","zoomLevel":165.0,"timeSinceLastSwitch":4.033332824707031,"timeSinceLastDeath":0.0}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 33.1,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":84.77644348144531,"playerZ":251.00604248046876,"currentUnitType":"TuberculosisType","trigger":"switch"}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 33.1,
+            "playerType": "human",
+            "data": {"fromState":"WaypointNavigation","toState":"MouseFollow","trigger":"UnitSwitch","unitType":"PneumoniaType","posX":84.77644348144531,"posZ":251.00604248046876,"zoomLevel":165.0,"timeInPreviousState":1.3761825561523438}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 33.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 33.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=33m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":195.80044555664063}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 33.67382,
+            "playerType": "human",
+            "data": {"outcome":"Arrived","unitName":"PathogenTuberculosisPrefab(Clone)","unitType":"TuberculosisType","deathPosX":75.46068572998047,"deathPosZ":248.33880615234376,"waypointX":72.94035339355469,"waypointZ":247.61721801757813,"distToWaypoint":2.621602773666382,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 33.70382,
+            "playerType": "human",
+            "data": {"outcome":"Arrived","unitName":"PathogenTuberculosisPrefab(Clone)","unitType":"TuberculosisType","deathPosX":75.46068572998047,"deathPosZ":248.33880615234376,"waypointX":72.94035339355469,"waypointZ":247.61721801757813,"distToWaypoint":2.621713876724243,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 34.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 34.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=30m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":200.59115600585938}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 34.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 34.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=29m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":203.2675323486328}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 35.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 35.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=28m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":204.92239379882813}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 35.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 35.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=28m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":206.41171264648438}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 36.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 36.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=27m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":208.0234832763672}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 36.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 36.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=27m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":208.7094268798828}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 37.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 37.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=27m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":208.92495727539063}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 37.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 37.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=28m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":205.72879028320313}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 37.87382,
+            "playerType": "human",
+            "data": {"fromState":"MouseFollow","toState":"WaypointNavigation","trigger":"WaypointSet","unitType":"PneumoniaType","posX":124.07355499267578,"posZ":247.3717041015625,"zoomLevel":165.0,"timeInPreviousState":4.773815155029297}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 37.87382,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"Mouse","unitType":"PneumoniaType","posX":60.412574768066409,"posZ":233.50473022460938,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 38.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 38.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=27m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":208.34742736816407}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 38.08382,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":315.3995056152344,"posZ":159.25071716308595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 38.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 38.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=26m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":209.86497497558595}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 39.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 39.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=26m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":210.8445587158203}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 39.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 39.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=26m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":211.78759765625}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 40.06667,
+            "playerType": "ai",
+            "data": {"action":"Survey","priority":5,"description":"Survey: 4 cells, 3/7 nodes owned","alternatives":"Periodic strategic overview","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":212.60989379882813}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 40.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 40.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=26m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":212.60989379882813}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 40.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 40.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":213.2247314453125}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 41.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 41.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":213.84735107421876}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 41.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 41.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":214.40696716308595}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 42.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 42.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":214.60780334472657}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 42.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 42.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":215.1181640625}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 43.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 43.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":215.57054138183595}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 43.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 43.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":215.9278106689453}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 44.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 44.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":216.24510192871095}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 44.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 44.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":216.50843811035157}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 45.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 45.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":216.71490478515626}
+        },
+        {
+            "eventType": "ControlStateEvent",
+            "timestamp": 45.19382,
+            "playerType": "human",
+            "data": {"fromState":"WaypointNavigation","toState":"MouseFollow","trigger":"WaypointCleared","unitType":"PneumoniaType","posX":63.27833938598633,"posZ":234.12890625,"zoomLevel":165.0,"timeInPreviousState":7.319999694824219}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 45.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 45.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":216.89788818359376}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 46.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 46.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":5,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.0496063232422}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 46.24382,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":316.9729309082031,"posZ":132.41021728515626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 46.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 46.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.16848754882813}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 46.75381,
+            "playerType": "human",
+            "data": {"ability":"Replicate","triggerMethod":"Keyboard","unitType":"PneumoniaType","posX":58.865013122558597,"posZ":228.52801513671876,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 47.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 47.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.27381896972657}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 47.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 47.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.36111450195313}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 48.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 48.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.42922973632813}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 48.56667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 48.56667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.48983764648438}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 49.06667,
+            "playerType": "human",
+            "data": {"ability":"WaypointSet","triggerMethod":"AIDecision","unitType":"NeutrophilType","posX":63.581077575683597,"posZ":217.78269958496095,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "AIDecisionEvent",
+            "timestamp": 49.06667,
+            "playerType": "ai",
+            "data": {"action":"SetWaypoint","priority":2,"description":"CaptureNearbyNode at (64, 218)","alternatives":"dist=25m","teamCellCount":4,"ownedNodeCount":3,"controlledUnit":"NeutrophilType","posX":38.833335876464847,"posZ":217.53977966308595}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 49.30381,
+            "playerType": "human",
+            "data": {"ability":"Emit","triggerMethod":"Keyboard","unitType":"PneumoniaType","posX":50.244266510009769,"posZ":215.0272979736328,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 49.42381,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":39.34210968017578,"posZ":217.5716094970703,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "WaypointOutcomeEvent",
+            "timestamp": 49.43333,
+            "playerType": "human",
+            "data": {"outcome":"Died","unitName":"ImmuneNeutrophilPrefab(Clone)","unitType":"NeutrophilType","deathPosX":38.833335876464847,"deathPosZ":217.56961059570313,"waypointX":63.581077575683597,"waypointZ":217.78269958496095,"distToWaypoint":24.748659133911134,"isDockWaypoint":false}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 49.96381,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":49.74850082397461,"posZ":198.9208221435547,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 53.14381,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":317.6194152832031,"posZ":128.64828491210938,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 53.23333,
+            "playerType": "human",
+            "data": {"nodeName":"SmallNode_LR","capturedByTeam":1,"playerInvolved":false,"captureMethod":"AIAutonomous","playerDistance":242.16253662109376,"playerUnitType":"PneumoniaType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 53.23333,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":57.01063537597656,"playerZ":191.47567749023438,"currentUnitType":"PneumoniaType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"nodeName":"SmallNode_LL","capturedByTeam":2,"playerInvolved":false,"captureMethod":"NKProjectile","playerDistance":45.05247497558594,"playerUnitType":"PneumoniaType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":50.123191833496097,"playerZ":174.7873077392578,"currentUnitType":"PneumoniaType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":60.66090774536133,"posZ":224.93289184570313,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":78.49237823486328,"posZ":215.85986328125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":73.52234649658203,"posZ":217.36892700195313,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":55.860931396484378,"posZ":226.43600463867188,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":56.99200439453125,"posZ":221.5565185546875,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":57.113525390625,"posZ":216.5850067138672,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":49.77470397949219,"posZ":218.57009887695313,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":52.13907241821289,"posZ":189.72911071777345,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 55.90382,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":51.52973175048828,"posZ":204.77569580078126,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 56.92381,
+            "playerType": "human",
+            "data": {"ability":"Replicate","triggerMethod":"Keyboard","unitType":"PneumoniaType","posX":47.1513557434082,"posZ":165.802734375,"zoomLevel":165.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 56.95381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":36.1594352722168,"posZ":165.71734619140626,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 57.43382,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":true,"posX":45.102176666259769,"posZ":160.7665252685547,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 58.63381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":37.73828887939453,"posZ":168.9892578125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 58.87381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"PneumoniaType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":41.80180740356445,"posZ":168.89047241210938,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 59.46667,
+            "playerType": "human",
+            "data": {"fromUnitType":"None","toUnitType":"VirusType","fromX":276.227294921875,"fromZ":217.0785675048828,"toX":276.227294921875,"toZ":217.0785675048828,"switchDistance":0.0,"switchMethod":"DeathRespawn","zoomLevel":165.0,"timeSinceLastSwitch":26.36666488647461,"timeSinceLastDeath":2.0328521728515627}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 59.46667,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":276.227294921875,"playerZ":217.0785675048828,"currentUnitType":"VirusType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 59.50381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":38.444602966308597,"posZ":169.00022888183595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 59.95381,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":37.806278228759769,"posZ":164.70814514160157,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 65.14381,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":55.73044204711914,"posZ":136.52735900878907,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 66.86667,
+            "playerType": "human",
+            "data": {"fromUnitType":"VirusType","toUnitType":"MycobacteriumType","fromX":233.88470458984376,"fromZ":197.71902465820313,"toX":221.58615112304688,"toZ":203.99008178710938,"switchDistance":13.835492134094239,"switchMethod":"DirectClick","zoomLevel":165.0,"timeSinceLastSwitch":7.400001525878906,"timeSinceLastDeath":9.432853698730469}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 66.86667,
+            "playerType": "human",
+            "data": {"zoomLevel":165.0,"zoomDelta":0.0,"isMapMode":false,"playerX":233.88470458984376,"playerZ":197.71902465820313,"currentUnitType":"VirusType","trigger":"switch"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 70.03333,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":30.0,"isMapMode":false,"playerX":193.3076934814453,"playerZ":191.20098876953126,"currentUnitType":"MycobacteriumType","trigger":"periodic"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 70.75381,
+            "playerType": "human",
+            "data": {"nodeName":"LargeNode","capturedByTeam":1,"playerInvolved":true,"captureMethod":"AIAutonomous","playerDistance":24.6934814453125,"playerUnitType":"MycobacteriumType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 70.75381,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":0.0,"isMapMode":false,"playerX":183.87892150878907,"playerZ":190.2248992919922,"currentUnitType":"MycobacteriumType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 73.42381,
+            "playerType": "human",
+            "data": {"killerType":"TuberculosisType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":82.33290100097656,"posZ":263.2120361328125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 75.13381,
+            "playerType": "human",
+            "data": {"ability":"Replicate","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":159.2666473388672,"posZ":231.16744995117188,"zoomLevel":195.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 75.13381,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":159.68527221679688,"posZ":243.42892456054688,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 75.43381,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":154.2570037841797,"posZ":242.15457153320313,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 75.43381,
+            "playerType": "human",
+            "data": {"ability":"Emit","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":158.65890502929688,"posZ":235.2150421142578,"zoomLevel":195.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 75.76381,
+            "playerType": "human",
+            "data": {"killerType":"TuberculosisType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":97.43941497802735,"posZ":260.4140319824219,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 78.85381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":101.91114044189453,"posZ":254.88436889648438,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 79.4,
+            "playerType": "human",
+            "data": {"fromUnitType":"MycobacteriumType","toUnitType":"MycobacteriumType","fromX":139.80995178222657,"fromZ":249.36317443847657,"toX":145.54933166503907,"toZ":256.8224792480469,"switchDistance":9.411786079406739,"switchMethod":"DirectClick","zoomLevel":195.0,"timeSinceLastSwitch":12.533332824707032,"timeSinceLastDeath":21.9661865234375}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 79.4,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":0.0,"isMapMode":false,"playerX":139.80995178222657,"playerZ":249.36317443847657,"currentUnitType":"MycobacteriumType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 80.0238,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":109.45301818847656,"posZ":247.84788513183595,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 80.7438,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":118.59086608886719,"posZ":245.12448120117188,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 80.80381,
+            "playerType": "human",
+            "data": {"ability":"Emit","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":142.15139770507813,"posZ":257.74078369140627,"zoomLevel":195.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 82.4838,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":121.28339385986328,"posZ":242.3053741455078,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 84.1638,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":158.4696044921875,"posZ":139.36749267578126,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 84.22381,
+            "playerType": "human",
+            "data": {"killerType":"TuberculosisType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":88.41259002685547,"posZ":231.7047882080078,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 84.3138,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":109.57429504394531,"posZ":263.1632080078125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 84.43381,
+            "playerType": "human",
+            "data": {"ability":"Replicate","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":125.23355102539063,"posZ":265.79144287109377,"zoomLevel":195.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 84.43381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":111.52530670166016,"posZ":266.0234680175781,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 85.60381,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":108.7881851196289,"posZ":276.3738098144531,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 91.39381,
+            "playerType": "human",
+            "data": {"ability":"Replicate","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":113.40286254882813,"posZ":300.7217712402344,"zoomLevel":195.0}
+        },
+        {
+            "eventType": "AbilityEvent",
+            "timestamp": 91.8738,
+            "playerType": "human",
+            "data": {"ability":"Emit","triggerMethod":"Keyboard","unitType":"MycobacteriumType","posX":118.25076293945313,"posZ":296.9864196777344,"zoomLevel":195.0}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 92.2038,
+            "playerType": "human",
+            "data": {"killerType":"TuberculosisType","victimType":"NeutrophilType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":82.1606216430664,"posZ":228.3576202392578,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 92.33334,
+            "playerType": "human",
+            "data": {"nodeName":"SmallNode_LL","capturedByTeam":1,"playerInvolved":false,"captureMethod":"AIAutonomous","playerDistance":96.06591033935547,"playerUnitType":"MycobacteriumType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 92.33334,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":0.0,"isMapMode":false,"playerX":118.14883422851563,"playerZ":296.8460388183594,"currentUnitType":"MycobacteriumType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 93.1638,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":86.99433135986328,"posZ":221.8000030517578,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"nodeName":"SmallNode_UL","capturedByTeam":2,"playerInvolved":true,"captureMethod":"NKProjectile","playerDistance":28.458436965942384,"playerUnitType":"MycobacteriumType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":0.0,"isMapMode":false,"playerX":118.4359359741211,"playerZ":299.3530578613281,"currentUnitType":"MycobacteriumType","trigger":"nodeCapture"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":104.46765899658203,"posZ":292.57232666015627,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":111.11541748046875,"posZ":315.2388916015625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":true,"posX":118.4359359741211,"posZ":299.3530578613281,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":110.88964080810547,"posZ":275.1133117675781,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":108.63286590576172,"posZ":273.88726806640627,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":111.17777252197266,"posZ":308.5159912109375,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":108.5263671875,"posZ":313.208251953125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":109.69560241699219,"posZ":310.4439697265625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"MycobacteriumType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":110.06837463378906,"posZ":312.185791015625,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":81.19281768798828,"posZ":263.22027587890627,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.18381,
+            "playerType": "human",
+            "data": {"killerType":"NodeType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":83.19678497314453,"posZ":267.2674865722656,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 94.96381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":95.93714141845703,"posZ":226.32366943359376,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 95.50381,
+            "playerType": "human",
+            "data": {"killerType":"TCellType","victimType":"TuberculosisType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":229.20481872558595,"posZ":120.91161346435547,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 95.89381,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":222.2752685546875,"posZ":124.31389617919922,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 96.1938,
+            "playerType": "human",
+            "data": {"fromUnitType":"None","toUnitType":"VirusType","fromX":223.4167022705078,"fromZ":214.54998779296876,"toX":223.4167022705078,"toZ":214.54998779296876,"switchDistance":0.0,"switchMethod":"DeathRespawn","zoomLevel":195.0,"timeSinceLastSwitch":16.793800354003908,"timeSinceLastDeath":2.0099945068359377}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 96.1938,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":0.0,"isMapMode":false,"playerX":223.4167022705078,"playerZ":214.54998779296876,"currentUnitType":"VirusType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 96.2238,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"TCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":95.36762237548828,"posZ":238.58938598632813,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 97.0938,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":151.81387329101563,"posZ":206.81491088867188,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 97.6638,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":170.54270935058595,"posZ":179.79209899902345,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 98.6238,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":171.253173828125,"posZ":181.10540771484376,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 98.8038,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":173.64779663085938,"posZ":181.1511688232422,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.3438,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":174.85040283203126,"posZ":181.56558227539063,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.6438,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":172.3212127685547,"posZ":183.5184783935547,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.67381,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":176.2093963623047,"posZ":181.19032287597657,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "SwitchEvent",
+            "timestamp": 99.83334,
+            "playerType": "human",
+            "data": {"fromUnitType":"VirusType","toUnitType":"MycobacteriumType","fromX":221.33319091796876,"fromZ":195.24818420410157,"toX":219.33766174316407,"toZ":183.93238830566407,"switchDistance":11.526909828186036,"switchMethod":"DirectClick","zoomLevel":195.0,"timeSinceLastSwitch":3.6395339965820314,"timeSinceLastDeath":5.649528503417969}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 99.83334,
+            "playerType": "human",
+            "data": {"zoomLevel":195.0,"zoomDelta":0.0,"isMapMode":false,"playerX":221.33319091796876,"playerZ":195.24818420410157,"currentUnitType":"VirusType","trigger":"switch"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 99.9438,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":176.08395385742188,"posZ":181.03497314453126,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 100.0938,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":174.37123107910157,"posZ":181.2357940673828,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 100.2438,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":171.44407653808595,"posZ":182.23028564453126,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 100.3638,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":170.6993408203125,"posZ":180.57456970214845,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.0538,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":163.07290649414063,"posZ":181.02809143066407,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.2938,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":165.69979858398438,"posZ":180.95240783691407,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 101.5638,
+            "playerType": "human",
+            "data": {"killerType":"NeutrophilType","victimType":"VirusType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":168.8304443359375,"posZ":180.57069396972657,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 105.1338,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"NeutrophilType","playerWasKiller":true,"playerUnitKill":true,"playerWasVictim":false,"posX":175.2313232421875,"posZ":187.48635864257813,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 105.6138,
+            "playerType": "human",
+            "data": {"killerType":"MycobacteriumType","victimType":"DCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":165.36190795898438,"posZ":210.3675994873047,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 109.5333,
+            "playerType": "human",
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":6.765167236328125,"isMapMode":false,"playerX":165.24964904785157,"playerZ":167.96803283691407,"currentUnitType":"MycobacteriumType","trigger":"periodic"}
+        },
+        {
+            "eventType": "CombatEvent",
+            "timestamp": 110.4438,
+            "playerType": "human",
+            "data": {"killerType":"PneumoniaType","victimType":"NKCellType","playerWasKiller":false,"playerUnitKill":false,"playerWasVictim":false,"posX":104.56382751464844,"posZ":288.5948486328125,"distanceToTarget":0.0,"weaponUsed":"Melee"}
+        },
+        {
+            "eventType": "NodeCaptureEvent",
+            "timestamp": 111,
+            "playerType": "human",
+            "data": {"nodeName":"Base2Node","capturedByTeam":1,"playerInvolved":false,"captureMethod":"AIAutonomous","playerDistance":112.9990005493164,"playerUnitType":"MycobacteriumType"}
+        },
+        {
+            "eventType": "ViewEvent",
+            "timestamp": 111,
+            "playerType": "human",
+            "data": {"zoomLevel":201.76516723632813,"zoomDelta":0.0,"isMapMode":false,"playerX":148.28546142578126,"playerZ":160.0428466796875,"currentUnitType":"MycobacteriumType","trigger":"nodeCapture"}
+        }
+    ]
+}

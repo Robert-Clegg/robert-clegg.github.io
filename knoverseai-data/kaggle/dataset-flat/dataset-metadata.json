@@ -1,0 +1,34 @@
+{
+  "title": "KnoverseAI Cognitive Mechanics Telemetry",
+  "id": "robertclegg/knoverseai-cognitive-mechanics-telemetry",
+  "subtitle": "Human vs AI behavioral telemetry from Pathogenika and PetroActive",
+  "description": "Paired human-AI telemetry sessions from two games built for the KnoverseAI Cognitive Mechanics benchmark. Contains 10 Pathogenika sessions (Unity, real-time strategy with immune system cells) and 4 PetroActive sessions (Three.js, mech exploration with radar navigation). Each session captures timestamped behavioral events: unit switching, waypoint navigation, combat, abilities, camera control, and node capture. AI opponent evolved from v1.0 (12% active) to v2.4 (98% active, abilities firing) across telemetry-driven iterations. Session annotations provide corrected metadata including team assignments, AI version, and playerType attribution status. The benchmark measures whether an AI's behavioral trace is structurally comparable to a human's using the same diagnostic framework — decision tempo, action diversity, spatial coverage, and strategic adaptation.",
+  "keywords": [
+    "cognitive-mechanics",
+    "game-telemetry",
+    "human-ai-comparison",
+    "behavioral-analysis",
+    "agi-benchmark",
+    "immunology-game",
+    "real-time-strategy"
+  ],
+  "licenses": [
+    {
+      "name": "CC-BY-4.0"
+    }
+  ],
+  "resources": [
+    {
+      "path": "benchmark_results.csv",
+      "description": "Pre-computed metrics for all 14 sessions"
+    },
+    {
+      "path": "pathogenika_session_annotations.json",
+      "description": "Pathogenika session metadata and corrections"
+    },
+    {
+      "path": "petroactive_session_annotations.json",
+      "description": "PetroActive session metadata"
+    }
+  ]
+}

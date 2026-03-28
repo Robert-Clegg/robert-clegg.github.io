@@ -1,0 +1,5209 @@
+{
+  "sessionId": "petro-1774628035861",
+  "startTime": 217.59999990463257,
+  "events": [
+    {
+      "type": "ev_phaseChange",
+      "timestamp": 214.89999985694885,
+      "container": "WORLD",
+      "layerWeight": 2.5,
+      "data": {
+        "type": "ev_phaseChange",
+        "timestamp": 214.89999985694885,
+        "sessionId": "pa-1774628035861-4ssqds",
+        "phase": "BRIEFING",
+        "fromPhase": "BRIEFING",
+        "toPhase": "LOADOUT",
+        "phaseDuration": 214.89999985694885
+      }
+    },
+    {
+      "type": "ev_cameraZoom",
+      "timestamp": 733,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 732.8999998569489,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "zoomLevel": 60,
+        "viewMode": "tpp"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 1745.2999999523163,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 1745.2999999523163,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.2604237867395762,
+        "mouseY": -0.6656217345872519,
+        "movX": 60,
+        "movY": -109,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 2252.399999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 2252.399999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.2604237867395762,
+        "mouseY": -0.6217345872518287,
+        "movX": 60,
+        "movY": -132,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 2808.0999999046326,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 2808.0999999046326,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.2604237867395762,
+        "mouseY": -0.6217345872518287,
+        "movX": 60,
+        "movY": -132,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 3317.2000000476837,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 3317.2000000476837,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.14559125085440872,
+        "mouseY": -0.5862068965517242,
+        "movX": 152,
+        "movY": -150,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 3827.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 3827.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.19070403280929593,
+        "mouseY": -0.37513061650992685,
+        "movX": 116,
+        "movY": -261,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 4328.899999856949,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 4328.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1529.3929488290262,
+        "mechZ": 1649.3929488290262,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 4329,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 4329,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "a",
+          "w"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 4329,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 4329,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.18933697881066303,
+        "mouseY": -0.27899686520376177,
+        "movX": 118,
+        "movY": -312,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 4840,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 4840,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1527.5866445561485,
+        "mechZ": 1647.5866445561485,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 4840,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 4840,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "a",
+          "w"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 4840,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 4840,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.18933697881066303,
+        "mouseY": -0.26436781609195403,
+        "movX": 118,
+        "movY": -319,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 5346,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 5346,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1525.8807494465364,
+        "mechZ": 1645.7627494470132,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 5346,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 5346,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 5346,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 5346,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.67053998632946,
+        "mouseY": -0.10344827586206895,
+        "movX": -270,
+        "movY": -404,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 5851.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 5851.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1525.9631273855332,
+        "mechZ": 1643.8545366234748,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 5851.700000047684,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 5851.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "a",
+          "w",
+          "d"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 5851.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 5851.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.6814764183185236,
+        "mouseY": -0.11807732497387669,
+        "movX": -278,
+        "movY": -396,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 6357.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 6357.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1524.590279570028,
+        "mechZ": 1641.8931888077311,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 6357.799999952316,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 6357.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 6357.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 6357.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7088174982911826,
+        "mouseY": -0.18077324973876707,
+        "movX": -300,
+        "movY": -363,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 6863.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 6863.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1524.007270028603,
+        "mechZ": 1639.6041792672597,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 6863.799999952316,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 6863.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "a",
+          "w"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 6863.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 6863.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7142857142857143,
+        "mouseY": -0.24555903866248685,
+        "movX": -305,
+        "movY": -330,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 7369.899999856949,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 7369.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1522.217936319148,
+        "mechZ": 1637.8148455578048,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 7369.899999856949,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 7369.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "a",
+          "w"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 7370,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 7370,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.719753930280246,
+        "mouseY": -0.2622779519331244,
+        "movX": -309,
+        "movY": -321,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_wasdDwell",
+      "timestamp": 7628.599999904633,
+      "container": "KEYBOARD",
+      "layerWeight": 1.5,
+      "data": {
+        "timestamp": 7846.099999904633,
+        "sessionId": "petro-1774628035861",
+        "duration": 3460,
+        "distance": 16,
+        "startX": 1530,
+        "startZ": 1650,
+        "endX": 1521.9,
+        "endZ": 1636.7
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 7875.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 7875.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.721120984278879,
+        "mouseY": -0.26436781609195403,
+        "movX": -310,
+        "movY": -319,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 8381.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 8381.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.721120984278879,
+        "mouseY": -0.26436781609195403,
+        "movX": -310,
+        "movY": -319,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_radarOpen",
+      "timestamp": 8554.099999904633,
+      "container": "HUD",
+      "layerWeight": 1.5,
+      "data": {
+        "timestamp": 8771.599999904633,
+        "sessionId": "petro-1774628035861",
+        "mechX": 1521.9,
+        "mechZ": 1636.7,
+        "timeSinceLastOpen": 0
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 8554.200000047684,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 8771.700000047684,
+        "sessionId": "petro-1774628035861",
+        "fromState": "wasd",
+        "toState": "radar",
+        "trigger": "fKey",
+        "timeInPrevious": 8772
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 8554.599999904633,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 8772,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "FollowMode ON",
+        "t": 8772,
+        "tag": "mode",
+        "mx": 1521.9,
+        "mz": 1636.7
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 8887.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 8887.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.6883116883116883,
+        "mouseY": -0.2622779519331244,
+        "movX": -284,
+        "movY": -321,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 9393.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 9393.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7074504442925496,
+        "mouseY": 0.7324973876698014,
+        "movX": -300,
+        "movY": -845,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 9899.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 9899.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7498291182501708,
+        "mouseY": 0.7032392894461861,
+        "movX": -334,
+        "movY": -829,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 10405.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 10405.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.8154477101845523,
+        "mouseY": 0.6447230929989551,
+        "movX": -386,
+        "movY": -798,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 10911.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 10911.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.8168147641831852,
+        "mouseY": 0.7596656217345873,
+        "movX": -387,
+        "movY": -859,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 11417.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 11417.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -393,
+        "movY": -863,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_radarClose",
+      "timestamp": 11898.799999952316,
+      "container": "HUD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 12116.299999952316,
+        "sessionId": "petro-1774628035861",
+        "dwellTime": 3345,
+        "waypointSet": true
+      }
+    },
+    {
+      "type": "ev_waypointSet",
+      "timestamp": 11898.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 12116.399999856949,
+        "sessionId": "petro-1774628035861",
+        "worldX": 1064.4,
+        "worldZ": 1075.9,
+        "mechX": 1521.9,
+        "mechZ": 1636.7,
+        "distance": 724,
+        "source": "radar"
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 11898.899999856949,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 12116.399999856949,
+        "sessionId": "petro-1774628035861",
+        "fromState": "radar",
+        "toState": "waypoint",
+        "trigger": "radarClick",
+        "timeInPrevious": 3345
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 11899.5,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 12117,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "WaypointSet x=1064 z=1076",
+        "t": 12117,
+        "tag": "set",
+        "mx": 1521.9,
+        "mz": 1636.7
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 11926.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 11926.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1521.857228677658,
+        "mechZ": 1636.5327776708434,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 11926.099999904633,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 11926.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 12429.899999856949,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 12429.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1520.4275817102214,
+        "mechZ": 1634.4749901396688,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 12429.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 12429.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 12935.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 12935.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1518.8285447224293,
+        "mechZ": 1632.5150284655758,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 12935.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 12935.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 13441.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 13441.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1517.2285551339085,
+        "mechZ": 1630.5551985452491,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 13441.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 13441.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 13948,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 13948,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1515.6279305187595,
+        "mechZ": 1628.5945961269636,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 13948,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 13948,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 14453.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 14453.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1514.0285707091095,
+        "mechZ": 1626.6355429888197,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 14453.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 14453.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 14960.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 14960.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1512.4276298794375,
+        "mechZ": 1624.6745532620023,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 14960.099999904633,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 14960.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 15466,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 15466,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1510.8279538652955,
+        "mechZ": 1622.715112805599,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 15466,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 15466,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -392,
+        "movY": -862,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 15971.899999856949,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 15971.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1509.228277851907,
+        "mechZ": 1620.7556723501182,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 15971.899999856949,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 15971.899999856949,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -365,
+        "movY": -797,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 16478,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 16478,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1507.628285634071,
+        "mechZ": 1618.7958445763413,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 16478,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 16478,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -292,
+        "movY": -615,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 16984,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 16984,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1506.0279772117876,
+        "mechZ": 1616.8356294842692,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 16984,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 16984,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -292,
+        "movY": -615,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 17489.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 17489.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1504.4286174020936,
+        "mechZ": 1614.8765763461608,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 17489.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 17489.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -459,
+        "movY": -710,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 17996.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 17996.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1502.8279927761162,
+        "mechZ": 1612.9159739367153,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 17996.099999904633,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 17996.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.82365003417635,
+        "mouseY": 0.768025078369906,
+        "movX": -488,
+        "movY": -707,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_waypointCancel",
+      "timestamp": 18003.299999952316,
+      "container": "KEYBOARD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 18220.799999952316,
+        "sessionId": "petro-1774628035861",
+        "distRemaining": 693,
+        "travelTime": 6105
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 18003.599999904633,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 18221.099999904633,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "WaypointCancelled",
+        "t": 18221.099999904633,
+        "tag": "cancel",
+        "mx": 1502.8,
+        "mz": 1612.9
+      }
+    },
+    {
+      "type": "ev_radarOpen",
+      "timestamp": 18003.599999904633,
+      "container": "HUD",
+      "layerWeight": 1.5,
+      "data": {
+        "timestamp": 18221.099999904633,
+        "sessionId": "petro-1774628035861",
+        "mechX": 1502.8,
+        "mechZ": 1612.9,
+        "timeSinceLastOpen": 0
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 18003.599999904633,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 18221.099999904633,
+        "sessionId": "petro-1774628035861",
+        "fromState": "waypoint",
+        "toState": "radar",
+        "trigger": "fKey",
+        "timeInPrevious": 6105
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 18003.599999904633,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 18221.099999904633,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "FollowMode ON",
+        "t": 18221.099999904633,
+        "tag": "mode",
+        "mx": 1502.8,
+        "mz": 1612.9
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 18502,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 18502,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.8045112781954887,
+        "mouseY": 0.7366771159874608,
+        "movX": -470,
+        "movY": -688,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 19007.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 19007.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7826384142173616,
+        "mouseY": 0.709508881922675,
+        "movX": -453,
+        "movY": -674,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 19514,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 19514,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.8086124401913876,
+        "mouseY": 0.7011494252873562,
+        "movX": -474,
+        "movY": -669,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 20020,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 20020,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7935748462064252,
+        "mouseY": 0.6844305120167189,
+        "movX": -462,
+        "movY": -660,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 20525.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 20525.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7881066302118933,
+        "mouseY": 0.6739811912225706,
+        "movX": -457,
+        "movY": -655,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 21031.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 21031.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7867395762132604,
+        "mouseY": 0.6781609195402298,
+        "movX": -457,
+        "movY": -657,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_radarClose",
+      "timestamp": 21298.5,
+      "container": "HUD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 21516,
+        "sessionId": "petro-1774628035861",
+        "dwellTime": 3295,
+        "waypointSet": true
+      }
+    },
+    {
+      "type": "ev_waypointSet",
+      "timestamp": 21298.5,
+      "container": "MOUSE",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 21516,
+        "sessionId": "petro-1774628035861",
+        "worldX": 1316.4,
+        "worldZ": 1674,
+        "mechX": 1502.8,
+        "mechZ": 1612.9,
+        "distance": 196,
+        "source": "radar"
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 21298.5,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 21516,
+        "sessionId": "petro-1774628035861",
+        "fromState": "radar",
+        "toState": "waypoint",
+        "trigger": "radarClick",
+        "timeInPrevious": 3295
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 21299.099999904633,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 21516.599999904633,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "WaypointSet x=1316 z=1674",
+        "t": 21516.599999904633,
+        "tag": "set",
+        "mx": 1502.8,
+        "mz": 1612.9
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 21537.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 21537.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1501.645073461602,
+        "mechZ": 1612.832784381518,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 21537.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 21537.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -456,
+        "movY": -656,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 22043.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 22043.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1499.2328357713448,
+        "mechZ": 1613.5925511558953,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 22043.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 22043.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -461,
+        "movY": -651,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 22549.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 22549.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1496.8301221084548,
+        "mechZ": 1614.386526761998,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 22549.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 22549.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -465,
+        "movY": -649,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 23056.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 23056.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1494.4269799932629,
+        "mechZ": 1615.1807993697325,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 23056.099999904633,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 23056.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -467,
+        "movY": -635,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 23561.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 23561.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1492.0257370371537,
+        "mechZ": 1615.9744449231935,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 23561.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 23561.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -453,
+        "movY": -609,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 24067.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 24067.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1489.6235445984394,
+        "mechZ": 1616.768404297079,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 24067.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 24067.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -567,
+        "movY": -390,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 24573.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 24573.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1487.2218269008642,
+        "mechZ": 1617.5622067621575,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 24573.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 24573.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -912,
+        "movY": -411,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 25079.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 25079.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1484.8191597210177,
+        "mechZ": 1618.3563230448713,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 25079.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 25079.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -947,
+        "movY": -400,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 25586,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 25586,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1482.4164925400394,
+        "mechZ": 1619.1504393279597,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 25586,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 25586,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -942,
+        "movY": -400,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 26091.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 26091.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1480.0152495847321,
+        "mechZ": 1619.9440848838467,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 26091.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 26091.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -937,
+        "movY": -373,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 26598.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 26598.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1477.611632921481,
+        "mechZ": 1620.7385149845702,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 26598.099999904633,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 26598.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -991,
+        "movY": -356,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 27103.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 27103.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1475.2108647073103,
+        "mechZ": 1621.5320036316393,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 27103.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 27103.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -1001,
+        "movY": -313,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 27609.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 27609.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1472.808672268599,
+        "mechZ": 1622.3259630055368,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 27609.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 27609.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -1001,
+        "movY": -312,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 28116,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 28116,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1470.4055303464843,
+        "mechZ": 1623.1202361974422,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 28116,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 28116,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -952,
+        "movY": -68,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 28621.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 28621.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1468.004287391177,
+        "mechZ": 1623.91388175333,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 28621.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 28621.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -966,
+        "movY": -127,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 29128.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 29128.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1465.600670727926,
+        "mechZ": 1624.7083118540538,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 29128.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 29128.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -980,
+        "movY": -123,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 29634.200000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 29634.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1463.1984782892152,
+        "mechZ": 1625.5022712279497,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 29634.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 29634.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -1032,
+        "movY": -153,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 30139.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 30139.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1460.797710075044,
+        "mechZ": 1626.29575987502,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 30139.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 30139.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -993,
+        "movY": -73,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 30646.099999904633,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 30646.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1458.394568152929,
+        "mechZ": 1627.0900330669263,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 30646.099999904633,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 30646.099999904633,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -939,
+        "movY": -7,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 31152.200000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 31152.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1455.9919009730816,
+        "mechZ": 1627.8841493496411,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 31152.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 31152.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7853725222146275,
+        "mouseY": 0.6781609195402298,
+        "movX": -934,
+        "movY": -9,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_waypointCancel",
+      "timestamp": 31641.599999904633,
+      "container": "KEYBOARD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 31859.099999904633,
+        "sessionId": "petro-1774628035861",
+        "distRemaining": 145,
+        "travelTime": 10343
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 31641.89999985695,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 31859.39999985695,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "WaypointCancelled",
+        "t": 31859.39999985695,
+        "tag": "cancel",
+        "mx": 1453.7,
+        "mz": 1628.6
+      }
+    },
+    {
+      "type": "ev_radarOpen",
+      "timestamp": 31641.89999985695,
+      "container": "HUD",
+      "layerWeight": 1.5,
+      "data": {
+        "timestamp": 31859.39999985695,
+        "sessionId": "petro-1774628035861",
+        "mechX": 1453.7,
+        "mechZ": 1628.6,
+        "timeSinceLastOpen": 0
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 31642,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 31859.5,
+        "sessionId": "petro-1774628035861",
+        "fromState": "waypoint",
+        "toState": "radar",
+        "trigger": "fKey",
+        "timeInPrevious": 10344
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 31642.200000047684,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 31859.700000047684,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "FollowMode ON",
+        "t": 31859.700000047684,
+        "tag": "mode",
+        "mx": 1453.7,
+        "mz": 1628.6
+      }
+    },
+    {
+      "type": "ev_cameraKey",
+      "timestamp": 31668.200000047684,
+      "container": "KEYBOARD",
+      "layerWeight": 0.5,
+      "data": {
+        "timestamp": 31668.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "keys": [
+          "f"
+        ]
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 31668.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 31668.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7881066302118933,
+        "mouseY": 0.6781609195402298,
+        "movX": -933,
+        "movY": -8,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 32175.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 32175.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7006151742993848,
+        "mouseY": 0.7199582027168234,
+        "movX": -864,
+        "movY": -29,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 32681.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 32681.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7443609022556391,
+        "mouseY": 0.690700104493208,
+        "movX": -899,
+        "movY": -14,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 33187.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 33187.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7648667122351333,
+        "mouseY": 0.7074190177638453,
+        "movX": -915,
+        "movY": -23,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 33693.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 33693.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.773069036226931,
+        "mouseY": 0.7053291536050157,
+        "movX": -922,
+        "movY": -22,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 34199.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 34199.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7053291536050157,
+        "movX": -917,
+        "movY": -22,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_radarClose",
+      "timestamp": 34548.89999985695,
+      "container": "HUD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 34766.39999985695,
+        "sessionId": "petro-1774628035861",
+        "dwellTime": 2907,
+        "waypointSet": true
+      }
+    },
+    {
+      "type": "ev_waypointSet",
+      "timestamp": 34549,
+      "container": "MOUSE",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 34766.5,
+        "sessionId": "petro-1774628035861",
+        "worldX": 1433.4,
+        "worldZ": 1507.1,
+        "mechX": 1453.7,
+        "mechZ": 1628.6,
+        "distance": 123,
+        "source": "radar"
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 34549,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 34766.5,
+        "sessionId": "petro-1774628035861",
+        "fromState": "radar",
+        "toState": "waypoint",
+        "trigger": "radarClick",
+        "timeInPrevious": 2907
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 34549.799999952316,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 34767.200000047684,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "WaypointSet x=1433 z=1507",
+        "t": 34767.200000047684,
+        "tag": "set",
+        "mx": 1453.7,
+        "mz": 1628.6
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 34705.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 34705.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1453.0708943675936,
+        "mechZ": 1628.1382728849298,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 34705.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 34705.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -916,
+        "movY": -20,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 35211.59999990463,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 35211.59999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1452.560440659258,
+        "mechZ": 1625.6651270209354,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 35211.59999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 35211.59999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -844,
+        "movY": 52,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 35718,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 35718,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1452.1567711999564,
+        "mechZ": 1623.1660186122751,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 35718,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 35718,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -528,
+        "movY": 115,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 36223.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 36223.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1451.75387605112,
+        "mechZ": 1620.6688110214945,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 36223.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 36223.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -512,
+        "movY": 116,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 36729.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 36729.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1451.350982804304,
+        "mechZ": 1618.1716031238448,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 36729.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 36729.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 37235.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 37235.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1450.9478506489704,
+        "mechZ": 1615.6729143756195,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 37236,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 37236,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 37741.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 37741.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1450.5450370490007,
+        "mechZ": 1613.1762000931076,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 37741.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 37741.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 38247.59999990463,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 38247.59999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1450.1421438103878,
+        "mechZ": 1610.6789921953416,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 38247.59999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 38247.59999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 38753.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 38753.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1449.7390116548984,
+        "mechZ": 1608.1803034459335,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 38753.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 38753.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 39260,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 39260,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1449.3358794994085,
+        "mechZ": 1605.6816146965252,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 39260,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 39260,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 39765.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 39765.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1448.933145538461,
+        "mechZ": 1603.1853940316187,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 39765.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 39765.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 40271.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 40271.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1448.5301726608259,
+        "mechZ": 1600.6876925162464,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 40271.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 40271.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 40777.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 40777.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1448.127120144358,
+        "mechZ": 1598.1894973844453,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 40777.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 40777.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 41283.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 41283.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1447.724147266723,
+        "mechZ": 1595.6917958690735,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 41283.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 41283.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 41790,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 41790,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1447.3211743890877,
+        "mechZ": 1593.1940943537018,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 41790,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 41790,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 42295.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 42295.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1446.918281150285,
+        "mechZ": 1590.6968864547591,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 42295.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 42295.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 42801.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 42801.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1446.515228633818,
+        "mechZ": 1588.198691322958,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 42801.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 42801.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 43307.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 43307.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1446.1123353950145,
+        "mechZ": 1585.7014834240151,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 43307.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 43307.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -493,
+        "movY": 119,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 43813.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 43813.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1445.7093625173798,
+        "mechZ": 1583.2037819086424,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 43813.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 43813.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -441,
+        "movY": 131,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 44319.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 44319.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1445.3063100009124,
+        "mechZ": 1580.7055867768406,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 44319.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 44319.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -441,
+        "movY": 131,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 44825.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 44825.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1444.9033371232777,
+        "mechZ": 1578.2078852614688,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 44825.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 44825.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -441,
+        "movY": 131,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 45331.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 45331.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1444.5005235234978,
+        "mechZ": 1575.7111709801327,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 45331.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 45331.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -637,
+        "movY": 381,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 45837.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 45837.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1444.0973913680077,
+        "mechZ": 1573.2124822307248,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 45837.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 45837.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -637,
+        "movY": 412,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 46344,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 46344,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1443.6942592125183,
+        "mechZ": 1570.7137934813165,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 46344.09999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 46344.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7676008202323992,
+        "mouseY": 0.7032392894461861,
+        "movX": -501,
+        "movY": 399,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 46850.09999990463,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 46850.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1443.2912863348843,
+        "mechZ": 1568.2160919659443,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 46850.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 46850.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.7689678742310322,
+        "mouseY": 0.7053291536050157,
+        "movX": -498,
+        "movY": 400,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 47356.299999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 47356.299999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1442.8881541793946,
+        "mechZ": 1565.717403216537,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 47356.299999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 47356.299999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.6541353383458647,
+        "mouseY": 0.8056426332288401,
+        "movX": -406,
+        "movY": 347,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 47862,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 47862,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1442.4854202186382,
+        "mechZ": 1563.2211825528072,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 47862,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 47862,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.3834586466165414,
+        "mouseY": 0.9958202716823407,
+        "movX": -188,
+        "movY": 248,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 48367.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 48367.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1442.0825269798368,
+        "mechZ": 1560.7239746538648,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 48367.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 48367.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.3834586466165414,
+        "mouseY": 0.9958202716823407,
+        "movX": -188,
+        "movY": 248,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 48873.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 48873.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1441.6795541022022,
+        "mechZ": 1558.2262731384922,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 48873.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 48873.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.27956254272043746,
+        "mouseY": 0.6342737722048066,
+        "movX": -311,
+        "movY": 423,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 49380,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 49380,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1441.2764219467128,
+        "mechZ": 1555.727584389084,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 49380.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 49380.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.27956254272043746,
+        "mouseY": 0.6342737722048066,
+        "movX": -311,
+        "movY": 423,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 49886,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 49886,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1440.8734490690777,
+        "mechZ": 1553.2298828737116,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 49886,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 49886,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.28092959671907036,
+        "mouseY": 0.5256008359456635,
+        "movX": -312,
+        "movY": 479,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 50392,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 50392,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1440.4704761914427,
+        "mechZ": 1550.7321813583396,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 50392,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 50392,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.27546138072453863,
+        "mouseY": 0.4587251828631139,
+        "movX": -308,
+        "movY": 515,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 50898,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 50898,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1440.067503313808,
+        "mechZ": 1548.2344798429679,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 50898,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 50898,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": -0.0034176349965823194,
+        "mouseY": 0.7074190177638453,
+        "movX": -89,
+        "movY": 384,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 51404,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 51404,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1439.6645304361734,
+        "mechZ": 1545.736778327596,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 51404,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 51404,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.797676008202324,
+        "mouseY": 0.9143155694879833,
+        "movX": 556,
+        "movY": 275,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 51909.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 51909.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1439.261637197562,
+        "mechZ": 1543.2395704298299,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 51909.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 51909.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9561128526645768,
+        "movX": 630,
+        "movY": 253,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 52415.700000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 52415.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1438.8588235975938,
+        "mechZ": 1540.7428561473173,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 52415.700000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 52415.700000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8933697881066303,
+        "mouseY": 0.9540229885057472,
+        "movX": 632,
+        "movY": 254,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 52921.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 52921.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1438.4557710811268,
+        "mechZ": 1538.2446610155162,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 52921.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 52921.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8920027341079972,
+        "mouseY": 0.9519331243469175,
+        "movX": 631,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 53427.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 53427.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1438.0527982034932,
+        "mechZ": 1535.7469595001444,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 53427.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 53427.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 53934.09999990463,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 53934.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1437.6496660480043,
+        "mechZ": 1533.248270750737,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 53934.09999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 53934.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 54440,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 54440,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1437.2467728093932,
+        "mechZ": 1530.7510628529715,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 54440,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 54440,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 54945.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 54945.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1436.843879570591,
+        "mechZ": 1528.2538549540288,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 54945.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 54945.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 55451.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 55451.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1436.4409066929568,
+        "mechZ": 1525.7561534386568,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 55451.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 55451.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 55958.09999990463,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 55958.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1436.0377745374685,
+        "mechZ": 1523.2574646892488,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 55958.09999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 55958.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 56464.200000047684,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 56464.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1435.6347220210027,
+        "mechZ": 1520.7592695574472,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 56464.200000047684,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 56464.200000047684,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 56969.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 56969.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1435.2319880600578,
+        "mechZ": 1518.2630488925404,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 56969.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 56969.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 57475.89999985695,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 57475.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1434.8289355435923,
+        "mechZ": 1515.7648537607383,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 57475.89999985695,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 57475.89999985695,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 57982.09999990463,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 57982.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1434.4259626659598,
+        "mechZ": 1513.267152245367,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 57982.09999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 57982.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_cameraPan",
+      "timestamp": 58487.799999952316,
+      "container": "VIEW",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 58487.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "mechX": 1434.0231490659926,
+        "mechZ": 1510.770437962854,
+        "speed": 5,
+        "burst": false,
+        "jump": false
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 58487.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 58487.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_waypointArrive",
+      "timestamp": 58853,
+      "container": "WORLD",
+      "layerWeight": 1.5,
+      "data": {
+        "timestamp": 59070.5,
+        "sessionId": "petro-1774628035861",
+        "worldX": 1433.4,
+        "worldZ": 1507.1,
+        "travelTime": 24304,
+        "travelDist": 121
+      }
+    },
+    {
+      "type": "ev_controlState",
+      "timestamp": 58853,
+      "container": "KEYBOARD",
+      "layerWeight": 2,
+      "data": {
+        "timestamp": 59070.5,
+        "sessionId": "petro-1774628035861",
+        "fromState": "waypoint",
+        "toState": "wasd",
+        "trigger": "arrival",
+        "timeInPrevious": 24304
+      }
+    },
+    {
+      "type": "ev_waypoint",
+      "timestamp": 58853.5,
+      "container": "WORLD",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 59070.799999952316,
+        "sessionId": "petro-1774628035861",
+        "event": "Waypoint3D",
+        "msg": "WaypointArrived",
+        "t": 59070.799999952316,
+        "tag": "arrived",
+        "mx": 1433.7,
+        "mz": 1509
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 58994,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 58994,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 59500,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 59500,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8906356801093642,
+        "mouseY": 0.9519331243469175,
+        "movX": 630,
+        "movY": 256,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 60006,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 60006,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8578263841421736,
+        "mouseY": 0.32915360501567403,
+        "movX": 604,
+        "movY": 583,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 60512.09999990463,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 60512.09999990463,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8578263841421736,
+        "mouseY": 0.2810867293625914,
+        "movX": 603,
+        "movY": 609,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    },
+    {
+      "type": "ev_terrainClick",
+      "timestamp": 61017.799999952316,
+      "container": "MOUSE",
+      "layerWeight": 1,
+      "data": {
+        "timestamp": 61017.799999952316,
+        "sessionId": "petro-1774628035861",
+        "phase": "LOADOUT",
+        "lmb": false,
+        "rmb": false,
+        "mouseX": 0.8578263841421736,
+        "mouseY": 0.2810867293625914,
+        "movX": 603,
+        "movY": 609,
+        "gridCell": [
+          0,
+          0
+        ],
+        "worldPosition": [
+          0,
+          0,
+          0
+        ],
+        "tool": "geophone"
+      }
+    }
+  ],
+  "containerSnapshots": {
+    "MOUSE": {
+      "container": "MOUSE",
+      "color": "#44ff44",
+      "eventCount": 121,
+      "lastEventTime": 61017.799999952316,
+      "recentRate": 2
+    },
+    "KEYBOARD": {
+      "container": "KEYBOARD",
+      "color": "#ff4444",
+      "eventCount": 18,
+      "lastEventTime": 58853,
+      "recentRate": 0.1
+    },
+    "HUD": {
+      "container": "HUD",
+      "color": "#ffaa44",
+      "eventCount": 6,
+      "lastEventTime": 34548.89999985695,
+      "recentRate": 0.2
+    },
+    "WORLD": {
+      "container": "WORLD",
+      "color": "#00ddff",
+      "eventCount": 11,
+      "lastEventTime": 58853.5,
+      "recentRate": 0.2
+    },
+    "VIEW": {
+      "container": "VIEW",
+      "color": "#ff44ff",
+      "eventCount": 89,
+      "lastEventTime": 58487.799999952316,
+      "recentRate": 2
+    },
+    "AUDIO": {
+      "container": "AUDIO",
+      "color": "#ffff44",
+      "eventCount": 0,
+      "lastEventTime": 0,
+      "recentRate": 0
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "_description": "Session annotations for PetroActive telemetry files. Raw JSON files preserved as-is.",
+  "_generated": "2026-03-27",
+  "_generator": "Claude Opus 4.6",
+  "_rules": {
+    "game": "PetroActive — Three.js mech exploration game. Single player. Waypoint system via radar HUD.",
+    "export": "Events via eventBus.emit() -> TelemetryCapture wildcard -> JSON. Export: SAVE DATA button, Shift+backtick, or auto-save on unload."
+  },
+  "sessions": {
+    "petro_telemetry_petro-1774623147010.json": {
+      "wpVersion": "v13",
+      "date": "2026-03-27",
+      "duration": "43s",
+      "events": 186,
+      "radarEvents": {
+        "set": 5,
+        "arrived": 0,
+        "cancelled": 5
+      },
+      "notes": "First radar telemetry test. All 5 waypoints cancelled — exploratory testing of the feature. Rapid set/cancel cycles (1-4s between). Mech barely moved from center."
+    },
+    "petro_telemetry_petro-1774624430825.json": {
+      "wpVersion": "v15",
+      "date": "2026-03-27",
+      "duration": "82s",
+      "events": 292,
+      "radarEvents": {
+        "set": 4,
+        "arrived": 0,
+        "cancelled": 4
+      },
+      "notes": "Radar pointer orientation fix test. Confirmed mech moves TOWARD target (dot product positive). All 4 cancelled — distances 319-939m, travel too slow to wait."
+    },
+    "petro_telemetry_petro-1774625153307.json": {
+      "wpVersion": "v15+",
+      "date": "2026-03-27",
+      "duration": "129s",
+      "events": 20,
+      "radarEvents": {
+        "set": 0,
+        "arrived": 0,
+        "cancelled": 0
+      },
+      "notes": "Empty session — page refreshed for new version, no gameplay. Only phase change and terrain clicks."
+    },
+    "petro_telemetry_petro-1774628035861.json": {
+      "wpVersion": "v16",
+      "date": "2026-03-27",
+      "duration": "61s",
+      "events": 245,
+      "radarEvents": {
+        "set": 3,
+        "arrived": 1,
+        "cancelled": 2
+      },
+      "notes": "First successful waypoint arrival. Player calibrated from 724m -> 196m -> 123m targets. Third waypoint arrived (123m, 24.3s travel). Radar pointer fix confirmed working."
+    }
+  }
+}

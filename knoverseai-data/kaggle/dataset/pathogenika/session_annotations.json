@@ -1,0 +1,119 @@
+{
+  "_description": "Session annotations for Pathogenika telemetry files. Raw JSON files are preserved as-is. This file provides corrected metadata for analysis.",
+  "_generated": "2026-03-27",
+  "_generator": "Claude Opus 4.6",
+  "_rules": {
+    "playerTypeStatus": {
+      "absent": "No playerType field in events (pre-implementation)",
+      "missing": "playerType field added to class but not written to JSON export",
+      "partial-polluted": "playerType present but some AI events incorrectly tagged as human",
+      "clean": "All events correctly attributed to human or ai"
+    },
+    "teamMapping": {
+      "Team 1": "Pathogen (virus, bacteria — Replicate, Emit abilities, dock to capture nodes)",
+      "Team 2": "Immune (neutrophils, NK cells, T cells, macrophages — melee kills, recapture nodes by killing infected cells)"
+    }
+  },
+  "sessions": {
+    "behavioral_telemetry_2026-03-24_05-15-01pm.json": {
+      "file": "behavioral_telemetry_2026-03-24_05-15-01pm.json",
+      "aiVer": "pre-AI",
+      "humanTeam": 1,
+      "humanTeamName": "Pathogen",
+      "aiTeam": null,
+      "aiTeamName": null,
+      "playerTypeStatus": "absent",
+      "notes": "Single-player baseline. No AI opponent. No playerType field."
+    },
+    "behavioral_telemetry_2026-03-24_06-20-37pm.json": {
+      "file": "behavioral_telemetry_2026-03-24_06-20-37pm.json",
+      "aiVer": "pre-AI",
+      "humanTeam": 2,
+      "humanTeamName": "Immune",
+      "aiTeam": null,
+      "aiTeamName": null,
+      "playerTypeStatus": "absent",
+      "notes": "Single-player baseline. No AI opponent. No playerType field."
+    },
+    "behavioral_telemetry_2026-03-27_02-50-03pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_02-50-03pm.json",
+      "aiVer": "v1.0",
+      "humanTeam": 1,
+      "humanTeamName": "Pathogen",
+      "aiTeam": 2,
+      "aiTeamName": "Immune",
+      "playerTypeStatus": "missing",
+      "notes": "First AI session. playerType field not yet implemented. 278 AIDecisionEvents exist but untagged. All events appear as untagged."
+    },
+    "behavioral_telemetry_2026-03-27_03-09-28pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_03-09-28pm.json",
+      "aiVer": "v1.0+",
+      "humanTeam": 1,
+      "humanTeamName": "Pathogen",
+      "aiTeam": 2,
+      "aiTeamName": "Immune",
+      "playerTypeStatus": "partial-polluted",
+      "notes": "playerType field present. 96 AbilityEvents with triggerMethod=AIDecision incorrectly tagged playerType=human. AI active 1-49s then silent (43% of match). AI waypoint spam: 90x same target."
+    },
+    "behavioral_telemetry_2026-03-27_03-18-08pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_03-18-08pm.json",
+      "aiVer": "v1.0+",
+      "humanTeam": 2,
+      "humanTeamName": "Immune",
+      "aiTeam": 1,
+      "aiTeamName": "Pathogen",
+      "playerTypeStatus": "partial-polluted",
+      "notes": "playerType present. 60 AbilityEvents with triggerMethod=AIDecision incorrectly tagged playerType=human. AI active 1-31s then silent (12% of match). Human 45 kills."
+    },
+    "behavioral_telemetry_2026-03-27_04-04-41pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_04-04-41pm.json",
+      "aiVer": "v2.0",
+      "humanTeam": 1,
+      "humanTeamName": "Pathogen",
+      "aiTeam": 2,
+      "aiTeamName": "Immune",
+      "playerTypeStatus": "partial-polluted",
+      "notes": "AI active 100%, 14 switches, 5 unit types. 33 AbilityEvents with triggerMethod=AIDecision tagged human. AI had 0 actual ability uses (Immune team cant Emit/Replicate)."
+    },
+    "behavioral_telemetry_2026-03-27_04-32-19pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_04-32-19pm.json",
+      "aiVer": "v2.1",
+      "humanTeam": 2,
+      "humanTeamName": "Immune",
+      "aiTeam": 1,
+      "aiTeamName": "Pathogen",
+      "playerTypeStatus": "partial-polluted",
+      "notes": "AI Emit 19x + Replicate 16x confirmed firing but tagged playerType=human (35 polluted events). Fixed in v2.1.1. AI WaypointOutcomes present (21). AI lost all nodes 4->0."
+    },
+    "behavioral_telemetry_2026-03-27_05-00-13pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_05-00-13pm.json",
+      "aiVer": "v2.1.1",
+      "humanTeam": 1,
+      "humanTeamName": "Pathogen",
+      "aiTeam": 2,
+      "aiTeamName": "Immune",
+      "playerTypeStatus": "clean",
+      "notes": "First fully clean playerType session. 161 combat decisions. AI lost nodes 4->1. Human won 9-6."
+    },
+    "behavioral_telemetry_2026-03-27_05-19-42pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_05-19-42pm.json",
+      "aiVer": "v2.2",
+      "humanTeam": 1,
+      "humanTeamName": "Pathogen",
+      "aiTeam": 2,
+      "aiTeamName": "Immune",
+      "playerTypeStatus": "clean",
+      "notes": "Node defense added (15 DefendNode decisions). Human captured AI base at 85s. Human won 6-2. SwitchEvent playerType still defaults to human for AI switches."
+    },
+    "behavioral_telemetry_2026-03-27_05-36-20pm.json": {
+      "file": "behavioral_telemetry_2026-03-27_05-36-20pm.json",
+      "aiVer": "v2.4",
+      "humanTeam": 2,
+      "humanTeamName": "Immune",
+      "aiTeam": 1,
+      "aiTeamName": "Pathogen",
+      "playerTypeStatus": "clean",
+      "notes": "Balanced defense. AI Emit 12x + Replicate 13x with clean playerType=ai. 23 WP outcomes. Human won 9-5. SwitchEvent still defaults human for AI."
+    }
+  }
+}

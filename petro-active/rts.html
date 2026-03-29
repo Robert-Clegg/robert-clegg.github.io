@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1366" />
+  <title>Petro Active: RTS — Node Control</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a1a; }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    /* Loading screen */
+    #loading {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0a0a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #eee;
+      font-family: 'Courier New', monospace;
+      z-index: 100;
+      transition: opacity 0.5s;
+    }
+
+    #loading h1 {
+      font-size: 28px;
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+      color: #ff8844;
+    }
+
+    #loading p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 2px;
+    }
+  </style>
+  <script type="module" crossorigin src="/petro-active/assets/rts-2jWul5wa.js"></script>
+  <link rel="modulepreload" crossorigin href="/petro-active/assets/HeightmapSampler-vHqpF2JF.js">
+  <link rel="modulepreload" crossorigin href="/petro-active/assets/EventBus-D4ZsXXk0.js">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Loading screen -->
+    <div id="loading">
+      <h1>PETRO ACTIVE — RTS</h1>
+      <p>Two-Phase Node Control — Loading terrain...</p>
+    </div>
+  </div>
+
+</body>
+</html>

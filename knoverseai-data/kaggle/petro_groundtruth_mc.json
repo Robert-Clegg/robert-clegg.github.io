@@ -1,0 +1,72 @@
+{
+  "session": "petro_session_001",
+  "player_team": "Blue",
+  "ai_team": "Red",
+  "ai_state": "Baseline (naive, no prior learning)",
+  "session_version": "v161",
+  "annotator": "Robert Clegg (player)",
+  "annotation_date": "2026-04-11",
+
+  "overall_strategy_summary": "Aggressive forward expansion. Blue player treated the game as a capture-speed race against passive AI. No defensive posture adopted at any point. Center was a waypoint, not a position to hold. Force multiplication through capture-spawn mechanic was the primary strategic lever.",
+
+  "micro_contexts": [
+    {
+      "id": "mc1_center_deployment",
+      "zone": "center",
+      "node_id": "C",
+      "position": [1559.4, 1548.8],
+      "time_window_description": "Early session — first 2-3 minutes. Center captured quickly with no resistance.",
+      "question": "After center is captured/contested, does the player distribute mechs around center for defense, concentrate all forces, or exploit the respawn-at-node advantage?",
+      "ground_truth": "Neither distributed nor concentrated for defense. Center was captured unopposed and immediately treated as a staging point, not a defensive position. Player pivoted to expansion within seconds of capture. The cognitive signal is that center was evaluated as a waypoint — capture, spawn reinforcements, advance. No defensive reasoning was applied because no threat was observed.",
+      "dominant_cognitive_band": "Command (8-30s). Quick capture decision, immediate pivot to next objective. The absence of defensive setup reveals the player read the AI's passivity and adjusted tempo accordingly — no need to consolidate what isn't threatened.",
+      "key_behavioral_signals": [
+        "No mechs left at center as garrison after capture",
+        "Waypoints set forward (toward Node 2) during or immediately after center capture",
+        "Short dwell time at center node — capture and move, not capture and hold",
+        "No radar checks backward after leaving center"
+      ],
+      "what_models_will_likely_predict_wrong": "Most models will predict defensive distribution or concentration at center because generic RTS doctrine says 'secure your gains.' The ground truth is that against a passive opponent, the optimal play is continuous forward pressure — and the player recognized this in real time."
+    },
+    {
+      "id": "mc2_mountain_priority",
+      "zone": "mountain_node_east",
+      "node_id": "2",
+      "position": [1847.4, 2063.5],
+      "time_window_description": "Mid-session. After center capture, player pushed south toward Node 2 while setting waypoints for NPC mechs to rendezvous.",
+      "question": "Will the player prioritize capturing Node 2, Node 4, or neither? Which mountain node will they target first and why?",
+      "ground_truth": "Player went center first, then pushed toward Node 2 (eastern mountain, deeper into Red territory). Critically, the player set waypoints for NPC mechs to converge on Node 2 simultaneously — the tmech would arrive first (fastest unit), but allied mechs were already en route. This is a force multiplication play: arrive first at Node 2, capture it (spawning new mechs there), and be reinforced by the waypointed allies arriving shortly after. Node 4 was deliberately deprioritized — the player recognized that even if Red held Node 4, the fighting there would keep forces distributed, and the respawn mechanic meant recapture was always available.",
+      "dominant_cognitive_band": "Sustained (30s+). This decision involves parallel strategic reasoning: simultaneous forward push with tmech + waypoint coordination of NPC allies + deliberate acceptance of Node 4 as expendable. The layered reasoning (force multiplication through capture-spawn + rendezvous timing + acceptable loss calculus) is L3-L4 strategic cognition.",
+      "key_behavioral_signals": [
+        "Waypoint events sent toward Node 2 area during or shortly after center capture",
+        "tmech movement trajectory: center → south/southeast toward Node 2",
+        "No waypoints or movement toward Node 4 in early-to-mid session",
+        "If Node 4 was contested later, player did not redirect main force — accepted distributed fighting"
+      ],
+      "what_models_will_likely_predict_wrong": "Models may predict Node 4 first because it's closer to Blue's territory (safer choice). The ground truth reveals the player chose the aggressive deep option (Node 2) because the waypoint-rendezvous strategy made it viable — a prediction that requires understanding the capture-spawn mechanic, not just spatial proximity."
+    },
+    {
+      "id": "mc3_rear_awareness",
+      "zone": "blue_territory",
+      "node_id": "5",
+      "position": [2081.5, 825.5],
+      "time_window_description": "Mid-to-late session. After securing center and pushing toward Node 2.",
+      "question": "Once the player pushes forward toward contested space, will they monitor rear nodes via radar checks, defend with dedicated mechs, or ignore rear entirely?",
+      "ground_truth": "Ignored rear nodes entirely. Full forward push with no radar checks backward and no mechs dedicated to rear defense. The player assessed that Red was overwhelmed and had no capacity to threaten Blue's rear. This was correct — the naive AI stayed near its own territory and never mounted a flanking attack. The player only returned attention to rear territory (Node 5 area, Node 4) after the forward objectives (center, Node 2) were secured, and only then to mop up undefended nodes rather than to defend against threat.",
+      "dominant_cognitive_band": "Assess (2-8s) for the initial decision to ignore rear, then Search (<0.6s) for the later mop-up phase. The key cognitive signal is what DIDN'T happen: no radar toggles to check behind, no tab-switches to rear-positioned mechs, no waypoints sent backward. The absence of defensive behavior is itself a high-confidence behavioral signal — the player's mental model of the opponent was accurate enough that rear monitoring was correctly judged as wasted attention.",
+      "key_behavioral_signals": [
+        "Zero or near-zero radar toggles directed at Blue's rear territory during forward push",
+        "No tab-switches to mechs positioned near Node 5 or Blue base during mid-session",
+        "No defensive waypoints sent to rear positions",
+        "Late-session movement to uncontested rear nodes = mop-up, not defense",
+        "The ABSENCE of rear-checking events is the signal — models must recognize that missing telemetry events carry diagnostic meaning"
+      ],
+      "what_models_will_likely_predict_wrong": "Models trained on competitive RTS analysis will predict radar checks and rear defense because that's doctrinally correct. The ground truth is that situational awareness includes knowing when NOT to check — the player's read of AI passivity eliminated the need for rear monitoring. A model that predicts rear awareness is applying generic heuristics rather than reasoning from the specific opponent profile visible in the early telemetry."
+    }
+  ],
+
+  "meta_annotation": {
+    "overall_cognitive_profile": "Aggressive expansionist with strong opponent modeling. Player correctly read AI passivity from early telemetry (no enemy contacts at center) and shifted from cautious advance to full-speed territorial capture. The strategic sophistication is in the waypoint-rendezvous play at Node 2 and the deliberate acceptance of Node 4 as expendable — both require understanding game mechanics at a systems level, not just spatial reasoning.",
+    "what_makes_this_session_diagnostic": "The naive AI creates a specific behavioral signature in the human player: the absence of defensive behavior. A model predicting from early telemetry must recognize that 'no enemy contact at center' means 'aggressive forward push incoming' — but most models will default to balanced play predictions because they're applying generic RTS frameworks rather than reasoning from the specific telemetry signal.",
+    "the_perimeter_trap": "The terrain has passable low ground around the mountain perimeter. No experienced player uses it because the nodes are on the mountains, not around them. Models that predict perimeter flanking are reasoning from generic tactical doctrine (flanking = good) rather than from this terrain's specific topology. This is a diagnostic tell that separates terrain-aware reasoning from template application."
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "terrain": "PetroActive 3D RTS",
+  "world_size": [3060, 3060],
+  "heightmap": "513x513 RG16 PNG, decode: (R*256+G)/65535.0",
+  "description": "Asymmetric mountain terrain with central valley. Two bases connected by ridgelines with passes. Mountains create LOS barriers and elevation advantages.",
+
+  "nodes": {
+    "blue_base": {
+      "id": "B2",
+      "position": [2360.5, 825.5],
+      "zone_type": "recovery",
+      "description": "Blue team spawn point. Safe territory, no contest expected in early game.",
+      "strategic_role": "Fallback, respawn origin, force regeneration"
+    },
+    "blue_near": {
+      "id": "5",
+      "position": [2081.5, 825.5],
+      "zone_type": "recovery",
+      "description": "Adjacent to Blue base. Easy early capture, minimal strategic decision required.",
+      "strategic_role": "Forward spawn point, buffer zone"
+    },
+    "mountain_node_west": {
+      "id": "4",
+      "position": [920.4, 1034.2],
+      "zone_type": "commitment",
+      "description": "Elevated position on western mountain mass. Requires committing forces away from center corridor. Holding it extends defensive perimeter but overextends supply lines.",
+      "strategic_role": "Optional territorial control. Losing it temporarily is strategically acceptable — fighting there distributes forces and respawn mechanics allow recapture."
+    },
+    "center": {
+      "id": "C",
+      "position": [1559.4, 1548.8],
+      "zone_type": "convergence",
+      "description": "Central valley between mountain masses. Both teams' natural advance routes converge here. First major contact point. Capture spawns reinforcements at the geographic midpoint.",
+      "strategic_role": "Force multiplication hub. Capturing center creates a forward spawn that accelerates territorial expansion in both directions."
+    },
+    "mountain_node_east": {
+      "id": "2",
+      "position": [1847.4, 2063.5],
+      "zone_type": "commitment",
+      "description": "Elevated position on eastern mountain mass, deep in Red territory. Capturing requires pushing past center into enemy space.",
+      "strategic_role": "Forward staging point. Rendezvous target — send NPC mechs via waypoint while tmech pushes ahead. Arriving first means protection from converging allies, and capture spawns additional mechs at this forward position."
+    },
+    "red_near": {
+      "id": "1",
+      "position": [1109.4, 2160.8],
+      "zone_type": "information",
+      "description": "Adjacent to Red base. Deep enemy territory. Capturing signals total map control.",
+      "strategic_role": "Late-game objective. Only targeted once center and mountain nodes are secured."
+    },
+    "red_base": {
+      "id": "B",
+      "position": [740.4, 2689.4],
+      "zone_type": "recovery",
+      "description": "Red team spawn point. Deepest enemy territory.",
+      "strategic_role": "Final objective or ignored — game often decided before reaching this point."
+    }
+  },
+
+  "zone_types": {
+    "convergence": {
+      "definition": "Geographic point where both teams' natural advance routes meet. First major decision point.",
+      "cognitive_demand": "Assess band (2-8s). Quick evaluation: contest, capture, or bypass. Against passive AI, becomes Command band — capture and immediately pivot to next objective.",
+      "key_mechanic": "Capture spawns reinforcements at geographic midpoint, enabling force projection in all directions."
+    },
+    "commitment": {
+      "definition": "Position that requires dedicating forces away from the main axis of advance. Holding costs attention and units.",
+      "cognitive_demand": "Sustained band (30s+) for the strategic calculus of whether to commit. L3-L4 reasoning: is holding this node worth the force distribution? Can I accept temporary loss because respawn mechanics favor recapture?",
+      "key_mechanic": "Elevation provides LOS advantage. Capture spawns mechs at an elevated position. But committing forces here means fewer at center or on the main push."
+    },
+    "recovery": {
+      "definition": "Safe territory near own base. Low cognitive demand, minimal decision-making.",
+      "cognitive_demand": "Search/Glance band (<1s). No real decision — capture and move on.",
+      "key_mechanic": "Respawn point. Force regeneration. Buffer against deep enemy penetration."
+    },
+    "information": {
+      "definition": "Deep enemy territory where presence reveals opponent's base-level behavior and defensive posture.",
+      "cognitive_demand": "Orient band (1-2s). Gathering intelligence about enemy state rather than making complex tactical decisions.",
+      "key_mechanic": "Reaching this zone signals overwhelming advantage. The decision to push here vs. consolidate is the diagnostic signal."
+    }
+  },
+
+  "terrain_features": {
+    "central_valley": {
+      "description": "Low-ground corridor connecting Blue and Red territories through center node. Natural advance route for both teams.",
+      "cognitive_role": "Path of least resistance. Models may predict players use this exclusively, missing the mountain flanking options."
+    },
+    "western_ridge": {
+      "description": "Mountain mass on western side of map. Node 4 sits on this elevation. Ridge creates LOS barrier between western approach and central valley.",
+      "cognitive_role": "Commitment zone. Going here means not going center. The decision to split forces reveals L3+ strategic reasoning."
+    },
+    "eastern_ridge": {
+      "description": "Mountain mass on eastern side. Node 2 sits here, deeper into Red territory than Node 4 is from Blue.",
+      "cognitive_role": "Forward projection zone. Sending forces here while pushing center reveals parallel strategic thinking — waypoint NPCs to rendezvous while tmech advances."
+    },
+    "perimeter_lowground": {
+      "description": "Low terrain around the outer edges of the mountain masses. Passable but exposed.",
+      "cognitive_role": "DIAGNOSTIC TRAP: Models may predict flanking via perimeter. In practice, the terrain doesn't reward this — the nodes are on the mountains, not around them. Predicting perimeter flanking reveals the model is reasoning from generic RTS heuristics rather than from this specific topology."
+    }
+  },
+
+  "game_mechanics": {
+    "capture": "Only tmech (fastest, lightest unit) can capture nodes. Park near dome for 10s.",
+    "spawn": "Capturing a node spawns additional squad mechs AT that node. They respawn there when destroyed.",
+    "respawn": "Destroyed mechs respawn at their team's nearest captured node after 5 seconds.",
+    "waypoints": "Player can set waypoints via radar overlay (M key). RMB assigns waypoint, round-robin NPC assignment.",
+    "tab_switch": "Player can instantly switch between mechs after death or at any time.",
+    "radar": "M key toggles radar overlay showing all unit positions across terrain.",
+    "los": "Line of sight constrained by terrain heightmap. Mountains block visibility.",
+    "asymmetry": "Red is fast/fragile/short-range (rush playstyle). Blue is slow/durable/long-range (hold and siege)."
+  }
+}

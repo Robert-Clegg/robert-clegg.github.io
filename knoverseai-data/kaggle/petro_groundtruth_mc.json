@@ -7,6 +7,27 @@
   "annotator": "Robert Clegg (player)",
   "annotation_date": "2026-04-11",
 
+  "ai_baseline_failures": {
+    "description": "The baseline AI's specific failures are what made the player's aggressive strategy possible. These failures are visible in the early telemetry and should inform any model's predictions.",
+    "deathball": "All Red mechs moved as one blob. Spread=50 at start, briefly 343 at 1:03, collapsed back to 37 by end. Zero force distribution.",
+    "zero_waypoints": "AI issued zero waypoints the entire game. No strategic deployment, no directed movement.",
+    "fsm_distribution": "72% capturing, 16% retaliate, 10% hunting, 2% wandering. The AI spent most of its time trying to capture nodes in a blob rather than fighting or scouting.",
+    "no_territory_response": "Blue captured Red's base and Red didn't react for 75 seconds. No defense trigger, no redirect.",
+    "no_scouting": "No scout behavior. No patrol. No information gathering. The AI never knew what the player was doing until the player arrived.",
+    "predictable_pathing": "Red mechs plod forward in straight lines toward objectives. No flanking, no evasion, no terrain exploitation.",
+    "what_early_telemetry_reveals": "In the first 6 minutes, a model should see: zero Red contacts at center, no Red movement toward center, Red spread values showing blob movement near Red base. These signals should drive the prediction that the human will push aggressively forward with no rear defense — because the AI is not threatening anything."
+  },
+
+  "learning_trajectory": {
+    "description": "This session is Session 001 of a 5-session learning arc. The AI improved between sessions based on CC analyzing raw telemetry. The player also switched teams. This context matters because it shows what the same terrain and mechanics produce under different conditions.",
+    "session_001": "Human=Blue vs naive Red. Blue won 6-1. Human used zero personal combat — pure deployment strategy.",
+    "session_002": "Human=Blue vs improved Red (CC added split deployment, LOS-based territory awareness, scouting, anti-deathball). The AI learned from Session 001 telemetry.",
+    "session_003": "Human=Red vs improved Blue. Player switched to the fast/fragile team against a Blue AI that had learned from watching a human play Blue. Player now facing their own strategy reflected back.",
+    "session_004": "Human=Red vs further-improved Blue. AI adapted to Red playstyle.",
+    "session_005": "Both trained AIs against each other. No human player. Both incorporating lessons from human play.",
+    "relevance_to_predictions": "Session 001 is the baseline. The AI's failures in this session are KNOWN and DOCUMENTED because they were diagnosed and fixed for Session 002. The fixes themselves (split deployment, scouting, anti-deathball, territory awareness) are a catalog of what the baseline AI was NOT doing — and therefore what the player was exploiting."
+  },
+
   "overall_strategy_summary": "Aggressive forward expansion. Blue player treated the game as a capture-speed race against passive AI. No defensive posture adopted at any point. Center was a waypoint, not a position to hold. Force multiplication through capture-spawn mechanic was the primary strategic lever.",
 
   "micro_contexts": [

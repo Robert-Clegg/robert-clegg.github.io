@@ -1,0 +1,12 @@
+{
+  "metric": "rougeL_fmeasure",
+  "target": 0.1648,
+  "tolerance": 0.025,
+  "observed_mean": 0.1682701718250257,
+  "observed_median": 0.11596638655462185,
+  "observed_std": 0.2088043024961788,
+  "n": 300,
+  "delta_from_target": 0.0034701718250257085,
+  "gate_pass": true,
+  "source": "baseline_zs_gpt41 / openai/gpt-4.1 / ZS-ETH prompt"
+}

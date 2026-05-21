@@ -1,0 +1,12 @@
+{
+  "total_samples": 300,
+  "by_bucket": {
+    "early": 100,
+    "middle": 100,
+    "late": 100
+  },
+  "unique_dialogues": 202,
+  "seed": 20260521,
+  "source_csv": "C:\\Users\\rcleg\\simstudent-audit\\sim-student-eval\\data\\annotated\\eedi\\test_gpt-4.1.csv",
+  "source_csv_md5": "dc1801dadeab9013d4b0c793b2089f78"
+}

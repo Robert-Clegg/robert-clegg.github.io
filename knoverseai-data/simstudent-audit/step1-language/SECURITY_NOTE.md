@@ -12,6 +12,6 @@
 Until step 1 is done, anyone who saw the repo can spend on the OpenRouter account.
 
 ## Compromised key (for your reference when revoking)
-Redacted from this published copy. The full key is in `simstudent-audit/SECURITY_NOTE.md` on the local audit machine (`C:\Users\rcleg\simstudent-audit\SECURITY_NOTE.md`). Key prefix: `sk-or-v1-bad27...`.
+Full key in `simstudent-audit/.env` (gitignored). Key prefix: `sk-or-v1-bad27f32...`
 
 Look in the OpenRouter dashboard (https://openrouter.ai/settings/keys) for a key whose first eight characters after `sk-or-v1-` are `bad27f32` and revoke it.

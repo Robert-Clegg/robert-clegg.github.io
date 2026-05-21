@@ -1,0 +1,855 @@
+The Effects of Modern Math Computer Games on Learners' Math Achievement and Math Course Motivation in a Public High School Setting
+Research Brief
+Mansureh Kebritchi, Ph.D., Atsusi Hirumi, Ph.D. and Haiyan Bai, Ph.D.
+The contents of this brief are based on dissertation research completed by Mansureh Kebritchi, Spring 2008, in partial fulfillment of requirements for the degree of Doctor of Philosophy in Education with an Instructional Technology Specialization from the College of Education at the University of Central Florida (UCF).
+Context
+ Educational computer games are reemerging as an important outgrowth of the commercial video game industry. Increasing number of educators in K-12, colleges, and universities, as well as the military, medicine and hospitality are experimenting with the use of games to enhance learning.
+ Video games can capture and sustain a player's attention for long periods of time, inducing what some have termed, "flow state."
+ Games are also thought to be effective tools for teaching complex ideas because they (a) use action instead of explanation, (b) create personal motivation and satisfaction, (c) accommodate various learning styles and skills, (d) reinforce mastery, and (e) provide interactive, decisionmaking context (Charles & McAlister, 2004; Holland, Jenkins, & Squire, 2002).
+ Advances in technology also make it possible to access and play games through relatively simple platforms and mobile devices, which is particularly important for those without a personal computer (Mitchell & Savill-Smith, 2004).
+ Video games may create a new learning culture that better corresponds with the habits and interests of today's children and young adults (Prensky, 2001).
+ "People acquire new knowledge and complex skills from game play, suggesting gaming could help address one of the nation's most pressing needs ­ strengthening our system of education and preparing workers for 21st century jobs" (Federation of American Scientists, 2006, p. 3).
+Problem
+ The potential benefits are persuasive; however, there is a dearth of empirical research on the effectiveness of educational computers games, particularly in formal school settings (Mitchell & Savill-Smith, 2004). Existing studies yield mixed results (e.g., Randel, Morris, Wetzel, & Whitehill, 1992) and methodological flaws prohibit solid conclusions to guide research and practice (Mitchell & Savill-Smith, 2004).
+Related Research
+ Table 1 lists and notes overall findings from five research reviews that synthesized results from studies on the effectiveness of educational video games from the mid 1980s to the mid 2000s.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 1 of 15
+
+Table 1. Summary of results reported by reviews of literature on educational games
+
+# of
+
+Reference
+
+Studies
+
+Vogel, J. J., Vogel, D. S., Cannon-Bowers, J., Bowers, C.A., Muse, K., & Wright, M. (2006). 32
+
+Computer gaming and interactive simulations for learning: A meta-analysis. Journal of
+
+Educational Computing Research, 34(3), 229-243.
+
+Hays, R. T. (2005). The effectiveness of instructional games: A literature review and
+
+48
+
+discussion. Naval Air Warfare Center Training Systems Division (No 2005-004). Retrieved
+
+07 October 1007 from http://stnet.dtie.mil/oai/
+
+Dempsey, J.V., Rasmussen, K., Lucassen, B. (1994). Instructional gaming: implications for 94
+
+instructional technology. Paper presented at the Annual Meeting of the AECT, 16­20
+
+February, Nashville, TN.
+
+Randel, J.M., Morris, B.A., Wetzel, C.D., & Whitehill, B.V. (1992). The effectiveness of
+
+67
+
+games for educational purposes: a review of recent research. Simulation and Gaming,
+
+23(3), 261­276.
+
+VanSickle, R. L. (1986). A quantitative review of research on instructional gaming: A
+
+26
+
+twenty-year perspective. Theory and Research in Social Education,14(3), 245-264.
+
+Findings Positive
+Mixed
+Positive
+Mixed
+Weak Positive
+
+ Table 2 notes findings from seven studies examining the effects of math games on student learning completed between 1996 and 2007.
+
+Table 2. Summary of results reported on the use of math computer games Reference
+Lopez-Moreto, G. & Lopez, G. (2007). Computer support for learning mathematics: A learning environment based on recreational learning objects. Computers & Education, 48(4), 618-641. Ke, F. & Grabowski, B. (2007). Game playing for math learning: cooperative or not? British Journal of Educational Technology, 38(2), 49-259. Rosas, R., Nussbaum, M., Cumsille, P., Marianov, V., Correa, M., Flores, P., et al. (2003). Beyond nintendo: design and assessment of educational video games for first and second grade students. Computers & Education, 40(1), 71-24. Laffery, J. M., Espinsosa, L., Moore, J., & Lodree, A. (2003). Supportingg learning and behavior o f at-risk young children: Computers in urban education., Journal of Research on Technology in Education, 35(4), 423-440. Moreno, R. (2002). Who learns best with multiple representations? Cognitive theory implications for individual differences in multimedia learning. Paper presented at World Conference on Educational Multimedia, Hypermedia, & Telecommunications. Denver, CO. Din, F. S., Caleo, J. (2000). Playing computer games versus better learning. Paper presented at the Eastern Educational Research Association. Clearwater, Florida. Klawe, M. M. (1998). When Does The Use Of Computer Games And Other Interactive Multimedia Software Help Students Learn Mathematics? Unpublished manuscript. Retrieved July 17, 2007 from http://www.cs.ubc.ca/nest/egems/reports/NCTM.doc Sedighian, K. & Sedighian, A. S. (1996). Can Educational Computer Games Help Educators Learn About the Psychology of Learning Mathematics in Children? 18th Annual Meeting of the International Group for the Psychology of Mathematics Education , Florida, USA
+
+Findings
+Positive Positive Positive
+Mixed
+Positive
+Mixed Positive
+Positive
+
+ However, methodological flaws limit conclusions about the effects of educational games. Less than half used experimental research design incorporating control and experimental groups.
+ Furthermore, a number of published math games have yet to be studied. Table 3 lists educational math games published between 2000-2007.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 2 of 15
+
+Table 3. List of math games published between 2000-2007.
+
+Title
+
+Year
+
+Genre
+
+Freddi Fish 5
+
+2001 Strategy-Adventure
+
+Math Missions
+
+2003 Strategy
+
+Math Booster
+
+2003 Adventure
+
+Aqua MOOSE
+
+2003 Strategy
+
+ASTRA EAGLE
+
+2005 Strategy
+
+Zombie Division
+
+2005 Action-Adventure
+
+Level Elementary Elementary Elementary High School Elementary Elementary
+
+Findings No data found No data No data found Mixed Positive No data found
+
+Purpose
+
+This study investigated the effects of modern math video games on student math class motivation and achievement in a formal K-12 setting. Findings from one of four schools participating in the overall study are reported in this brief.
+Research Questions
+
+The following questions guided this study: 1. What effects does game play have on the student academic mathematics achievement, as measured
+by (a) the school district-wide benchmark exam, and (b) the game publisher's performance test? 2. What effects does game play have on student math course motivation as measured by Keller's
+(1987a) Course Motivation Survey? 3. Do differences in prior knowledge, computer experience, and language background affect student
+math attitudes and achievement when playing the game?
+
+In this study, prior knowledge refers to learners' preexisting mathematics knowledge and language background refers to their English fluency. These two factors were determined based on the participants' school records. Computer skill was determined by a demographic survey.
+
+Null Hypotheses
+
+Three hypotheses were tested to answer the research questions: 1. There is no significant difference between math achievement scores of learners in the experimental
+group, who received the pre-Algebra and/or Algebra I instructional games, versus the math achievement scores of learners in the control group, who did not receive the games. 2. There is no significant difference between math class motivation scores of learners in the experimental group, who received the pre-Algebra and/or Algebra I instructional games, versus math class motivation scores of learners in the control group, who did not receive the games. 3. There is no significant difference between the effects of the games on students with differences in (a) prior knowledge, (b) computer experience, and (c) language background.
+
+Subjects
+
+ Tables 1 and 2 report demographic data on the teachers and students who participated in the study.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 3 of 15
+
+ A total of 981 Algebra and Pre-Algebra math students and 10 math teachers from an urban high school in the southeast United States were asked to participate in the study. 430 students and all 10 teachers volunteered. Of the 430 cases, 193 yielded valid data on all dependent measures and are reported in the results. Missing data analyses revealed the missing data were randomly distributed, and the power for subsequent multivariate analysis of co-variance analysis was .90; indicating a sufficient sample for testing the proposed hypotheses and obtaining valid results.
+
+Table 1. The Demographics of the Participated Teachers (N = 10)
+
+Demographic
+
+Gender
+
+Male Female
+
+Ethnicity
+
+Caucasian African American Hispanic
+
+Gen X (1961-1979) Age
+Baby Boomers (1945-1960)
+
+Education
+
+Bachelors degree Masters degree
+
+Experience
+
+Over 10 years Over 6 years About 2 years
+
+Computer Skill
+
+Proficient-Regular User Awesome-Power User
+
+Game-Playing
+
+Not at all Not often About 3-4 time per week Everyday
+
+Number of Teachers 4 6 4 3 3 7 3 5 5 5 4 1 7 3 4 3 2 1
+
+Table 2. The Demographics of the Participated Students (N = 193)
+
+Demographic
+
+Gender
+
+Male Female
+
+Caucasian
+
+Ethnicity
+
+African American Hispanic
+
+Other
+
+Very low
+
+Prior Mathematics Knowledge
+
+Low Intermediate High
+
+Professional
+
+Low
+
+Intermediate
+
+English Language Skill
+
+High
+
+Proficient
+
+Native
+
+Percent 52.9 47.1 16.0 5.9 73.4 4.8 33.7 29.7 32.6 4.1 0.0 25.6 5.8 15.1 10.5 43.0
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 4 of 15
+
+Table 2 (con't). The Demographics of the Participated Students (N = 193)
+
+Non-User
+
+3.1
+
+Beginner- Just Started User
+
+5.2
+
+Computer Skill
+
+Novice-Infrequent User
+
+14.5
+
+Proficient-Regular User
+
+44.6
+
+Awesome-Power User
+
+29.5
+
+Research Design
+
+Table 3. Research Design used to test research hypotheses
+
+Participants'
+
+1st Nine Weeks
+
+Groups
+
+Beginning
+
+During
+
+X Treatment R O1O2O3O4
+
+Control
+
+R O1O2O3O4
+
+2nd Nine Weeks During
+X O5
+
+End
+O2O3O4
+O2O3O4
+
+Key X = Treatment (single and multi-player games) O1 = Demographic Survey O2= School District-wide Benchmark Exam
+
+O3 = DimensionMTM Game Preparation and Performance Test O4 = Course Motivation Survey O5 = Interviews
+
+Treatment
+
+The treatment consisted of a set of single player and multi-player modern math video games:  EvolverTM Single Player- A single player game that consists of twenty Pre-Algebra related missions within a 3-D immersive environment.  DimenxianTM Single Player - A single player game that consists of four Algebra related missions within a 3-D immersive environment.  EvolverTM Multiplayer - A set of 3 multiplayer games, including: (a) Swarm, a strategy game in which players work in teams to collect points and capture stations by solving Pre-algebra and Algebra mathematics problems, (b) Meltdown, a strategy game in which individual players or teams compete against each other by solving Algebra problems to gather points and (c) Obstacle Course, a strategy game in which players compete against each other to complete five major stages with Pre-algebra and Algebra obstacles.
+
+Instruments
+ Demographics survey. Information regarding participants' age, gender, computer skills, and game play proficiencies.
+ Motivation surveys. Pre and post study-period surveys measured students' perceived levels of Attention, Relevance, Confidence and Satisfaction as an indicator of the overall math course motivation based on Keller's ARCS model (1987a, 1987b). The validity of the survey was confirmed by the experts who developed and modified the motivation instrument. Cronbach's alpha measure of reliability for the pre-course survey was .87 and for the midyear survey, it was calculated as .86.
+ The district-wide benchmark pre and posttests, consisting of 25 multiple choice questions. The reliability and validity of the exams were determined by the school district. The benchmark test reliabilities were moderate to good, ranging from .73 (Grade 9) to .82 (Grade 10) for the pretest
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 5 of 15
+
+and from .84 (Grade 9) to .86 (Grade 10) for the posttest (Princeton Review, 2008). The district also reported medium to high correlations between district math benchmark scores and statewide FCAT math scores.  The DimensionMTM game preparation and performance tests. The validity of the game tests was confirmed by the mathematics experts employed by the game company who developed the tests. The reliability of the game performance tests have been estimated based on Cronbach's alpha as  = .9, N = 490, for the pretest and  = .91, N = 649, for the posttest.
+Procedure
+ All math teachers at the High School were given one day of training on the use of the DimensionM educational video games, including two single and 3 multiplayer math games.
+ All 10 Algebra and Pre-algebra teachers who volunteered for the study were randomly assigned to experimental and control groups (R), following the design of a recent national study conducted by the U.S. Department of Education that examined the effectiveness of reading and mathematics software products in public school settings (Dynarski, et. al., 2007).
+ Teachers in the experimental group were encouraged to integrate the games in class and during available lab time as much as possible, using plans of study that correlated game missions to the planned sequence of instruction.
+ At the beginning of the school year, students in both the experimental and control groups were to complete three instruments: (a) the demographic survey (O1), (b) the district-wide benchmark exam (O2), (c) DimensionMTM game preparation test (O3) and (d) the Course Motivation Survey (O4).
+ Teachers and students in the experimental group were given access to the games (X) during the first and second nine week periods of school.
+ Interviews (O5) were conducted with the teachers and students in the experimental to gather data and additional insights on how the games were being used in math class.
+ At the end of the second nine week term, students in both the experimental and control groups were again asked to complete a similar set of surveys and tests (O2, O3, O4).
+Data Analysis
+ Data was inputted into SPSS and multivariate analysis of covariance (MANCOVA) was used to test the research hypotheses.
+ The random assignment of teachers controlled for potential biases caused by differences in teaching ability, style and practice.
+ Since students could not be randomly assigned, the district benchmark pre-test, the game preparation test and the pre-course math motivation survey were used as covariates to control for differences in entry level math achievement and motivation.
+ Significance level for all hypothesis tests was set at .05.  Charmaz's (2000) grounded theory was used to analyze the interview results.  Post hoc analyses were conducted to gain further insights on the results.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 6 of 15
+
+Results
+
+Hypotheses 1 and 2 (Effects on Math Achievement and Motivation)
+
+ Table 4 reports the mean and standard deviations of scores on the six primary dependent variables.
+
+Table 4. The Mean and Standard Deviation of Six Dependent Variables (N=193)
+
+Mean
+
+Std. Deviation
+
+Variable
+
+Total Score
+
+Control Experimental Control Experimental
+
+(n=76)
+
+(n=117)
+
+(n=76)
+
+(n=117)
+
+Motivation1 (pretest)
+
+100 (raw)
+
+67.99
+
+70.58
+
+13.11
+
+13.48
+
+Motivation2 (posttest)
+
+100 (raw)
+
+68.53
+
+68.20
+
+11.38
+
+13.17
+
+GameMath1 (pretest)
+
+47 (raw)
+
+18.92
+
+27.52
+
+7.99
+
+9.18
+
+GameMath2 (posttest)
+
+47 (raw)
+
+21.99
+
+24.58
+
+7.73
+
+11.67
+
+Benchmark1 (pretest)
+
+100 (percent)
+
+28.26
+
+37.64
+
+12.09
+
+14.30
+
+Benchmark2 (posttest)
+
+100 (percent)
+
+32.00
+
+45.71
+
+13.65
+
+17.55
+
+ After controlling for differences in math achievement and motivation using pretest scores as covariates, the tests of between-subjects effects indicate significant differences between control versus experimental group scores on the game performance posttest (GameMath2) F (1, 188) = 8.37, p < .01, and the benchmark posttest (Benchmark2) F (1, 188) = 6.93, p < .01 (Table 5).
+ No significant differences were found between the two group scores on the motivation postsurvey (Motivation2), F (1, 188) = 2.85, p > .05 (Table 5).
+
+Table 5. Results of the Tests of Between-Subjects Effects for Achievement and Motivation
+
+Source Dependent Variable df
+
+F
+
+2
+
+a
+Observed Power
+
+Motivation2
+
+1
+
+2.845
+
+.015
+
+.389
+
+Group
+
+GameMath2
+
+1
+
+8.363
+
+.043
+
+.820
+
+Benchmark2
+
+1
+
+6.928
+
+.036
+
+.745
+
+a. Computed using alpha = .05, *significant at .05 level
+
+p .093 .004* .009*
+
+Hypotheses 3 (Effects of games on students with differences in prior knowledge, computer experience, and language background)
+
+ The MANCOVA indicated no significant differences on achievement and motivation of the control group versus the experimental group with different prior mathematics knowledge, computer skills and English language skills.
+ As depicted in Table 6, the Pillai's Trace of 0.05 is not significant, F (3, 94) = 1.49, p > .05, and failed to reject the hypothesis that population means on the dependent variables were the same for control and experimental groups. The multivariate  2 = .05 indicated 5% of multivariate
+variance of the dependent variables of achievement and motivation was associated with the group factor, prior mathematics, computer skills and English language skills.  No significant interaction was found among control and experimental groups, computer skill, prior mathematics achievement and English language skill, F (3, 94) = .86, p > .05.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 7 of 15
+
+Table 6. The Multivariate Analysis of Covariance for Achievement and Motivation of Control and Experimental Groups When Interacting with Computer Skill, Mathematics Achievement, and English Language Skill
+
+Effect
+
+Value F Hypothesis df Error df
+
+ 2 Observed
+Powera
+
+p
+
+Group
+
+Pillai's Trace .045 1.490 3.000
+
+94.000 .045 .382
+
+.222
+
+Computer Skill *Math Achievement Pillai's Trace .027 .858
+* EnglishSkill a. Computed using alpha = .05
+
+3.000
+
+94.000 .027 .23
+
+.466
+
+Teacher Interviews
+
+ Interviews indicated that teachers believed that the mathematics games had positive effects on student math achievement and math class motivation.
+ Table 7 shows the total number of responses of the teachers on the effects of the games on student achievement and motivation.
+ The single player games (DimenxianTM and EvolverTM Single Player games) were played by all five teachers.
+ The majority of the teachers reported that these two games had some to great positive effects on student achievement (3 of 5 for EvolverTM Single Player, 4 of 5 for DimenxianTM) and motivation (4 of 5 for EvolverTM Single Player, 5 of 5 for DimenxianTM).
+ Teacher 1 reported that EvolverTM Single Player had no impact on student achievement and motivation because of the game topics were not yet taught to the students.
+ Teacher 2 suggested that Obstacle CourseTM had no impact on achievement and motivation because it was too complicated to play.
+ Teacher 3 reported no impact of EvolverTM Single Player, DimenxianTM and SwarmTM on achievement because her students played the game only three times, each time for 30 minutes for a total of 90 minutes.
+
+Table 7. Teacher Responses on the Effects of the Games on Math Achievement and Motivation (n = 5)
+
+Achievement
+
+Motivation
+
+Not Played GN SN NI SP GP GN SN NI SP GP
+
+EvolverTM
+
+23
+
+131
+
+Numbers of the DimenxianTM
+
+Teachers' SwarmTM
+
+3
+
+Responses Obstacle CourseTM
+
+4
+
+14
+
+1
+
+1
+
+1
+
+32 11 1
+
+MeltdownTM
+
+4
+
+1
+
+1
+
+GN = Great Negative, SN = Some Negative, NI = No Impact, SP = Some Positive, GP = Great Positive
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 8 of 15
+
+The teachers suggested the following reasons as primary causes of positive game effects:  The game motivated the students because it was an alternative way of teaching; a positive
+change that got the students away from pencils and paper and engaged them in mathematics activities. As one of the teachers stated, "This is definitely the way that we have to go to teach mathematics in the future."  The games made students more interested in learning mathematics. When students played the games, they wanted to learn more and pay more attention because they liked to accomplish the game missions. One of the teachers stated: "It [the games] makes them want to learn [math]."  The game could change students' perception of mathematics. Their mathematics phobias appeared to be reduced by playing the games. More students could see the relationship between mathematics and life.  The mathematics concepts stayed with the students longer when they saw the concepts in the game.
+
+Student Interviews
+
+ Interviews indicated that students believed that the mathematics games had positive effects on their math achievement and motivation.
+ Students reported that they liked playing the games more than doing other school activities such as homework, class assignments and working on worksheets.
+ Table 8 shows the total responses of the students on effects of the games on their mathematics achievement and their motivation.
+ All of the 15 students reported somewhat positive to very positive impact of the games on their achievement.
+ In addition, 13 of 15 students reported that they were more interested in playing the games than doing other school activities such as homework, assignments and worksheets.
+
+Table 8. Students' Responses on the Effects of the Games on Achievement and Motivation (n = 15)
+
+Achievement
+
+Interested in playing the games as compared to other school works
+
+Not at all
+
+No Impact
+
+Somewhat Positive
+
+Positive
+
+Great Positive
+
+A lot less
+
+Less
+
+About the Same
+
+More
+
+A lot more
+
+Numbers of the Students' Responses
+
+5
+
+5
+
+5
+
+2
+
+6
+
+7
+
+All 15 interviewed students reported that they liked playing the games because:  The games took them out of class, changed their mood and they were entertaining.  The adventure and exploration aspect of the game made it interesting.  The challenging aspect of the game was interesting.  The combination of action, solving problems and learning mathematics in the games made them
+very attractive.  The way that games combined fun and learning mathematics was interesting.  The games showed students different way of learning mathematics.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 9 of 15
+
+Post Hoc Analyses
+
+To further analyze the results, two post hoc questions were proposed:
+
+1. Did participants who played the math video games demonstrate greater gains in the achievement tests (in either or both the district benchmark exam or the game mathematics performance test) than participants who did not play the game?
+2. Did participants in the experimental group report different motivation scores based on the amount of time and location that they played the mathematics games?
+
+Post Hoc Question #1 Gain Scores
+
+ Table 9 shows the participants in both experimental [t (116) = - 4.87, p < .05], and control [t (75) = - 2.36, p < .05] groups achieved significant gains from pretests to posttests in the district benchmark exams.
+ The experimental group demonstrated greater gains in the benchmark exams score (mean difference = 8.07) than the control group (mean difference = 3.74).
+ For the game preparation and performance tests, the experimental group reported mean score dropped 2.94 from pretests to posttests [t (116) = 3.17, p < .05], while control group mean scores increased by 3.07 from pretest to posttests [t (99) = - 4.63, p < .05].
+ The drop in mean scores on the game preparation and performance test is attributed to the fact that students' test scores did not affect their course grades and, apparently, a number of students made little to no effort to complete the midyear test.
+
+Table 9. The Comparison of the Gain Scores of Experimental and Control Group
+
+Paired Differences
+
+t
+
+df p
+
+Mean Std. Deviation
+
+Experimental Benchmark1 - Benchmark2 8.07
+
+17.91
+
+4.87 116 .00
+
+Control
+
+Benchmark1 - Benchmark2 3.74
+
+13.83
+
+2.36 75 .02
+
+Experimental GameMath1 - GameMath2 -2.94
+
+10.03
+
+-3.17 116 .00
+
+Control
+
+GameMath1 - GameMath2 3.07
+
+5.77
+
+4.63 75 .00
+
+Post Hoc Question #2 Motivation Scores based on Time and Location
+
+ Table 10 and Figure 1 illustrate that students who played the games in class and in the computer lab scored reported significantly higher levels of math course motivation than students played the games only in the school lab or did not play the game.
+
+Table 10. The Descriptive Statistics on Motivation Post-survey (Motivation2)
+
+Game Use
+
+Mean
+
+Std. Deviation
+
+n
+
+No Use
+
+68.53
+
+11.38
+
+76
+
+3 Times total 60min, Lab only
+
+62.53
+
+11.60
+
+30
+
+4 Times total 30-40 min, Lab only
+
+68.33
+
+10.91
+
+6
+
+Once a week, 30-40min, Lab only
+
+68.25
+
+10.73
+
+16
+
+Once a week, 30-40Min, Lab only
+
+68.36
+
+13.13
+
+44
+
+Once a week 30-40Min, Lab And Class
+
+75.86
+
+14.64
+
+21
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 10 of 15
+
+Figure 1. Distribution of Mean Motivation Scores across Groups
+Estimated Marginal Means of Motivation2
+
+76
+
+74
+
+Estimated Marginal Means
+
+72
+
+70
+
+68
+
+66
+
+64
+
+62
+
+No Game Use
+
+LateNov_Dec,3 Times- 60min,
+Lab
+
+LateNov-Dec,4 Times-30-40
+min, Lab,Special Education
+
+LateSep-Dec, Once a week, 30-40min, Lab
+
+Gameuse
+
+MidSep-Dec, Once a week, 30-40Min, Lab
+
+Oct-Dec, Once a week 30-
+40Min, Lab And Class
+
+ Game play appeared to affect student math course motivation when played during class but did not appear affect student math course motivation when the game was used only in the computer lab.
+
+Discussion & Conclusions
+
+The DimensionMTM math video games had a significant positive effect on student mathematics achievement in a public high school setting.
+
+ Students who played the math video games scored significantly higher on the district-wide math benchmark exam, F (1, 188) = 6.93, p < .05, and on the math performance test generated by the publisher, F (1, 188) = 8.37, p <.05, than students who did not play the games.
+ While students in both the experimental and control groups demonstrated significant gains from pre-test to posttest on the district benchmark exams, students who played the games demonstrated greater gain scores from pre-test to posttest (mean increase of 8.07) than students who did not play the games (mean increase of 3.74).
+ Higher achievement scores and greater gain scores on district benchmark tests by students who played the games, compared to those who did not play the game are particularly significant because there is a high correlation between the district math benchmark tests and the statewide math FCAT tests (as reported by the district).
+ Teacher and student interviews support the quantitative findings. The majority of the interviewed teachers (4 of 5) and students (15 of 15) reported that the participants' mathematics understandings and skills improved as a result of playing the mathematics games.
+ According to the teachers, the games were effective teaching and learning tools because they (a) were experiential in nature, (b) offered an alternative way of teaching and learning, (c) gave the students reasons to learn mathematics to solve the game problems and progress in the
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 11 of 15
+
+games, (d) addressed students' mathematics phobias and (e) increased time on task. As one of the teachers stated: "It [the games] makes them want to learn [math]."  According to the students, the games were effective because they (a) combined learning and fun, (b) offered mathematics in adventurous and exploratory context and (c) challenged students to learn mathematics.  The positive results are consistent with prior empirical research on the effects of math games, including those reported by Ke and Grabowski (2007), Klawe (1998), Moreno (2002), Rosas et al. (2003) and Sedighian and Sedighian (1996), suggesting that computer math video games may improve mathematics achievement.  The results also support findings from two meta-analysis, including: (a) Vogel et al. (2006) who concluded that interactive simulations and games were more effective than traditional classroom instruction on learners' cognitive gains based on a review of 32 empirical studies, and (b) Dempsey et al. (1994) who concluded that students who played math video games and attended the traditional classroom instruction achieved higher mathematics score than students who only attended traditional classrooms based on 94 empirical studies.
+The DimensionMTM math video games may have positive effects on student motivation in math class.
+ Although no significant differences were found in students' math course motivation between students who played and did not play the games, the overall findings are attributed to the fact that students may have disassociated game play from their math class.
+ Students who played the games in class and in the computer lab reported significantly higher levels of motivation than students who played the games only in the school lab or did not play the game.
+ The results provide some additional evidence to support findings by Lopez-Moreto and Lopez (2007), Rosas et al. (2003), Klawe (1998) and Sedighian and Sedighian (1996), who found game play may have a positive effect on math students' motivation.
+ However, with non-significant overall findings, further empirical research is necessary to delineate the effects of DimensionMTM games on students' math motivation in public school settings.
+It does not appear that students' prior knowledge, computer experience and language background affects their math achievement or motivation when playing math video games.
+ No significant differences were found between the math achievement and math course motivation of the control group versus the experimental group with different prior mathematics knowledge, computer skills and English language skills.
+ In addition, no significant interactions were found among control and experimental groups, computer skill, prior mathematics achievement, and English language skill, F (3, 94) = .86, p > .05.
+ No significant relationships were found between student math achievement, student math course motivation, game play and students' prior mathematics knowledge, computer skills and English language skills.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 12 of 15
+
+A number of important issues regarding the integration of games in school settings also emerged from the findings. To use the games effectively in school settings, it is believed that:
+ Teacher training, focusing on the integration of games (e.g., what to do before and after game play, how to access and interpret students' scores, how game missions relate to course topics) is essential for enhancing student learning. Teachers, however, do not necessarily need to know how to play each game; students figure out game play on their own or help each other master game mechanics.
+ Logistical issues across the school, including scheduling time and available computers for students to play the games must be addressed prior to the school term to optimize use.
+ Access to the games from home, at community centers and libraries, as well as in class and in computer labs before and after school may optimize use. It appears that students are motivated to play the games outside of class on their own.
+ School and district administrators should be educated and observe the use of math video games in teaching math. Administrator with little knowledge and exposure may not consider game play as an effective teaching method and limit use, particularly during class time.
+ Math games should be designed so students cannot progress in the games without solving mathematics problems, putting additional focus on learning mathematics compared to playing the games.
+ Math games should provide clear game objective and guidance to help students play the games,  Math games should allow the players to save their progress so that the players will be able to
+continue from where they left of each time they play.  Math games with multiple missions should be designed so that each mission may be completed
+during a typical class period.
+In addition to further studying the effects of math games on student math attitudes and motivation, additional data analyses and research are recommended, examining:
+ The effects of gender on game play and preference, and resulting math achievement and motivation.
+ The differential use, preference and effects of single versus multiplayer games on student math achievement and motivation.
+ The effects of fundamental game components (e.g., story and gameplay) and related game elements (e.g., characters, settings, plot, rules, tools, goals, mechanics) on student math achievement and motivation.
+ The effectiveness of math video games for teaching different math skills and concepts.  The use of alternative pre-game and post-game instructional events on student game play and
+resulting math achievement and motivation.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 13 of 15
+
+References
+Charles, D., McAlister, M. (2004). Integrating Ideas About Invisible Playgrounds from Play Theory into Online Educational Digital Games. M. Rauterberg (Ed.): ICEC 2004, LNCS 3166, pp. 598­601.
+Dempsey, J.V., Rasmussen, K., Lucassen, B. (1994). Instructional gaming: implications for instructional technology. Paper presented at the Annual Meeting of the AECT, 16­20 February, Nashville, TN.
+Din, F. S., Caleo, J. (2000). Playing computer games versus better learning. Paper presented at the Eastern Educational Research Association. Clearwater, Florida.
+Dynarski, M., Agodini, R., Heaviside, S., Novak, T., Carey, N., Campuzano, L., Means, B., Elliott, J., & Bruckman, A. (2002). Design of a 3-D Interactive Mathematics Learning Environment. Proceedings of DIS 2002 (ACM conference on Designing Interactive Systems). London, UK. Retrieved July 7, 2007 from http://www.cc.gatech.edu/elc/aquamoose/pubs/amdis2002.pdf
+Federation of American Scientists. (2006). Harnessing the power of video game for learning. Retrieved January 30, 2007 from http://fas.org/gamesummit/
+Hays, R. T. (2005). The effectiveness of instructional games: A literature review and discussion. Naval Air Warfare Center Training Systems Division (No 2005-004). Retrieved 07 October 1007 from http://stnet.dtie.mil/oai/
+Holland, W., Jenkins, H., Squire, K. (2002). Video Game Theory. In Perron, B., and Wolf, M. (Eds). Routledge. Retrieved February 15, 2006 from http://www.educationarcade.org/gtt/
+Ke, F. & Grabowski, B. (2007). Game playing for math learning: cooperative or not? British Journal of Educational Technology, 38(2), 49-259.
+Kebritchi, M. (2007). The effects of modern math video games on student math achievement and math course motivation. Unpublished dissertation. College of Education, Department of Educational Technology, Research and Leadership. University of Central Florida.
+Keller, J. M. (1987a). Development and use of the ARCS model of motivational design. Journal of Instructional Development, 10(3), 2-10.
+Keller, J.M. (1987b). The systematic process of motivational design. Performance & Instruction, 26(9), 18.
+Klawe, M. M. (1998). When Does The Use Of Computer Games And Other Interactive Mult-imedia Software Help Students Learn Mathematics? Unpublished manuscript. Retrieved July 17, 2007 from http://www.cs.ubc.ca/nest/egems/reports/NCTM.doc
+Laffery, J. M., Espinsosa, L., Moore, J., & Lodree, A. (2003). Supportingg learning and behavior o f at-risk young children: Computers in urban education. Journal of Research on Technology in Education, 35(4), 423-440.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 14 of 15
+
+Lopez-Moreto, G. & Lopez, G. (2007). Computer support for learning mathematics: A learning environment based on recreational learning objects. Computers & Education, 48(4), 618-641.
+Mitchell, A., & Savill-Smith, C. (2004). The use of computer games for learning. Retrieved 23 July 2007 fromhttp://www.mlearning.org/archive/docs/The%20use%20of%20computer%20and%20video %20games% 20for%20learning.pdf
+Moreno, R. (2002). Who learns best with multiple representations? Cognitive theory implications for individual differences in multimedia learning. Paper presented at World Conference on Educational Multimedia, Hypermedia, & Telecommunications. Denver, CO.
+Prensky, M. (2001).Digital game-based learning. New York: McGraw-Hill.
+Randel, J.M., Morris, B.A., Wetzel, C.D., & Whitehill, B.V. (1992). The effectiveness of games for educational purposes: a review of recent research. Simulation and Gaming, 23(3), 261­276.
+Rosas, R., Nussbaum, M., Cumsille, P., Marianov, V., Correa, M., Flores, P., et al. (2003). Beyond nintendo: design and assessment of educational video games for first and second grade students. Computers & Education, 40(1), 71-24.
+Sedighian, K. & Sedighian, A. S. (1996). Can Educational Computer Games Help Educators Learn About the Psychology of Learning Mathematics in Children? 18th Annual Meeting of the International Group for the Psychology of Mathematics Education, Florida, USA
+VanSickle, R. L. (1986). A quantitative review of research on instructional gaming: A twenty-year perspective. Theory and Research in Social Education,14(3), 245-264.
+Vogel, J. J., Vogel, D. S., Cannon-Bowers, J., Bowers, C.A., Muse, K., & Wright, M. (2006). Computer gaming and interactive simulations for learning: A meta-analysis. Journal of Educational Computing Research, 34(3), 229-243.
+
+Kebritchi, Hirumi & Bai © 2008
+
+Page 15 of 15
+
+

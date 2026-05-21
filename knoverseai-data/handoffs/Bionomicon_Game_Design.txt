@@ -1,0 +1,519 @@
+BIONOMICON
+Game Design
+
+OVERVIEW
+The apocalypse is coming.
+Our immune system can't handle the post apocalyptic biological pathogens that will be thrown at it.
+Our only chance of survival is to enhance our immune system and prepare for the unknown.
+
+BIONOMICON
+Bionomicon has developed advanced Artificial Life nanotechnology capable of learning and adapting.
+As a scientist at Bionomicon, your job is to train the nanobots to fight along side the human immune system against pathogenic invaders.
+
+SIMULATOR
+To aid in the training of nano-bots, Bionomicon has developed a state-of-the-art "biological simulator".
+The simulator can recreate any environment inside the human body using holographic technology.
+The human immune system and pathogen invaders are also simulated with advanced AI.
+Think "Holodeck" from Star Trek TNG but at a cellular level.
+
+GAMEPLAY
+Game play draws inspiration from the Tower Defense and Real-Time Strategy genres.
+
+GAMEPLAY
+The goal of the game is to protect
+human cells!
+
+GAMEPLAY
+Cells and Pathogens enter
+the simulation in waves through the blood vessels.
+
+GAMEPLAY
+The player has control over which white blood cells enter the simulation
+next.
+
+GAMEPLAY
+Pathogens break out of the vessel to
+attack cells.
+
+GAMEPLAY
+White blood cells will chase the pathogen to the infected area to fight.
+
+GAMEPLAY
+Players build nanofactories where
+they can queue up various nano-bots
+for production.
+
+GAMEPLAY
+Players must produce the right types of nano-bots to help defeat the
+invader.
+
+GAMEPLAY
+Each scenario will have win conditions like "destroy all the pathogens and clean up the dead cells".
+
+RESOURCES
+The player will have to keep track of many resources during game play.
+Cytokine levels control how many white blood cells can be called into an area. A player can choose which
+cells will enter the simulation next.
+Immune system awareness. The player uses dendritic cells to inform the lymph node of the pathogen. This brings in
+more B and T cells coded to kill the pathogen.
+Cell reproduction rate. Clumps of cells will slowly regenerate over time if damaged.
+
+RESOURCES
+Nano-materials are used for producing bots at a factory. The player will use Scavenger bots to collect dead cell remnants and expired nano-bots in the field.
+Nano-rejection levels must be monitored and balanced during the simulation. Too much nano-technology in an
+area will cause the immune system to attack.
+
+RESOURCES
+Picture of Level with UI overlay showing different resources...
+
+INSPIRATION
+The mechanics of the immune system and various pathogens will be modeled as accurately as possible to
+their real-world counterparts.
+This gives the player an unprecedented exposure to the core concepts of the actual human immune system through a game.
+Our goal is to inspire players to learn more about the human immune system and deadly diseases - planting
+seeds for future thinking on the subjects.
+
+FUTURE THINKING
+
+BIONOMICON
+Simulation Actors
+
+HUMAN CELLS
+Human cells are ultimately what the player is trying to protect and keep healthy during a simulation.
+The simulator can model the full life cycle of a human cell including reproduction. Interactions with pathogens and
+cancerous states can also be simulated.
+Cellular walls like the inside lining of the stomach or skin can be modeled as well as cell "clumps" with confined
+reproduction.
+
+IMMUNE SYSTEM
+The simulator models the behavior of the human immune system down to the cellular level.
+Immune system actors include white blood cells like Neutrophils, Macrophages, Dendritic, B-Cells, and T-Cells.
+Cytokines are a key communication mechanism used by the immune system to recruit reinforcements.
+Players do not have direct control over the immune system units in a simulation. They can influence the type of cell the immune system should respond with.
+
+CYTOKINES
+Cytokines are used to attract white blood cells. They are produced by dying white blood cells and T-Helpers.
+A certain amount of cytokines are required to attract white blood cells. For example, a small amount of
+cytokine is required to attract a Neutrophil but a large amount is required to attract the bigger Macrophage.
+Cytokines dissipate over time. Therefore a player must keep cytokine levels high in order to attract bigger units
+throughout the scenario.
+
+ANTIBODIES
+Antibodies are released by B-Cells.
+They attach to a pathogen and slow down movement.
+Attaching to a pathogen can prevent cell penetration.
+The attached antibodies also act as a "tagging" system letting other white blood cells in the area to consume the
+pathogen.
+Antibodies do have a life span so the player is encouraged to keep the antibody levels high during a heavy battle.
+
+IMMUNE SYSTEM CELLS
+There are two types of immune system cells in the game; Innate and Acquired.
+Innate cells will hunt down and kill anything that looks like a bad guy in the body.
+Acquired cells are coded to kill a specific pathogen or infected cell.
+The fight against a pathogen usually starts with Innate units which then have the ability to call in Adaptive units.
+
+INNATE CELLS
+There are six types of innate immune system cells, each with a different benefit to the player.
+
+NEUTROPHIL
+Name: Neutrophil Purpose: Consume pathogens Attraction Level: 5 cytokines Speed: Medium Lifespan: 60 seconds or 1 pathogen Death: Release 20 cytokines
+Overview Neutrophils are the most common white blood cells in our immune system. Their sole purpose is to consume pathogens. After they consume a pathogen, they die. Just before death, they release cytokines which call in other white blood cells to the area.
+
+BASOPHIL
+Name: Basophil Purpose: Consume pathogens Attraction Level: 10 cytokines Speed: Fast Lifespan: 90 seconds or 1 pathogen Death: Release histamine that slow nearby pathogens
+Overview Basophils, like neutrophils, are good at engulfing all basic types of pathogens. They are particularly effective against parasites. Upon death, the Basophil releases histamines that will immobilize nearby parasites completely and slow down the movement of other types of pathogens.
+
+EOSINOPHIL
+Name: Eosinophil Purpose: Consume pathogens Attraction Level: 10 cytokines Speed: Medium Lifespan: 90 seconds or 1 pathogen Death: Release toxic cloud that kills pathogens
+Overview Eosinophils release toxic proteins and free radicals that are especially good at killing bacteria and parasites. Toxins can damage tissue, so these toxins must be tightly regulated by the body. There should be a limit of the number of Eosinophils that can be added to the system at once.
+
+MACROPHAGE
+Name: Macrophage Purpose: Consume pathogens Attraction Level : 25 cytokines Speed: Slow Lifespan: 120 seconds or 10 pathogens Death: Release 100 cytokines
+Overview Macrophages are the "big eaters" of our immune system. They can consume up to 100x more pathogens than a Neutrophil. They therefore require more cytokine in an area to be attracted and move very slowly. After they consume 10 pathogens, they die. Just before death, they release cytokines which call in other white blood cells to the area.
+
+DENDRITIC
+Name: Dendritic Purpose: Recruit B-Cells & T-Helpers Attraction Level : 35 cytokines Speed: Fast Lifespan: Consume 1 pathogen and bring it back to the lymph node. Upon completion of the trip, the player will have 1 additional B or T-Helper cell.
+Overview The Dendritic Cell is responsible for consuming a pathogen and then reporting back detailed information to the lymph node where B-Cells and T-Helpers are produced specifically to take out the specific pathogen.
+
+NATURAL KILLER
+Name: Natural Killer Purpose: Kill infected or cancerous cells. Attraction Level : 50 cytokines Speed: Medium Lifespan: 60 seconds Activation: Bond with an infected or cancerous cell and release toxins into it.
+Overview The Natural Killer cell has one job ­ to kill cells that it finds to be defective. It does this by injecting toxins into the cell and killing it from the inside. These toxins may leak out and damage nearby health cells. Because the NK cell is not "targeted" like a T-Killer cell, it can sometimes become confused and attack healthy cells. This is what leads to autoimmune disorders.
+
+TARGETED CELLS
+There are three types of adaptive immune system cells programmed into the simulator.
+
+B-CELL
+Name: B-Cell Purpose: Release antibodies to slow down and tag pathogens for death. Speed: Medium Lifespan: Until the simulation is complete. Activation: Consume a pathogen and release antibodies. Activation: Replicate a B-Cell when stimulated by a THelper.
+Overview B-Cells are coded to target a specific pathogen. When they consume the pathogen, they become "activated" and release antibodies. The antibodies hunt down and attach themselves to the specific pathogen. This slows down the pathogen and also tags it for termination by Macrophages.
+
+T-HELPER
+
+Overview
+
+Name: T-Helper
+Purpose: Attract T-Killers and stimulate B-Cells.
+Speed: Fast
+Lifespan: Until the simulation is complete.
+Activation : Bond with a WBC that has consumed a pathogen and release 10 cytokines.
+Activation : Bond with an infected or cancerous cell and release 10 T-cytokines.
+Activation : Bond with a B-Cell to stimulate replication and increase antibody production.
+
+T helper cells are a type of T cells that play an important role in the immune system, particularly in the adaptive immune system. They help the activity of other immune cells by releasing T cell cytokines. They are essential in B cell antibody class switching, in the activation and growth of cytotoxic T cells, and in maximizing bactericidal activity of phagocytes such as macrophages.
+
+T-KILLER
+Name: T-Killer Purpose: Kill infected or cancerous cells. Attraction Level : 100 T-cytokines Speed: Medium Lifespan: Until the simulation is complete. Activation: Bond with an infected or cancerous cell and trigger Apoptosis (programmed cell death).
+Overview A T-Killer cell is a T lymphocyte (a type of white blood cell) that kills cancer cells, cells that are infected (particularly with viruses), or cells that are damaged in other ways. Most cytotoxic T cells express T-cell receptors (TCRs) that can recognize a specific antigen. An antigen is a molecule capable of stimulating an immune response, and is often produced by cancer cells or viruses.
+
+RECRUITMENT
+White blood cells will enter the simulation at predetermined intervals (ex. every 15 seconds).
+Players have the ability to select which white blood cell enters the simulation on the next interval.
+The available white blood cells to enter the simulation will be dependent on Cytokine levels, a per-unit "cool down",
+and Dendritic cell activity.
+
+RECRUITMENT
+The interface for selecting the next white blood cell to enter the scene should show availability and requirements
+needed to recruit.
+
+Neutrophil READY!
+
+0:27
+Basophil WAITING
+
+Eosinophil READY!
+
+1:42
+Macrophage WAITING
+
+Dendritic REQ 35 Cytokine
+
+Natural Killer REQ 50
+Cytokine
+
+2x
+
+2x
+
+B-Cell READY!
+
+T-Helper READY!
+
+Use Dendritic cells to increase inventory of B-Cells and T-Helpers.
+
+T-Killer REQ 100 T-Cytokine
+
+Start the fight with "phils". Build up cyStoarktitnhee lfeigvhet lws.ith "phils" and build
+up cytokine levels.
+Bring in the Macrophages to kick some major ass and continue to raising cytokine levels.
+Call in the Dendritic to raise Lymph Node awareness. Call in Natural Killers if cells need a killin'.
+Call in B-Cells and T-Helpers. These are big "hero" units that tear things up and signal for the big boy.
+Call in the big T-Killer to wipe out infected or cancerous cells!
+
+TYPICAL USE
+
+NANO-BOTS
+Nano-bots are the primary mechanism for the player to influence the outcome of a simulation.
+They are built specifically for one purpose much like a medicine or pharmaceutical drug.
+Classes of nano-bots the player will have access to include: assassins, cleaners, repair, protection, trappers,
+enhancers, and amplifiers.
+Nano-bots will learn and adapt to their job the more a player uses them. This is represented by leveling system
+with a skill tree for each class of nano-bot.
+
+NANO-BOTS
+Each nano-bot that has a fuel cell that is expended as they work. The nano-bot will return to a nano-factor to
+refuel when needed.
+Nano-bots that run out of fuel in the field can be collected by a Scavenger or refueled by a Repair bot.
+A player can retire a nano-bot that is no longer serving a purpose in the simulation. This will reduce the nanorejection levels.
+
+NANO-BOTS
+Bionomicon has used deep sea biology research to inspire their nano-bot designs.
+
+VIPER
+Name: Viper Purpose: Hunt and kill pathogens Size: Small Speed: Fast Genesis Time: Longest
+Description Vipers have an aerodynamic form with 3 flagellum for efficient maneuvering. They also have four grabber arms to attach to pathogens.
+
+GULPER
+Name: Gulper Purpose: Clean toxins produced by pathogens Size: Large Speed: Slow Genesis Time: Average
+Description Gulpers have large pouch like vacuoles that hold all the collected toxin proteins. These vacuoles really add to the size of the nano-bot. Small grabber arms are located around the vacuoles, and the bot uses them to efficiently grab toxin proteins and push them into the vacuoles.
+
+AMPHIPOD
+Name: Amphipod Purpose: Repair damaged cells and refuel nano-bots. Size: Average Speed: Average Genesis Time: Average
+Description The Amphipod has many grabbers that help the nano-bot latch onto cells, and it then releases chemicals that help the cell bind together again.
+
+NAUTILUS
+Name: Nautilus Purpose: Create protective shield around cells Size: Large Speed: Slow Genesis Time: Long
+Description Nautilus bots are bulky and slow. They hold a lot of proteins to build shields. Nautilus bots should have a large bulky quality with a single flagellum that helps it navigate. It should have a "plate-like" quality, with large metal pieces that give a feeling of an armored unit.
+
+ANGLER
+Name: Angler Purpose: Release chemicals that slow down pathogens Size: Average Speed: Average Genesis Time: Average
+Description Anglers are average sized, and they synthesize their own chemicals internally (hence the cool down time). They have two propulsion flagellum to help move efficiently, and they have lots of openings to disperse the chemicals.
+
+CYTOSQUID
+Name: Cytosquid Purpose: Release cytokines Size: Average Speed: Fast Genesis Time: Fast
+Description Cytosquids are round, porous, and small. They release a small cloud of cytokines then have a cool down timer before they can release more. They generally move close to white blood cells before releasing cytokines.
+
+ISOPOD
+Name: Isopod Purpose: Collect materials for nano-bot construction Size: Average Speed: Slow Genesis Time: Average
+Description These nano-bots hunt down dead cells or stranded nano-bots and bring them back to the factory to help with unit production.
+
+CHIMAERA
+Name: Chimaera Purpose: Augment the function of a white blood cell Size: Small Speed: Fast Genesis Time: Super Fast
+Description These oddball nano-bots travel through the level and bind with white blood cells; augmenting movement speed, life span, engulfing capacity, and other unique stats. Enhancers are very small, smooth, and agile with a number of flagellum.
+
+ENHANCER
+The Enhancer bot enters a cell much like a virus and hijacks the inner workings of the cell.
+
+Neutrophil 10% speed boost 10% more cytokines 20% longer lifespan Consume 2 pathogens
+Basophil 10% speed boost 15% more histamines 20% longer lifespan Consume 2 pathogens
+Eosinophil 10% speed boost 15% more toxins 20% longer lifespan Consume 2 pathogens
+Dendritic Cell 20% speed boost 20% longer lifespan
+Macrophage 10% speed boost 10% more cytokines 20% longer lifespan Consume 8 pathogens
+
+ENHANCER
+Natural Killer 10% speed boost 15% more toxins 20% longer lifespan
+B Cell 10% speed boost 15% more antibodies +1 memory cell
+T Helper 20% speed boost 10% more cytokines +1 memory cell
+T Killer 20% speed boost
+Each type of white blood cell is augmented in unique ways by the Enhancer bot.
+
+NANO-FACTORIES
+Nano-factories produce nano-bots during the simulation.
+Players will place and construct nano-factories at key locations in a level.
+Nano-factories are akin to towers in a Tower Defense game with the distinction of being able to produce any
+type of unit.
+Players will queue up the production of nano-bots, much like a factory in a Real-Time Strategy game.
+
+NANO-FACTORIES
+Nano-bots take a certain amount of time to produce. When construction is complete, the nano-bot is launched
+out of the factory and into the simulation.
+There can only be a limited amount of nano-tech in an area before the immune system will attack it.
+Nano-factories can be upgraded to provide nano-bot enhancements over the course of the simulation.
+Factory upgrades improve the nano-bots they produce with enhancements like increased speed, better
+navigation, longer lifespan, and reduced genesis time.
+
+NANO-FACTORIES
+
+PATHOGENS
+The simulator is programmed to model the following common classes of pathogen: Viruses, Bacteria, and
+Parasites.
+Most pathogens target specific areas of the human body to wage war. Anthrax goes after the lungs, Malaria starts
+in the liver and ends up in the blood stream, etc.
+The simulator will holographically generate an appropriate environment for the particular pathogen the player is fighting.
+
+VIRUS
+Viruses are the most common type of pathogen that the immune system encounters.
+There are currently 170 known virus strains, represented by an H (1-17) and N (1-10) identifier.
+A virus will penetrate a human cell, hijack it's internal replication engine, and produce more viruses.
+Those new viruses spread to nearby cells and continue replicating.
+
+BACTERIA
+Bacteria are different than viruses in that they have fully functional cells.
+This means that bacteria are able to survive and reproduce on their own.
+Bacteria commonly form colonies and cause infections when they begin to reproduce within the human body.
+
+PARASITE
+A parasite is an organism that lives on or inside another organism (the host) and harms the host.
+Parasites use human cells as a host to reproduce.
+Parasitic offspring typically have a specific function like attacking red blood cells.
+
+BIONOMICON
+Scenarios
+
+SCENARIOS
+Simulated "scenarios" pit the player and their nano-bots against known and unknown pathogenic invaders.
+Early in the game, these scenarios will include well-known diseases like Cancer, Diabetes, HIV, Malaria, and Anthrax.
+As the game progresses, the player will take on fictional pathogens that might be encountered after the apocalypse.
+
+SCENARIOS
+We've started with level designs for some more prominent diseases. There is no end to the other diseases that levels
+could be built from including:
+Smallpox, West Nile, Ebola, Hepatitis, Meningitis, Strep Throat, Measles, Polio, Typhoid Fever, Yellow Fever, Rabies, Diphtheria, Food Poisoning, Scarlet Fever,
+Tonsillitis, Tuberculosis, Ringworm, Mad Cow, Legionnaires' Disease, and the Black Death (Plague).
+Fictional pathogens also provide limitless potential for additional content. The scenario building community will
+hopefully provide the majority of these.
+
+MEMORY CELLS
+B-Cells are stimulated by a T-Helper to replicate into Memory B-Cells that are coded to identify a specific
+pathogen in the future.
+The game keeps track of the number of Memory B-Cells created in each scenario and persists that data.
+When a scenario is replayed, the built up memory cells created for the specific pathogen influence the starting
+conditions for the scenario.
+The scenario might start with a small inventory of B and THelper cells.
+
+TUTORIALS
+Tutorial scenarios will be used to get the player up to speed on the basics of the game play.
+The basic actors like tissue cells, neutrophils, and macrophages will be introduced in the first tutorials.
+A couple foundational nano-bots like the Assassin and Repair bots will be used in the final tutorials.
+Teaching the player about the user interface will be a primary objective through most of the tutorials.
+
+MALARIA
+Malaria is caused by a parasite. The plasmodium parasite enters the blood stream of a human through the saliva of an anopheles mosquito. The parasite then makes its way
+through the blood stream to the liver, where it burrows into the liver cells.
+While in a liver cell, it reproduces. The merozoites then spread to the red blood cells and reproduce inside the red blood cells. The bloods cells that host the merozoites
+stick to the wall of the blood vessels until the new merozoites burst out, and the cycle continues.
+
+MALARIA
+The battle to defeat Malaria takes place in the liver.
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+MALARIA
+
+ANTHRAX
+Anthrax is caused by Bacillus anthracis. The bacteria can exist dormant in its endospore stage for many years,
+hidden in the ground. It can then be inhaled or ingested, or create an infection through a cut in the surface of the
+skin.
+When a human inhales the spores they travel to their lungs and rest in the alveolar sacs. Macrophages are then alerted to the presence of the spores and leave the blood stream to engulf the endospores.
+
+ANTHRAX
+Usually a pathogen is destroyed when they are engulfed by macrophages, but in this instance the endospores
+germinate inside the macrophage and exit as vegetative Bacillus.
+The Bacillus anthracis then spreads and multiplies by invading cells. They also release exotoxins that attach to
+the cells and kill them.
+These exotoxins travel through the blood stream and cause blood poisoning on their way to the cells they
+destroy.
+
+ANTHRAX
+The battle to defeat Anthrax takes place in the lymph nodes.
+
+ANTHRAX
+
+ANTHRAX
+
+ANTHRAX
+
+ANTHRAX
+
+ANTHRAX
+
+ANTHRAX
+
+CANCER
+A natural immune response can fight cancer. Natural Killer cells, B-Cells and T-Killers all work well against the
+cancer cells.
+T-Killer cells can be targeted to kill reproducing cells and B -Cells can create antibodies that effectively mark replicating cells.
+However, the immune system is usually unable to totally crush cancer. Often times chemotherapy is a solution, but in our simulation we have the capacity to include fictional
+nano-bots to help destroy the cancerous cells.
+
+CANCER
+The battle to defeat Cancer takes place in the parathyroid.
+
+CANCER
+
+CANCER
+
+CANCER
+
+CANCER
+
+CANCER
+
+HIV
+The human immunodeficiency virus (HIV) is a slowly replicating retrovirus that causes the acquired
+immunodeficiency syndrome (AIDS), a condition which progressive failure of the immune system allows lifethreatening infections and cancers to thrive.
+HIV infects vital cells in the human immune system such as helper T-Helpers, Macrophages, and Dendritic cells.
+When T-Helper cell counts decline below a critical level, cell-mediated immunity is lost, and the body becomes progressively more susceptible to opportunistic infections.
+
+HIV
+The battle to defeat HIV and Pneumonia takes place in the Alveolar Sacs.
+
+HIV
+
+HIV
+
+HIV
+
+HIV
+
+HIV
+
+HIV
+
+HIV
+
+HIV
+
+DIABETES
+Type 1 Diabetes is a form of diabetes mellitus that results from the autoimmune destruction of the insulin-producing
+beta cells in the pancreas.
+The subsequent lack of insulin leads to increased blood and urine glucose. Untreated, type 1 diabetes is ultimately
+fatal.
+
+DIABETES
+The battle to defeat Diabetes takes place in the pancreas.
+
+DIABETES
+
+DIABETES
+
+DIABETES
+
+DIABETES
+
+DIABETES
+
+DIABETES
+
+PATHOGEN X
+Pathogen X is an extraterrestrial parasite unlike any faced.
+It travels to the heart and begins to reproduce in cells and break them apart for nutrition to fuel reproduction.
+The player should have to use all of their skills they have learned to efficiently deal with this threat.
+This parasite has arms (like a macrophage) that extend to engulf cytokines and antibodies.
+The parasite reproduces a variant that collects materials from tissue cells in order to fuel reproduction.
+
+PATHOGEN X
+The battle to defeat Pathogen X takes place in the heart.
+
+PATHOGEN X
+
+PATHOGEN X
+
+PATHOGEN X
+
+PATHOGEN X
+
+PATHOGEN X
+
+PATHOGEN X
+
+BIONOMICON
+Modding
+
+LEVEL EDITOR
+The level editor allows the player to pick a specific location in the body and build unique experiences from
+existing game content.
+The player can choose from a number of pieces that connect to create unique levels.
+The player can choose the flow direction of a blood vessel and also where that vessel connects to other areas in the
+level.
+The player can choose where the tissue cells should be placed that need to be protected.
+
+LEVEL EDITOR
+The player can choose the number and speed of enemy waves as well as the intervals for white blood cell arrival.
+The player can choose the locations for nano-factories.
+Finally, the player can set the starting conditions for the scenario. This might include initial actors in the scene,
+starting cytokine levels, etc.
+Players should be able to share their creations with the community using something like Steam Workshop.
+
+PATHOGEN EDITOR
+The pathogen editor allows players to create custom enemy types and share them with the community.
+The pathogen class (virus, parasite, or bacteria) determines the general behavior. Modifiers provide the
+player with a layer of behavioral customization.
+The shape, size, color, and décor (like cilia or flagellum) of a pathogen body can also be customized.
+Special abilities like releasing a cloud of toxins on death can be attached to particular classes of pathogen.
+
+SERIOUSLY Can we make it now?
+
+

@@ -401,6 +401,20 @@ function computeEpisodes(s) {
   const filtered = banded.filter(e => modalityPasses(e.container));
   const out = [];
 
+  // Helper: summarise the composition of events inside a [start, end] window
+  // by modality. E.g. "5 mouse, 1 view, 2 hud". This is what Robert called out
+  // about radar consultations - setting a waypoint contains clicks + zoom +
+  // map detail, not just the radar HUD bookends.
+  function composition(startT, endT) {
+    const inside = filtered.filter(e => e.t >= startT && e.t <= endT);
+    const counts = { MOUSE: 0, KEYBOARD: 0, VIEW: 0, HUD: 0 };
+    for (const e of inside) counts[e.container] = (counts[e.container] || 0) + 1;
+    const parts = MODALITIES
+      .filter(m => counts[m] > 0)
+      .map(m => `${counts[m]} ${m.toLowerCase()}`);
+    return { count: inside.length, parts: parts.join(', ') || 'none' };
+  }
+
   // Hesitation: a gap >= pauseThresholdMs followed by a burst of >= 3 events
   // within 1.5s after the gap ends. The episode spans the pause + burst.
   if (enabledEpisodes.has('Hesitation')) {
@@ -416,12 +430,14 @@ function computeEpisodes(s) {
         burstEnd = filtered[j].t;
       }
       if (burstCount >= 3) {
+        const burstStart = filtered[i].t;
+        const comp = composition(burstStart, burstEnd);
         out.push({
           type: 'Hesitation',
           start: filtered[i - 1].t,
           end: burstEnd,
           duration: burstEnd - filtered[i - 1].t,
-          meta: `pause ${(gapMs / 1000).toFixed(1)}s then ${burstCount} actions`,
+          meta: `pause ${(gapMs / 1000).toFixed(1)}s then burst: ${comp.parts}`,
         });
       }
     }
@@ -435,12 +451,13 @@ function computeEpisodes(s) {
     for (const o of opens) {
       const c = closes.find(x => x.t > o.t);
       if (c && (c.t - o.t) < 30) {
+        const comp = composition(o.t, c.t);
         out.push({
           type: 'RadarConsultation',
           start: o.t,
           end: c.t,
           duration: c.t - o.t,
-          meta: `radar open ${(c.t - o.t).toFixed(1)}s`,
+          meta: `radar open ${(c.t - o.t).toFixed(1)}s, contains: ${comp.parts}`,
         });
       }
     }
@@ -458,12 +475,13 @@ function computeEpisodes(s) {
       let j = i;
       while (j + 1 < seekEvents.length && seekEvents[j + 1].t - seekEvents[i].t < winSec) j++;
       if (j - i >= 2) {
+        const comp = composition(seekEvents[i].t, seekEvents[j].t);
         out.push({
           type: 'InformationSeeking',
           start: seekEvents[i].t,
           end: seekEvents[j].t,
           duration: seekEvents[j].t - seekEvents[i].t,
-          meta: `${j - i + 1} info-seek events`,
+          meta: `info-seek window: ${comp.parts}`,
         });
         i = j + 1;
       } else {
@@ -482,12 +500,13 @@ function computeEpisodes(s) {
       let j = i;
       while (j + 1 < moveEvents.length && moveEvents[j + 1].t - moveEvents[j].t < winSec) j++;
       if (j - i >= 3) {
+        const comp = composition(moveEvents[i].t, moveEvents[j].t);
         out.push({
           type: 'MovementBurst',
           start: moveEvents[i].t,
           end: moveEvents[j].t,
           duration: moveEvents[j].t - moveEvents[i].t,
-          meta: `${j - i + 1} movement events`,
+          meta: `movement burst: ${comp.parts}`,
         });
       }
       i = j + 1;

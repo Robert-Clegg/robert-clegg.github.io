@@ -74,6 +74,12 @@ svg { display: block; }
 .icon-chip .glyph { font-size: 13px; line-height: 1; }
 .icon-chip .count { color: #6e7681; font-size: 10px; }
 .icon-chip.active .count { color: #d4a800; }
+.episode-btn {
+  background: #0d1117; color: #c9d1d9; border: 1px solid #30363d;
+  padding: 4px 10px; border-radius: 12px; cursor: pointer; font-size: 11px;
+}
+.episode-btn:hover { border-color: #00e5ff; }
+.episode-btn.active { border-color: #FFD700; background: #1a1a0a; color: #FFD700; }
 </style>
 </head>
 <body>
@@ -135,6 +141,13 @@ svg { display: block; }
     <span style="color:#8b949e; font-size:12px;" title="Click event types to mark them as icons on the timeline.">Action markers:</span>
     <div id="icon-chips" style="display:flex; flex-wrap:wrap; gap:4px;"></div>
   </div>
+  <div class="row" style="margin-bottom: 12px; gap: 6px; padding-top: 8px; border-top: 1px dashed #30363d;">
+    <span style="color:#8b949e; font-size:12px;" title="Higher-order cognitive episodes detected from event patterns. Mirrors the Detector framework in petro-active-web/src/episodes/.">Episodes:</span>
+    <button class="episode-btn active" data-episode="Hesitation">Hesitation</button>
+    <button class="episode-btn active" data-episode="RadarConsultation">Radar consultation</button>
+    <button class="episode-btn" data-episode="InformationSeeking">Information seeking</button>
+    <button class="episode-btn" data-episode="MovementBurst">Movement burst</button>
+  </div>
   <div id="bands-card"><div class="no-data">Load files to see cognitive bands</div></div>
 </div>
 
@@ -193,6 +206,13 @@ let activeModalities = new Set(['MOUSE', 'KEYBOARD', 'VIEW', 'HUD']);
 let pauseThresholdMs = 2000;
 let showPauses = true;
 let iconTypes = new Set(); // event-type strings the viewer wants surfaced as marker icons
+let enabledEpisodes = new Set(['Hesitation', 'RadarConsultation']);
+const EPISODE_COLORS = {
+  Hesitation:         '#9966ff', // purple - matches Reflective
+  RadarConsultation:  '#4bc0c0', // teal - matches HUD
+  InformationSeeking: '#ff9f40', // orange
+  MovementBurst:      '#FFD700', // gold
+};
 
 // ---------------------------------------------------------------------------
 // Auto-load published sessions from manifest
@@ -372,6 +392,111 @@ function inputTypeCatalog(s) {
     .map(([type, count]) => ({ type, count, container: meta[type].container }));
 }
 
+// Episode detection - simplified JS versions of detectors that live in
+// petro-active-web/src/episodes/detectors/. The shape (start, end, type,
+// label, duration) mirrors the Detector interface in src/episodes/types.ts.
+// Each detector runs on the filtered banded event stream.
+function computeEpisodes(s) {
+  const banded = computeEventBands(s);
+  const filtered = banded.filter(e => modalityPasses(e.container));
+  const out = [];
+
+  // Hesitation: a gap >= pauseThresholdMs followed by a burst of >= 3 events
+  // within 1.5s after the gap ends. The episode spans the pause + burst.
+  if (enabledEpisodes.has('Hesitation')) {
+    for (let i = 1; i < filtered.length; i++) {
+      const gapMs = (filtered[i].t - filtered[i - 1].t) * 1000;
+      if (gapMs < pauseThresholdMs) continue;
+      // Look forward for a burst
+      const burstWindowSec = 1.5;
+      let burstCount = 0;
+      let burstEnd = filtered[i].t;
+      for (let j = i; j < filtered.length && filtered[j].t - filtered[i].t < burstWindowSec; j++) {
+        burstCount++;
+        burstEnd = filtered[j].t;
+      }
+      if (burstCount >= 3) {
+        out.push({
+          type: 'Hesitation',
+          start: filtered[i - 1].t,
+          end: burstEnd,
+          duration: burstEnd - filtered[i - 1].t,
+          meta: `pause ${(gapMs / 1000).toFixed(1)}s then ${burstCount} actions`,
+        });
+      }
+    }
+  }
+
+  // RadarConsultation: ev_radarOpen paired with the nearest following
+  // ev_radarClose. Episode spans the open->close interval.
+  if (enabledEpisodes.has('RadarConsultation')) {
+    const opens = filtered.filter(e => e.type === 'ev_radarOpen');
+    const closes = filtered.filter(e => e.type === 'ev_radarClose');
+    for (const o of opens) {
+      const c = closes.find(x => x.t > o.t);
+      if (c && (c.t - o.t) < 30) {
+        out.push({
+          type: 'RadarConsultation',
+          start: o.t,
+          end: c.t,
+          duration: c.t - o.t,
+          meta: `radar open ${(c.t - o.t).toFixed(1)}s`,
+        });
+      }
+    }
+  }
+
+  // InformationSeeking: sliding 2s window containing radar/zoom OR multiple
+  // controlState transitions OR cameraKey samples - any combination that
+  // signals "player is gathering information."
+  if (enabledEpisodes.has('InformationSeeking')) {
+    const seekTypes = new Set(['ev_radarOpen', 'ev_radarClose', 'ev_cameraZoom', 'ev_controlState']);
+    const seekEvents = filtered.filter(e => seekTypes.has(e.type));
+    const winSec = 2.0;
+    let i = 0;
+    while (i < seekEvents.length) {
+      let j = i;
+      while (j + 1 < seekEvents.length && seekEvents[j + 1].t - seekEvents[i].t < winSec) j++;
+      if (j - i >= 2) {
+        out.push({
+          type: 'InformationSeeking',
+          start: seekEvents[i].t,
+          end: seekEvents[j].t,
+          duration: seekEvents[j].t - seekEvents[i].t,
+          meta: `${j - i + 1} info-seek events`,
+        });
+        i = j + 1;
+      } else {
+        i++;
+      }
+    }
+  }
+
+  // MovementBurst: clusters of >=4 KEYBOARD events (cameraKey/wasdDwell) within 2s.
+  if (enabledEpisodes.has('MovementBurst')) {
+    const moveTypes = new Set(['ev_cameraKey', 'ev_wasdDwell']);
+    const moveEvents = filtered.filter(e => moveTypes.has(e.type));
+    const winSec = 2.0;
+    let i = 0;
+    while (i < moveEvents.length) {
+      let j = i;
+      while (j + 1 < moveEvents.length && moveEvents[j + 1].t - moveEvents[j].t < winSec) j++;
+      if (j - i >= 3) {
+        out.push({
+          type: 'MovementBurst',
+          start: moveEvents[i].t,
+          end: moveEvents[j].t,
+          duration: moveEvents[j].t - moveEvents[i].t,
+          meta: `${j - i + 1} movement events`,
+        });
+      }
+      i = j + 1;
+    }
+  }
+
+  return out;
+}
+
 function buildIconChips() {
   const el = document.getElementById('icon-chips');
   el.innerHTML = '';
@@ -436,7 +561,14 @@ function renderBands() {
 
   const W = 1100, padL = 130, padR = 30, padT = 20, padB = 40;
   const bandH = 60;
-  const H = padT + padB + BANDS.length * bandH;
+  // Episode lane sits above the bands. Height depends on how many episode rows
+  // we need to stack (one row per active type to avoid overlapping bars).
+  const activeEpisodeTypes = ['Hesitation', 'RadarConsultation', 'InformationSeeking', 'MovementBurst']
+    .filter(t => enabledEpisodes.has(t));
+  const episodeRowH = 14;
+  const episodeLaneH = activeEpisodeTypes.length > 0 ? (activeEpisodeTypes.length * episodeRowH + 8) : 0;
+  const bandsTop = padT + episodeLaneH;
+  const H = bandsTop + padB + BANDS.length * bandH;
 
   const tMax = duration;
   const tCutoff = tMax * playhead;
@@ -446,7 +578,7 @@ function renderBands() {
   let bgs = '';
   BANDS.forEach((b, i) => {
     const row = rowOf(i);
-    const y = padT + row * bandH;
+    const y = bandsTop + row * bandH;
     const alt = row % 2 === 0 ? '#161b22' : '#0d1117';
     bgs += `<rect x="0" y="${y}" width="${W}" height="${bandH}" fill="${alt}"/>`;
     bgs += `<line x1="${padL}" y1="${y + bandH}" x2="${W - padR}" y2="${y + bandH}" stroke="#30363d"/>`;
@@ -454,13 +586,40 @@ function renderBands() {
     bgs += `<text x="${padL - 8}" y="${y + bandH/2 + 12}" fill="#8b949e" font-size="10" text-anchor="end">${b.range}</text>`;
   });
 
-  // Time axis ticks
+  // Time axis ticks (span from band top through episode lane too)
   let ticks = '';
   const step = duration > 120 ? 30 : (duration > 30 ? 10 : 5);
   for (let t = 0; t <= duration; t += step) {
     const x = scaleX(t);
     ticks += `<line x1="${x}" y1="${padT}" x2="${x}" y2="${H - padB}" stroke="#21262d"/>`;
     ticks += `<text x="${x}" y="${H - padB + 14}" fill="#8b949e" font-size="10" text-anchor="middle">${t.toFixed(0)}s</text>`;
+  }
+
+  // Episode lane (above the bands). One row per active episode type.
+  let episodeSvg = '';
+  if (activeEpisodeTypes.length > 0) {
+    const episodes = computeEpisodes(s);
+    for (let r = 0; r < activeEpisodeTypes.length; r++) {
+      const type = activeEpisodeTypes[r];
+      const y = padT + r * episodeRowH;
+      const color = EPISODE_COLORS[type];
+      // Row label on the left
+      episodeSvg += `<text x="${padL - 8}" y="${y + episodeRowH - 3}" fill="${color}" font-size="10" text-anchor="end" opacity="0.85">${type}</text>`;
+      // Bars for this episode type
+      for (const ep of episodes) {
+        if (ep.type !== type) continue;
+        if (ep.start > tCutoff) continue;
+        const x1 = scaleX(ep.start);
+        const x2 = scaleX(Math.min(ep.end, tCutoff));
+        const w = Math.max(2, x2 - x1);
+        episodeSvg += `<rect x="${x1}" y="${y + 1}" width="${w}" height="${episodeRowH - 3}" fill="${color}" opacity="0.65" rx="2">
+          <title>${ep.type}: ${ep.duration.toFixed(2)}s (${ep.start.toFixed(1)}s - ${ep.end.toFixed(1)}s) - ${ep.meta || ''}</title>
+        </rect>`;
+        if (w > 60 && ep.duration >= 0.5) {
+          episodeSvg += `<text x="${x1 + 4}" y="${y + episodeRowH - 4}" fill="#fff" font-size="9" opacity="0.95">${ep.duration.toFixed(1)}s</text>`;
+        }
+      }
+    }
   }
 
   // Per-modality rate curves within each band
@@ -470,7 +629,7 @@ function renderBands() {
 
   let curves = '';
   for (let bi = 0; bi < BANDS.length; bi++) {
-    const yTop = padT + rowOf(bi) * bandH;
+    const yTop = bandsTop + rowOf(bi) * bandH;
     const yBase = yTop + bandH - 4;
     const lineH = bandH - 10;
 
@@ -531,7 +690,7 @@ function renderBands() {
     if (e.t > tCutoff) continue;
     if (!modalityPasses(e.container)) continue;
     const x = scaleX(e.t);
-    const yTop = padT + rowOf(e.band) * bandH;
+    const yTop = bandsTop + rowOf(e.band) * bandH;
     const yTeam = yTop + bandH * (modOffsets[e.container] || 0.7);
     const color = MODALITY_COLORS[e.container] || '#c9d1d9';
     ticksDots += `<line x1="${x}" y1="${yTeam}" x2="${x}" y2="${yTeam + 6}" stroke="${color}" stroke-width="1.3" opacity="0.85"/>`;
@@ -540,7 +699,7 @@ function renderBands() {
   // Per-modality baseline guides
   let baselines = '';
   for (let i = 0; i < BANDS.length; i++) {
-    const yTop = padT + rowOf(i) * bandH;
+    const yTop = bandsTop + rowOf(i) * bandH;
     for (const m of MODALITIES) {
       if (!modalityPasses(m)) continue;
       const yBase = yTop + bandH * (modOffsets[m] || 0.7) + 6;
@@ -554,7 +713,7 @@ function renderBands() {
   let pauseCountVisible = 0;
   if (showPauses) {
     const pauses = computePauses(s);
-    const reflectiveTop = padT + rowOf(BANDS.length - 1) * bandH;
+    const reflectiveTop = bandsTop + rowOf(BANDS.length - 1) * bandH;
     const barY = reflectiveTop + 6;
     const barH = 10;
     for (const p of pauses) {
@@ -609,6 +768,7 @@ function renderBands() {
   const svg = `<svg width="100%" viewBox="0 0 ${W} ${Htotal}" preserveAspectRatio="xMidYMid meet">
     ${bgs}
     ${ticks}
+    ${episodeSvg}
     ${baselines}
     ${pauseSvg}
     ${curves}
@@ -759,6 +919,16 @@ document.getElementById('pause-scrub').addEventListener('input', (evt) => {
 document.getElementById('show-pauses').addEventListener('change', (evt) => {
   showPauses = evt.target.checked;
   renderBands();
+});
+
+document.querySelectorAll('.episode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.dataset.episode;
+    if (enabledEpisodes.has(type)) enabledEpisodes.delete(type);
+    else enabledEpisodes.add(type);
+    btn.classList.toggle('active');
+    renderBands();
+  });
 });
 
 function tick(now) {

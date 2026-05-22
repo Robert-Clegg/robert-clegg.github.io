@@ -1,12 +1,28 @@
 {
-  "schemaVersion": 1,
-  "description": "Curated PetroActive session telemetry for the Cognitive Bands dashboard. s001-s006 are human-vs-AI; s007 is AI-vs-AI baseline.",
+  "schemaVersion": 2,
+  "description": "PetroActive FPS session telemetry used in the Kaggle Cognitive Mechanics benchmark. Single-player mech exploration with mouse, keyboard (WASD), view, and HUD input capture. Each event carries a container (MOUSE/KEYBOARD/VIEW/HUD/WORLD) and a layerWeight (precomputed cognitive weight).",
+  "shape": "v2-containerized",
   "sessions": [
-    { "file": "s001.json",           "label": "s001 - Human vs AI",        "kind": "human-vs-ai" },
-    { "file": "s003.json",           "label": "s003 - Human vs AI",        "kind": "human-vs-ai" },
-    { "file": "s004.json",           "label": "s004 - Human vs AI",        "kind": "human-vs-ai" },
-    { "file": "s005.json",           "label": "s005 - Human vs AI",        "kind": "human-vs-ai" },
-    { "file": "s006.json",           "label": "s006 - Human vs AI",        "kind": "human-vs-ai" },
-    { "file": "s007_ai_vs_ai.json",  "label": "s007 - AI vs AI baseline",  "kind": "ai-vs-ai" }
+    {
+      "file": "petro_telemetry_petro-1774623147010.json",
+      "label": "s01 - Radar telemetry first test",
+      "wpVersion": "v13",
+      "date": "2026-03-27",
+      "notes": "First radar telemetry test. 5 waypoints, all cancelled - exploratory testing."
+    },
+    {
+      "file": "petro_telemetry_petro-1774624430825.json",
+      "label": "s02 - Radar orientation fix test",
+      "wpVersion": "v15",
+      "date": "2026-03-27",
+      "notes": "Radar pointer orientation fix test. 4 waypoints, all cancelled - distances 319-939m."
+    },
+    {
+      "file": "petro_telemetry_petro-1774628035861.json",
+      "label": "s03 - First successful arrival",
+      "wpVersion": "v16",
+      "date": "2026-03-27",
+      "notes": "First successful waypoint arrival. Calibrated from 724m to 196m to 123m targets."
+    }
   ]
 }

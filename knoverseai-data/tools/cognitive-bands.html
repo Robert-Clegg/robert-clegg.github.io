@@ -64,6 +64,16 @@ svg { display: block; }
 .bar-wrap { background: #0d1117; height: 14px; border-radius: 4px; overflow: hidden; border: 1px solid #30363d; }
 .bar-fill { height: 100%; display: flex; }
 .session-note { color: #8b949e; font-size: 12px; margin-top: 6px; font-style: italic; }
+.icon-chip {
+  background: #0d1117; color: #c9d1d9; border: 1px solid #30363d;
+  padding: 4px 8px; border-radius: 12px; cursor: pointer; font-size: 11px;
+  display: inline-flex; align-items: center; gap: 4px; user-select: none;
+}
+.icon-chip:hover { border-color: #00e5ff; }
+.icon-chip.active { border-color: #FFD700; background: #1a1a0a; color: #FFD700; }
+.icon-chip .glyph { font-size: 13px; line-height: 1; }
+.icon-chip .count { color: #6e7681; font-size: 10px; }
+.icon-chip.active .count { color: #d4a800; }
 </style>
 </head>
 <body>
@@ -111,6 +121,20 @@ svg { display: block; }
     <button class="modality-btn" data-modality="VIEW">View</button>
     <button class="modality-btn" data-modality="HUD">HUD</button>
   </div>
+  <div class="row" style="margin-bottom: 12px; gap: 10px; padding-top: 8px; border-top: 1px dashed #30363d;">
+    <span style="color:#8b949e; font-size:12px;" title="Hypothesis-tunable: where does a gap become a 'pause' worth treating as cognition?">Pause threshold:</span>
+    <input type="range" id="pause-scrub" min="200" max="10000" value="2000" step="100" style="max-width: 260px;">
+    <span class="time-readout" id="pause-readout" style="color:#9966ff; min-width:60px;">2.0s</span>
+    <span id="pause-count" style="color:#8b949e; font-size:12px;"></span>
+    <span style="flex:1"></span>
+    <label style="color:#8b949e; font-size:12px; display:flex; align-items:center; gap:6px;">
+      <input type="checkbox" id="show-pauses" checked> Show pauses
+    </label>
+  </div>
+  <div class="row" style="margin-bottom: 12px; gap: 6px; padding-top: 8px; border-top: 1px dashed #30363d;">
+    <span style="color:#8b949e; font-size:12px;" title="Click event types to mark them as icons on the timeline.">Action markers:</span>
+    <div id="icon-chips" style="display:flex; flex-wrap:wrap; gap:4px;"></div>
+  </div>
   <div id="bands-card"><div class="no-data">Load files to see cognitive bands</div></div>
 </div>
 
@@ -137,6 +161,23 @@ const MODALITY_COLORS = {
   HUD:      '#4bc0c0',
 };
 
+// Visual glyphs for action markers. Falls back to a dot if type is unknown.
+const TYPE_GLYPHS = {
+  ev_waypointSet:    '▲',  // triangle
+  ev_waypointArrive: '★',  // star
+  ev_waypointCancel: '✕',  // x
+  ev_terrainClick:   '●',  // dot
+  ev_controlState:   '⇄',  // arrows
+  ev_cameraKey:      '■',  // square
+  ev_wasdDwell:      '→',  // arrow
+  ev_radarOpen:      '◉',  // bullseye
+  ev_radarClose:     '○',  // open circle
+  ev_phaseChange:    '│',  // vertical bar
+  ev_cameraPan:      '↔',  // horizontal arrows
+  ev_cameraZoom:     '⦿',  // crosshair
+};
+function glyphFor(type) { return TYPE_GLYPHS[type] || '•'; }
+
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
@@ -147,6 +188,9 @@ let playing = false;
 let playSpeed = 1;
 let lastFrameTs = 0;
 let modalityFilter = 'all'; // 'all' | 'MOUSE' | 'KEYBOARD' | 'VIEW' | 'HUD'
+let pauseThresholdMs = 2000;
+let showPauses = true;
+let iconTypes = new Set(); // event-type strings the viewer wants surfaced as marker icons
 
 // ---------------------------------------------------------------------------
 // Auto-load published sessions from manifest
@@ -215,6 +259,8 @@ function selectSession(idx) {
   playing = false;
   document.getElementById('play-btn').textContent = 'Play';
   document.getElementById('time-scrub').value = 1000;
+  iconTypes.clear();
+  buildIconChips();
   renderAll();
 }
 
@@ -279,6 +325,65 @@ function computeEventBands(s) {
     lastInputMs = tMs;
   }
   return out;
+}
+
+// Compute pause intervals - gaps between consecutive input events that
+// exceed pauseThresholdMs. Each pause is a {start, end, duration} in seconds.
+function computePauses(s) {
+  const events = getEvents(s);
+  const startMs = sessionStartMs(s);
+  const out = [];
+  let lastInputMs = null;
+  for (const e of events) {
+    const container = e.container || 'WORLD';
+    if (container === 'WORLD') continue;
+    const tMs = e.timestamp;
+    if (lastInputMs !== null && (tMs - lastInputMs) >= pauseThresholdMs) {
+      out.push({
+        start: (lastInputMs - startMs) / 1000,
+        end: (tMs - startMs) / 1000,
+        duration: (tMs - lastInputMs) / 1000,
+      });
+    }
+    lastInputMs = tMs;
+  }
+  return out;
+}
+
+// Catalog all input event types present in the session, with their counts.
+function inputTypeCatalog(s) {
+  const counts = {};
+  const meta = {};
+  for (const e of (s.data.events || [])) {
+    const container = e.container || 'WORLD';
+    if (container === 'WORLD') continue;
+    const t = e.type || 'unknown';
+    counts[t] = (counts[t] || 0) + 1;
+    if (!meta[t]) meta[t] = { container };
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([type, count]) => ({ type, count, container: meta[type].container }));
+}
+
+function buildIconChips() {
+  const el = document.getElementById('icon-chips');
+  el.innerHTML = '';
+  if (activeIdx === null) return;
+  const catalog = inputTypeCatalog(sessions[activeIdx]);
+  for (const { type, count, container } of catalog) {
+    const chip = document.createElement('div');
+    chip.className = 'icon-chip' + (iconTypes.has(type) ? ' active' : '');
+    chip.dataset.type = type;
+    chip.innerHTML = `<span class="glyph" style="color:${MODALITY_COLORS[container] || '#c9d1d9'}">${glyphFor(type)}</span> ${type.replace('ev_', '')} <span class="count">${count}</span>`;
+    chip.onclick = () => {
+      if (iconTypes.has(type)) iconTypes.delete(type);
+      else iconTypes.add(type);
+      chip.classList.toggle('active');
+      renderBands();
+    };
+    el.appendChild(chip);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -438,16 +543,71 @@ function renderBands() {
     }
   }
 
-  // Playhead
-  const px = scaleX(tCutoff);
-  const playline = `<line x1="${px}" y1="${padT}" x2="${px}" y2="${H - padB}" stroke="#FFD700" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.7"/>`;
+  // Pause bars: gaps >= pauseThresholdMs rendered in the Reflective band (top row)
+  let pauseSvg = '';
+  let pauseCountVisible = 0;
+  if (showPauses) {
+    const pauses = computePauses(s);
+    const reflectiveTop = padT + rowOf(BANDS.length - 1) * bandH;
+    const barY = reflectiveTop + 6;
+    const barH = 10;
+    for (const p of pauses) {
+      if (p.start > tCutoff) continue;
+      pauseCountVisible++;
+      const x1 = scaleX(p.start);
+      const x2 = scaleX(Math.min(p.end, tCutoff));
+      const w = Math.max(2, x2 - x1);
+      const labelOk = w > 28;
+      pauseSvg += `<rect x="${x1}" y="${barY}" width="${w}" height="${barH}" fill="#9966ff" opacity="0.55" rx="2">
+        <title>Pause ${p.duration.toFixed(1)}s (${p.start.toFixed(1)}s - ${p.end.toFixed(1)}s)</title>
+      </rect>`;
+      if (labelOk) {
+        pauseSvg += `<text x="${(x1 + x2) / 2}" y="${barY + barH - 2}" fill="#fff" font-size="9" text-anchor="middle" opacity="0.9">${p.duration.toFixed(1)}s</text>`;
+      }
+    }
+    document.getElementById('pause-count').textContent = `${pauses.length} pause${pauses.length === 1 ? '' : 's'} >= ${(pauseThresholdMs/1000).toFixed(1)}s`;
+  } else {
+    document.getElementById('pause-count').textContent = '';
+  }
 
-  const svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+  // Action marker icons: a lane just above the X-axis labels. Each enabled
+  // event type renders as a glyph at the event's time, colored by modality.
+  let iconSvg = '';
+  if (iconTypes.size > 0) {
+    const iconY = H - padB + 28; // below the time-tick labels
+    const iconRowH = 14;
+    // Stack overlapping icons vertically
+    const used = {}; // bucket -> next row
+    for (const e of banded) {
+      if (e.t > tCutoff) continue;
+      if (!iconTypes.has(e.type)) continue;
+      const x = scaleX(e.t);
+      // bucket by ~12px to detect overlap
+      const bucket = Math.floor(x / 12);
+      const row = (used[bucket] || 0);
+      used[bucket] = row + 1;
+      const y = iconY + row * iconRowH;
+      const color = MODALITY_COLORS[e.container] || '#c9d1d9';
+      iconSvg += `<text x="${x}" y="${y}" fill="${color}" font-size="13" text-anchor="middle" opacity="0.95"><title>${e.type} at ${e.t.toFixed(2)}s</title>${glyphFor(e.type)}</text>`;
+    }
+  }
+
+  // Compute extra height needed for icon lane (only if active)
+  const iconLaneH = iconTypes.size > 0 ? 28 : 0;
+  const Htotal = H + iconLaneH;
+
+  // Playhead extends through the icon lane too
+  const px = scaleX(tCutoff);
+  const playline = `<line x1="${px}" y1="${padT}" x2="${px}" y2="${Htotal - 4}" stroke="#FFD700" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.7"/>`;
+
+  const svg = `<svg width="100%" viewBox="0 0 ${W} ${Htotal}" preserveAspectRatio="xMidYMid meet">
     ${bgs}
     ${ticks}
     ${baselines}
+    ${pauseSvg}
     ${curves}
     ${ticksDots}
+    ${iconSvg}
     ${playline}
   </svg>`;
 
@@ -558,6 +718,17 @@ document.querySelectorAll('.modality-btn').forEach(btn => {
     renderDist();
     renderStats();
   });
+});
+
+document.getElementById('pause-scrub').addEventListener('input', (evt) => {
+  pauseThresholdMs = parseInt(evt.target.value, 10);
+  document.getElementById('pause-readout').textContent = (pauseThresholdMs / 1000).toFixed(1) + 's';
+  renderBands();
+});
+
+document.getElementById('show-pauses').addEventListener('change', (evt) => {
+  showPauses = evt.target.checked;
+  renderBands();
 });
 
 function tick(now) {

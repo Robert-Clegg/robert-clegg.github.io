@@ -30,6 +30,16 @@ button {
 }
 button:hover { background: #30363d; border-color: #00e5ff; }
 button.active { border-color: #FFD700; color: #FFD700; }
+.session-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.session-btn {
+  background: #0d1117; color: #c9d1d9; border: 1px solid #30363d;
+  padding: 8px 12px; border-radius: 6px; cursor: pointer;
+  font-size: 13px; text-align: left; line-height: 1.3;
+}
+.session-btn:hover { border-color: #00e5ff; }
+.session-btn.active { border-color: #FFD700; background: #1a1a0a; color: #FFD700; }
+.session-btn .meta { display: block; font-size: 11px; color: #8b949e; margin-top: 2px; }
+.session-btn.active .meta { color: #d4a800; }
 input[type="file"] { display: none; }
 label.file-btn {
   display: inline-block; background: #238636; color: #fff; padding: 10px 20px;
@@ -73,8 +83,11 @@ svg { display: block; }
 <p class="subtitle">Multi-bandwidth view of PetroActive session activity. Each event lands in the band that matches its inter-event interval (gap since this team's previous event).</p>
 
 <div class="card">
-  <span id="file-count" style="color:#8b949e;">Loading published sessions...</span>
-  <div id="sessions-list"></div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <h3 style="margin:0; color:#FFD700; font-size:14px;">Session</h3>
+    <span id="file-count" style="color:#8b949e; font-size:12px;">Loading...</span>
+  </div>
+  <div id="session-btns" class="session-btns"></div>
 </div>
 
 <div class="legend">
@@ -110,9 +123,6 @@ svg { display: block; }
 <h2>Band Distribution</h2>
 <div class="card" id="dist-card"><div class="no-data">No data</div></div>
 
-<h2>Session Selector</h2>
-<div class="card" id="session-btns"></div>
-
 <script>
 // ---------------------------------------------------------------------------
 // Band definitions (inter-event interval, in milliseconds)
@@ -141,7 +151,6 @@ let teamFilter = 'both'; // 'both' | 'human' | 'ai'
 const TELEMETRY_BASE = '../petro-active/telemetry';
 
 async function loadPublishedSessions() {
-  const listEl = document.getElementById('sessions-list');
   const countEl = document.getElementById('file-count');
   try {
     const r = await fetch(`${TELEMETRY_BASE}/sessions-manifest.json`);
@@ -150,7 +159,6 @@ async function loadPublishedSessions() {
     const entries = manifest.sessions || [];
 
     sessions.length = 0;
-    listEl.innerHTML = '';
 
     for (const entry of entries) {
       try {
@@ -158,14 +166,12 @@ async function loadPublishedSessions() {
         if (!dr.ok) throw new Error(`HTTP ${dr.status}`);
         const data = await dr.json();
         sessions.push({ name: entry.file, label: entry.label || entry.file, kind: entry.kind || 'human-vs-ai', data });
-        listEl.innerHTML += `<div>${entry.label || entry.file} - ${(data.events || []).length} events, ${(data.matchDuration || 0).toFixed(1)}s</div>`;
       } catch (e) {
         console.error(`Failed to load ${entry.file}:`, e);
-        listEl.innerHTML += `<div style="color:#ff6384">Failed: ${entry.file}</div>`;
       }
     }
 
-    countEl.textContent = `${sessions.length} published session(s)`;
+    countEl.textContent = `${sessions.length} sessions - click to switch`;
     buildSessionButtons();
     if (sessions.length > 0) selectSession(0);
   } catch (e) {
@@ -180,9 +186,12 @@ function buildSessionButtons() {
   el.innerHTML = '';
   sessions.forEach((s, i) => {
     const btn = document.createElement('button');
-    btn.textContent = s.label || s.name.replace('.json', '');
-    btn.onclick = () => selectSession(i);
+    btn.className = 'session-btn';
     btn.id = `sbtn-${i}`;
+    const events = (s.data.events || []).length;
+    const dur = (s.data.matchDuration || 0).toFixed(0);
+    btn.innerHTML = `${s.label || s.name.replace('.json', '')}<span class="meta">${events} events, ${dur}s</span>`;
+    btn.onclick = () => selectSession(i);
     el.appendChild(btn);
   });
 }

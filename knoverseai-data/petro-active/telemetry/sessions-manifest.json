@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "description": "Curated PetroActive session telemetry for the Cognitive Bands dashboard. s001-s006 are human-vs-AI; s007 is AI-vs-AI baseline.",
+  "sessions": [
+    { "file": "s001.json",           "label": "s001 - Human vs AI",        "kind": "human-vs-ai" },
+    { "file": "s003.json",           "label": "s003 - Human vs AI",        "kind": "human-vs-ai" },
+    { "file": "s004.json",           "label": "s004 - Human vs AI",        "kind": "human-vs-ai" },
+    { "file": "s005.json",           "label": "s005 - Human vs AI",        "kind": "human-vs-ai" },
+    { "file": "s006.json",           "label": "s006 - Human vs AI",        "kind": "human-vs-ai" },
+    { "file": "s007_ai_vs_ai.json",  "label": "s007 - AI vs AI baseline",  "kind": "ai-vs-ai" }
+  ]
+}

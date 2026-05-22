@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cognitive Bands - KnoverseAI</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 20px; line-height: 1.5;
+}
+h1 { color: #00e5ff; margin-bottom: 4px; font-size: 24px; }
+h2 { color: #FFD700; margin: 24px 0 8px; font-size: 18px; }
+h3 { color: #c9d1d9; margin: 12px 0 6px; font-size: 14px; }
+.subtitle { color: #8b949e; font-size: 13px; margin-bottom: 16px; }
+.card {
+  background: #161b22; border-radius: 8px; padding: 16px; margin: 12px 0;
+  border: 1px solid #30363d;
+}
+.row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.legend { display: flex; gap: 20px; margin: 8px 0; font-size: 13px; flex-wrap: wrap; }
+.legend span { display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot-cyan { background: #00e5ff; }
+.dot-gold { background: #FFD700; }
+button {
+  background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+  padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  margin: 4px;
+}
+button:hover { background: #30363d; border-color: #00e5ff; }
+button.active { border-color: #FFD700; color: #FFD700; }
+input[type="file"] { display: none; }
+label.file-btn {
+  display: inline-block; background: #238636; color: #fff; padding: 10px 20px;
+  border-radius: 6px; cursor: pointer; font-size: 14px; margin: 8px 0;
+}
+label.file-btn:hover { background: #2ea043; }
+input[type="range"] {
+  flex: 1; min-width: 200px; accent-color: #FFD700;
+}
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px; margin: 8px 0;
+}
+.stat-box {
+  background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+  padding: 10px; text-align: center;
+}
+.stat-box .val { font-size: 20px; color: #00e5ff; font-weight: bold; }
+.stat-box .label { font-size: 11px; color: #8b949e; }
+svg { display: block; }
+#sessions-list { margin: 8px 0; max-height: 120px; overflow-y: auto; font-size: 12px; color: #8b949e; }
+#sessions-list div { padding: 2px 0; }
+.no-data { color: #484f58; text-align: center; padding: 40px; font-style: italic; }
+.band-label { font-size: 11px; }
+.band-info { font-size: 11px; color: #8b949e; margin-top: 2px; }
+.time-readout { color: #FFD700; font-weight: bold; min-width: 90px; text-align: right; font-variant-numeric: tabular-nums; }
+.band-row {
+  display: grid; grid-template-columns: 130px 1fr 80px; gap: 12px;
+  align-items: center; padding: 4px 0; font-size: 12px;
+}
+.band-row .name { color: #c9d1d9; font-weight: bold; }
+.band-row .range { color: #8b949e; font-size: 11px; }
+.band-row .count { color: #00e5ff; text-align: right; font-variant-numeric: tabular-nums; }
+.bar-wrap { background: #0d1117; height: 14px; border-radius: 4px; overflow: hidden; border: 1px solid #30363d; }
+.bar-fill { height: 100%; }
+</style>
+</head>
+<body>
+
+<h1>Cognitive Bands</h1>
+<p class="subtitle">Multi-bandwidth view of PetroActive session activity. Each event lands in the band that matches its inter-event interval (gap since this team's previous event).</p>
+
+<div class="card">
+  <span id="file-count" style="color:#8b949e;">Loading published sessions...</span>
+  <div id="sessions-list"></div>
+</div>
+
+<div class="legend">
+  <span><span class="dot dot-cyan"></span> Human / Blue Team</span>
+  <span><span class="dot dot-gold"></span> AI / Red Team</span>
+  <span style="color:#8b949e;">|</span>
+  <span style="color:#8b949e;">Top band = fastest activity (reflex). Bottom band = slowest (reflective).</span>
+</div>
+
+<div class="stats-grid" id="stats-grid"></div>
+
+<h2>Cognitive Activity Bands</h2>
+<div class="card">
+  <div class="row" style="margin-bottom: 12px;">
+    <button id="play-btn">Play</button>
+    <button id="reset-btn">Reset</button>
+    <button class="speed-btn active" data-speed="1">1x</button>
+    <button class="speed-btn" data-speed="2">2x</button>
+    <button class="speed-btn" data-speed="5">5x</button>
+    <button class="speed-btn" data-speed="10">10x</button>
+    <input type="range" id="time-scrub" min="0" max="1000" value="1000" step="1">
+    <span class="time-readout" id="time-readout">0.0s</span>
+  </div>
+  <div id="bands-card"><div class="no-data">Load files to see cognitive bands</div></div>
+</div>
+
+<h2>Band Distribution</h2>
+<div class="card" id="dist-card"><div class="no-data">No data</div></div>
+
+<h2>Session Selector</h2>
+<div class="card" id="session-btns"></div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Band definitions (inter-event interval, in milliseconds)
+// ---------------------------------------------------------------------------
+const BANDS = [
+  { name: 'Reflex',     range: '< 100 ms',         min: 0,    max: 100,   color: '#ff6384' },
+  { name: 'Tactical',   range: '100 - 500 ms',     min: 100,  max: 500,   color: '#FFD700' },
+  { name: 'Strategic',  range: '500 ms - 2 s',     min: 500,  max: 2000,  color: '#00e5ff' },
+  { name: 'Reflective', range: '> 2 s',            min: 2000, max: Infinity, color: '#9966ff' },
+];
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+const sessions = [];
+let activeIdx = null;
+let playhead = 1.0; // 0..1 fraction of session duration
+let playing = false;
+let playSpeed = 1;
+let lastFrameTs = 0;
+
+// ---------------------------------------------------------------------------
+// Auto-load published sessions from manifest
+// ---------------------------------------------------------------------------
+const TELEMETRY_BASE = '../petro-active/telemetry';
+
+async function loadPublishedSessions() {
+  const listEl = document.getElementById('sessions-list');
+  const countEl = document.getElementById('file-count');
+  try {
+    const r = await fetch(`${TELEMETRY_BASE}/sessions-manifest.json`);
+    if (!r.ok) throw new Error(`manifest HTTP ${r.status}`);
+    const manifest = await r.json();
+    const entries = manifest.sessions || [];
+
+    sessions.length = 0;
+    listEl.innerHTML = '';
+
+    for (const entry of entries) {
+      try {
+        const dr = await fetch(`${TELEMETRY_BASE}/${entry.file}`);
+        if (!dr.ok) throw new Error(`HTTP ${dr.status}`);
+        const data = await dr.json();
+        sessions.push({ name: entry.file, label: entry.label || entry.file, kind: entry.kind || 'human-vs-ai', data });
+        listEl.innerHTML += `<div>${entry.label || entry.file} - ${(data.events || []).length} events, ${(data.matchDuration || 0).toFixed(1)}s</div>`;
+      } catch (e) {
+        console.error(`Failed to load ${entry.file}:`, e);
+        listEl.innerHTML += `<div style="color:#ff6384">Failed: ${entry.file}</div>`;
+      }
+    }
+
+    countEl.textContent = `${sessions.length} published session(s)`;
+    buildSessionButtons();
+    if (sessions.length > 0) selectSession(0);
+  } catch (e) {
+    console.error('Manifest load failed:', e);
+    countEl.textContent = 'Could not load sessions-manifest.json';
+    countEl.style.color = '#ff6384';
+  }
+}
+
+function buildSessionButtons() {
+  const el = document.getElementById('session-btns');
+  el.innerHTML = '';
+  sessions.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = s.label || s.name.replace('.json', '');
+    btn.onclick = () => selectSession(i);
+    btn.id = `sbtn-${i}`;
+    el.appendChild(btn);
+  });
+}
+
+loadPublishedSessions();
+
+function selectSession(idx) {
+  activeIdx = idx;
+  document.querySelectorAll('#session-btns button').forEach((b, i) => {
+    b.classList.toggle('active', i === idx);
+  });
+  playhead = 1.0;
+  playing = false;
+  document.getElementById('play-btn').textContent = 'Play';
+  document.getElementById('time-scrub').value = 1000;
+  renderAll();
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function getEvents(s) {
+  return s.data.events || [];
+}
+
+function getDuration(s) {
+  if (s.data.matchDuration) return s.data.matchDuration;
+  const evs = getEvents(s);
+  if (evs.length < 2) return 1;
+  return evs[evs.length - 1].timestamp - evs[0].timestamp;
+}
+
+function classifyTeam(e) {
+  // s001-s007 PetroActive shape: playerType is 'human' or 'ai'
+  const pt = e.playerType;
+  if (pt === 'ai') return 'ai';
+  if (pt === 'human') return 'human';
+  // Fallback by team color
+  const t = e.teamName;
+  if (t === 'red') return 'ai';
+  if (t === 'blue') return 'human';
+  return 'human';
+}
+
+function bandOf(deltaMs) {
+  for (let i = 0; i < BANDS.length; i++) {
+    if (deltaMs < BANDS[i].max) return i;
+  }
+  return BANDS.length - 1;
+}
+
+// Compute the per-event band assignment using per-team inter-event interval (ms).
+// Returns array same length as events with { team, band, t (seconds), eventType }.
+function computeEventBands(s) {
+  const events = getEvents(s);
+  const lastTByTeam = {};
+  const out = [];
+  for (const e of events) {
+    const team = classifyTeam(e);
+    const t = e.timestamp; // seconds
+    const tMs = t * 1000;
+    const prev = lastTByTeam[team];
+    const delta = (prev === undefined) ? Infinity : (tMs - prev);
+    const band = bandOf(delta);
+    lastTByTeam[team] = tMs;
+    out.push({ team, band, t, eventType: e.eventType || 'unknown', delta });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Stats summary
+// ---------------------------------------------------------------------------
+function renderStats() {
+  if (activeIdx === null) return;
+  const s = sessions[activeIdx];
+  const events = getEvents(s);
+  const duration = getDuration(s);
+  const banded = computeEventBands(s);
+
+  const humanEvents = banded.filter(b => b.team === 'human').length;
+  const aiEvents = banded.filter(b => b.team === 'ai').length;
+
+  const stats = [
+    { val: events.length, label: 'Total Events' },
+    { val: duration.toFixed(1) + 's', label: 'Duration' },
+    { val: humanEvents, label: 'Human Events' },
+    { val: aiEvents, label: 'AI Events' },
+    { val: (events.length / duration).toFixed(2), label: 'Events / sec' },
+    { val: (s.data.gameVersion || '-'), label: 'Game Version' },
+  ];
+
+  document.getElementById('stats-grid').innerHTML =
+    stats.map(x => `<div class="stat-box"><div class="val">${x.val}</div><div class="label">${x.label}</div></div>`).join('');
+}
+
+// ---------------------------------------------------------------------------
+// Cognitive Bands renderer (the hero viz)
+// ---------------------------------------------------------------------------
+function renderBands() {
+  if (activeIdx === null) return;
+  const s = sessions[activeIdx];
+  const banded = computeEventBands(s);
+  const duration = getDuration(s);
+  if (banded.length === 0) {
+    document.getElementById('bands-card').innerHTML = '<div class="no-data">No events</div>';
+    return;
+  }
+
+  const W = 1100, padL = 130, padR = 30, padT = 20, padB = 40;
+  const bandH = 60;
+  const H = padT + padB + BANDS.length * bandH;
+
+  const tMax = duration;
+  const tCutoff = tMax * playhead;
+  const scaleX = (t) => padL + (t / tMax) * (W - padL - padR);
+
+  // Band rows: background, label, range
+  let bgs = '';
+  BANDS.forEach((b, i) => {
+    const y = padT + i * bandH;
+    const alt = i % 2 === 0 ? '#161b22' : '#0d1117';
+    bgs += `<rect x="0" y="${y}" width="${W}" height="${bandH}" fill="${alt}"/>`;
+    bgs += `<line x1="${padL}" y1="${y + bandH}" x2="${W - padR}" y2="${y + bandH}" stroke="#30363d"/>`;
+    bgs += `<text x="${padL - 8}" y="${y + bandH/2 - 4}" fill="${b.color}" font-size="13" font-weight="bold" text-anchor="end">${b.name}</text>`;
+    bgs += `<text x="${padL - 8}" y="${y + bandH/2 + 12}" fill="#8b949e" font-size="10" text-anchor="end">${b.range}</text>`;
+  });
+
+  // Time axis ticks
+  let ticks = '';
+  const step = duration > 200 ? 30 : (duration > 60 ? 10 : 5);
+  for (let t = 0; t <= duration; t += step) {
+    const x = scaleX(t);
+    ticks += `<line x1="${x}" y1="${padT}" x2="${x}" y2="${H - padB}" stroke="#21262d"/>`;
+    ticks += `<text x="${x}" y="${H - padB + 14}" fill="#8b949e" font-size="10" text-anchor="middle">${t.toFixed(0)}s</text>`;
+  }
+
+  // Per-band rate curves (events / 1s window, per team)
+  const windowSec = Math.max(0.5, duration / 200);
+  const stepSec = windowSec / 2;
+  const nSteps = Math.floor(duration / stepSec) + 1;
+  // For each band, compute rate over time per team
+  let curves = '';
+  for (let bi = 0; bi < BANDS.length; bi++) {
+    const yTop = padT + bi * bandH;
+    const yBase = yTop + bandH - 4;
+    const lineH = bandH - 10;
+
+    const eventsInBand = banded.filter(b => b.band === bi);
+    if (eventsInBand.length === 0) continue;
+
+    const ratesH = new Array(nSteps).fill(0);
+    const ratesA = new Array(nSteps).fill(0);
+    for (const e of eventsInBand) {
+      if (e.t > tCutoff) continue;
+      const idx = Math.floor(e.t / stepSec);
+      if (idx >= 0 && idx < nSteps) {
+        if (e.team === 'human') ratesH[idx]++;
+        else ratesA[idx]++;
+      }
+    }
+    // Smooth over the window (centered)
+    const winSteps = Math.max(1, Math.floor(windowSec / stepSec));
+    const smoothH = ratesH.map((_, i) => {
+      let sum = 0;
+      for (let k = Math.max(0, i - winSteps); k <= Math.min(nSteps - 1, i + winSteps); k++) sum += ratesH[k];
+      return sum / windowSec;
+    });
+    const smoothA = ratesA.map((_, i) => {
+      let sum = 0;
+      for (let k = Math.max(0, i - winSteps); k <= Math.min(nSteps - 1, i + winSteps); k++) sum += ratesA[k];
+      return sum / windowSec;
+    });
+
+    const maxRate = Math.max(1, ...smoothH, ...smoothA);
+
+    // Build polygon paths
+    const buildPath = (rates) => {
+      let pts = `${scaleX(0)},${yBase}`;
+      for (let i = 0; i < nSteps; i++) {
+        const t = i * stepSec;
+        if (t > tCutoff) break;
+        const y = yBase - (rates[i] / maxRate) * lineH;
+        pts += ` ${scaleX(t)},${y}`;
+      }
+      pts += ` ${scaleX(Math.min(tCutoff, (nSteps-1)*stepSec))},${yBase}`;
+      return pts;
+    };
+
+    curves += `<polygon points="${buildPath(smoothH)}" fill="#00e5ff" opacity="0.18"/>`;
+    curves += `<polygon points="${buildPath(smoothA)}" fill="#FFD700" opacity="0.18"/>`;
+  }
+
+  // Event ticks
+  let ticksDots = '';
+  for (const e of banded) {
+    if (e.t > tCutoff) continue;
+    const x = scaleX(e.t);
+    const yTop = padT + e.band * bandH;
+    const yTeam = e.team === 'human' ? yTop + bandH * 0.62 : yTop + bandH * 0.82;
+    const color = e.team === 'human' ? '#00e5ff' : '#FFD700';
+    ticksDots += `<line x1="${x}" y1="${yTeam}" x2="${x}" y2="${yTeam + 6}" stroke="${color}" stroke-width="1.2" opacity="0.75"/>`;
+  }
+
+  // Playhead line
+  const px = scaleX(tCutoff);
+  const playline = `<line x1="${px}" y1="${padT}" x2="${px}" y2="${H - padB}" stroke="#FFD700" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.7"/>`;
+
+  // Per-team baseline guides
+  let baselines = '';
+  for (let i = 0; i < BANDS.length; i++) {
+    const yTop = padT + i * bandH;
+    baselines += `<line x1="${padL}" y1="${yTop + bandH * 0.62 + 6}" x2="${W - padR}" y2="${yTop + bandH * 0.62 + 6}" stroke="#30363d" stroke-dasharray="2,4" opacity="0.5"/>`;
+    baselines += `<line x1="${padL}" y1="${yTop + bandH * 0.82 + 6}" x2="${W - padR}" y2="${yTop + bandH * 0.82 + 6}" stroke="#30363d" stroke-dasharray="2,4" opacity="0.5"/>`;
+    // small team labels at left edge
+    baselines += `<text x="${padL + 4}" y="${yTop + bandH * 0.62 + 4}" fill="#00e5ff" font-size="9" opacity="0.7">H</text>`;
+    baselines += `<text x="${padL + 4}" y="${yTop + bandH * 0.82 + 4}" fill="#FFD700" font-size="9" opacity="0.7">AI</text>`;
+  }
+
+  const svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    ${bgs}
+    ${ticks}
+    ${baselines}
+    ${curves}
+    ${ticksDots}
+    ${playline}
+  </svg>`;
+
+  document.getElementById('bands-card').innerHTML = svg;
+  document.getElementById('time-readout').textContent = tCutoff.toFixed(1) + 's / ' + duration.toFixed(1) + 's';
+}
+
+// ---------------------------------------------------------------------------
+// Band distribution bars
+// ---------------------------------------------------------------------------
+function renderDist() {
+  if (activeIdx === null) return;
+  const s = sessions[activeIdx];
+  const banded = computeEventBands(s);
+  if (banded.length === 0) {
+    document.getElementById('dist-card').innerHTML = '<div class="no-data">No events</div>';
+    return;
+  }
+
+  const total = banded.length;
+  let html = '';
+  for (let i = 0; i < BANDS.length; i++) {
+    const b = BANDS[i];
+    const hCount = banded.filter(x => x.band === i && x.team === 'human').length;
+    const aCount = banded.filter(x => x.band === i && x.team === 'ai').length;
+    const count = hCount + aCount;
+    const pct = total ? (count / total) * 100 : 0;
+    const hPct = count ? (hCount / count) * 100 : 0;
+    const aPct = count ? (aCount / count) * 100 : 0;
+
+    html += `<div class="band-row">
+      <div>
+        <div class="name" style="color:${b.color}">${b.name}</div>
+        <div class="range">${b.range}</div>
+      </div>
+      <div class="bar-wrap" title="Human ${hCount} | AI ${aCount}">
+        <div class="bar-fill" style="display:flex; width:${pct.toFixed(1)}%;">
+          <div style="width:${hPct}%; background:#00e5ff"></div>
+          <div style="width:${aPct}%; background:#FFD700"></div>
+        </div>
+      </div>
+      <div class="count">${count} (${pct.toFixed(1)}%)</div>
+    </div>`;
+  }
+
+  document.getElementById('dist-card').innerHTML = html;
+}
+
+// ---------------------------------------------------------------------------
+// Renderer entry
+// ---------------------------------------------------------------------------
+function renderAll() {
+  if (activeIdx === null) return;
+  renderStats();
+  renderBands();
+  renderDist();
+}
+
+// ---------------------------------------------------------------------------
+// Playback controls
+// ---------------------------------------------------------------------------
+document.getElementById('play-btn').addEventListener('click', () => {
+  if (activeIdx === null) return;
+  if (playhead >= 1.0) playhead = 0;
+  playing = !playing;
+  document.getElementById('play-btn').textContent = playing ? 'Pause' : 'Play';
+  if (playing) {
+    lastFrameTs = performance.now();
+    requestAnimationFrame(tick);
+  }
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  playhead = 0;
+  playing = false;
+  document.getElementById('play-btn').textContent = 'Play';
+  document.getElementById('time-scrub').value = 0;
+  renderBands();
+});
+
+document.getElementById('time-scrub').addEventListener('input', (evt) => {
+  playhead = evt.target.value / 1000;
+  playing = false;
+  document.getElementById('play-btn').textContent = 'Play';
+  renderBands();
+});
+
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    playSpeed = parseFloat(btn.dataset.speed);
+  });
+});
+
+function tick(now) {
+  if (!playing) return;
+  if (activeIdx === null) return;
+  const s = sessions[activeIdx];
+  const duration = getDuration(s);
+  const dt = (now - lastFrameTs) / 1000;
+  lastFrameTs = now;
+  playhead += (dt * playSpeed) / duration;
+  if (playhead >= 1.0) {
+    playhead = 1.0;
+    playing = false;
+    document.getElementById('play-btn').textContent = 'Play';
+  }
+  document.getElementById('time-scrub').value = Math.round(playhead * 1000);
+  renderBands();
+  if (playing) requestAnimationFrame(tick);
+}
+</script>
+
+</body>
+</html>

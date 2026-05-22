@@ -81,7 +81,7 @@ svg { display: block; }
   <span><span class="dot dot-cyan"></span> Human / Blue Team</span>
   <span><span class="dot dot-gold"></span> AI / Red Team</span>
   <span style="color:#8b949e;">|</span>
-  <span style="color:#8b949e;">Top band = fastest activity (reflex). Bottom band = slowest (reflective).</span>
+  <span style="color:#8b949e;">Top band = slowest (reflective). Bottom band = fastest (reflex).</span>
 </div>
 
 <div class="stats-grid" id="stats-grid"></div>
@@ -97,6 +97,12 @@ svg { display: block; }
     <button class="speed-btn" data-speed="10">10x</button>
     <input type="range" id="time-scrub" min="0" max="1000" value="1000" step="1">
     <span class="time-readout" id="time-readout">0.0s</span>
+  </div>
+  <div class="row" style="margin-bottom: 12px; gap: 6px;">
+    <span style="color:#8b949e; font-size:12px;">Show:</span>
+    <button class="team-btn active" data-team="both">Both</button>
+    <button class="team-btn" data-team="human">Human only</button>
+    <button class="team-btn" data-team="ai">AI only</button>
   </div>
   <div id="bands-card"><div class="no-data">Load files to see cognitive bands</div></div>
 </div>
@@ -127,6 +133,7 @@ let playhead = 1.0; // 0..1 fraction of session duration
 let playing = false;
 let playSpeed = 1;
 let lastFrameTs = 0;
+let teamFilter = 'both'; // 'both' | 'human' | 'ai'
 
 // ---------------------------------------------------------------------------
 // Auto-load published sessions from manifest
@@ -227,6 +234,16 @@ function bandOf(deltaMs) {
   return BANDS.length - 1;
 }
 
+// Visual row index: invert so Reflective (slowest, highest band index) sits on top.
+function rowOf(bandIdx) {
+  return BANDS.length - 1 - bandIdx;
+}
+
+function teamPasses(team) {
+  if (teamFilter === 'both') return true;
+  return team === teamFilter;
+}
+
 // Compute the per-event band assignment using per-team inter-event interval (ms).
 // Returns array same length as events with { team, band, t (seconds), eventType }.
 function computeEventBands(s) {
@@ -293,11 +310,12 @@ function renderBands() {
   const tCutoff = tMax * playhead;
   const scaleX = (t) => padL + (t / tMax) * (W - padL - padR);
 
-  // Band rows: background, label, range
+  // Band rows: background, label, range (Reflective on top, Reflex on bottom)
   let bgs = '';
   BANDS.forEach((b, i) => {
-    const y = padT + i * bandH;
-    const alt = i % 2 === 0 ? '#161b22' : '#0d1117';
+    const row = rowOf(i);
+    const y = padT + row * bandH;
+    const alt = row % 2 === 0 ? '#161b22' : '#0d1117';
     bgs += `<rect x="0" y="${y}" width="${W}" height="${bandH}" fill="${alt}"/>`;
     bgs += `<line x1="${padL}" y1="${y + bandH}" x2="${W - padR}" y2="${y + bandH}" stroke="#30363d"/>`;
     bgs += `<text x="${padL - 8}" y="${y + bandH/2 - 4}" fill="${b.color}" font-size="13" font-weight="bold" text-anchor="end">${b.name}</text>`;
@@ -320,7 +338,7 @@ function renderBands() {
   // For each band, compute rate over time per team
   let curves = '';
   for (let bi = 0; bi < BANDS.length; bi++) {
-    const yTop = padT + bi * bandH;
+    const yTop = padT + rowOf(bi) * bandH;
     const yBase = yTop + bandH - 4;
     const lineH = bandH - 10;
 
@@ -331,6 +349,7 @@ function renderBands() {
     const ratesA = new Array(nSteps).fill(0);
     for (const e of eventsInBand) {
       if (e.t > tCutoff) continue;
+      if (!teamPasses(e.team)) continue;
       const idx = Math.floor(e.t / stepSec);
       if (idx >= 0 && idx < nSteps) {
         if (e.team === 'human') ratesH[idx]++;
@@ -365,19 +384,20 @@ function renderBands() {
       return pts;
     };
 
-    curves += `<polygon points="${buildPath(smoothH)}" fill="#00e5ff" opacity="0.18"/>`;
-    curves += `<polygon points="${buildPath(smoothA)}" fill="#FFD700" opacity="0.18"/>`;
+    if (teamFilter !== 'ai') curves += `<polygon points="${buildPath(smoothH)}" fill="#00e5ff" opacity="0.22"/>`;
+    if (teamFilter !== 'human') curves += `<polygon points="${buildPath(smoothA)}" fill="#FFD700" opacity="0.22"/>`;
   }
 
   // Event ticks
   let ticksDots = '';
   for (const e of banded) {
     if (e.t > tCutoff) continue;
+    if (!teamPasses(e.team)) continue;
     const x = scaleX(e.t);
-    const yTop = padT + e.band * bandH;
+    const yTop = padT + rowOf(e.band) * bandH;
     const yTeam = e.team === 'human' ? yTop + bandH * 0.62 : yTop + bandH * 0.82;
     const color = e.team === 'human' ? '#00e5ff' : '#FFD700';
-    ticksDots += `<line x1="${x}" y1="${yTeam}" x2="${x}" y2="${yTeam + 6}" stroke="${color}" stroke-width="1.2" opacity="0.75"/>`;
+    ticksDots += `<line x1="${x}" y1="${yTeam}" x2="${x}" y2="${yTeam + 6}" stroke="${color}" stroke-width="1.2" opacity="0.8"/>`;
   }
 
   // Playhead line
@@ -387,12 +407,15 @@ function renderBands() {
   // Per-team baseline guides
   let baselines = '';
   for (let i = 0; i < BANDS.length; i++) {
-    const yTop = padT + i * bandH;
-    baselines += `<line x1="${padL}" y1="${yTop + bandH * 0.62 + 6}" x2="${W - padR}" y2="${yTop + bandH * 0.62 + 6}" stroke="#30363d" stroke-dasharray="2,4" opacity="0.5"/>`;
-    baselines += `<line x1="${padL}" y1="${yTop + bandH * 0.82 + 6}" x2="${W - padR}" y2="${yTop + bandH * 0.82 + 6}" stroke="#30363d" stroke-dasharray="2,4" opacity="0.5"/>`;
-    // small team labels at left edge
-    baselines += `<text x="${padL + 4}" y="${yTop + bandH * 0.62 + 4}" fill="#00e5ff" font-size="9" opacity="0.7">H</text>`;
-    baselines += `<text x="${padL + 4}" y="${yTop + bandH * 0.82 + 4}" fill="#FFD700" font-size="9" opacity="0.7">AI</text>`;
+    const yTop = padT + rowOf(i) * bandH;
+    if (teamFilter !== 'ai') {
+      baselines += `<line x1="${padL}" y1="${yTop + bandH * 0.62 + 6}" x2="${W - padR}" y2="${yTop + bandH * 0.62 + 6}" stroke="#30363d" stroke-dasharray="2,4" opacity="0.5"/>`;
+      baselines += `<text x="${padL + 4}" y="${yTop + bandH * 0.62 + 4}" fill="#00e5ff" font-size="9" opacity="0.7">H</text>`;
+    }
+    if (teamFilter !== 'human') {
+      baselines += `<line x1="${padL}" y1="${yTop + bandH * 0.82 + 6}" x2="${W - padR}" y2="${yTop + bandH * 0.82 + 6}" stroke="#30363d" stroke-dasharray="2,4" opacity="0.5"/>`;
+      baselines += `<text x="${padL + 4}" y="${yTop + bandH * 0.82 + 4}" fill="#FFD700" font-size="9" opacity="0.7">AI</text>`;
+    }
   }
 
   const svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
@@ -420,16 +443,21 @@ function renderDist() {
     return;
   }
 
-  const total = banded.length;
+  // Total respects the team filter so percentages match the viz
+  const filtered = banded.filter(x => teamPasses(x.team));
+  const total = filtered.length;
   let html = '';
-  for (let i = 0; i < BANDS.length; i++) {
+  // Reflective on top, Reflex on bottom
+  for (let i = BANDS.length - 1; i >= 0; i--) {
     const b = BANDS[i];
     const hCount = banded.filter(x => x.band === i && x.team === 'human').length;
     const aCount = banded.filter(x => x.band === i && x.team === 'ai').length;
-    const count = hCount + aCount;
+    const hShown = teamFilter === 'ai' ? 0 : hCount;
+    const aShown = teamFilter === 'human' ? 0 : aCount;
+    const count = hShown + aShown;
     const pct = total ? (count / total) * 100 : 0;
-    const hPct = count ? (hCount / count) * 100 : 0;
-    const aPct = count ? (aCount / count) * 100 : 0;
+    const hPct = count ? (hShown / count) * 100 : 0;
+    const aPct = count ? (aShown / count) * 100 : 0;
 
     html += `<div class="band-row">
       <div>
@@ -493,6 +521,16 @@ document.querySelectorAll('.speed-btn').forEach(btn => {
     document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     playSpeed = parseFloat(btn.dataset.speed);
+  });
+});
+
+document.querySelectorAll('.team-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    teamFilter = btn.dataset.team;
+    renderBands();
+    renderDist();
   });
 });
 

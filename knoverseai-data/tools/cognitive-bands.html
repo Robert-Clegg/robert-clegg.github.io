@@ -214,6 +214,16 @@ const EPISODE_COLORS = {
   MovementBurst:      '#FFD700', // gold
 };
 
+// Episodes mapped to DeepMind's cognitive sub-abilities per the published
+// CM Data Mapping (neutral-zone-game/CM_DATA_MAPPING_TO_AGI_FACULTIES.md).
+// Surfaced in tooltips so episodes are connected to the established taxonomy.
+const EPISODE_FACULTY = {
+  Hesitation:         '7.2 Confidence calibration (Metacognitive Monitoring)',
+  RadarConsultation:  '8.2 Planning (Executive Functions)',
+  InformationSeeking: '7.1 Metamemory (Metacognitive Knowledge)',
+  MovementBurst:      '8.1 Goal maintenance (Executive Functions)',
+};
+
 // ---------------------------------------------------------------------------
 // Auto-load published sessions from manifest
 // ---------------------------------------------------------------------------
@@ -622,8 +632,9 @@ function renderBands() {
       const type = activeEpisodeTypes[r];
       const y = padT + r * episodeRowH;
       const color = EPISODE_COLORS[type];
-      // Row label on the left
-      episodeSvg += `<text x="${padL - 8}" y="${y + episodeRowH - 3}" fill="${color}" font-size="10" text-anchor="end" opacity="0.85">${type}</text>`;
+      // Row label on the left (with AGI faculty tooltip)
+      const faculty = EPISODE_FACULTY[type] || '';
+      episodeSvg += `<text x="${padL - 8}" y="${y + episodeRowH - 3}" fill="${color}" font-size="10" text-anchor="end" opacity="0.85"><title>DeepMind sub-ability: ${faculty}</title>${type}</text>`;
       // Bars for this episode type
       for (const ep of episodes) {
         if (ep.type !== type) continue;
@@ -632,7 +643,7 @@ function renderBands() {
         const x2 = scaleX(Math.min(ep.end, tCutoff));
         const w = Math.max(2, x2 - x1);
         episodeSvg += `<rect x="${x1}" y="${y + 1}" width="${w}" height="${episodeRowH - 3}" fill="${color}" opacity="0.65" rx="2">
-          <title>${ep.type}: ${ep.duration.toFixed(2)}s (${ep.start.toFixed(1)}s - ${ep.end.toFixed(1)}s) - ${ep.meta || ''}</title>
+          <title>${ep.type} [${faculty}]: ${ep.duration.toFixed(2)}s (${ep.start.toFixed(1)}s - ${ep.end.toFixed(1)}s) - ${ep.meta || ''}</title>
         </rect>`;
         if (w > 60 && ep.duration >= 0.5) {
           episodeSvg += `<text x="${x1 + 4}" y="${y + episodeRowH - 4}" fill="#fff" font-size="9" opacity="0.95">${ep.duration.toFixed(1)}s</text>`;

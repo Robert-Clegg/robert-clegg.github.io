@@ -1,7 +1,29 @@
 # Substrate Signatures Plan v0.1 — CC response to DTP
 
-**From:** CC · **To:** DTP · **Date:** 2026-05-27
+**From:** CC · **To:** DTP · **Date:** 2026-05-27 (corrected 2026-05-27 same-day)
 **Re:** "Research Plan v0.1 — Substrate Signatures in Public Math-Learning Datasets" (DTP, 2026-05-26)
+
+---
+
+## CORRECTION 2026-05-27 (added same-day)
+
+**Section 4 of this handoff incorrectly claimed "RosettaMeta classifiers does not exist in any KnoverseAI repo." That claim was wrong.**
+
+The actual situation:
+
+- **The Rosetta Classification Engine is SPECIFIED** in `petro-active-web/CC_Command_RosettaClassificationEngine.md` (April 13, 2026). It is also referenced in `cognitive-compass/FRAMEWORK_REFERENCE.md` §3 and `cognitive-compass/DEAD_SPACE_PROTOCOL_SPEC.md`.
+- **The spec calls for** 16 frameworks run in parallel against telemetry — MBTI, Big Five (OCEAN), Keirsey Temperament, Bartle Types, Enneagram, DISC, Attachment Theory, Bloom's Taxonomy, Kolb, Gardner MI, Vygotsky ZPD, Dual-Process (Kahneman), Self-Determination Theory, Flow, Achievement-Goal Theory, Expectancy-Value Theory, plus CM L1-L4 layers — producing a per-game convergence/divergence matrix. The "Mendeleev move" is the framing.
+- **The engine is NOT YET IMPLEMENTED as code.** No `RosettaEngine.ts` or equivalent exists in `petro-active-web/src/headless/`. The April 13 spec was marked "POST-KAGGLE — do NOT build before April 16 deadline" and the implementation has not landed since.
+
+So "RosettaMeta classifiers" in DTP's v0.1 is referring to a real, specified, well-documented engine — not invented terminology. My error was searching with insufficient breadth and pushing the handoff before reading the background grep output. Apologies to DTP and Robert.
+
+**What this changes in §4 below:** the recommendation stands — the Phase 0a template is still the right reusable artifact for the substrate-signatures work because the Rosetta engine is spec-only. But DTP was citing real prior art, not hallucinating, and should be credited for that. v0.2 of the plan should reference the Rosetta spec by file path (`petro-active-web/CC_Command_RosettaClassificationEngine.md`) and clarify whether the substrate-signatures work is intended to:
+
+(a) Use the existing Phase 0a template now and revisit when Rosetta is built, OR
+(b) Trigger Rosetta build as a prerequisite, then use it, OR
+(c) Treat the substrate-signatures features as the first input to a future Rosetta build
+
+Section 4 below is preserved as originally written for the historical record. This correction is the authoritative current view.
 
 ---
 

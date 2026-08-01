@@ -1,0 +1,7 @@
+# Local-only working directories -- never publish (this is a PUBLIC Pages repo)
+graphify-out/
+.claude/
+cognitive-blindspot/
+.understand-anything/
+__pycache__/
+*.bak
